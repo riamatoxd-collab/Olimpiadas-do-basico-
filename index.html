@@ -7,9 +7,8 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="Olimpíadas Méqui" />
-  <title>Olimpíadas do Básico — Venture v6.2</title>
+  <title>Olimpíadas do Básico — Venture v6.3</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <style>
     body {
@@ -58,7 +57,7 @@
       <div class="text-center mb-5">
         <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl mc-gradient text-[#FFC72C] font-black text-4xl shadow-lg mb-2.5 border-2 border-[#FFC72C]/40">M</div>
         <h1 class="text-2xl font-black tracking-tight text-slate-900">OLIMPÍADAS DO BÁSICO</h1>
-        <p class="text-xs text-slate-500 font-semibold mt-0.5">Treinamento Oficial Venture • Versão 6.2 🏆</p>
+        <p class="text-xs text-slate-500 font-semibold mt-0.5">Treinamento Oficial Venture • Versão 6.3 Cloud 🏆</p>
       </div>
 
       <div class="flex rounded-2xl bg-slate-100 p-1.5 mb-5">
@@ -262,9 +261,9 @@
         <div class="flex items-center justify-between flex-wrap gap-2">
           <div>
             <h3 class="font-black text-slate-900 text-base">🏆 Ranking Geral da Loja</h3>
-            <span id="syncStatusText" class="text-[11px] text-amber-600 font-bold">● Conectando à nuvem em tempo real...</span>
+            <span id="syncStatusText" class="text-[11px] text-emerald-600 font-bold">● Conectando à Nuvem HTTPS...</span>
           </div>
-          <button onclick="forceSyncNow()" class="bg-slate-100 hover:bg-slate-200 active:scale-95 text-slate-800 font-extrabold text-xs px-3.5 py-2 rounded-xl transition">
+          <button onclick="forceSyncNow()" class="bg-red-50 hover:bg-red-100 active:scale-95 text-red-700 border border-red-200 font-extrabold text-xs px-3.5 py-2 rounded-xl transition">
             🔄 Sincronizar Agora
           </button>
         </div>
@@ -360,7 +359,7 @@
         <div class="glass-card rounded-3xl p-5 space-y-3">
           <div class="flex items-center justify-between">
             <h3 class="font-black text-slate-900 text-sm">👥 Equipe Cadastrada</h3>
-            <button onclick="forceSyncNow()" class="text-xs font-extrabold text-red-600 bg-red-50 px-3 py-1 rounded-xl">🔄 Forçar Sincronia</button>
+            <button onclick="forceSyncNow()" class="text-xs font-extrabold text-red-600 bg-red-50 px-3 py-1 rounded-xl">🔄 Puxar Novos da Nuvem</button>
           </div>
           <div id="adminUsersList" class="space-y-3"></div>
         </div>
@@ -372,22 +371,22 @@
       <div class="glass-card rounded-3xl p-5 space-y-4">
         <div class="flex items-center justify-between">
           <h2 class="font-black text-slate-900 text-base">🚀 Novidades da Versão</h2>
-          <span class="bg-red-100 text-red-800 text-xs font-black px-3 py-1 rounded-full">Versão 6.2</span>
-        </div>
-
-        <div class="border-l-4 border-[#DA291C] pl-3.5 space-y-1">
-          <span class="text-[11px] font-extrabold text-red-600 uppercase">Versão 6.2 • Alternativas Inteligentes A, B, C e D</span>
-          <h4 class="font-black text-slate-900 text-sm">Opções Semelhantes à Resposta Original no Simulado 🧠🎯</h4>
-          <ul class="text-xs text-slate-600 list-disc list-inside space-y-1 pt-1">
-            <li><strong>Alternativas A, B, C e D Plausíveis:</strong> Todas as perguntas agora geram opções parecidas com a resposta original (mesma unidade de medida, temperaturas próximas, tempos parecidos e receitas equivalentes).</li>
-            <li><strong>Botões Identificados (A, B, C, D):</strong> Layout de prova oficial com selo das letras em cada alternativa.</li>
-          </ul>
+          <span class="bg-emerald-100 text-emerald-800 text-xs font-black px-3 py-1 rounded-full">Versão 6.3 Cloud</span>
         </div>
 
         <div class="border-l-4 border-emerald-600 pl-3.5 space-y-1">
-          <span class="text-[11px] font-extrabold text-emerald-600 uppercase">Versão 6.1</span>
-          <h4 class="font-black text-slate-900 text-sm">Sincronização em Tempo Real via WebSockets + Avatares e Cargos ⚡</h4>
-          <p class="text-xs text-slate-600 pt-1">Conexão multi-aparelhos instantânea, escolha de ícones de perfil, cargos oficiais (Atendente, Treinador, Supervisor, Coordenador e GUN) e Painel ADM.</p>
+          <span class="text-[11px] font-extrabold text-emerald-600 uppercase">Versão 6.3 • Nuvem HTTPS Porta 443 com Histórico</span>
+          <h4 class="font-black text-slate-900 text-sm">Sincronização Garantida no GitHub Pages (4G e Wi-Fi) ☁️📲</h4>
+          <ul class="text-xs text-slate-600 list-disc list-inside space-y-1 pt-1">
+            <li><strong>Nuvem HTTPS (Porta 443):</strong> Substituída a porta antiga que sofria bloqueio nas operadoras móveis por conexão HTTPS direta (`ntfy.sh Cloud`) com histórico salvo no servidor.</li>
+            <li><strong>Memória Offline/Online:</strong> Mesmo que você esteja com o celular fechado quando alguém se cadastrar, o servidor guarda o cadastro na fila e entrega assim que você abrir o app.</li>
+          </ul>
+        </div>
+
+        <div class="border-l-4 border-[#DA291C] pl-3.5 space-y-1">
+          <span class="text-[11px] font-extrabold text-red-600 uppercase">Versão 6.2</span>
+          <h4 class="font-black text-slate-900 text-sm">Alternativas A, B, C e D Semelhantes + Avatares e Cargos 🎯</h4>
+          <p class="text-xs text-slate-600 pt-1">Questões com opções parecidas com a resposta original, escolha de ícones de perfil, cargos oficiais e Painel ADM.</p>
         </div>
       </div>
     </section>
@@ -628,8 +627,11 @@
     const STORAGE_USERS_KEY = "mequi_olimpiadas_users_v6";
     const STORAGE_CURRENT_KEY = "mequi_olimpiadas_active_user_v6";
     const ADMIN_SECRET_PASS = "342005";
-    const SYNC_TOPIC = "mequi/olimpiadas/venture2026/store_ranking_v6_sync";
-    let mqttClients = [];
+
+    // MOTOR DE NUVEM HTTPS PORTA 443 (NTFY CLOUD STREAM + HISTÓRICO DE CACHE)
+    const CLOUD_TOPIC = "mequi_venture_olimpiadas_2026_v63_store";
+    const CLOUD_BASE_URL = `https://ntfy.sh/${CLOUD_TOPIC}`;
+    let sseConnection = null;
 
     let users = {};
     let currentUserKey = localStorage.getItem(STORAGE_CURRENT_KEY) || null;
@@ -638,6 +640,7 @@
     let currentHearts = 5;
     let isAdminUnlocked = false;
 
+    // Resgata cadastros feitos nas versões anteriores do aparelho e os prepara para subir para a nuvem
     function rescuePreviousLocalRegistrations() {
       const keysToCheck = [
         "mequi_olimpiadas_users_v3",
@@ -655,14 +658,12 @@
               const u = parsed[k];
               if (!u || !u.name) return;
               if (k === "daniel pessoa de oliveira" && u.xp === 250 && u.correctAnswers === 2) return;
-              if (!users[k] || (u.xp || 0) > (users[k].xp || 0)) {
-                users[k] = {
-                  ...u,
-                  role: u.role || u.station || "Atendente",
-                  avatar: u.avatar || "🍔",
-                  updatedAt: u.updatedAt || Date.now()
-                };
-              }
+              users[k] = mergeSingleUser(users[k], {
+                ...u,
+                role: u.role || u.station || "Atendente",
+                avatar: u.avatar || "🍔",
+                updatedAt: u.updatedAt || Date.now()
+              });
             });
           }
         } catch (e) {}
@@ -715,89 +716,140 @@
       };
     }
 
-    function mergeUserDictionaries(localDict, remoteDict) {
-      const merged = { ...localDict };
-      if (!remoteDict || typeof remoteDict !== "object") return merged;
+    function processIncomingCloudPayload(rawMsgStr) {
+      try {
+        const data = JSON.parse(rawMsgStr);
+        if (!data) return false;
+        let changed = false;
 
-      Object.keys(remoteDict).forEach(k => {
-        const rUser = remoteDict[k];
-        if (!rUser || !rUser.name) return;
-        if (k === "daniel pessoa de oliveira" && rUser.xp === 250 && rUser.correctAnswers === 2) return;
-        merged[k] = mergeSingleUser(merged[k], rUser);
-      });
-      return merged;
+        if (data.type === "single" && data.k && data.u) {
+          const before = JSON.stringify(users[data.k]);
+          users[data.k] = mergeSingleUser(users[data.k], data.u);
+          if (JSON.stringify(users[data.k]) !== before) changed = true;
+        } else if (data.type === "batch" && data.map && typeof data.map === "object") {
+          Object.keys(data.map).forEach(k => {
+            const u = data.map[k];
+            if (!u || !u.name) return;
+            if (k === "daniel pessoa de oliveira" && u.xp === 250 && u.correctAnswers === 2) return;
+            const before = JSON.stringify(users[k]);
+            users[k] = mergeSingleUser(users[k], u);
+            if (JSON.stringify(users[k]) !== before) changed = true;
+          });
+        }
+        return changed;
+      } catch (e) {
+        return false;
+      }
     }
 
-    function initRealtimeCloudSync() {
+    // 1. BAIXA TODO O HISTÓRICO DE CADASTROS DA NUVEM HTTPS (PORTA 443)
+    async function fetchAllCloudHistory(pushLocalAfter = false) {
       const statusEl = document.getElementById("syncStatusText");
-      const brokers = [
-        "wss://broker.emqx.io:8084/mqtt",
-        "wss://broker.hivemq.com:8884/mqtt"
-      ];
+      if (statusEl) statusEl.textContent = "🔄 Sincronizando cadastros na nuvem...";
 
-      brokers.forEach((brokerUrl) => {
-        try {
-          const client = mqtt.connect(brokerUrl, {
-            clientId: "mequi_v62_" + Math.random().toString(16).substring(2, 10),
-            clean: true,
-            connectTimeout: 5000,
-            reconnectPeriod: 4000
-          });
-
-          client.on("connect", () => {
-            if (statusEl) {
-              statusEl.textContent = "● Nuvem Conectada em Tempo Real (Todos os Aparelhos)";
-              statusEl.className = "text-[11px] text-emerald-600 font-bold";
-            }
-            client.subscribe(SYNC_TOPIC, { qos: 1 }, () => {
-              setTimeout(() => broadcastUsersToCloud(), 1200);
-            });
-          });
-
-          client.on("message", (topic, message) => {
-            if (topic !== SYNC_TOPIC) return;
+      const keysFoundInCloud = new Set();
+      try {
+        const res = await fetch(`${CLOUD_BASE_URL}/json?poll=1&since=all&t=${Date.now()}`, {
+          method: "GET",
+          cache: "no-store"
+        });
+        if (res.ok) {
+          const text = await res.text();
+          const lines = text.trim().split("\n");
+          lines.forEach(line => {
+            if (!line) return;
             try {
-              const remoteUsers = JSON.parse(message.toString());
-              users = mergeUserDictionaries(users, remoteUsers);
-              const afterStr = JSON.stringify(users);
-
-              localStorage.setItem(STORAGE_USERS_KEY, afterStr);
-              renderLeaderboard();
-              updateHeaderUI();
-              if (isAdminUnlocked) renderAdminUsersList();
-
-              if (afterStr !== JSON.stringify(remoteUsers)) {
-                client.publish(SYNC_TOPIC, afterStr, { qos: 1, retain: true });
+              const pkt = JSON.parse(line);
+              if (pkt.event === "message" && pkt.message) {
+                const parsedMsg = JSON.parse(pkt.message);
+                if (parsedMsg.type === "single" && parsedMsg.k) keysFoundInCloud.add(parsedMsg.k);
+                if (parsedMsg.type === "batch" && parsedMsg.map) {
+                  Object.keys(parsedMsg.map).forEach(k => keysFoundInCloud.add(k));
+                }
+                processIncomingCloudPayload(pkt.message);
               }
-            } catch (e) {}
+            } catch (err) {}
           });
 
-          mqttClients.push(client);
-        } catch (err) {}
-      });
+          localStorage.setItem(STORAGE_USERS_KEY, JSON.stringify(users));
+          renderLeaderboard();
+          updateHeaderUI();
+          if (isAdminUnlocked) renderAdminUsersList();
+
+          if (statusEl) {
+            statusEl.textContent = "● Nuvem HTTPS Sincronizada (Todos os Celulares)";
+            statusEl.className = "text-[11px] text-emerald-600 font-bold";
+          }
+
+          // Se este aparelho tem usuários locais que ainda não estavam na nuvem, envia automaticamente!
+          const localKeys = Object.keys(users);
+          const missingOnCloud = localKeys.filter(k => !keysFoundInCloud.has(k));
+          if (pushLocalAfter || missingOnCloud.length > 0) {
+            await pushBatchUsersToCloud(users);
+          }
+        }
+      } catch (err) {
+        if (statusEl) statusEl.textContent = "● Conectando à rede...";
+      }
     }
 
-    function broadcastUsersToCloud() {
+    // 2. ENVIA UM ÚNICO USUÁRIO IMEDIATAMENTE PELA PORTA 443 HTTPS (SEM PREFLIGHT CORS)
+    async function pushSingleUserToCloud(key, userObj) {
       localStorage.setItem(STORAGE_USERS_KEY, JSON.stringify(users));
       renderLeaderboard();
       updateHeaderUI();
       if (isAdminUnlocked) renderAdminUsersList();
 
-      const payload = JSON.stringify(users);
-      mqttClients.forEach(client => {
-        if (client && client.connected) {
-          client.publish(SYNC_TOPIC, payload, { qos: 1, retain: true });
-        }
-      });
+      try {
+        const payload = JSON.stringify({ type: "single", k: key, u: userObj });
+        await fetch(CLOUD_BASE_URL, {
+          method: "POST",
+          body: payload
+        });
+      } catch (e) {}
     }
 
-    function forceSyncNow() {
-      const statusEl = document.getElementById("syncStatusText");
-      if (statusEl) statusEl.textContent = "🔄 Sincronizando todos os aparelhos...";
-      broadcastUsersToCloud();
-      setTimeout(() => {
-        if (statusEl) statusEl.textContent = "● Nuvem Conectada em Tempo Real (Todos os Aparelhos)";
-      }, 800);
+    // 3. ENVIA LOTE DE USUÁRIOS EM BLOCOS COMPACTOS (< 3 KB) PARA NUNCA EXCEDER O LIMITE
+    async function pushBatchUsersToCloud(dict) {
+      const entries = Object.entries(dict);
+      const chunkSize = 10;
+      for (let i = 0; i < entries.length; i += chunkSize) {
+        const slice = entries.slice(i, i + chunkSize);
+        const mapChunk = {};
+        slice.forEach(([k, u]) => { mapChunk[k] = u; });
+        try {
+          await fetch(CLOUD_BASE_URL, {
+            method: "POST",
+            body: JSON.stringify({ type: "batch", map: mapChunk })
+          });
+        } catch (e) {}
+      }
+    }
+
+    // 4. ESCUTA NOVOS CADASTROS AO VIVO VIA HTTPS SERVER-SENT EVENTS (PORTA 443)
+    function startLiveHttpsStream() {
+      try {
+        if (sseConnection) sseConnection.close();
+        sseConnection = new EventSource(`${CLOUD_BASE_URL}/sse`);
+        sseConnection.onmessage = (e) => {
+          try {
+            const pkt = JSON.parse(e.data);
+            if (pkt.event === "message" && pkt.message) {
+              const updated = processIncomingCloudPayload(pkt.message);
+              if (updated) {
+                localStorage.setItem(STORAGE_USERS_KEY, JSON.stringify(users));
+                renderLeaderboard();
+                updateHeaderUI();
+                if (isAdminUnlocked) renderAdminUsersList();
+              }
+            }
+          } catch (err) {}
+        };
+      } catch (e) {}
+    }
+
+    async function forceSyncNow() {
+      await fetchAllCloudHistory(true);
     }
 
     function getLevelInfo(xp) {
@@ -843,7 +895,7 @@
       users[currentUserKey].avatar = icon;
       users[currentUserKey].updatedAt = Date.now();
       closeAvatarModal();
-      broadcastUsersToCloud();
+      pushSingleUserToCloud(currentUserKey, users[currentUserKey]);
     }
 
     function switchAuthTab(mode) {
@@ -867,13 +919,17 @@
       err.classList.remove("hidden");
     }
 
-    function handleRegister() {
+    async function handleRegister() {
       const name = document.getElementById("regName").value.trim().toUpperCase();
       const role = document.getElementById("regRole").value;
       const pass = document.getElementById("regPass").value.trim();
 
       if (name.length < 2) return showAuthError("Digite seu nome ou apelido válido.");
       if (pass.length < 4) return showAuthError("Sua senha precisa ter pelo menos 4 dígitos.");
+
+      const btn = document.getElementById("btnRegSubmit");
+      btn.textContent = "SINCRONIZANDO NA NUVEM...";
+      btn.disabled = true;
 
       const key = name.toLowerCase();
       users[key] = {
@@ -888,14 +944,26 @@
 
       currentUserKey = key;
       localStorage.setItem(STORAGE_CURRENT_KEY, key);
-      broadcastUsersToCloud();
+      await pushSingleUserToCloud(key, users[key]);
+
+      btn.textContent = "FINALIZAR CADASTRO ✅";
+      btn.disabled = false;
       document.getElementById("authModal").classList.add("hidden");
     }
 
-    function handleLogin() {
+    async function handleLogin() {
       const name = document.getElementById("loginName").value.trim();
       const pass = document.getElementById("loginPass").value.trim();
       const key = name.toLowerCase();
+
+      const btn = document.getElementById("btnLoginSubmit");
+      btn.textContent = "BUSCANDO CONTA...";
+      btn.disabled = true;
+
+      await fetchAllCloudHistory(false);
+
+      btn.textContent = "ENTRAR NO APLICATIVO 🚀";
+      btn.disabled = false;
 
       if (!users[key] || users[key]._deleted) return showAuthError("Colaborador não encontrado! Clique em 'Criar Conta' acima.");
       if (users[key].password && users[key].password !== pass) return showAuthError("Senha incorreta! Tente novamente.");
@@ -903,7 +971,7 @@
       currentUserKey = key;
       localStorage.setItem(STORAGE_CURRENT_KEY, key);
       document.getElementById("authModal").classList.add("hidden");
-      broadcastUsersToCloud();
+      pushSingleUserToCloud(key, users[key]);
     }
 
     function logoutUser() {
@@ -917,7 +985,7 @@
       if (!currentUserKey || !users[currentUserKey]) return;
       users[currentUserKey].xp = Math.max(0, (users[currentUserKey].xp || 0) + amount);
       users[currentUserKey].updatedAt = Date.now();
-      broadcastUsersToCloud();
+      pushSingleUserToCloud(currentUserKey, users[currentUserKey]);
     }
 
     function updateHeaderUI() {
@@ -967,7 +1035,6 @@
       document.getElementById("quizFeedback").classList.add("hidden");
       document.getElementById("nextQuizBtn").classList.add("hidden");
 
-      // Usa as 3 opções semelhantes (w) da questão
       const wrongChoices = (randomItem.w && randomItem.w.length === 3)
         ? [...randomItem.w]
         : QUESTIONS_DB.filter(item => item.id !== randomItem.id).sort(() => 0.5 - Math.random()).slice(0, 3).map(item => item.a);
@@ -1218,7 +1285,7 @@
       users[key].xp = Math.max(0, (users[key].xp || 0) + delta);
       users[key].updatedAt = Date.now();
       users[key].adminOverrideAt = Date.now();
-      broadcastUsersToCloud();
+      pushSingleUserToCloud(key, users[key]);
     }
 
     function adminSetCustomXp(key) {
@@ -1230,7 +1297,7 @@
         users[key].xp = Math.max(0, parsed);
         users[key].updatedAt = Date.now();
         users[key].adminOverrideAt = Date.now();
-        broadcastUsersToCloud();
+        pushSingleUserToCloud(key, users[key]);
       }
     }
 
@@ -1241,7 +1308,7 @@
       users[key].correctAnswers = 0;
       users[key].updatedAt = Date.now();
       users[key].adminOverrideAt = Date.now();
-      broadcastUsersToCloud();
+      pushSingleUserToCloud(key, users[key]);
     }
 
     function adminDeleteUser(key) {
@@ -1250,7 +1317,7 @@
       users[key]._deleted = true;
       users[key].updatedAt = Date.now();
       users[key].adminOverrideAt = Date.now();
-      broadcastUsersToCloud();
+      pushSingleUserToCloud(key, users[key]);
     }
 
     function adminSaveMember() {
@@ -1274,13 +1341,13 @@
         adminOverrideAt: Date.now()
       };
 
-      broadcastUsersToCloud();
+      pushSingleUserToCloud(key, users[key]);
 
       document.getElementById("admNewName").value = "";
       document.getElementById("admNewPass").value = "";
       document.getElementById("admNewXp").value = "";
       document.getElementById("admNewHits").value = "";
-      alert(`Colaborador ${name} (${role}) salvo e transmitido para todos os aparelhos!`);
+      alert(`Colaborador ${name} (${role}) salvo e transmitido na nuvem!`);
     }
 
     function switchMainTab(tab) {
@@ -1290,22 +1357,28 @@
       });
       document.getElementById(`tab-${tab}`).classList.remove("hidden");
       document.getElementById(`nav-${tab}`).className = "flex flex-col items-center py-1 rounded-2xl text-red-600 font-extrabold text-[10px] transition";
-      if (tab === "prizes" || tab === "admin") forceSyncNow();
+      if (tab === "prizes" || tab === "admin") fetchAllCloudHistory(false);
     }
 
-    window.onload = () => {
+    window.onload = async () => {
       rescuePreviousLocalRegistrations();
       renderAvatarSelector();
       startNewQuiz();
       loadRandomFlashcard();
       renderBookList();
       renderLeaderboard();
-      initRealtimeCloudSync();
 
       if (currentUserKey && users[currentUserKey] && !users[currentUserKey]._deleted) {
         document.getElementById("authModal").classList.add("hidden");
         updateHeaderUI();
       }
+
+      // Baixa o histórico da nuvem HTTPS e sobe cadastros locais pendentes
+      await fetchAllCloudHistory(true);
+      // Liga a escuta em tempo real
+      startLiveHttpsStream();
+      // Checagem periódica de segurança a cada 10 segundos
+      setInterval(() => fetchAllCloudHistory(false), 10000);
     };
   </script>
 </body>
