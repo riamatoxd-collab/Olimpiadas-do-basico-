@@ -390,4 +390,379 @@
       { id: 157, level: "Intermediário", q: "Quantas pedras de gelo colocamos nos refrigerantes P, M e G?", a: "P: 0,5 pá (5 pedras) | M: 2/3 pá (7 pedras) | G: 1 pá (10 pedras)." },
       { id: 158, level: "Intermediário", q: "Quais as quantidades corretas de 1 Sundae?", a: "4,5 voltas de massa (4,5 oz), 2 tiros de cobertura (1 oz) e 7 g de amendoim." },
       { id: 159, level: "Intermediário", q: "Quais as quantidades corretas de 1 Top Sundae?", a: "6 voltas de massa (6 oz), 2 tiros de cobertura (1 no fundo e 1 em cima = 1 oz), 1 tiro de paçoca (1 oz) e 2 bijus." },
-      { id: 163, level: "Avançado", q: "Qual a temperatura das placas da tostadeira?",
+      { id: 163, level: "Avançado", q: "Qual a temperatura das placas da tostadeira?", a: "Placas A e B: 271 °C | Placa C: 254 °C." },
+      { id: 166, level: "Avançado", q: "Qual a calibragem do dispensador de Ketchup (Regular e Quarteirão)?", a: "Ketchup Regular: 6 tiros = 2 oz/60 ml | Quarteirão: 6 tiros = 3 oz/90 ml." },
+      { id: 167, level: "Avançado", q: "Qual a calibragem do dispensador de Mostarda e da pistola de Big Mac?", a: "Mostarda: 47 tiros = 1 oz/30 ml | Pistola Big Mac: 4 tiros de 1/2 oz = 2 oz/60 ml." },
+      { id: 171, level: "Avançado", q: "Qual procedimento devemos seguir ao trabalhar com a tela LOOK & COOK?", a: "OSA: Olha, Serve e Ativa." },
+      { id: 172, level: "Avançado", q: "Qual o ponto de partida de cozimento para as carnes vermelhas 10:1 e 4:1?", a: "10:1 a partir de 39\" (Next Gen 41\") | 4:1 a partir de 104\" (Next Gen 126\")." },
+      { id: 173, level: "Avançado", q: "Qual o GAP correto para as carnes de 10:1 na chapa?", a: "225\" por 20 segundos, final 290\"." },
+      { id: 177, level: "Avançado", q: "Qual a concentração correta de cloro no sanitizante dos panos e borrifadores?", a: "De 50 a 100 ppm." },
+      { id: 182, level: "Avançado", q: "Em que ano e onde foi fundado o McDonald's nos EUA e no Brasil?", a: "EUA: 1955 em Des Plaines, Illinois | Brasil: 1979 em Copacabana (RJ) e 1981 na Av. Paulista (SP)." },
+      { id: 186, level: "Avançado", q: "Qual a condimentação e quantidades de ingredientes do Big Tasty?", a: "2 tiros de 1 oz molho Tasty (base e coroa), 10 g cebola, 28 g alface, 2 tomates, 3 fatias ementhal e carne 4:1." },
+      { id: 187, level: "Avançado", q: "Quais são os 7 conceitos da UHC?", a: "1. Coração da cozinha; 2. Ativar pouco e sempre; 3. Sistema de garagem; 4. Tempos das carnes; 5. Acelerar/desacelerar na mesma chamada; 6. Níveis PLS; 7. Não compensar erro com outro." },
+      { id: 188, level: "Avançado", q: "O que é e para que serve a caramelização dos pães?", a: "É a queima de 5% do açúcar do pão para criar uma película que impede que os condimentos penetrem no pão." },
+      { id: 189, level: "Avançado", q: "Quais são as temperaturas da Zona de Risco para crescimento de microrganismos?", a: "De 4,4 °C a 60 °C." },
+      { id: 190, level: "Avançado", q: "Qual a temperatura de extração do sorvete?", a: "De -8 °C a -9 °C." },
+      { id: 192, level: "Avançado", q: "Quais são os 7 Básicos Operacionais?", a: "Plano de chão, Rota Gerencial, Pré-Plantão, Pós-Plantão, Posicionamento, Checklist e Experimentação." },
+      { id: 193, level: "Avançado", q: "O que é overrun do mix e qual o seu percentual?", a: "Mede a proporção entre mix e ar; percentual de 55% a 65%, com ideal em 58%." },
+      { id: 194, level: "Avançado", q: "Quais as quantidades corretas de complementos dos sorvetes?", a: "Gotas: 50 g | Rocks: 20 g | Ovomaltine: 20 g | Paçoca: 20 g | Ovo Shake: 54 g." },
+      { id: 195, level: "Avançado", q: "Qual a temperatura e proporção correta para o café coado?", a: "A partir de 77 °C; proporção de 1.100 ml de água para 1 pacote de 50 g de café." }
+    ];
+
+    const STORAGE_USERS_KEY = "mequi_olimpiadas_users_v3";
+    const STORAGE_CURRENT_KEY = "mequi_olimpiadas_active_user_v3";
+    // Canal global de sincronização para a loja Venture
+    const CLOUD_API_URL = "https://kvdb.io/A6p8XzW9K3mR7yQ2vL5nJ1/mequi_venture_ranking_2026";
+
+    let users = JSON.parse(localStorage.getItem(STORAGE_USERS_KEY) || "{}");
+
+    // Garante que o perfil principal esteja sempre preservado
+    if (!users["daniel pessoa de oliveira"]) {
+      users["daniel pessoa de oliveira"] = {
+        name: "DANIEL PESSOA DE OLIVEIRA",
+        station: "Gerência / Treinador",
+        password: "1234",
+        xp: 250,
+        correctAnswers: 2
+      };
+    }
+
+    let currentUserKey = localStorage.getItem(STORAGE_CURRENT_KEY) || null;
+    let currentBookFilter = "ALL";
+    let currentStreak = 0;
+
+    function saveUsers() {
+      localStorage.setItem(STORAGE_USERS_KEY, JSON.stringify(users));
+      pushToCloud();
+    }
+
+    // Sincroniza os cadastros de diferentes celulares na nuvem
+    async function syncWithCloud() {
+      const statusEl = document.getElementById("syncStatusText");
+      if (statusEl) statusEl.textContent = "🔄 Sincronizando cadastros...";
+      try {
+        const res = await fetch(CLOUD_API_URL);
+        if (res.ok) {
+          const cloudData = await res.json();
+          if (cloudData && typeof cloudData === "object") {
+            Object.keys(cloudData).forEach(k => {
+              if (!users[k] || (cloudData[k].xp || 0) > (users[k].xp || 0)) {
+                users[k] = cloudData[k];
+              }
+            });
+            localStorage.setItem(STORAGE_USERS_KEY, JSON.stringify(users));
+            renderLeaderboard();
+            updateHeaderUI();
+          }
+        }
+        await pushToCloud();
+        if (statusEl) statusEl.textContent = "● Sincronizado com todos os aparelhos";
+      } catch (e) {
+        if (statusEl) statusEl.textContent = "● Modo Local Ativo";
+      }
+    }
+
+    async function pushToCloud() {
+      try {
+        await fetch(CLOUD_API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(users)
+        });
+      } catch (e) {}
+    }
+
+    function getLevelInfo(xp) {
+      if (xp >= 2000) return { level: 5, title: "👑 Nível 5 — Mestre das Olimpíadas", min: 2000, max: 3000 };
+      if (xp >= 1000) return { level: 4, title: "🥇 Nível 4 — Padrão Ouro Venture", min: 1000, max: 2000 };
+      if (xp >= 500)  return { level: 3, title: "🥈 Nível 3 — Especialista de Prata", min: 500, max: 1000 };
+      if (xp >= 200)  return { level: 2, title: "🥉 Nível 2 — Chapa de Bronze", min: 200, max: 500 };
+      return { level: 1, title: "🔰 Nível 1 — Treinador Iniciante", min: 0, max: 200 };
+    }
+
+    function switchAuthTab(mode) {
+      document.getElementById("authError").classList.add("hidden");
+      if (mode === "login") {
+        document.getElementById("loginForm").classList.remove("hidden");
+        document.getElementById("registerForm").classList.add("hidden");
+        document.getElementById("tabLoginBtn").className = "flex-1 py-2 text-xs font-extrabold rounded-lg bg-white text-gray-900 shadow";
+        document.getElementById("tabRegisterBtn").className = "flex-1 py-2 text-xs font-extrabold rounded-lg text-gray-500";
+      } else {
+        document.getElementById("loginForm").classList.add("hidden");
+        document.getElementById("registerForm").classList.remove("hidden");
+        document.getElementById("tabRegisterBtn").className = "flex-1 py-2 text-xs font-extrabold rounded-lg bg-white text-gray-900 shadow";
+        document.getElementById("tabLoginBtn").className = "flex-1 py-2 text-xs font-extrabold rounded-lg text-gray-500";
+      }
+    }
+
+    function showAuthError(msg) {
+      const err = document.getElementById("authError");
+      err.textContent = msg;
+      err.classList.remove("hidden");
+    }
+
+    function handleRegister() {
+      const name = document.getElementById("regName").value.trim().toUpperCase();
+      const station = document.getElementById("regStation").value;
+      const pass = document.getElementById("regPass").value.trim();
+
+      if (name.length < 2) return showAuthError("Digite seu nome ou apelido válido.");
+      if (pass.length < 4) return showAuthError("A senha precisa ter pelo menos 4 dígitos.");
+
+      const key = name.toLowerCase();
+      users[key] = {
+        name: name,
+        station: station,
+        password: pass,
+        xp: users[key] ? users[key].xp : 0,
+        correctAnswers: users[key] ? users[key].correctAnswers : 0
+      };
+
+      saveUsers();
+      currentUserKey = key;
+      localStorage.setItem(STORAGE_CURRENT_KEY, key);
+      document.getElementById("authModal").classList.add("hidden");
+      updateHeaderUI();
+      renderLeaderboard();
+    }
+
+    function handleLogin() {
+      const name = document.getElementById("loginName").value.trim();
+      const pass = document.getElementById("loginPass").value.trim();
+      const key = name.toLowerCase();
+
+      if (!users[key]) return showAuthError("Usuário não encontrado neste aparelho! Clique em 'Novo Cadastro' acima.");
+      if (users[key].password && users[key].password !== pass) return showAuthError("Senha incorreta! Tente novamente.");
+
+      currentUserKey = key;
+      localStorage.setItem(STORAGE_CURRENT_KEY, key);
+      document.getElementById("authModal").classList.add("hidden");
+      updateHeaderUI();
+      renderLeaderboard();
+    }
+
+    function logoutUser() {
+      currentUserKey = null;
+      localStorage.removeItem(STORAGE_CURRENT_KEY);
+      document.getElementById("loginPass").value = "";
+      document.getElementById("authModal").classList.remove("hidden");
+    }
+
+    function toggleAddMemberBox() {
+      document.getElementById("addMemberBox").classList.toggle("hidden");
+    }
+
+    function addManualMemberToRanking() {
+      const name = document.getElementById("manualName").value.trim().toUpperCase();
+      const station = document.getElementById("manualStation").value;
+      const xp = parseInt(document.getElementById("manualXp").value || "0", 10);
+      const hits = parseInt(document.getElementById("manualHits").value || "0", 10);
+
+      if (!name) return alert("Digite o nome do colaborador!");
+      const key = name.toLowerCase();
+
+      users[key] = {
+        name: name,
+        station: station,
+        password: users[key]?.password || "1234",
+        xp: xp,
+        correctAnswers: hits
+      };
+
+      saveUsers();
+      renderLeaderboard();
+      document.getElementById("manualName").value = "";
+      document.getElementById("manualXp").value = "";
+      document.getElementById("manualHits").value = "";
+      document.getElementById("addMemberBox").classList.add("hidden");
+    }
+
+    function shareMyScoreWhatsApp() {
+      if (!currentUserKey || !users[currentUserKey]) return;
+      const u = users[currentUserKey];
+      const lvl = getLevelInfo(u.xp).level;
+      const text = `🏆 *RANKING OLIMPÍADAS DO BÁSICO*\n👤 Colaborador: *${u.name}*\n🍔 Estação: ${u.station}\n⚡ Pontuação: *${u.xp} XP* (Nível ${lvl})\n✅ Acertos: ${u.correctAnswers || 0}`;
+      window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
+    }
+
+    function addXp(amount) {
+      if (!currentUserKey || !users[currentUserKey]) return;
+      users[currentUserKey].xp += amount;
+      saveUsers();
+      updateHeaderUI();
+      renderLeaderboard();
+    }
+
+    function updateHeaderUI() {
+      if (!currentUserKey || !users[currentUserKey]) return;
+      const u = users[currentUserKey];
+      const info = getLevelInfo(u.xp);
+
+      document.getElementById("userNameDisplay").textContent = u.name;
+      document.getElementById("userStationBadge").textContent = u.station;
+      document.getElementById("userXpDisplay").textContent = `${u.xp} XP`;
+      document.getElementById("userRankTitle").textContent = info.title;
+      document.getElementById("currentLevelNum").textContent = `Nível ${info.level}`;
+
+      const progress = Math.min(100, Math.round(((u.xp - info.min) / (info.max - info.min)) * 100));
+      document.getElementById("xpProgressBar").style.width = `${Math.max(8, progress)}%`;
+
+      if (info.level < 5) {
+        document.getElementById("nextLevelTarget").textContent = `Faltam ${info.max - u.xp} XP para o Nível ${info.level + 1}`;
+      } else {
+        document.getElementById("nextLevelTarget").textContent = `Nível Máximo Alcançado! 👑`;
+      }
+    }
+
+    function startNewQuiz() {
+      currentStreak = 0;
+      loadNextQuizQuestion();
+    }
+
+    function loadNextQuizQuestion() {
+      const levelFilter = document.getElementById("quizLevelFilter").value;
+      const pool = levelFilter === "ALL" ? QUESTIONS_DB : QUESTIONS_DB.filter(item => item.level === levelFilter);
+      const randomItem = pool[Math.floor(Math.random() * pool.length)];
+
+      document.getElementById("quizQuestionMeta").textContent = `Pergunta #${randomItem.id} • Nível ${randomItem.level}`;
+      document.getElementById("quizStreakInfo").textContent = `🔥 Sequência: ${currentStreak}`;
+      document.getElementById("quizQuestionText").textContent = randomItem.q;
+      document.getElementById("quizFeedback").classList.add("hidden");
+      document.getElementById("nextQuizBtn").classList.add("hidden");
+
+      const others = QUESTIONS_DB.filter(item => item.id !== randomItem.id)
+        .sort(() => 0.5 - Math.random())
+        .slice(0, 3)
+        .map(item => item.a);
+
+      const options = [...others, randomItem.a].sort(() => 0.5 - Math.random());
+      const container = document.getElementById("quizOptions");
+      container.innerHTML = "";
+
+      options.forEach(opt => {
+        const btn = document.createElement("button");
+        btn.className = "w-full text-left p-3.5 rounded-xl border-2 border-gray-200 hover:border-amber-400 font-semibold text-xs text-gray-800 transition flex items-center justify-between bg-gray-50";
+        btn.textContent = opt;
+        btn.onclick = () => checkQuizAnswer(btn, opt, randomItem.a);
+        container.appendChild(btn);
+      });
+    }
+
+    function checkQuizAnswer(selectedBtn, chosen, correct) {
+      const allBtns = document.querySelectorAll("#quizOptions button");
+      allBtns.forEach(b => b.disabled = true);
+
+      const fb = document.getElementById("quizFeedback");
+      fb.classList.remove("hidden");
+
+      if (chosen === correct) {
+        selectedBtn.className = "w-full text-left p-3.5 rounded-xl border-2 border-green-600 bg-green-100 font-bold text-xs text-green-900";
+        currentStreak++;
+        if (currentUserKey && users[currentUserKey]) {
+          users[currentUserKey].correctAnswers = (users[currentUserKey].correctAnswers || 0) + 1;
+        }
+        addXp(25);
+        fb.className = "p-3 rounded-xl text-xs font-bold bg-green-100 text-green-800";
+        fb.textContent = "✅ Mandou muito bem! Resposta exata do Book Venture (+25 XP)!";
+      } else {
+        selectedBtn.className = "w-full text-left p-3.5 rounded-xl border-2 border-red-600 bg-red-100 font-bold text-xs text-red-900";
+        currentStreak = 0;
+        fb.className = "p-3 rounded-xl text-xs font-bold bg-red-100 text-red-800";
+        fb.innerHTML = `❌ Quase! O gabarito oficial é:<br><span class="underline">${correct}</span>`;
+      }
+
+      document.getElementById("quizStreakInfo").textContent = `🔥 Sequência: ${currentStreak}`;
+      document.getElementById("nextQuizBtn").classList.remove("hidden");
+    }
+
+    function setBookFilter(level) {
+      currentBookFilter = level;
+      renderBookList();
+    }
+
+    function renderBookList() {
+      const search = document.getElementById("searchBookInput").value.toLowerCase();
+      const container = document.getElementById("bookQuestionsContainer");
+      container.innerHTML = "";
+
+      const filtered = QUESTIONS_DB.filter(item => {
+        const matchesLevel = currentBookFilter === "ALL" || item.level === currentBookFilter;
+        const matchesText = item.q.toLowerCase().includes(search) || item.a.toLowerCase().includes(search) || String(item.id).includes(search);
+        return matchesLevel && matchesText;
+      });
+
+      filtered.forEach(item => {
+        const card = document.createElement("div");
+        card.className = "bg-white rounded-2xl p-3.5 shadow-sm border border-gray-100";
+        card.innerHTML = `
+          <div class="flex items-center justify-between mb-1">
+            <span class="text-[10px] font-black px-2 py-0.5 rounded-full bg-red-50 text-red-700">Questão #${item.id} • ${item.level}</span>
+            <button onclick="revealBookAnswer(this)" class="text-[11px] font-bold text-amber-600 underline">Ver Resposta (+5 XP)</button>
+          </div>
+          <p class="font-bold text-gray-900 text-xs">${item.q}</p>
+          <p class="hidden mt-2 pt-2 border-t border-gray-100 text-xs font-semibold text-green-700">✅ ${item.a}</p>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function revealBookAnswer(btn) {
+      const answerEl = btn.parentElement.nextElementSibling.nextElementSibling;
+      if (answerEl.classList.contains("hidden")) {
+        answerEl.classList.remove("hidden");
+        btn.textContent = "Ocultar";
+        addXp(5);
+      } else {
+        answerEl.classList.add("hidden");
+        btn.textContent = "Ver Resposta";
+      }
+    }
+
+    function renderLeaderboard() {
+      const container = document.getElementById("leaderboardContainer");
+      const list = Object.values(users).sort((a, b) => (b.xp || 0) - (a.xp || 0));
+
+      container.innerHTML = list.map((u, idx) => {
+        const medal = idx === 0 ? "🥇 ☕" : idx === 1 ? "🥈" : idx === 2 ? "🥉" : `${idx + 1}º`;
+        const lvl = getLevelInfo(u.xp || 0).level;
+        return `
+          <div class="flex items-center justify-between p-3 rounded-xl ${idx === 0 ? 'bg-amber-50 border border-amber-300' : 'bg-gray-50 border border-gray-100'}">
+            <div class="flex items-center gap-2.5">
+              <span class="font-black text-sm w-8">${medal}</span>
+              <div>
+                <p class="font-extrabold text-xs text-gray-900">${u.name}</p>
+                <p class="text-[10px] text-gray-500 font-semibold">${u.station || 'Equipe'} • Nível ${lvl}</p>
+              </div>
+            </div>
+            <div class="text-right">
+              <span class="font-black text-xs text-red-600">${u.xp || 0} XP</span>
+              <span class="block text-[10px] text-gray-400">${u.correctAnswers || 0} acertos</span>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function switchMainTab(tab) {
+      ["quiz", "book", "prizes", "updates"].forEach(t => {
+        document.getElementById(`tab-${t}`).classList.add("hidden");
+        document.getElementById(`nav-${t}`).className = "flex flex-col items-center text-gray-400 font-bold text-[11px]";
+      });
+      document.getElementById(`tab-${tab}`).classList.remove("hidden");
+      document.getElementById(`nav-${tab}`).className = "flex flex-col items-center text-red-600 font-extrabold text-[11px]";
+      if (tab === "prizes") syncWithCloud();
+    }
+
+    window.onload = () => {
+      if (currentUserKey && users[currentUserKey]) {
+        document.getElementById("authModal").classList.add("hidden");
+        updateHeaderUI();
+      }
+      startNewQuiz();
+      renderBookList();
+      renderLeaderboard();
+      syncWithCloud();
+    };
+  </script>
+</body>
+</html>
