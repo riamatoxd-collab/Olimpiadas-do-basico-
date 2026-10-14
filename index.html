@@ -16,22 +16,10 @@
     .mc-yellow { background-color: #FFC72C; }
     .text-mc-red { color: #DA291C; }
     .text-mc-yellow { color: #FFC72C; }
-    .btn-3d {
-      transition: all 0.1s ease;
-      box-shadow: 0 4px 0 #b01e13;
-    }
-    .btn-3d:active {
-      transform: translateY(3px);
-      box-shadow: 0 1px 0 #b01e13;
-    }
-    .btn-yellow-3d {
-      transition: all 0.1s ease;
-      box-shadow: 0 4px 0 #d4a012;
-    }
-    .btn-yellow-3d:active {
-      transform: translateY(3px);
-      box-shadow: 0 1px 0 #d4a012;
-    }
+    .btn-3d { transition: all 0.1s ease; box-shadow: 0 4px 0 #b01e13; }
+    .btn-3d:active { transform: translateY(3px); box-shadow: 0 1px 0 #b01e13; }
+    .btn-yellow-3d { transition: all 0.1s ease; box-shadow: 0 4px 0 #d4a012; }
+    .btn-yellow-3d:active { transform: translateY(3px); box-shadow: 0 1px 0 #d4a012; }
   </style>
 </head>
 <body class="min-h-screen pb-24">
@@ -45,7 +33,6 @@
         <p class="text-xs text-gray-500 font-semibold">Treinamento Oficial Venture • Rumo ao 1º Lugar 🏆</p>
       </div>
 
-      <!-- Alternar entre Login e Cadastro -->
       <div class="flex rounded-xl bg-gray-100 p-1 mb-4">
         <button id="tabLoginBtn" onclick="switchAuthTab('login')" class="flex-1 py-2 text-xs font-extrabold rounded-lg bg-white text-gray-900 shadow">ENTRAR COM SENHA</button>
         <button id="tabRegisterBtn" onclick="switchAuthTab('register')" class="flex-1 py-2 text-xs font-extrabold rounded-lg text-gray-500">NOVO CADASTRO</button>
@@ -56,8 +43,8 @@
       <!-- FORMULÁRIO DE LOGIN -->
       <div id="loginForm" class="space-y-3">
         <div>
-          <label class="text-xs font-bold text-gray-700">Seu Nome ou Usuário</label>
-          <input id="loginName" type="text" placeholder="Ex: João Silva" class="w-full mt-1 px-3.5 py-2.5 rounded-xl border border-gray-300 text-sm focus:outline-none focus:border-red-600" />
+          <label class="text-xs font-bold text-gray-700">Seu Nome Completo ou Apelido</label>
+          <input id="loginName" type="text" placeholder="Ex: DANIEL PESSOA DE OLIVEIRA" class="w-full mt-1 px-3.5 py-2.5 rounded-xl border border-gray-300 text-sm focus:outline-none focus:border-red-600" />
         </div>
         <div>
           <label class="text-xs font-bold text-gray-700">Sua Senha de Acesso</label>
@@ -68,10 +55,10 @@
         </button>
       </div>
 
-      <!-- FORMULÁRIO DE CADASTRO (PARA PESSOAS NOVAS) -->
+      <!-- FORMULÁRIO DE CADASTRO -->
       <div id="registerForm" class="hidden space-y-3">
         <div>
-          <label class="text-xs font-bold text-gray-700">Nome ou Apelido</label>
+          <label class="text-xs font-bold text-gray-700">Nome Completo ou Apelido</label>
           <input id="regName" type="text" placeholder="Digite seu nome" class="w-full mt-1 px-3.5 py-2.5 rounded-xl border border-gray-300 text-sm focus:outline-none focus:border-red-600" />
         </div>
         <div>
@@ -97,7 +84,7 @@
     </div>
   </div>
 
-  <!-- CABEÇALHO DO JOGADOR (XP E NÍVEL) -->
+  <!-- CABEÇALHO DO JOGADOR -->
   <header class="mc-red text-white pt-4 pb-5 px-4 rounded-b-3xl shadow-lg sticky top-0 z-30">
     <div class="max-w-xl mx-auto">
       <div class="flex items-center justify-between mb-3">
@@ -116,11 +103,10 @@
             <span class="text-[10px] block uppercase opacity-80">Total XP</span>
             <span id="userXpDisplay" class="font-black text-sm text-[#FFC72C]">0 XP</span>
           </div>
-          <button onclick="logoutUser()" class="bg-white/15 hover:bg-white/25 text-xs font-bold px-2.5 py-2 rounded-xl">Sair</button>
+          <button onclick="logoutUser()" class="bg-white/15 hover:bg-white/25 text-xs font-bold px-2.5 py-2 rounded-xl">Trocar</button>
         </div>
       </div>
 
-      <!-- Barra de Progresso de Nível -->
       <div class="bg-black/30 rounded-full h-3 w-full overflow-hidden p-0.5">
         <div id="xpProgressBar" class="mc-yellow h-full rounded-full transition-all duration-300" style="width: 10%"></div>
       </div>
@@ -131,10 +117,9 @@
     </div>
   </header>
 
-  <!-- CONTEÚDO PRINCIPAL -->
   <main class="max-w-xl mx-auto px-4 mt-4">
 
-    <!-- ABA 1: SIMULADO / QUIZ INTERATIVO -->
+    <!-- ABA 1: SIMULADO -->
     <section id="tab-quiz" class="space-y-4">
       <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
         <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
@@ -162,23 +147,23 @@
       </div>
     </section>
 
-    <!-- ABA 2: APOSTILA COMPLETA (BOOK 200 PERGUNTAS) -->
+    <!-- ABA 2: BOOK COMPLETO -->
     <section id="tab-book" class="hidden space-y-3">
       <div class="bg-white rounded-2xl p-3.5 shadow-sm border border-gray-100 sticky top-28 z-20 space-y-2">
         <input id="searchBookInput" oninput="renderBookList()" type="text" placeholder="🔍 Buscar pergunta (ex: alface, chapa, 18 segundos, mostarda...)" class="w-full px-3.5 py-2 rounded-xl bg-gray-100 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-red-500" />
         <div class="flex gap-1.5 overflow-x-auto pb-1">
-          <button onclick="setBookFilter('ALL')" class="book-filter-btn px-3 py-1 rounded-full text-xs font-bold bg-red-600 text-white">Todas</button>
-          <button onclick="setBookFilter('Básico')" class="book-filter-btn px-3 py-1 rounded-full text-xs font-bold bg-gray-200 text-gray-700">Nível Básico</button>
-          <button onclick="setBookFilter('Intermediário')" class="book-filter-btn px-3 py-1 rounded-full text-xs font-bold bg-gray-200 text-gray-700">Intermediário</button>
-          <button onclick="setBookFilter('Avançado')" class="book-filter-btn px-3 py-1 rounded-full text-xs font-bold bg-gray-200 text-gray-700">Avançado</button>
+          <button onclick="setBookFilter('ALL')" class=" px-3 py-1 rounded-full text-xs font-bold bg-red-600 text-white">Todas</button>
+          <button onclick="setBookFilter('Básico')" class=" px-3 py-1 rounded-full text-xs font-bold bg-gray-200 text-gray-700">Nível Básico</button>
+          <button onclick="setBookFilter('Intermediário')" class=" px-3 py-1 rounded-full text-xs font-bold bg-gray-200 text-gray-700">Intermediário</button>
+          <button onclick="setBookFilter('Avançado')" class=" px-3 py-1 rounded-full text-xs font-bold bg-gray-200 text-gray-700">Avançado</button>
         </div>
       </div>
       <div id="bookQuestionsContainer" class="space-y-2"></div>
     </section>
 
-    <!-- ABA 3: PREMIAÇÕES E RANKING -->
+    <!-- ABA 3: PREMIAÇÕES E RANKING DA LOJA -->
     <section id="tab-prizes" class="hidden space-y-4">
-      <!-- Card Destaque 1º Lugar: Caneca do McDonald's -->
+      <!-- Prêmio Principal -->
       <div class="bg-gradient-to-br from-[#DA291C] to-[#9e1910] text-white rounded-3xl p-5 shadow-xl relative overflow-hidden border-2 border-[#FFC72C]">
         <div class="flex items-center gap-4">
           <div class="text-5xl bg-white/15 p-3.5 rounded-2xl border border-white/20">☕</div>
@@ -190,9 +175,55 @@
         </div>
       </div>
 
-      <!-- Outras Premiações por Nível e Pódio -->
+      <!-- RANKING DA LOJA COM SINCRONIZAÇÃO ONLINE + CADASTRO DE EQUIPE -->
       <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 space-y-3">
-        <h3 class="font-black text-gray-800 text-sm">🏅 Quadro de Premiações e Conquistas</h3>
+        <div class="flex items-center justify-between flex-wrap gap-2">
+          <div>
+            <h3 class="font-black text-gray-800 text-sm">🏆 Ranking da Loja (Disputa pela Caneca ☕)</h3>
+            <span id="syncStatusText" class="text-[11px] text-green-600 font-bold">● Sincronizado com a Loja</span>
+          </div>
+          <div class="flex gap-1.5">
+            <button onclick="syncWithCloud()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold text-[11px] px-2.5 py-1.5 rounded-xl">🔄 Atualizar</button>
+            <button onclick="toggleAddMemberBox()" class="mc-yellow text-gray-900 font-black text-[11px] px-2.5 py-1.5 rounded-xl">+ Adicionar Pessoa</button>
+          </div>
+        </div>
+
+        <!-- Painel Rápido para Adicionar/Atualizar Pessoas da Equipe no Ranking -->
+        <div id="addMemberBox" class="hidden p-3.5 rounded-2xl bg-amber-50 border border-amber-200 space-y-2.5">
+          <p class="text-xs font-extrabold text-amber-900">👥 Adicionar ou Atualizar Colaborador no Ranking:</p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <input id="manualName" type="text" placeholder="Nome do Colaborador" class="px-3 py-2 rounded-xl border border-amber-300 text-xs font-semibold bg-white" />
+            <select id="manualStation" class="px-3 py-2 rounded-xl border border-amber-300 text-xs font-semibold bg-white">
+              <option value="Cozinha & Chapa">🍔 Cozinha & Chapa</option>
+              <option value="Balcão & Caixa">🍟 Balcão & Caixa</option>
+              <option value="McFritas & Fritos">🔥 McFritas & Fritos</option>
+              <option value="Bebidas & Sobremesas">🍦 Bebidas & Sobremesas</option>
+              <option value="Drive-Thru & Delivery">🚗 Drive-Thru & Delivery</option>
+              <option value="LOPE & Qualidade">🧹 LOPE & Qualidade</option>
+              <option value="Gerência / Treinador">⭐ Gerência / Treinador</option>
+            </select>
+          </div>
+          <div class="grid grid-cols-2 gap-2">
+            <input id="manualXp" type="number" placeholder="Pontos XP (ex: 100)" class="px-3 py-2 rounded-xl border border-amber-300 text-xs font-semibold bg-white" />
+            <input id="manualHits" type="number" placeholder="Nº de Acertos (ex: 4)" class="px-3 py-2 rounded-xl border border-amber-300 text-xs font-semibold bg-white" />
+          </div>
+          <button onclick="addManualMemberToRanking()" class="w-full mc-red text-white font-black py-2 rounded-xl text-xs">
+            SALVAR NO RANKING DA LOJA ✅
+          </button>
+        </div>
+
+        <!-- Lista de Todos os Participantes -->
+        <div id="leaderboardContainer" class="space-y-2"></div>
+
+        <!-- Botão de Compartilhar Meu Resultado no WhatsApp -->
+        <button onclick="shareMyScoreWhatsApp()" class="w-full bg-green-600 hover:bg-green-700 text-white font-black py-2.5 rounded-xl text-xs flex items-center justify-center gap-2 shadow">
+          <span>📲 Enviar Meu Placar no Grupo do WhatsApp</span>
+        </button>
+      </div>
+
+      <!-- Quadro de Premiações -->
+      <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 space-y-3">
+        <h3 class="font-black text-gray-800 text-sm">🏅 Quadro de Premiações do Pódio</h3>
         <div class="grid grid-cols-1 gap-2.5 text-xs">
           <div class="flex items-center gap-3 p-3 rounded-xl bg-amber-50 border border-amber-200">
             <span class="text-2xl">🥇</span>
@@ -205,7 +236,7 @@
             <span class="text-2xl">🥈</span>
             <div>
               <p class="font-black text-gray-800">2º Lugar no Ranking Geral</p>
-              <p class="text-gray-600">🍔 Reconhecimento Prata + Prioridade de escolha na escala/break</p>
+              <p class="text-gray-600">🍔 Reconhecimento Prata + Prioridade na escala/break</p>
             </div>
           </div>
           <div class="flex items-center gap-3 p-3 rounded-xl bg-orange-50 border border-orange-200">
@@ -229,56 +260,39 @@
           <div class="flex justify-between p-2 rounded-lg bg-amber-100 text-amber-900 font-bold"><span>👑 Nível 5 — Mestre das Olimpíadas</span><span>2.000+ XP</span></div>
         </div>
       </div>
-
-      <!-- Ranking Geral dos Colaboradores Cadastrados -->
-      <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 space-y-3">
-        <div class="flex items-center justify-between">
-          <h3 class="font-black text-gray-800 text-sm">🏆 Ranking da Loja (Disputa pela Caneca ☕)</h3>
-          <span class="text-[11px] text-gray-400 font-semibold">Atualizado em tempo real</span>
-        </div>
-        <div id="leaderboardContainer" class="space-y-2"></div>
-      </div>
     </section>
 
-    <!-- ABA 4: ATUALIZAÇÕES DO APLICATIVO (CHANGELOG) -->
+    <!-- ABA 4: ATUALIZAÇÕES DO APLICATIVO -->
     <section id="tab-updates" class="hidden space-y-3">
       <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 space-y-4">
         <div class="flex items-center justify-between">
           <h2 class="font-black text-gray-900 text-base">🚀 Atualizações do Aplicativo</h2>
-          <span class="bg-green-100 text-green-800 text-xs font-black px-2.5 py-0.5 rounded-full">Versão 3.0</span>
+          <span class="bg-green-100 text-green-800 text-xs font-black px-2.5 py-0.5 rounded-full">Versão 4.0</span>
+        </div>
+
+        <div class="border-l-4 border-green-600 pl-3.5 space-y-1">
+          <span class="text-[11px] font-extrabold text-green-700 uppercase">Versão 4.0 • Novo!</span>
+          <h4 class="font-black text-gray-800 text-sm">Ranking Global da Loja + Sincronização de Equipe 🏆</h4>
+          <ul class="text-xs text-gray-600 list-disc list-inside space-y-1 pt-1">
+            <li><strong>Sincronização Global na Nuvem:</strong> Agora os colaboradores cadastrados aparecem juntos no Ranking da Loja!</li>
+            <li><strong>Botão "+ Adicionar Pessoa":</strong> Permite incluir e atualizar rapidamente qualquer colaborador da equipe direto na aba de Prêmios.</li>
+            <li><strong>Compartilhamento no WhatsApp:</strong> Envie seu placar direto no grupo das Olimpíadas com 1 clique.</li>
+          </ul>
         </div>
 
         <div class="border-l-4 border-[#DA291C] pl-3.5 space-y-1">
-          <span class="text-[11px] font-extrabold text-red-600 uppercase">Versão 3.0 • Atualização Atual</span>
+          <span class="text-[11px] font-extrabold text-red-600 uppercase">Versão 3.0</span>
           <h4 class="font-black text-gray-800 text-sm">Sistema de Senha, Níveis e Aba de Premiações ☕</h4>
           <ul class="text-xs text-gray-600 list-disc list-inside space-y-1 pt-1">
-            <li><strong>Registro com Senha Pessoal:</strong> Agora cada colaborador novo cria sua conta protegida por senha para ninguém mexer no seu XP.</li>
-            <li><strong>Aba de Premiações Oficial:</strong> Inclusão do prêmio de <strong>1º Lugar (Caneca Oficial do McDonald's)</strong> e destaques do pódio.</li>
-            <li><strong>Sistema de Patentes por Nível:</strong> Suba do Nível 1 ao Nível 5 ganhando +25 XP por resposta certa no Simulado e +5 XP lendo o Book.</li>
-            <li><strong>Aba de Atualizações:</strong> Histórico completo de melhorias e avisos da 2ª Fase das Olimpíadas.</li>
+            <li>Registro com Senha Pessoal e prêmio de 1º Lugar (Caneca Oficial do McDonald's).</li>
           </ul>
-        </div>
-
-        <div class="border-l-4 border-amber-400 pl-3.5 space-y-1">
-          <span class="text-[11px] font-extrabold text-amber-600 uppercase">Versão 2.0 • Anterior</span>
-          <h4 class="font-black text-gray-800 text-sm">Integração do Book Venture (Básico, Intermediário e Avançado)</h4>
-          <ul class="text-xs text-gray-600 list-disc list-inside space-y-1 pt-1">
-            <li>Adicionadas as perguntas oficiais do Book Olimpíadas de Básico (Venture).</li>
-            <li>Busca instantânea por palavra-chave e filtro por nível de dificuldade.</li>
-          </ul>
-        </div>
-
-        <div class="border-l-4 border-gray-300 pl-3.5 space-y-1">
-          <span class="text-[11px] font-extrabold text-gray-500 uppercase">Versão 1.0 • Lançamento</span>
-          <h4 class="font-black text-gray-800 text-sm">Primeiro Quiz Interativo rumo à 2ª Fase</h4>
-          <p class="text-xs text-gray-600 pt-1">Criação do simulado mobile para apoiar a loja após conquistar o 4º lugar na 1ª fase.</p>
         </div>
       </div>
     </section>
 
   </main>
 
-  <!-- NAVEGAÇÃO INFERIOR ESTILO APP -->
+  <!-- NAVEGAÇÃO INFERIOR -->
   <nav class="fixed bottom-0 inset-x-0 bg-white border-t border-gray-200 z-40 shadow-lg">
     <div class="max-w-xl mx-auto grid grid-cols-4 py-2">
       <button onclick="switchMainTab('quiz')" id="nav-quiz" class="flex flex-col items-center text-red-600 font-extrabold text-[11px]">
@@ -291,7 +305,7 @@
       </button>
       <button onclick="switchMainTab('prizes')" id="nav-prizes" class="flex flex-col items-center text-gray-400 font-bold text-[11px]">
         <span class="text-lg">☕</span>
-        <span>Prêmios</span>
+        <span>Ranking</span>
       </button>
       <button onclick="switchMainTab('updates')" id="nav-updates" class="flex flex-col items-center text-gray-400 font-bold text-[11px]">
         <span class="text-lg">🔔</span>
@@ -301,7 +315,6 @@
   </nav>
 
   <script>
-    // BANCO DE QUESTÕES OFICIAIS DO BOOK OLIMPÍADAS DO BÁSICO (VENTURE)
     const QUESTIONS_DB = [
       { id: 1, level: "Básico", q: "Quantas gramas de alface colocamos no Big Mac?", a: "12 g na base e 12 g no clube, totalizando 24 gramas." },
       { id: 2, level: "Básico", q: "Quantas gramas de alface colocamos no McChicken?", a: "28 gramas de alface." },
@@ -377,306 +390,4 @@
       { id: 157, level: "Intermediário", q: "Quantas pedras de gelo colocamos nos refrigerantes P, M e G?", a: "P: 0,5 pá (5 pedras) | M: 2/3 pá (7 pedras) | G: 1 pá (10 pedras)." },
       { id: 158, level: "Intermediário", q: "Quais as quantidades corretas de 1 Sundae?", a: "4,5 voltas de massa (4,5 oz), 2 tiros de cobertura (1 oz) e 7 g de amendoim." },
       { id: 159, level: "Intermediário", q: "Quais as quantidades corretas de 1 Top Sundae?", a: "6 voltas de massa (6 oz), 2 tiros de cobertura (1 no fundo e 1 em cima = 1 oz), 1 tiro de paçoca (1 oz) e 2 bijus." },
-      { id: 163, level: "Avançado", q: "Qual a temperatura das placas da tostadeira?", a: "Placas A e B: 271 °C | Placa C: 254 °C." },
-      { id: 166, level: "Avançado", q: "Qual a calibragem do dispensador de Ketchup (Regular e Quarteirão)?", a: "Ketchup Regular: 6 tiros = 2 oz/60 ml | Quarteirão: 6 tiros = 3 oz/90 ml." },
-      { id: 167, level: "Avançado", q: "Qual a calibragem do dispensador de Mostarda e da pistola de Big Mac?", a: "Mostarda: 47 tiros = 1 oz/30 ml | Pistola Big Mac: 4 tiros de 1/2 oz = 2 oz/60 ml." },
-      { id: 171, level: "Avançado", q: "Qual procedimento devemos seguir ao trabalhar com a tela LOOK & COOK?", a: "OSA: Olha, Serve e Ativa." },
-      { id: 172, level: "Avançado", q: "Qual o ponto de partida de cozimento para as carnes vermelhas 10:1 e 4:1?", a: "10:1 a partir de 39\" (Next Gen 41\") | 4:1 a partir de 104\" (Next Gen 126\")." },
-      { id: 173, level: "Avançado", q: "Qual o GAP correto para as carnes de 10:1 na chapa?", a: "225\" por 20 segundos, final 290\"." },
-      { id: 177, level: "Avançado", q: "Qual a concentração correta de cloro no sanitizante dos panos e borrifadores?", a: "De 50 a 100 ppm." },
-      { id: 182, level: "Avançado", q: "Em que ano e onde foi fundado o McDonald's nos EUA e no Brasil?", a: "EUA: 1955 em Des Plaines, Illinois | Brasil: 1979 em Copacabana (RJ) e 1981 na Av. Paulista (SP)." },
-      { id: 186, level: "Avançado", q: "Qual a condimentação e quantidades de ingredientes do Big Tasty?", a: "2 tiros de 1 oz molho Tasty (base e coroa), 10 g cebola, 28 g alface, 2 tomates, 3 fatias ementhal e carne 4:1." },
-      { id: 187, level: "Avançado", q: "Quais são os 7 conceitos da UHC?", a: "1. Coração da cozinha; 2. Ativar pouco e sempre; 3. Sistema de garagem; 4. Tempos das carnes; 5. Acelerar/desacelerar na mesma chamada; 6. Níveis PLS; 7. Não compensar erro com outro." },
-      { id: 188, level: "Avançado", q: "O que é e para que serve a caramelização dos pães?", a: "É a queima de 5% do açúcar do pão para criar uma película que impede que os condimentos penetrem no pão." },
-      { id: 189, level: "Avançado", q: "Quais são as temperaturas da Zona de Risco para crescimento de microrganismos?", a: "De 4,4 °C a 60 °C." },
-      { id: 190, level: "Avançado", q: "Qual a temperatura de extração do sorvete?", a: "De -8 °C a -9 °C." },
-      { id: 192, level: "Avançado", q: "Quais são os 7 Básicos Operacionais?", a: "Plano de chão, Rota Gerencial, Pré-Plantão, Pós-Plantão, Posicionamento, Checklist e Experimentação." },
-      { id: 193, level: "Avançado", q: "O que é overrun do mix e qual o seu percentual?", a: "Mede a proporção entre mix e ar; percentual de 55% a 65%, com ideal em 58%." },
-      { id: 194, level: "Avançado", q: "Quais as quantidades corretas de complementos dos sorvetes?", a: "Gotas: 50 g | Rocks: 20 g | Ovomaltine: 20 g | Paçoca: 20 g | Ovo Shake: 54 g." },
-      { id: 195, level: "Avançado", q: "Qual a temperatura e proporção correta para o café coado?", a: "A partir de 77 °C; proporção de 1.100 ml de água para 1 pacote de 50 g de café." }
-    ];
-
-    // GESTÃO DE USUÁRIOS E SENHAS (LOCALSTORAGE)
-    const STORAGE_USERS_KEY = "mequi_olimpiadas_users_v3";
-    const STORAGE_CURRENT_KEY = "mequi_olimpiadas_active_user_v3";
-
-    let users = JSON.parse(localStorage.getItem(STORAGE_USERS_KEY) || "{}");
-    let currentUserKey = localStorage.getItem(STORAGE_CURRENT_KEY) || null;
-    let currentBookFilter = "ALL";
-    let currentQuizQuestion = null;
-    let currentStreak = 0;
-
-    function saveUsers() {
-      localStorage.setItem(STORAGE_USERS_KEY, JSON.stringify(users));
-    }
-
-    function getLevelInfo(xp) {
-      if (xp >= 2000) return { level: 5, title: "👑 Nível 5 — Mestre das Olimpíadas", min: 2000, max: 3000 };
-      if (xp >= 1000) return { level: 4, title: "🥇 Nível 4 — Padrão Ouro Venture", min: 1000, max: 2000 };
-      if (xp >= 500)  return { level: 3, title: "🥈 Nível 3 — Especialista de Prata", min: 500, max: 1000 };
-      if (xp >= 200)  return { level: 2, title: "🥉 Nível 2 — Chapa de Bronze", min: 200, max: 500 };
-      return { level: 1, title: "🔰 Nível 1 — Treinador Iniciante", min: 0, max: 200 };
-    }
-
-    function switchAuthTab(mode) {
-      document.getElementById("authError").classList.add("hidden");
-      if (mode === "login") {
-        document.getElementById("loginForm").classList.remove("hidden");
-        document.getElementById("registerForm").classList.add("hidden");
-        document.getElementById("tabLoginBtn").className = "flex-1 py-2 text-xs font-extrabold rounded-lg bg-white text-gray-900 shadow";
-        document.getElementById("tabRegisterBtn").className = "flex-1 py-2 text-xs font-extrabold rounded-lg text-gray-500";
-      } else {
-        document.getElementById("loginForm").classList.add("hidden");
-        document.getElementById("registerForm").classList.remove("hidden");
-        document.getElementById("tabRegisterBtn").className = "flex-1 py-2 text-xs font-extrabold rounded-lg bg-white text-gray-900 shadow";
-        document.getElementById("tabLoginBtn").className = "flex-1 py-2 text-xs font-extrabold rounded-lg text-gray-500";
-      }
-    }
-
-    function showAuthError(msg) {
-      const err = document.getElementById("authError");
-      err.textContent = msg;
-      err.classList.remove("hidden");
-    }
-
-    function handleRegister() {
-      const name = document.getElementById("regName").value.trim();
-      const station = document.getElementById("regStation").value;
-      const pass = document.getElementById("regPass").value.trim();
-
-      if (name.length < 2) return showAuthError("Digite seu nome ou apelido válido.");
-      if (pass.length < 4) return showAuthError("A senha precisa ter pelo menos 4 caracteres.");
-
-      const key = name.toLowerCase();
-      if (users[key]) return showAuthError("Este nome já está cadastrado! Use a aba 'Entrar com Senha'.");
-
-      users[key] = {
-        name: name,
-        station: station,
-        password: pass,
-        xp: 0,
-        correctAnswers: 0,
-        createdAt: new Date().toLocaleDateString("pt-BR")
-      };
-
-      saveUsers();
-      currentUserKey = key;
-      localStorage.setItem(STORAGE_CURRENT_KEY, key);
-      document.getElementById("authModal").classList.add("hidden");
-      updateHeaderUI();
-      renderLeaderboard();
-    }
-
-    function handleLogin() {
-      const name = document.getElementById("loginName").value.trim();
-      const pass = document.getElementById("loginPass").value.trim();
-      const key = name.toLowerCase();
-
-      if (!users[key]) return showAuthError("Usuário não encontrado! Clique em 'Novo Cadastro' acima.");
-      if (users[key].password !== pass) return showAuthError("Senha incorreta! Tente novamente.");
-
-      currentUserKey = key;
-      localStorage.setItem(STORAGE_CURRENT_KEY, key);
-      document.getElementById("authModal").classList.add("hidden");
-      updateHeaderUI();
-      renderLeaderboard();
-    }
-
-    function logoutUser() {
-      currentUserKey = null;
-      localStorage.removeItem(STORAGE_CURRENT_KEY);
-      document.getElementById("loginPass").value = "";
-      document.getElementById("authModal").classList.remove("hidden");
-    }
-
-    function addXp(amount) {
-      if (!currentUserKey || !users[currentUserKey]) return;
-      users[currentUserKey].xp += amount;
-      saveUsers();
-      updateHeaderUI();
-      renderLeaderboard();
-    }
-
-    function updateHeaderUI() {
-      if (!currentUserKey || !users[currentUserKey]) return;
-      const u = users[currentUserKey];
-      const info = getLevelInfo(u.xp);
-
-      document.getElementById("userNameDisplay").textContent = u.name;
-      document.getElementById("userStationBadge").textContent = u.station;
-      document.getElementById("userXpDisplay").textContent = `${u.xp} XP`;
-      document.getElementById("userRankTitle").textContent = info.title;
-      document.getElementById("currentLevelNum").textContent = `Nível ${info.level}`;
-
-      const progress = Math.min(100, Math.round(((u.xp - info.min) / (info.max - info.min)) * 100));
-      document.getElementById("xpProgressBar").style.width = `${Math.max(8, progress)}%`;
-
-      if (info.level < 5) {
-        document.getElementById("nextLevelTarget").textContent = `Faltam ${info.max - u.xp} XP para o Nível ${info.level + 1}`;
-      } else {
-        document.getElementById("nextLevelTarget").textContent = `Nível Máximo Alcançado! 👑`;
-      }
-    }
-
-    // SIMULADO INTERATIVO
-    function startNewQuiz() {
-      currentStreak = 0;
-      loadNextQuizQuestion();
-    }
-
-    function loadNextQuizQuestion() {
-      const levelFilter = document.getElementById("quizLevelFilter").value;
-      const pool = levelFilter === "ALL" ? QUESTIONS_DB : QUESTIONS_DB.filter(item => item.level === levelFilter);
-      const randomItem = pool[Math.floor(Math.random() * pool.length)];
-      currentQuizQuestion = randomItem;
-
-      document.getElementById("quizQuestionMeta").textContent = `Pergunta #${randomItem.id} • Nível ${randomItem.level}`;
-      document.getElementById("quizStreakInfo").textContent = `🔥 Sequência: ${currentStreak}`;
-      document.getElementById("quizQuestionText").textContent = randomItem.q;
-      document.getElementById("quizFeedback").classList.add("hidden");
-      document.getElementById("nextQuizBtn").classList.add("hidden");
-
-      // Gerar 3 alternativas incorretas + 1 correta
-      const others = QUESTIONS_DB.filter(item => item.id !== randomItem.id)
-        .sort(() => 0.5 - Math.random())
-        .slice(0, 3)
-        .map(item => item.a);
-
-      const options = [...others, randomItem.a].sort(() => 0.5 - Math.random());
-      const container = document.getElementById("quizOptions");
-      container.innerHTML = "";
-
-      options.forEach(opt => {
-        const btn = document.createElement("button");
-        btn.className = "w-full text-left p-3.5 rounded-xl border-2 border-gray-200 hover:border-amber-400 font-semibold text-xs text-gray-800 transition flex items-center justify-between bg-gray-50";
-        btn.textContent = opt;
-        btn.onclick = () => checkQuizAnswer(btn, opt, randomItem.a);
-        container.appendChild(btn);
-      });
-    }
-
-    function checkQuizAnswer(selectedBtn, chosen, correct) {
-      const allBtns = document.querySelectorAll("#quizOptions button");
-      allBtns.forEach(b => b.disabled = true);
-
-      const fb = document.getElementById("quizFeedback");
-      fb.classList.remove("hidden");
-
-      if (chosen === correct) {
-        selectedBtn.className = "w-full text-left p-3.5 rounded-xl border-2 border-green-600 bg-green-100 font-bold text-xs text-green-900";
-        currentStreak++;
-        if (currentUserKey && users[currentUserKey]) {
-          users[currentUserKey].correctAnswers = (users[currentUserKey].correctAnswers || 0) + 1;
-        }
-        addXp(25);
-        fb.className = "p-3 rounded-xl text-xs font-bold bg-green-100 text-green-800";
-        fb.textContent = "✅ Mandou muito bem! Resposta exata do Book Venture (+25 XP)!";
-      } else {
-        selectedBtn.className = "w-full text-left p-3.5 rounded-xl border-2 border-red-600 bg-red-100 font-bold text-xs text-red-900";
-        currentStreak = 0;
-        fb.className = "p-3 rounded-xl text-xs font-bold bg-red-100 text-red-800";
-        fb.innerHTML = `❌ Quase! O gabarito oficial é:<br><span class="underline">${correct}</span>`;
-      }
-
-      document.getElementById("quizStreakInfo").textContent = `🔥 Sequência: ${currentStreak}`;
-      document.getElementById("nextQuizBtn").classList.remove("hidden");
-    }
-
-    // BOOK COMPLETO
-    function setBookFilter(level) {
-      currentBookFilter = level;
-      renderBookList();
-    }
-
-    function renderBookList() {
-      const search = document.getElementById("searchBookInput").value.toLowerCase();
-      const container = document.getElementById("bookQuestionsContainer");
-      container.innerHTML = "";
-
-      const filtered = QUESTIONS_DB.filter(item => {
-        const matchesLevel = currentBookFilter === "ALL" || item.level === currentBookFilter;
-        const matchesText = item.q.toLowerCase().includes(search) || item.a.toLowerCase().includes(search) || String(item.id).includes(search);
-        return matchesLevel && matchesText;
-      });
-
-      filtered.forEach(item => {
-        const card = document.createElement("div");
-        card.className = "bg-white rounded-2xl p-3.5 shadow-sm border border-gray-100";
-        card.innerHTML = `
-          <div class="flex items-center justify-between mb-1">
-            <span class="text-[10px] font-black px-2 py-0.5 rounded-full bg-red-50 text-red-700">Questão #${item.id} • ${item.level}</span>
-            <button onclick="revealBookAnswer(this)" class="text-[11px] font-bold text-amber-600 underline">Ver Resposta (+5 XP)</button>
-          </div>
-          <p class="font-bold text-gray-900 text-xs">${item.q}</p>
-          <p class="hidden mt-2 pt-2 border-t border-gray-100 text-xs font-semibold text-green-700">✅ ${item.a}</p>
-        `;
-        container.appendChild(card);
-      });
-    }
-
-    function revealBookAnswer(btn) {
-      const answerEl = btn.parentElement.nextElementSibling.nextElementSibling;
-      if (answerEl.classList.contains("hidden")) {
-        answerEl.classList.remove("hidden");
-        btn.textContent = "Ocultar";
-        addXp(5);
-      } else {
-        answerEl.classList.add("hidden");
-        btn.textContent = "Ver Resposta";
-      }
-    }
-
-    // RANKING GERAL
-    function renderLeaderboard() {
-      const container = document.getElementById("leaderboardContainer");
-      const list = Object.values(users).sort((a, b) => b.xp - a.xp);
-
-      if (list.length === 0) {
-        container.innerHTML = `<p class="text-xs text-gray-400 text-center py-4">Nenhum colaborador cadastrado ainda.</p>`;
-        return;
-      }
-
-      container.innerHTML = list.map((u, idx) => {
-        const medal = idx === 0 ? "🥇 ☕" : idx === 1 ? "🥈" : idx === 2 ? "🥉" : `${idx + 1}º`;
-        const lvl = getLevelInfo(u.xp).level;
-        return `
-          <div class="flex items-center justify-between p-3 rounded-xl ${idx === 0 ? 'bg-amber-50 border border-amber-300' : 'bg-gray-50'}">
-            <div class="flex items-center gap-2.5">
-              <span class="font-black text-sm w-8">${medal}</span>
-              <div>
-                <p class="font-extrabold text-xs text-gray-900">${u.name}</p>
-                <p class="text-[10px] text-gray-500 font-semibold">${u.station} • Nível ${lvl}</p>
-              </div>
-            </div>
-            <div class="text-right">
-              <span class="font-black text-xs text-red-600">${u.xp} XP</span>
-              <span class="block text-[10px] text-gray-400">${u.correctAnswers || 0} acertos</span>
-            </div>
-          </div>
-        `;
-      }).join("");
-    }
-
-    // NAVEGAÇÃO ENTRE ABAS
-    function switchMainTab(tab) {
-      ["quiz", "book", "prizes", "updates"].forEach(t => {
-        document.getElementById(`tab-${t}`).classList.add("hidden");
-        document.getElementById(`nav-${t}`).className = "flex flex-col items-center text-gray-400 font-bold text-[11px]";
-      });
-      document.getElementById(`tab-${tab}`).classList.remove("hidden");
-      document.getElementById(`nav-${tab}`).className = "flex flex-col items-center text-red-600 font-extrabold text-[11px]";
-    }
-
-    // INICIALIZAÇÃO
-    window.onload = () => {
-      if (currentUserKey && users[currentUserKey]) {
-        document.getElementById("authModal").classList.add("hidden");
-        updateHeaderUI();
-      }
-      startNewQuiz();
-      renderBookList();
-      renderLeaderboard();
-    };
-  </script>
-</body>
-</html>
+      { id: 163, level: "Avançado", q: "Qual a temperatura das placas da tostadeira?",
