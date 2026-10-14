@@ -1,1152 +1,682 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Olimpíadas Básico">
-  <title>Olimpíadas do Básico — 200 Questões Oficiais</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Olimpíadas Méqui" />
+  <title>Olimpíadas do Básico — Venture</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
   <style>
-    * {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      -webkit-tap-highlight-color: transparent;
-    }
-    body {
-      background-color: #f8fafc;
-      color: #1e293b;
-    }
+    body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
     .mc-red { background-color: #DA291C; }
     .mc-yellow { background-color: #FFC72C; }
-    .mc-text-red { color: #DA291C; }
-    .mc-text-yellow { color: #FFC72C; }
+    .text-mc-red { color: #DA291C; }
+    .text-mc-yellow { color: #FFC72C; }
     .btn-3d {
-      transition: all 0.12s ease;
-      box-shadow: 0 4px 0 rgba(0,0,0,0.18);
+      transition: all 0.1s ease;
+      box-shadow: 0 4px 0 #b01e13;
     }
     .btn-3d:active {
       transform: translateY(3px);
-      box-shadow: 0 1px 0 rgba(0,0,0,0.18);
+      box-shadow: 0 1px 0 #b01e13;
     }
-    .perspective {
-      perspective: 1000px;
+    .btn-yellow-3d {
+      transition: all 0.1s ease;
+      box-shadow: 0 4px 0 #d4a012;
     }
-    .flip-card-inner {
-      transition: transform 0.45s cubic-bezier(0.4, 0, 0.2, 1);
-      transform-style: preserve-3d;
-    }
-    .flipped {
-      transform: rotateY(180deg);
-    }
-    .flip-card-front, .flip-card-back {
-      backface-visibility: hidden;
-      -webkit-backface-visibility: hidden;
-    }
-    .flip-card-back {
-      transform: rotateY(180deg);
-    }
-    /* Custom scrollbar */
-    ::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
-    }
-    ::-webkit-scrollbar-track {
-      background: #f1f5f9;
-    }
-    ::-webkit-scrollbar-thumb {
-      background: #cbd5e1;
-      border-radius: 3px;
+    .btn-yellow-3d:active {
+      transform: translateY(3px);
+      box-shadow: 0 1px 0 #d4a012;
     }
   </style>
 </head>
 <body class="min-h-screen pb-24">
 
-  <!-- TOP HEADER -->
-  <header class="mc-red text-white sticky top-0 z-40 shadow-md">
-    <div class="max-w-3xl mx-auto px-4 py-3 flex items-center justify-between">
-      <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-xl mc-yellow flex items-center justify-center shadow-inner font-black text-2xl text-[#DA291C]">
-          M
+  <!-- MODAL DE LOGIN E CADASTRO COM SENHA -->
+  <div id="authModal" class="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border-4 border-[#FFC72C]">
+      <div class="text-center mb-4">
+        <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl mc-red text-[#FFC72C] font-black text-4xl shadow-md mb-2">M</div>
+        <h1 class="text-2xl font-black text-gray-900">OLIMPÍADAS DO BÁSICO</h1>
+        <p class="text-xs text-gray-500 font-semibold">Treinamento Oficial Venture • Rumo ao 1º Lugar 🏆</p>
+      </div>
+
+      <!-- Alternar entre Login e Cadastro -->
+      <div class="flex rounded-xl bg-gray-100 p-1 mb-4">
+        <button id="tabLoginBtn" onclick="switchAuthTab('login')" class="flex-1 py-2 text-xs font-extrabold rounded-lg bg-white text-gray-900 shadow">ENTRAR COM SENHA</button>
+        <button id="tabRegisterBtn" onclick="switchAuthTab('register')" class="flex-1 py-2 text-xs font-extrabold rounded-lg text-gray-500">NOVO CADASTRO</button>
+      </div>
+
+      <div id="authError" class="hidden mb-3 p-2.5 rounded-xl bg-red-100 text-red-700 text-xs font-bold text-center"></div>
+
+      <!-- FORMULÁRIO DE LOGIN -->
+      <div id="loginForm" class="space-y-3">
+        <div>
+          <label class="text-xs font-bold text-gray-700">Seu Nome ou Usuário</label>
+          <input id="loginName" type="text" placeholder="Ex: João Silva" class="w-full mt-1 px-3.5 py-2.5 rounded-xl border border-gray-300 text-sm focus:outline-none focus:border-red-600" />
         </div>
         <div>
-          <h1 class="font-extrabold text-base sm:text-lg leading-tight tracking-tight flex items-center gap-1.5">
-            Olimpíadas do Básico
-            <span class="bg-[#FFC72C] text-[#27251F] text-[10px] font-black px-2 py-0.5 rounded-full uppercase">200 Q</span>
-          </h1>
-          <p class="text-xs text-red-100 font-medium">Book Oficial Venture • Rumo ao 1º Lugar 🏆</p>
+          <label class="text-xs font-bold text-gray-700">Sua Senha de Acesso</label>
+          <input id="loginPass" type="password" placeholder="••••••" class="w-full mt-1 px-3.5 py-2.5 rounded-xl border border-gray-300 text-sm focus:outline-none focus:border-red-600" />
         </div>
+        <button onclick="handleLogin()" class="w-full mc-red text-white font-black py-3 rounded-xl btn-3d text-sm tracking-wide">
+          ENTRAR NO TREINAMENTO 🚀
+        </button>
       </div>
 
-      <!-- Stats Pill -->
-      <div class="flex items-center gap-2">
-        <div class="bg-black/20 backdrop-blur-sm px-2.5 py-1 rounded-xl flex items-center gap-1 text-xs font-bold">
-          <span>🔥</span>
-          <span id="streakCount">1</span>
+      <!-- FORMULÁRIO DE CADASTRO (PARA PESSOAS NOVAS) -->
+      <div id="registerForm" class="hidden space-y-3">
+        <div>
+          <label class="text-xs font-bold text-gray-700">Nome ou Apelido</label>
+          <input id="regName" type="text" placeholder="Digite seu nome" class="w-full mt-1 px-3.5 py-2.5 rounded-xl border border-gray-300 text-sm focus:outline-none focus:border-red-600" />
         </div>
-        <div class="bg-black/20 backdrop-blur-sm px-2.5 py-1 rounded-xl flex items-center gap-1 text-xs font-bold">
-          <span>✅</span>
-          <span id="masteredCount">0/200</span>
+        <div>
+          <label class="text-xs font-bold text-gray-700">Estação Principal</label>
+          <select id="regStation" class="w-full mt-1 px-3.5 py-2.5 rounded-xl border border-gray-300 text-sm bg-white focus:outline-none focus:border-red-600">
+            <option value="Cozinha & Chapa">🍔 Cozinha & Chapa</option>
+            <option value="Balcão & Caixa">🍟 Balcão & Caixa</option>
+            <option value="McFritas & Fritos">🔥 McFritas & Fritos</option>
+            <option value="Bebidas & Sobremesas">🍦 Bebidas & Sobremesas</option>
+            <option value="Drive-Thru & Delivery">🚗 Drive-Thru & Delivery</option>
+            <option value="LOPE & Qualidade">🧹 LOPE & Qualidade</option>
+            <option value="Gerência / Treinador">⭐ Gerência / Treinador</option>
+          </select>
         </div>
+        <div>
+          <label class="text-xs font-bold text-gray-700">Crie uma Senha de Acesso</label>
+          <input id="regPass" type="password" placeholder="Mínimo 4 dígitos" class="w-full mt-1 px-3.5 py-2.5 rounded-xl border border-gray-300 text-sm focus:outline-none focus:border-red-600" />
+        </div>
+        <button onclick="handleRegister()" class="w-full mc-yellow text-gray-900 font-black py-3 rounded-xl btn-yellow-3d text-sm tracking-wide">
+          CRIAR CONTA COM SENHA ✅
+        </button>
       </div>
     </div>
+  </div>
 
-    <!-- PROGRESS BAR -->
-    <div class="w-full bg-red-900/50 h-1.5">
-      <div id="globalProgressBar" class="mc-yellow h-1.5 transition-all duration-300" style="width: 0%"></div>
+  <!-- CABEÇALHO DO JOGADOR (XP E NÍVEL) -->
+  <header class="mc-red text-white pt-4 pb-5 px-4 rounded-b-3xl shadow-lg sticky top-0 z-30">
+    <div class="max-w-xl mx-auto">
+      <div class="flex items-center justify-between mb-3">
+        <div class="flex items-center gap-2.5">
+          <div class="w-10 h-10 rounded-xl mc-yellow text-gray-900 flex items-center justify-center font-black text-xl shadow">M</div>
+          <div>
+            <div class="flex items-center gap-1.5">
+              <span id="userNameDisplay" class="font-extrabold text-sm">Visitante</span>
+              <span id="userStationBadge" class="text-[10px] bg-black/25 px-2 py-0.5 rounded-full font-semibold">Estação</span>
+            </div>
+            <p id="userRankTitle" class="text-xs text-[#FFC72C] font-bold">🔰 Nível 1 — Iniciante</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <div class="bg-black/25 px-3 py-1.5 rounded-xl text-right">
+            <span class="text-[10px] block uppercase opacity-80">Total XP</span>
+            <span id="userXpDisplay" class="font-black text-sm text-[#FFC72C]">0 XP</span>
+          </div>
+          <button onclick="logoutUser()" class="bg-white/15 hover:bg-white/25 text-xs font-bold px-2.5 py-2 rounded-xl">Sair</button>
+        </div>
+      </div>
+
+      <!-- Barra de Progresso de Nível -->
+      <div class="bg-black/30 rounded-full h-3 w-full overflow-hidden p-0.5">
+        <div id="xpProgressBar" class="mc-yellow h-full rounded-full transition-all duration-300" style="width: 10%"></div>
+      </div>
+      <div class="flex justify-between text-[10px] font-semibold mt-1 opacity-90">
+        <span id="currentLevelNum">Nível 1</span>
+        <span id="nextLevelTarget">Faltam 200 XP para o Nível 2</span>
+      </div>
     </div>
   </header>
 
-  <!-- MAIN CONTAINER -->
-  <main class="max-w-3xl mx-auto px-3 sm:px-4 pt-4">
+  <!-- CONTEÚDO PRINCIPAL -->
+  <main class="max-w-xl mx-auto px-4 mt-4">
 
-    <!-- VIEW 1: BOOK COMPLETO (200 QUESTÕES) -->
-    <section id="view-book" class="space-y-4">
-      <!-- Search & Filters Card -->
-      <div class="bg-white rounded-2xl p-3.5 shadow-sm border border-slate-200/80 space-y-3">
-        <!-- Search Input -->
-        <div class="relative">
-          <input
-            id="searchInput"
-            type="text"
-            placeholder="Buscar pergunta, número (ex: 141), ingrediente, temperatura..."
-            class="w-full pl-10 pr-9 py-2.5 bg-slate-100 border border-slate-200 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#DA291C] focus:bg-white transition"
-            oninput="renderBookList()"
-          >
-          <svg class="w-5 h-5 text-slate-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-          </svg>
-          <button
-            id="clearSearchBtn"
-            onclick="clearSearch()"
-            class="hidden absolute right-2.5 top-2.5 text-slate-400 hover:text-slate-600"
-          >
-            ✕
-          </button>
-        </div>
-
-        <!-- Level Filter Pills -->
-        <div class="flex gap-1.5 overflow-x-auto pb-1 no-scrollbar">
-          <button onclick="setLevelFilter('ALL')" id="lvl-ALL" class="lvl-btn shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold bg-[#DA291C] text-white shadow-sm">
-            Todas (200)
-          </button>
-          <button onclick="setLevelFilter('Básico')" id="lvl-Básico" class="lvl-btn shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200">
-            🟢 Básico (1–107)
-          </button>
-          <button onclick="setLevelFilter('Intermediário')" id="lvl-Intermediário" class="lvl-btn shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200">
-            🟡 Intermediário (108–162)
-          </button>
-          <button onclick="setLevelFilter('Avançado')" id="lvl-Avançado" class="lvl-btn shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200">
-            🔴 Avançado (163–200)
-          </button>
-        </div>
-
-        <!-- Category & Status Filter Row -->
-        <div class="grid grid-cols-2 gap-2">
-          <select id="categorySelect" onchange="renderBookList()" class="bg-slate-100 border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold text-slate-700 focus:outline-none">
-            <option value="ALL">📍 Todas as Estações</option>
-            <option value="Linha & Montagem">🍔 Linha & Montagem</option>
-            <option value="Chapa & Carnes">🥩 Chapa & Carnes / UHC</option>
-            <option value="Fritos & McFritas">🍟 Fritos & McFritas</option>
-            <option value="LOPE & Qualidade">🧀 LOPE, Higiene & Câmaras</option>
-            <option value="Bebidas & Sobremesas">🍦 Bebidas & Sobremesas</option>
-            <option value="Atendimento & Cultura">🏆 Atendimento, Tempos & Cultura</option>
-          </select>
-
-          <select id="statusSelect" onchange="renderBookList()" class="bg-slate-100 border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold text-slate-700 focus:outline-none">
-            <option value="ALL">📋 Status: Todas</option>
-            <option value="STARRED">⭐ Favoritas / Revisar</option>
-            <option value="UNMASTERED">⏳ Falta Dominar</option>
-            <option value="MASTERED">✅ Já Dominadas</option>
+    <!-- ABA 1: SIMULADO / QUIZ INTERATIVO -->
+    <section id="tab-quiz" class="space-y-4">
+      <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
+        <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+          <h2 class="font-black text-gray-800 text-base">🎯 Simulado Oficial (+25 XP/acerto)</h2>
+          <select id="quizLevelFilter" onchange="startNewQuiz()" class="text-xs font-bold bg-gray-100 border border-gray-200 rounded-xl px-2.5 py-1.5">
+            <option value="ALL">Todos os Níveis</option>
+            <option value="Básico">Nível Básico</option>
+            <option value="Intermediário">Nível Intermediário</option>
+            <option value="Avançado">Nível Avançado</option>
           </select>
         </div>
 
-        <!-- Action Bar -->
-        <div class="flex items-center justify-between pt-1 border-t border-slate-100 text-xs">
-          <span id="resultsCountText" class="font-bold text-slate-500">Mostrando 200 perguntas</span>
-          <div class="flex gap-2">
-            <button onclick="toggleAllAnswers(true)" class="text-[#DA291C] font-bold hover:underline">Abrir Respostas</button>
-            <span class="text-slate-300">|</span>
-            <button onclick="toggleAllAnswers(false)" class="text-slate-500 font-semibold hover:underline">Ocultar</button>
+        <div id="quizCard" class="space-y-3">
+          <div class="flex items-center justify-between text-xs text-gray-500 font-bold">
+            <span id="quizQuestionMeta" class="bg-amber-100 text-amber-800 px-2.5 py-0.5 rounded-full">Pergunta #1</span>
+            <span id="quizStreakInfo">🔥 Sequência: 0</span>
           </div>
-        </div>
-      </div>
-
-      <!-- Questions List Container -->
-      <div id="questionsContainer" class="space-y-2.5"></div>
-    </section>
-
-    <!-- VIEW 2: SIMULADO / QUIZ INTERATIVO -->
-    <section id="view-quiz" class="hidden space-y-4">
-      <!-- Quiz Setup Screen -->
-      <div id="quizSetupCard" class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200 space-y-5">
-        <div class="text-center space-y-1">
-          <div class="w-14 h-14 mx-auto rounded-2xl mc-yellow flex items-center justify-center text-3xl shadow-sm">
-            🎯
-          </div>
-          <h2 class="text-xl font-black text-slate-800">Simulado Oficial das Olimpíadas</h2>
-          <p class="text-xs text-slate-500">Treine com perguntas de múltipla escolha geradas direto das 200 questões da Venture</p>
-        </div>
-
-        <div class="space-y-3">
-          <label class="block text-xs font-extrabold uppercase tracking-wider text-slate-500">1. Escolha o Nível</label>
-          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
-            <button onclick="selectQuizLevel('ALL')" id="qlvl-ALL" class="qlvl-btn p-3 rounded-xl border-2 border-[#DA291C] bg-red-50 text-[#DA291C] font-bold text-xs text-center">
-              🔥 Misturado<br><span class="text-[10px] font-normal opacity-80">1 a 200</span>
-            </button>
-            <button onclick="selectQuizLevel('Básico')" id="qlvl-Básico" class="qlvl-btn p-3 rounded-xl border-2 border-slate-200 bg-white text-slate-700 font-bold text-xs text-center">
-              🟢 Básico<br><span class="text-[10px] font-normal opacity-80">1 a 107</span>
-            </button>
-            <button onclick="selectQuizLevel('Intermediário')" id="qlvl-Intermediário" class="qlvl-btn p-3 rounded-xl border-2 border-slate-200 bg-white text-slate-700 font-bold text-xs text-center">
-              🟡 Interm.<br><span class="text-[10px] font-normal opacity-80">108 a 162</span>
-            </button>
-            <button onclick="selectQuizLevel('Avançado')" id="qlvl-Avançado" class="qlvl-btn p-3 rounded-xl border-2 border-slate-200 bg-white text-slate-700 font-bold text-xs text-center">
-              🔴 Avançado<br><span class="text-[10px] font-normal opacity-80">163 a 200</span>
-            </button>
-          </div>
-        </div>
-
-        <div class="space-y-3">
-          <label class="block text-xs font-extrabold uppercase tracking-wider text-slate-500">2. Quantidade de Perguntas</label>
-          <div class="grid grid-cols-4 gap-2">
-            <button onclick="selectQuizCount(5)" id="qcnt-5" class="qcnt-btn py-2.5 rounded-xl border-2 border-slate-200 font-bold text-xs text-slate-700">5 Rápidas</button>
-            <button onclick="selectQuizCount(10)" id="qcnt-10" class="qcnt-btn py-2.5 rounded-xl border-2 border-[#DA291C] bg-red-50 text-[#DA291C] font-bold text-xs">10 Padrão</button>
-            <button onclick="selectQuizCount(25)" id="qcnt-25" class="qcnt-btn py-2.5 rounded-xl border-2 border-slate-200 font-bold text-xs text-slate-700">25 Treino</button>
-            <button onclick="selectQuizCount(200)" id="qcnt-200" class="qcnt-btn py-2.5 rounded-xl border-2 border-slate-200 font-bold text-xs text-slate-700">Maratona</button>
-          </div>
-        </div>
-
-        <button onclick="startQuiz()" class="w-full py-3.5 rounded-2xl mc-red text-white font-black text-sm tracking-wide btn-3d">
-          COMEÇAR SIMULADO AGORA 🚀
-        </button>
-      </div>
-
-      <!-- Active Quiz Screen -->
-      <div id="quizActiveCard" class="hidden bg-white rounded-2xl p-4 sm:p-5 shadow-sm border border-slate-200 space-y-4">
-        <div class="flex items-center justify-between">
-          <button onclick="quitQuiz()" class="text-xs font-bold text-slate-400 hover:text-slate-600">✕ Sair</button>
-          <div class="flex-1 mx-3 bg-slate-100 h-2.5 rounded-full overflow-hidden">
-            <div id="quizProgressBar" class="bg-emerald-500 h-full transition-all duration-300" style="width: 10%"></div>
-          </div>
-          <div class="flex items-center gap-2 text-xs font-extrabold">
-            <span class="text-rose-500 flex items-center gap-0.5">❤️ <span id="quizLives">5</span></span>
-            <span class="text-slate-500" id="quizStepCounter">1/10</span>
-          </div>
-        </div>
-
-        <div class="flex items-center justify-between">
-          <span id="quizBadgeLevel" class="text-[11px] font-extrabold px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-800">Nível Intermediário</span>
-          <span id="quizBadgeNumber" class="text-xs font-bold text-slate-400">Questão #108</span>
-        </div>
-
-        <h3 id="quizQuestionText" class="text-base sm:text-lg font-extrabold text-slate-800 leading-snug">
-          Pergunta aqui?
-        </h3>
-
-        <div id="quizOptionsList" class="space-y-2.5 pt-1"></div>
-
-        <!-- Feedback Box -->
-        <div id="quizFeedbackBox" class="hidden p-3.5 rounded-xl border text-xs space-y-1">
-          <div id="quizFeedbackTitle" class="font-black text-sm"></div>
-          <div id="quizFeedbackAnswer" class="text-slate-700 font-medium"></div>
-        </div>
-
-        <button id="quizNextBtn" onclick="nextQuizQuestion()" class="hidden w-full py-3.5 rounded-xl bg-slate-900 text-white font-black text-sm btn-3d">
-          PRÓXIMA PERGUNTA →
-        </button>
-      </div>
-
-      <!-- Quiz Result Screen -->
-      <div id="quizResultCard" class="hidden bg-white rounded-2xl p-6 shadow-sm border border-slate-200 text-center space-y-4">
-        <div class="text-5xl" id="quizResultEmoji">🏆</div>
-        <h2 class="text-2xl font-black text-slate-800" id="quizResultTitle">Excelente Treino!</h2>
-        <p class="text-sm text-slate-500" id="quizResultSubtitle">Você completou a rodada das Olimpíadas do Básico.</p>
-
-        <div class="grid grid-cols-3 gap-2 max-w-sm mx-auto py-2">
-          <div class="bg-emerald-50 border border-emerald-200 p-3 rounded-xl">
-            <div class="text-xs text-emerald-700 font-bold">Acertos</div>
-            <div class="text-xl font-black text-emerald-600" id="resCorrect">0</div>
-          </div>
-          <div class="bg-amber-50 border border-amber-200 p-3 rounded-xl">
-            <div class="text-xs text-amber-700 font-bold">Precisão</div>
-            <div class="text-xl font-black text-amber-600" id="resPercent">0%</div>
-          </div>
-          <div class="bg-purple-50 border border-purple-200 p-3 rounded-xl">
-            <div class="text-xs text-purple-700 font-bold">XP Ganho</div>
-            <div class="text-xl font-black text-purple-600" id="resXP">+0</div>
-          </div>
-        </div>
-
-        <div class="flex gap-2 pt-2">
-          <button onclick="resetQuizSetup()" class="flex-1 py-3 rounded-xl bg-slate-100 text-slate-700 font-bold text-xs">
-            Configurar Outro
-          </button>
-          <button onclick="startQuiz()" class="flex-1 py-3 rounded-xl mc-red text-white font-black text-xs btn-3d">
-            Jogar Novamente 🔄
+          <p id="quizQuestionText" class="font-extrabold text-gray-900 text-base leading-snug"></p>
+          <div id="quizOptions" class="space-y-2 pt-1"></div>
+          <div id="quizFeedback" class="hidden p-3 rounded-xl text-xs font-bold"></div>
+          <button id="nextQuizBtn" onclick="loadNextQuizQuestion()" class="hidden w-full mc-red text-white font-black py-3 rounded-xl btn-3d text-xs">
+            PRÓXIMA PERGUNTA ➡️
           </button>
         </div>
       </div>
     </section>
 
-    <!-- VIEW 3: FLASHCARDS (MEMORIZAÇÃO RÁPIDA) -->
-    <section id="view-flashcards" class="hidden space-y-4">
-      <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200 space-y-3">
-        <div class="flex items-center justify-between">
+    <!-- ABA 2: APOSTILA COMPLETA (BOOK 200 PERGUNTAS) -->
+    <section id="tab-book" class="hidden space-y-3">
+      <div class="bg-white rounded-2xl p-3.5 shadow-sm border border-gray-100 sticky top-28 z-20 space-y-2">
+        <input id="searchBookInput" oninput="renderBookList()" type="text" placeholder="🔍 Buscar pergunta (ex: alface, chapa, 18 segundos, mostarda...)" class="w-full px-3.5 py-2 rounded-xl bg-gray-100 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-red-500" />
+        <div class="flex gap-1.5 overflow-x-auto pb-1">
+          <button onclick="setBookFilter('ALL')" class="book-filter-btn px-3 py-1 rounded-full text-xs font-bold bg-red-600 text-white">Todas</button>
+          <button onclick="setBookFilter('Básico')" class="book-filter-btn px-3 py-1 rounded-full text-xs font-bold bg-gray-200 text-gray-700">Nível Básico</button>
+          <button onclick="setBookFilter('Intermediário')" class="book-filter-btn px-3 py-1 rounded-full text-xs font-bold bg-gray-200 text-gray-700">Intermediário</button>
+          <button onclick="setBookFilter('Avançado')" class="book-filter-btn px-3 py-1 rounded-full text-xs font-bold bg-gray-200 text-gray-700">Avançado</button>
+        </div>
+      </div>
+      <div id="bookQuestionsContainer" class="space-y-2"></div>
+    </section>
+
+    <!-- ABA 3: PREMIAÇÕES E RANKING -->
+    <section id="tab-prizes" class="hidden space-y-4">
+      <!-- Card Destaque 1º Lugar: Caneca do McDonald's -->
+      <div class="bg-gradient-to-br from-[#DA291C] to-[#9e1910] text-white rounded-3xl p-5 shadow-xl relative overflow-hidden border-2 border-[#FFC72C]">
+        <div class="flex items-center gap-4">
+          <div class="text-5xl bg-white/15 p-3.5 rounded-2xl border border-white/20">☕</div>
           <div>
-            <h2 class="font-extrabold text-sm text-slate-800">🎴 Flashcards de Treinamento</h2>
-            <p class="text-xs text-slate-500">Toque no cartão para revelar o gabarito oficial</p>
+            <span class="bg-[#FFC72C] text-gray-900 text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase">Prêmio Oficial — 1º Lugar</span>
+            <h3 class="text-xl font-black mt-1">Caneca Oficial do McDonald's</h3>
+            <p class="text-xs opacity-90 mt-0.5">O 1º colocado no Ranking Geral de XP das Olimpíadas do Básico leva uma Caneca Exclusiva do Méqui!</p>
           </div>
-          <select id="fcLevelSelect" onchange="initFlashcards()" class="bg-slate-100 border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs font-bold text-slate-700">
-            <option value="ALL">Todas (200)</option>
-            <option value="Básico">🟢 Básico</option>
-            <option value="Intermediário">🟡 Intermediário</option>
-            <option value="Avançado">🔴 Avançado</option>
-            <option value="STARRED">⭐ Favoritas</option>
-          </select>
         </div>
+      </div>
 
-        <!-- Flashcard 3D Box -->
-        <div class="perspective my-2">
-          <div id="flashcardBox" onclick="flipFlashcard()" class="flip-card-inner relative w-full min-h-[230px] cursor-pointer select-none">
-            <!-- Front -->
-            <div class="flip-card-front absolute inset-0 bg-gradient-to-br from-slate-900 to-slate-800 text-white rounded-2xl p-6 flex flex-col justify-between shadow-md">
-              <div class="flex items-center justify-between text-xs">
-                <span id="fcFrontBadge" class="bg-white/15 px-2.5 py-1 rounded-full font-bold text-amber-300">Questão #1 • Básico</span>
-                <span id="fcCounterText" class="text-slate-300 font-bold">1 / 200</span>
-              </div>
-              <div class="my-auto py-4 text-center">
-                <p id="fcQuestion" class="text-base sm:text-lg font-extrabold leading-relaxed"></p>
-              </div>
-              <div class="text-center text-[11px] text-slate-300 font-semibold">
-                👆 Toque no cartão para ver a resposta oficial
-              </div>
+      <!-- Outras Premiações por Nível e Pódio -->
+      <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 space-y-3">
+        <h3 class="font-black text-gray-800 text-sm">🏅 Quadro de Premiações e Conquistas</h3>
+        <div class="grid grid-cols-1 gap-2.5 text-xs">
+          <div class="flex items-center gap-3 p-3 rounded-xl bg-amber-50 border border-amber-200">
+            <span class="text-2xl">🥇</span>
+            <div>
+              <p class="font-black text-amber-900">1º Lugar no Ranking Geral</p>
+              <p class="text-amber-700">☕ 1 Caneca Oficial do McDonald's + Destaque Ouro no Grupo</p>
             </div>
-
-            <!-- Back -->
-            <div class="flip-card-back absolute inset-0 bg-gradient-to-br from-[#DA291C] to-red-800 text-white rounded-2xl p-6 flex flex-col justify-between shadow-md">
-              <div class="flex items-center justify-between text-xs">
-                <span class="bg-black/25 px-2.5 py-1 rounded-full font-bold text-[#FFC72C]">✅ GABARITO OFICIAL VENTURE</span>
-                <span id="fcBackNumber" class="font-bold text-red-100">#1</span>
-              </div>
-              <div class="my-auto py-4 text-center">
-                <p id="fcAnswer" class="text-base sm:text-lg font-black leading-relaxed text-[#FFC72C]"></p>
-              </div>
-              <div class="text-center text-[11px] text-red-100 font-semibold">
-                👆 Toque para voltar à pergunta
-              </div>
+          </div>
+          <div class="flex items-center gap-3 p-3 rounded-xl bg-gray-50 border border-gray-200">
+            <span class="text-2xl">🥈</span>
+            <div>
+              <p class="font-black text-gray-800">2º Lugar no Ranking Geral</p>
+              <p class="text-gray-600">🍔 Reconhecimento Prata + Prioridade de escolha na escala/break</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-3 p-3 rounded-xl bg-orange-50 border border-orange-200">
+            <span class="text-2xl">🥉</span>
+            <div>
+              <p class="font-black text-orange-900">3º Lugar no Ranking Geral</p>
+              <p class="text-orange-700">🍦 Sobremesa / Sundae liberado no fim do plantão + Medalha Bronze</p>
             </div>
           </div>
         </div>
+      </div>
 
-        <!-- Flashcard Controls -->
-        <div class="grid grid-cols-4 gap-2 pt-1">
-          <button onclick="prevFlashcard()" class="py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs">
-            ← Anterior
-          </button>
-          <button onclick="markFlashcardReview()" class="py-2.5 rounded-xl bg-amber-100 hover:bg-amber-200 text-amber-800 font-bold text-xs">
-            ⭐ Revisar
-          </button>
-          <button onclick="markFlashcardMastered()" class="py-2.5 rounded-xl bg-emerald-100 hover:bg-emerald-200 text-emerald-800 font-bold text-xs">
-            ✅ Dominei
-          </button>
-          <button onclick="nextFlashcard()" class="py-2.5 rounded-xl bg-slate-900 text-white font-bold text-xs">
-            Próximo →
-          </button>
+      <!-- Tabela do Sistema de Níveis -->
+      <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 space-y-2">
+        <h3 class="font-black text-gray-800 text-sm">📈 Tabela de Patentes por XP</h3>
+        <div class="space-y-1.5 text-xs font-semibold text-gray-700">
+          <div class="flex justify-between p-2 rounded-lg bg-gray-50"><span>🔰 Nível 1 — Treinador Iniciante</span><span>0 a 199 XP</span></div>
+          <div class="flex justify-between p-2 rounded-lg bg-gray-50"><span>🥉 Nível 2 — Chapa de Bronze</span><span>200 a 499 XP</span></div>
+          <div class="flex justify-between p-2 rounded-lg bg-gray-50"><span>🥈 Nível 3 — Especialista de Prata</span><span>500 a 999 XP</span></div>
+          <div class="flex justify-between p-2 rounded-lg bg-gray-50"><span>🥇 Nível 4 — Padrão Ouro Venture</span><span>1.000 a 1.999 XP</span></div>
+          <div class="flex justify-between p-2 rounded-lg bg-amber-100 text-amber-900 font-bold"><span>👑 Nível 5 — Mestre das Olimpíadas</span><span>2.000+ XP</span></div>
         </div>
+      </div>
 
-        <button onclick="shuffleFlashcards()" class="w-full py-2 rounded-xl border border-slate-200 text-xs font-bold text-slate-600 hover:bg-slate-50">
-          🔀 Embaralhar Ordem dos Cartões
-        </button>
+      <!-- Ranking Geral dos Colaboradores Cadastrados -->
+      <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 space-y-3">
+        <div class="flex items-center justify-between">
+          <h3 class="font-black text-gray-800 text-sm">🏆 Ranking da Loja (Disputa pela Caneca ☕)</h3>
+          <span class="text-[11px] text-gray-400 font-semibold">Atualizado em tempo real</span>
+        </div>
+        <div id="leaderboardContainer" class="space-y-2"></div>
       </div>
     </section>
 
-    <!-- VIEW 4: FICHAS DE LANCHES & RESUMÃO -->
-    <section id="view-cheatsheet" class="hidden space-y-4">
-      <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200 space-y-3">
-        <h2 class="font-black text-base text-slate-800 flex items-center gap-2">
-          🍔 Fichas de Montagem & Novos Lanches
-        </h2>
-        <p class="text-xs text-slate-500">Resumo rápido das composições cobradas nas Olimpíadas e lançamentos da linha Brabo.</p>
+    <!-- ABA 4: ATUALIZAÇÕES DO APLICATIVO (CHANGELOG) -->
+    <section id="tab-updates" class="hidden space-y-3">
+      <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 space-y-4">
+        <div class="flex items-center justify-between">
+          <h2 class="font-black text-gray-900 text-base">🚀 Atualizações do Aplicativo</h2>
+          <span class="bg-green-100 text-green-800 text-xs font-black px-2.5 py-0.5 rounded-full">Versão 3.0</span>
+        </div>
 
-        <div class="grid sm:grid-cols-2 gap-3">
-          <!-- Big Mac -->
-          <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 space-y-1.5">
-            <div class="flex justify-between items-center">
-              <span class="font-black text-sm text-[#DA291C]">Big Mac (#1, #33, #185)</span>
-              <span class="text-[10px] font-bold bg-red-100 text-red-700 px-2 py-0.5 rounded-full">Clássico</span>
-            </div>
-            <ul class="text-xs text-slate-700 space-y-1">
-              <li>• <b>Molho Big Mac:</b> 1/2 oz na base + 1/2 oz no clube (total 1 oz)</li>
-              <li>• <b>Alface:</b> 12 g na base + 12 g no clube (total 24 g)</li>
-              <li>• <b>Picles:</b> 2 fatias no clube</li>
-              <li>• <b>Queijo Cheddar:</b> 1 fatia na base</li>
-              <li>• <b>Carnes:</b> 2 carnes 10:1 com 3,5 g de cebola reidratada cada</li>
-            </ul>
-          </div>
+        <div class="border-l-4 border-[#DA291C] pl-3.5 space-y-1">
+          <span class="text-[11px] font-extrabold text-red-600 uppercase">Versão 3.0 • Atualização Atual</span>
+          <h4 class="font-black text-gray-800 text-sm">Sistema de Senha, Níveis e Aba de Premiações ☕</h4>
+          <ul class="text-xs text-gray-600 list-disc list-inside space-y-1 pt-1">
+            <li><strong>Registro com Senha Pessoal:</strong> Agora cada colaborador novo cria sua conta protegida por senha para ninguém mexer no seu XP.</li>
+            <li><strong>Aba de Premiações Oficial:</strong> Inclusão do prêmio de <strong>1º Lugar (Caneca Oficial do McDonald's)</strong> e destaques do pódio.</li>
+            <li><strong>Sistema de Patentes por Nível:</strong> Suba do Nível 1 ao Nível 5 ganhando +25 XP por resposta certa no Simulado e +5 XP lendo o Book.</li>
+            <li><strong>Aba de Atualizações:</strong> Histórico completo de melhorias e avisos da 2ª Fase das Olimpíadas.</li>
+          </ul>
+        </div>
 
-          <!-- Quarteirão -->
-          <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 space-y-1.5">
-            <div class="flex justify-between items-center">
-              <span class="font-black text-sm text-[#DA291C]">Quarteirão com Queijo (#141)</span>
-              <span class="text-[10px] font-bold bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full">Intermediário</span>
-            </div>
-            <ul class="text-xs text-slate-700 space-y-1">
-              <li>• <b>Mostarda:</b> 1/40 oz</li>
-              <li>• <b>Ketchup:</b> 1/2 oz</li>
-              <li>• <b>Cebola Fresca:</b> 7 g</li>
-              <li>• <b>Picles:</b> 2 fatias</li>
-              <li>• <b>Queijo Cheddar:</b> 2 fatias em formato de estrela</li>
-              <li>• <b>Carne:</b> 1 carne 4:1</li>
-            </ul>
-          </div>
+        <div class="border-l-4 border-amber-400 pl-3.5 space-y-1">
+          <span class="text-[11px] font-extrabold text-amber-600 uppercase">Versão 2.0 • Anterior</span>
+          <h4 class="font-black text-gray-800 text-sm">Integração do Book Venture (Básico, Intermediário e Avançado)</h4>
+          <ul class="text-xs text-gray-600 list-disc list-inside space-y-1 pt-1">
+            <li>Adicionadas as perguntas oficiais do Book Olimpíadas de Básico (Venture).</li>
+            <li>Busca instantânea por palavra-chave e filtro por nível de dificuldade.</li>
+          </ul>
+        </div>
 
-          <!-- McNífico Bacon -->
-          <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 space-y-1.5">
-            <div class="flex justify-between items-center">
-              <span class="font-black text-sm text-[#DA291C]">McNífico Bacon (#143)</span>
-              <span class="text-[10px] font-bold bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full">Intermediário</span>
-            </div>
-            <ul class="text-xs text-slate-700 space-y-1">
-              <li>• <b>Mostarda / Ketchup:</b> 1/40 oz mostarda + 1/2 oz ketchup</li>
-              <li>• <b>Maionese:</b> 2/3 oz</li>
-              <li>• <b>Alface e Tomate:</b> 28 g de alface + 2 fatias de tomate</li>
-              <li>• <b>Cebola Fresca:</b> 7 g</li>
-              <li>• <b>Bacon e Queijo:</b> 2 fatias de bacon + 1 fatia de queijo</li>
-              <li>• <b>Carne:</b> 1 carne 4:1</li>
-            </ul>
-          </div>
-
-          <!-- Big Tasty -->
-          <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 space-y-1.5">
-            <div class="flex justify-between items-center">
-              <span class="font-black text-sm text-[#DA291C]">Big Tasty (#3, #186)</span>
-              <span class="text-[10px] font-bold bg-purple-100 text-purple-800 px-2 py-0.5 rounded-full">Avançado</span>
-            </div>
-            <ul class="text-xs text-slate-700 space-y-1">
-              <li>• <b>Molho Tasty:</b> 1 oz na coroa + 1 oz na base (total 2 oz)</li>
-              <li>• <b>Cebola Fresca e Alface:</b> 10 g de cebola + 28 g de alface</li>
-              <li>• <b>Tomate:</b> 2 fatias</li>
-              <li>• <b>Queijo Ementhal:</b> 3 fatias (1 na coroa + 2 na base em estrela)</li>
-              <li>• <b>Carne:</b> 1, 2 ou 3 carnes 4:1 (destacar TAG na caixa)</li>
-            </ul>
-          </div>
-
-          <!-- Brabo Brabíssimo -->
-          <div class="p-3.5 rounded-xl bg-amber-50/70 border border-amber-200 space-y-1.5">
-            <div class="flex justify-between items-center">
-              <span class="font-black text-sm text-slate-900">Brabo Brabíssimo (1 e 2 Carnes)</span>
-              <span class="text-[10px] font-bold bg-amber-300 text-slate-900 px-2 py-0.5 rounded-full">Lançamento</span>
-            </div>
-            <ul class="text-xs text-slate-700 space-y-1">
-              <li>• <b>Coroa Brioche:</b> 1 oz de Molho CBO + 28 g de Alface</li>
-              <li>• <b>Topo:</b> 3 fatias de Bacon + 1 fatia Queijo Cheddar</li>
-              <li>• <b>Centro:</b> 1 ou 2 carnes 4:1 + 1 fatia Queijo Cheddar</li>
-              <li>• <b>Base Brioche:</b> 10 g Cebola Crispy + 1 oz Molho Méquinese</li>
-            </ul>
-          </div>
-
-          <!-- Brabo SmokeHouse -->
-          <div class="p-3.5 rounded-xl bg-amber-50/70 border border-amber-200 space-y-1.5">
-            <div class="flex justify-between items-center">
-              <span class="font-black text-sm text-slate-900">Brabo SmokeHouse (1 e 2 Carnes)</span>
-              <span class="text-[10px] font-bold bg-amber-300 text-slate-900 px-2 py-0.5 rounded-full">Lançamento</span>
-            </div>
-            <ul class="text-xs text-slate-700 space-y-1">
-              <li>• <b>Coroa Brioche:</b> 1 oz Molho Méquinese + 10 g Cebola Crispy</li>
-              <li>• <b>Topo:</b> 3 fatias de Bacon + 1 fatia Queijo Cheddar</li>
-              <li>• <b>Centro:</b> 1 ou 2 carnes 4:1 + 1 fatia Queijo Cheddar</li>
-              <li>• <b>Base Brioche:</b> 10 g Bacon Triturado + 2/3 oz Geleia Defumada</li>
-            </ul>
-          </div>
+        <div class="border-l-4 border-gray-300 pl-3.5 space-y-1">
+          <span class="text-[11px] font-extrabold text-gray-500 uppercase">Versão 1.0 • Lançamento</span>
+          <h4 class="font-black text-gray-800 text-sm">Primeiro Quiz Interativo rumo à 2ª Fase</h4>
+          <p class="text-xs text-gray-600 pt-1">Criação do simulado mobile para apoiar a loja após conquistar o 4º lugar na 1ª fase.</p>
         </div>
       </div>
     </section>
 
   </main>
 
-  <!-- BOTTOM NAVIGATION BAR -->
-  <nav class="fixed bottom-0 inset-x-0 bg-white border-t border-slate-200 z-40 shadow-lg">
-    <div class="max-w-3xl mx-auto grid grid-cols-4 py-1.5 px-2">
-      <button onclick="switchTab('book')" id="tab-book" class="flex flex-col items-center py-1 rounded-xl text-[#DA291C] font-extrabold">
-        <span class="text-lg">📚</span>
-        <span class="text-[11px]">200 Questões</span>
-      </button>
-      <button onclick="switchTab('quiz')" id="tab-quiz" class="flex flex-col items-center py-1 rounded-xl text-slate-400 font-bold">
+  <!-- NAVEGAÇÃO INFERIOR ESTILO APP -->
+  <nav class="fixed bottom-0 inset-x-0 bg-white border-t border-gray-200 z-40 shadow-lg">
+    <div class="max-w-xl mx-auto grid grid-cols-4 py-2">
+      <button onclick="switchMainTab('quiz')" id="nav-quiz" class="flex flex-col items-center text-red-600 font-extrabold text-[11px]">
         <span class="text-lg">🎯</span>
-        <span class="text-[11px]">Simulado</span>
+        <span>Simulado</span>
       </button>
-      <button onclick="switchTab('flashcards')" id="tab-flashcards" class="flex flex-col items-center py-1 rounded-xl text-slate-400 font-bold">
-        <span class="text-lg">🎴</span>
-        <span class="text-[11px]">Flashcards</span>
+      <button onclick="switchMainTab('book')" id="nav-book" class="flex flex-col items-center text-gray-400 font-bold text-[11px]">
+        <span class="text-lg">📖</span>
+        <span>Book (200)</span>
       </button>
-      <button onclick="switchTab('cheatsheet')" id="tab-cheatsheet" class="flex flex-col items-center py-1 rounded-xl text-slate-400 font-bold">
-        <span class="text-lg">🍔</span>
-        <span class="text-[11px]">Lanches</span>
+      <button onclick="switchMainTab('prizes')" id="nav-prizes" class="flex flex-col items-center text-gray-400 font-bold text-[11px]">
+        <span class="text-lg">☕</span>
+        <span>Prêmios</span>
+      </button>
+      <button onclick="switchMainTab('updates')" id="nav-updates" class="flex flex-col items-center text-gray-400 font-bold text-[11px]">
+        <span class="text-lg">🔔</span>
+        <span>Novidades</span>
       </button>
     </div>
   </nav>
 
   <script>
-    // =========================================================================
-    // BANCO DE DADOS COMPLETO: TODAS AS 200 QUESTÕES DO BOOK VENTURE
-    // =========================================================================
+    // BANCO DE QUESTÕES OFICIAIS DO BOOK OLIMPÍADAS DO BÁSICO (VENTURE)
     const QUESTIONS_DB = [
-      // --- NÍVEL BÁSICO (1 a 107) ---
-      { id: 1, level: "Básico", cat: "Linha & Montagem", q: "Quantas gramas de alface colocamos no Big Mac?", a: "12 g na base e 12 g no clube, totalizando 24 gramas." },
-      { id: 2, level: "Básico", cat: "Linha & Montagem", q: "Quantas gramas de alface colocamos no McChicken?", a: "28 gramas de alface." },
-      { id: 3, level: "Básico", cat: "Linha & Montagem", q: "Quantas gramas (oz) de molho vai no Big Tasty?", a: "1 oz na coroa e 1 oz na base, totalizando 2 oz." },
-      { id: 4, level: "Básico", cat: "Linha & Montagem", q: "Quantas fatias de picles colocamos no Big Mac, Quarteirão e Cheeseburger?", a: "2 fatias no Big Mac e no Quarteirão, e 1 fatia no Cheeseburger." },
-      { id: 5, level: "Básico", cat: "Linha & Montagem", q: "Qual o tempo de vida secundário dos molhos Big Mac, Big Tasty, Maionese, Méquinese e Barbecue na linha?", a: "Molho Big Mac: 24 horas; Molhos Tasty, Maionese, Méquinese e Barbecue: 4 horas na bisnaga FIFO." },
-      { id: 6, level: "Básico", cat: "LOPE & Qualidade", q: "Quais são os padrões obrigatórios de apresentação pessoal para atuar na cozinha?", a: "Cabelos presos com redinha, unhas curtas e sem esmalte, barba feita, sem adornos, uniforme limpo e sapato antiderrapante." },
-      { id: 7, level: "Básico", cat: "LOPE & Qualidade", q: "Por quanto tempo devemos lavar as mãos?", a: "20 segundos." },
-      { id: 8, level: "Básico", cat: "LOPE & Qualidade", q: "Qual o primeiro passo na lavagem das mãos?", a: "Molhar as mãos." },
-      { id: 9, level: "Básico", cat: "LOPE & Qualidade", q: "Qual a frequência correta para lavagem das mãos?", a: "A cada 1 hora (e a cada troca de função/atividade)." },
-      { id: 10, level: "Básico", cat: "Chapa & Carnes", q: "Quais são os EPIs necessários para atuar na estação de chapa?", a: "Avental térmico/PVC, mangote de proteção térmica e luvas protetoras." },
-      { id: 11, level: "Básico", cat: "Linha & Montagem", q: "Qual é o tempo de tostagem e a compressão do pão na tostadeira?", a: "22 segundos de tostagem e compressão no GAP 4." },
-      { id: 12, level: "Básico", cat: "Linha & Montagem", q: "Qual a temperatura interna que o pão deve atingir ao sair da tostadeira?", a: "Superior a 70 °C (ideal 71 °C)." },
-      { id: 13, level: "Básico", cat: "Chapa & Carnes", q: "Qual é a temperatura da estufa UHC para carnes vermelhas e para carnes brancas?", a: "Carnes vermelhas: 79 °C e Carnes brancas: 85 °C." },
-      { id: 14, level: "Básico", cat: "Chapa & Carnes", q: "Qual o tempo de vida das carnes vermelhas (10:1 e 4:1) na UHC?", a: "10 minutos." },
-      { id: 15, level: "Básico", cat: "Fritos & McFritas", q: "Qual o tempo de vida das carnes brancas na UHC?", a: "Crispy 60 minutos, Chicken 30 minutos, Junior e Nuggets 20 minutos." },
-      { id: 16, level: "Básico", cat: "LOPE & Qualidade", q: "Qual o tempo de vida dos ceboleiros em área e quantos conseguimos fazer com 1 pacote de cebola?", a: "4 horas e 7 ceboleiros." },
-      { id: 17, level: "Básico", cat: "Linha & Montagem", q: "Qual o tempo de reação do iniciador?", a: "De 3 a 5 segundos." },
-      { id: 18, level: "Básico", cat: "Linha & Montagem", q: "Qual pessoa da linha nunca pode sair da estação?", a: "A pessoa do iniciador." },
-      { id: 19, level: "Básico", cat: "Linha & Montagem", q: "A partir de quantos sanduíches produzidos na hora devemos abrir o lado 2?", a: "125 sanduíches na hora." },
-      { id: 20, level: "Básico", cat: "Linha & Montagem", q: "Em qual direção devem ficar a base e a coroa dos pães na linha?", a: "Base sentido UHC e Coroa sentido tostadeira." },
-      { id: 21, level: "Básico", cat: "Linha & Montagem", q: "Quantos pães podemos ativar por vez na tostadeira?", a: "2 pães." },
-      { id: 22, level: "Básico", cat: "Linha & Montagem", q: "Quantos sanduíches podemos condimentar por vez?", a: "2 sanduíches." },
-      { id: 23, level: "Básico", cat: "Fritos & McFritas", q: "Quais as cores dos clipes das gavetas da UHC para McChicken e Nuggets?", a: "McChicken amarelo e Nuggets branco." },
-      { id: 24, level: "Básico", cat: "Chapa & Carnes", q: "Qual o tempo de vida do ceboleiro na estação de chapa?", a: "4 horas." },
-      { id: 25, level: "Básico", cat: "Linha & Montagem", q: "Quantos panos devemos ter na linha?", a: "3 panos: 1 para tostadeira, 1 para mesa de condimentação e 1 para UHC." },
-      { id: 26, level: "Básico", cat: "Linha & Montagem", q: "Em quantos pedaços devemos cortar a carne de Crispy da Salada Mix?", a: "De 5 a 7 pedaços." },
-      { id: 27, level: "Básico", cat: "LOPE & Qualidade", q: "Por quanto tempo o tomate deve ficar no sanitizante?", a: "15 minutos." },
-      { id: 28, level: "Básico", cat: "LOPE & Qualidade", q: "Por quanto tempo o tomate deve ficar em ambientação antes de ser cortado?", a: "2 horas." },
-      { id: 29, level: "Básico", cat: "LOPE & Qualidade", q: "Qual o tempo de vida do tomate após ser cortado?", a: "2 horas." },
-      { id: 30, level: "Básico", cat: "LOPE & Qualidade", q: "Qual o tempo de ambientação dos molhos Cheddar do Sanduíche e da Batata respectivamente?", a: "2 horas e 4 horas de ambientação." },
-      { id: 31, level: "Básico", cat: "Linha & Montagem", q: "Qual o tempo de vida do molho Cheddar na pistola?", a: "2 horas de ambientação e 6 horas de tempo de vida, totalizando 8 horas." },
-      { id: 32, level: "Básico", cat: "Linha & Montagem", q: "Quais quantidades de Molho Maionese colocamos nos sanduíches McChicken, McChicken Bacon, Chicken Jr e McNífico Bacon?", a: "2/3 oz de molho maionese." },
-      { id: 33, level: "Básico", cat: "Linha & Montagem", q: "Qual quantidade de Molho colocamos no Big Mac?", a: "1 tiro de 1/2 oz de molho na base e 1 no clube, totalizando 1 oz de molho Big Mac." },
-      { id: 34, level: "Básico", cat: "Linha & Montagem", q: "Quais cores de pegadores temos na linha e qual a sua finalidade?", a: "Pegador vermelho para carnes vermelhas com cebola, pegador azul para carnes vermelhas sem cebola e pegador verde para carnes brancas." },
-      { id: 35, level: "Básico", cat: "Chapa & Carnes", q: "Qual procedimento devemos seguir logo após ativar as carnes na chapa?", a: "Sanitizar as mãos." },
-      { id: 36, level: "Básico", cat: "Chapa & Carnes", q: "Qual ferramenta define os níveis de carnes que devemos ter nas gavetas?", a: "PLS." },
-      { id: 37, level: "Básico", cat: "Chapa & Carnes", q: "Qual o ângulo de raspagem da chapa?", a: "15°." },
-      { id: 38, level: "Básico", cat: "Chapa & Carnes", q: "Qual a forma correta de ativar, salgar e remover as carnes?", a: "Da direita para a esquerda, da frente para o fundo." },
-      { id: 39, level: "Básico", cat: "Chapa & Carnes", q: "Qual o empilhamento máximo de carnes de 10:1 na gaveta?", a: "3 carnes." },
-      { id: 40, level: "Básico", cat: "Chapa & Carnes", q: "Qual o empilhamento máximo de carnes de 4:1 na gaveta?", a: "1 carne, não podemos empilhar carnes de 4:1." },
-      { id: 41, level: "Básico", cat: "Chapa & Carnes", q: "Quantas carnes de 10:1 podemos ativar no máximo em cada platen?", a: "6 carnes." },
-      { id: 42, level: "Básico", cat: "Chapa & Carnes", q: "Quantas carnes de 4:1 podemos ativar no máximo em cada platen?", a: "4 carnes." },
-      { id: 43, level: "Básico", cat: "Chapa & Carnes", q: "Quantas carnes de 4:1 podemos colocar no máximo em cada gaveta?", a: "4 carnes." },
-      { id: 44, level: "Básico", cat: "Chapa & Carnes", q: "Quantas carnes de 10:1 podemos colocar no máximo em cada gaveta?", a: "12 carnes." },
-      { id: 45, level: "Básico", cat: "Chapa & Carnes", q: "Quantas fatias de bacon podemos ativar por vez em cada platen?", a: "6 fatias." },
-      { id: 46, level: "Básico", cat: "Fritos & McFritas", q: "Qual pegador devemos usar para ativar as carnes brancas?", a: "Pegador preto." },
-      { id: 47, level: "Básico", cat: "Fritos & McFritas", q: "Para que serve o pegador bege sem dentes nos produtos fritos?", a: "Para auxiliar a remoção das carnes dos cestos." },
-      { id: 48, level: "Básico", cat: "Fritos & McFritas", q: "Quais as rodadas máximas para ativar carnes brancas e tortas?", a: "McChicken e Chicken Jr 6 carnes, Crispy 4 carnes, Nuggets 24 bolinhas e Tortas 16 unidades." },
-      { id: 49, level: "Básico", cat: "Fritos & McFritas", q: "Qual o tempo de resfriamento das tortas?", a: "20 minutos." },
-      { id: 50, level: "Básico", cat: "Fritos & McFritas", q: "Qual o tempo de fritura das tortas?", a: "6 minutos." },
-      { id: 51, level: "Básico", cat: "Fritos & McFritas", q: "Qual o tempo de vida das tortas prontas?", a: "2 horas." },
-      { id: 52, level: "Básico", cat: "Fritos & McFritas", q: "Quais os dois sistemas de ativada que podemos usar nos produtos fritos?", a: "Manutenção e Recuperação." },
-      { id: 53, level: "Básico", cat: "Fritos & McFritas", q: "Por quanto tempo as carnes devem escorrer sobre o óleo antes de ir para a gaveta?", a: "5 a 10 segundos." },
-      { id: 54, level: "Básico", cat: "LOPE & Qualidade", q: "Quais EPIs a pessoa do LOPE deve usar para acessar as câmaras?", a: "Casaco, Calça, Bota, Touca (balaclava) e luvas." },
-      { id: 55, level: "Básico", cat: "LOPE & Qualidade", q: "Qual a temperatura da câmara de resfriados, Walk-in?", a: "De 1 a 4 °C." },
-      { id: 56, level: "Básico", cat: "LOPE & Qualidade", q: "Qual a temperatura da câmara de congelados, Chicago?", a: "De -18 a -23 °C." },
-      { id: 57, level: "Básico", cat: "LOPE & Qualidade", q: "Por quanto tempo o queijo deve ambientar antes de ser estocado na mesa de condimentação?", a: "2 horas." },
-      { id: 58, level: "Básico", cat: "LOPE & Qualidade", q: "Qual a temperatura do queijo após a ambientação de 2 horas?", a: "De 15° a 18 °C, ideal 17,5 °C." },
-      { id: 59, level: "Básico", cat: "LOPE & Qualidade", q: "Como sabemos quantos queijos devemos ambientar para cada hora?", a: "Usando a tabela chart, para saber quantos queijos vamos usar de acordo com as GCs por hora." },
-      { id: 60, level: "Básico", cat: "LOPE & Qualidade", q: "O que é o CARD LOPE?", a: "É a ficha de tarefas da estação LOPE." },
-      { id: 61, level: "Básico", cat: "LOPE & Qualidade", q: "Qual o tempo de vida da cebola reidratada?", a: "24 horas, incluindo 1 hora de hidratação." },
-      { id: 62, level: "Básico", cat: "Bebidas & Sobremesas", q: "Qual o tempo de vida do suco, após aberto?", a: "7 dias sob refrigeração." },
-      { id: 63, level: "Básico", cat: "Bebidas & Sobremesas", q: "Qual o tempo de vida do mix, após aberto?", a: "7 dias sob refrigeração." },
-      { id: 64, level: "Básico", cat: "LOPE & Qualidade", q: "Qual o tempo dos queijos Cheddar e Ementhal após abertos?", a: "24 horas sob refrigeração." },
-      { id: 65, level: "Básico", cat: "Linha & Montagem", q: "Qual o tempo de vida da alface e da cebola nas cubas?", a: "2 horas." },
-      { id: 66, level: "Básico", cat: "Linha & Montagem", q: "Quando usamos cubas médias para alface na mesa de condimentação?", a: "Nas horas pico." },
-      { id: 67, level: "Básico", cat: "Fritos & McFritas", q: "Qual a temperatura do óleo para carnes brancas e tortas?", a: "180 °C." },
-      { id: 68, level: "Básico", cat: "Fritos & McFritas", q: "Qual a temperatura do óleo para McFritas?", a: "168 °C." },
-      { id: 69, level: "Básico", cat: "Fritos & McFritas", q: "Qual o tempo de fritura para carnes brancas?", a: "McChicken, Chicken Jr e McNuggets: 3 minutos e 15 segundos (3'15\"); McCrispy: 6 minutos." },
-      { id: 70, level: "Básico", cat: "Fritos & McFritas", q: "Qual é o tempo de fritura das McFritas?", a: "3 minutos e 10 segundos (3'10\")." },
-      { id: 71, level: "Básico", cat: "Fritos & McFritas", q: "Com quantos segundos toca o alarme de Duty das McFritas e qual procedimento deve ser feito?", a: "Aos 30 segundos; deve-se erguer o cesto com as duas mãos e sacudi-lo fora do óleo para soltar os palitos." },
-      { id: 72, level: "Básico", cat: "Fritos & McFritas", q: "Por quanto tempo o cesto de McFritas deve escorrer sobre a fritadeira?", a: "De 5 a 10 segundos." },
-      { id: 73, level: "Básico", cat: "Fritos & McFritas", q: "Qual o tempo de vida das McFritas prontas no escorredor?", a: "7 minutos." },
-      { id: 74, level: "Básico", cat: "Fritos & McFritas", q: "Quantas gramas de sal o saleiro dispensa nas McFritas?", a: "4 gramas." },
-      { id: 75, level: "Básico", cat: "Fritos & McFritas", q: "Qual a capacidade máxima de abastecimento de batatas no cesto?", a: "Até a metade do cesto." },
-      { id: 76, level: "Básico", cat: "Atendimento & Cultura", q: "Qual o tempo de montagem de sanduíches na linha (MFY) de acordo com a quantidade de pessoas?", a: "Com 1 pessoa 50 segundos, com 2 pessoas 42 segundos, com 3 pessoas 35 segundos." },
-      { id: 77, level: "Básico", cat: "Atendimento & Cultura", q: "Qual o tempo de R2P (entrega pedido balcão)?", a: "90 segundos." },
-      { id: 78, level: "Básico", cat: "Atendimento & Cultura", q: "Qual o tempo de OEPE (drive)?", a: "120 segundos." },
-      { id: 79, level: "Básico", cat: "LOPE & Qualidade", q: "Qual o tempo de vida secundário da cebola shoyu?", a: "48 horas sob refrigeração na embalagem original e 2 horas na mesa de condimentação." },
-      { id: 80, level: "Básico", cat: "LOPE & Qualidade", q: "De quanto em quanto tempo deve ser retirado queijo para ambientar e por quanto tempo ambienta?", a: "Retiramos a cada hora e ambienta por 2 horas." },
-      { id: 81, level: "Básico", cat: "Bebidas & Sobremesas", q: "Qual a validade secundária do amendoim?", a: "10 dias na embalagem original e 5 dias no dispensador." },
-      { id: 82, level: "Básico", cat: "Bebidas & Sobremesas", q: "Qual a validade secundária do Ovomaltine?", a: "30 dias na embalagem original e 7 dias fracionado ou em dispensador." },
-      { id: 83, level: "Básico", cat: "Bebidas & Sobremesas", q: "Qual a validade secundária do Ovomaltine Rocks?", a: "15 dias na embalagem original e 24 horas fracionado ou em dispensador." },
-      { id: 84, level: "Básico", cat: "Bebidas & Sobremesas", q: "Qual a validade secundária das gotas de chocolate?", a: "10 dias na embalagem original e 24 horas fracionado ou em dispensador." },
-      { id: 85, level: "Básico", cat: "Bebidas & Sobremesas", q: "Qual a validade secundária das coberturas?", a: "7 dias." },
-      { id: 86, level: "Básico", cat: "Bebidas & Sobremesas", q: "Qual a temperatura do Mix no reservatório da máquina?", a: "De 1 a 4 °C." },
-      { id: 87, level: "Básico", cat: "Bebidas & Sobremesas", q: "Qual a validade secundária do biju?", a: "3 dias na embalagem original e 24 horas no dispensador." },
-      { id: 88, level: "Básico", cat: "Bebidas & Sobremesas", q: "Qual a validade secundária da casquinha/cascão?", a: "3 dias na embalagem original e 12 horas no dispensador." },
-      { id: 89, level: "Básico", cat: "LOPE & Qualidade", q: "Qual a validade secundária da Cebola Crispy?", a: "7 dias na embalagem original e 2 horas na mesa de condimentação." },
-      { id: 90, level: "Básico", cat: "Bebidas & Sobremesas", q: "Qual a temperatura de extração do refrigerante?", a: "De 1 a 4 °C." },
-      { id: 91, level: "Básico", cat: "Bebidas & Sobremesas", q: "Qual a temperatura de extração dos sucos?", a: "De 1 a 7 °C." },
-      { id: 92, level: "Básico", cat: "Bebidas & Sobremesas", q: "Por que colocamos gelo nos refrigerantes?", a: "Para manter a temperatura e a carbonatação." },
-      { id: 93, level: "Básico", cat: "LOPE & Qualidade", q: "Quais as cores dos esfregões que devemos usar na cozinha, balcão, salão, banheiros e externa?", a: "Cozinha Vermelho, Balcão e salão Azul, Banheiros e externa Verde." },
-      { id: 94, level: "Básico", cat: "Bebidas & Sobremesas", q: "Qual a quantidade de cobertura que colocamos nos McShakes de Chocolate e Morango?", a: "Chocolate 1 oz e Morango 2 oz." },
-      { id: 95, level: "Básico", cat: "Bebidas & Sobremesas", q: "Por quantos segundos devemos bater o McShake?", a: "18 segundos." },
-      { id: 96, level: "Básico", cat: "Atendimento & Cultura", q: "Qual a quantidade de itens nos sacos A, B e C respectivamente?", a: "1 a 3, 4 a 6 e 7 a 9 respectivamente." },
-      { id: 97, level: "Básico", cat: "Atendimento & Cultura", q: "Quando devemos servir o pedido na OAT?", a: "Após todos os itens estarem prontos." },
-      { id: 98, level: "Básico", cat: "Atendimento & Cultura", q: "Qual a ordem/sequência correta de montagem das bandejas?", a: "Sanduíches, batatas, bebidas e sobremesas." },
-      { id: 99, level: "Básico", cat: "Bebidas & Sobremesas", q: "Qual o primeiro passo para fazer o McShake?", a: "Colocar 15 ml de leite no fundo do copo." },
-      { id: 100, level: "Básico", cat: "Bebidas & Sobremesas", q: "De que forma identificamos as bebidas zero?", a: "Colocando a letra Z com caneta no copo." },
-      { id: 101, level: "Básico", cat: "Bebidas & Sobremesas", q: "Qual o tamanho da casquinha?", a: "3,5 voltas ou 7,5 cm." },
-      { id: 102, level: "Básico", cat: "Atendimento & Cultura", q: "Qual o 5º item que podemos sugerir para complementar a refeição do cliente?", a: "O café." },
-      { id: 103, level: "Básico", cat: "Bebidas & Sobremesas", q: "Qual o tempo de vida do café coado?", a: "1 hora." },
-      { id: 104, level: "Básico", cat: "Atendimento & Cultura", q: "Quais são as 5 estações principais do Drive Thru?", a: "Face (COD), Caixa Drive, Apoio, Entrega e Conferente." },
-      { id: 105, level: "Básico", cat: "Atendimento & Cultura", q: "Qual o objetivo de imprecisão do delivery dos restaurantes?", a: "1%." },
-      { id: 106, level: "Básico", cat: "Atendimento & Cultura", q: "A partir de quantas bebidas usamos suporte no drive?", a: "A partir de 2 bebidas." },
-      { id: 107, level: "Básico", cat: "LOPE & Qualidade", q: "O que é sistema PEPS?", a: "Primeiro que entra, primeiro que sai." },
-
-      // --- NÍVEL INTERMEDIÁRIO (108 a 162) ---
-      { id: 108, level: "Intermediário", cat: "Linha & Montagem", q: "Qual a temperatura da mesa de condimentação?", a: "De 49 a 57 °C." },
-      { id: 109, level: "Intermediário", cat: "Linha & Montagem", q: "Qual o empilhamento máximo dos pães?", a: "Big Mac 26 bandejas, demais 20 bandejas." },
-      { id: 110, level: "Intermediário", cat: "LOPE & Qualidade", q: "Qual sabonete usamos para lavar as mãos?", a: "Sabonete Bactericida." },
-      { id: 111, level: "Intermediário", cat: "Atendimento & Cultura", q: "Onde encontramos informações sobre alérgenos alimentares?", a: "Na lâmina de bandeja, Saber ou site do McDonald's." },
-      { id: 112, level: "Intermediário", cat: "Linha & Montagem", q: "Qual o zoom correto para o KVS da linha?", a: "4x2." },
-      { id: 113, level: "Intermediário", cat: "Chapa & Carnes", q: "Quais as primeiras estações que devemos posicionar na cozinha?", a: "Chapa e LOPE." },
-      { id: 114, level: "Intermediário", cat: "Linha & Montagem", q: "Em qual momento o iniciador aperta servido no pedido da linha, quando trabalhamos com 2 pessoas?", a: "Após dar os dois primeiros condimentos ou assim que a pessoa da condimentação assumir." },
-      { id: 115, level: "Intermediário", cat: "Linha & Montagem", q: "Qual a condimentação correta da Salada Mix?", a: "120 gramas de alface, 4 tomates cereja, 14 gramas de cebola shoyu, 4 picles, 16 gramas de bacon triturado e uma carne." },
-      { id: 116, level: "Intermediário", cat: "LOPE & Qualidade", q: "Qual o tempo de vida primária do tomate?", a: "Produtos hortifruti in natura não têm tempo de validade." },
-      { id: 117, level: "Intermediário", cat: "Chapa & Carnes", q: "Quantos panos devemos ter na área de chapa e para que servem?", a: "4 panos: 2 para utensílios, 1 para área gordurosa e 1 para áreas não gordurosas." },
-      { id: 118, level: "Intermediário", cat: "Chapa & Carnes", q: "Qual o tempo de remoção das carnes?", a: "18 segundos." },
-      { id: 119, level: "Intermediário", cat: "LOPE & Qualidade", q: "Qual o tempo de vida secundário do bacon cru?", a: "5 dias, incluindo o tempo de descongelamento de 12 horas." },
-      { id: 120, level: "Intermediário", cat: "LOPE & Qualidade", q: "Qual o tempo de vida da mostarda depois de aberta?", a: "7 dias sob refrigeração." },
-      { id: 121, level: "Intermediário", cat: "LOPE & Qualidade", q: "Qual o tempo de vida do picles após aberto?", a: "3 dias sob refrigeração, desde que tenha salmoura. Sem salmoura 24 horas." },
-      { id: 122, level: "Intermediário", cat: "LOPE & Qualidade", q: "Qual o tempo de vida primário da cebola e alface?", a: "10 dias, incluindo a data de fabricação." },
-      { id: 123, level: "Intermediário", cat: "Fritos & McFritas", q: "Qual o percentual máximo de compostos polares aceitável para a gordura?", a: "24%." },
-      { id: 124, level: "Intermediário", cat: "Fritos & McFritas", q: "Quais os sinais de decomposição do óleo?", a: "Espuma amarelada, cheiro forte e ácido, cor escura e fumaça excessiva." },
-      { id: 125, level: "Intermediário", cat: "Fritos & McFritas", q: "Quais são os 6 inimigos do óleo?", a: "Sal, Ar, Água, Altas temperaturas, Resíduos de carbono e Detergente." },
-      { id: 126, level: "Intermediário", cat: "LOPE & Qualidade", q: "Qual o tempo de vida do queijo na mesa de preparação?", a: "4 horas, incluindo 2 horas de ambientação." },
-      { id: 127, level: "Intermediário", cat: "LOPE & Qualidade", q: "Qual a quantidade de água que devemos usar para hidratar 1 pacote de cebola?", a: "3 litros, de 1 a 4 °C." },
-      { id: 128, level: "Intermediário", cat: "LOPE & Qualidade", q: "Quantas fatias de queijo podemos colocar em cada espaço da cuba de ambientação para queijos?", a: "1 bloco, 40 fatias, dividido em 2 partes." },
-      { id: 129, level: "Intermediário", cat: "Fritos & McFritas", q: "A que altura devemos segurar o saleiro das McFritas?", a: "20 cm." },
-      { id: 130, level: "Intermediário", cat: "Linha & Montagem", q: "De que forma devemos segurar as pistolas de molho ao condimentar os sanduíches?", a: "Com as duas mãos a 2 cm de altura." },
-      { id: 131, level: "Intermediário", cat: "Fritos & McFritas", q: "Qual o peso das McFritas P, M e G?", a: "73 g, 102 g e 146 g, respectivamente." },
-      { id: 132, level: "Intermediário", cat: "Fritos & McFritas", q: "Quantas vezes devemos misturar as McFritas após salgá-las?", a: "De 2 a 3 vezes para misturar o sal por igual." },
-      { id: 133, level: "Intermediário", cat: "Chapa & Carnes", q: "Qual a temperatura e tempo de aquecimento das chapas?", a: "Platen Superior 218 °C / Inferior 177 °C - Aquecimento 45 minutos." },
-      { id: 134, level: "Intermediário", cat: "Fritos & McFritas", q: "Qual a temperatura e tempo de congelamento dos congeladores portáteis?", a: "De -18 a -23 °C e 45 minutos de congelamento." },
-      { id: 135, level: "Intermediário", cat: "LOPE & Qualidade", q: "Onde devem ser descartados os rejeitos?", a: "Lixeira identificada com etiqueta e saco preto." },
-      { id: 136, level: "Intermediário", cat: "Atendimento & Cultura", q: "Quais os princípios da Cooltura de Serviço?", a: "Agilidade, Generosidade, Humildade, Vocação de Serviço e Inclusão." },
-      { id: 137, level: "Intermediário", cat: "Chapa & Carnes", q: "Qual a faixa de temperatura interna padrão (DFS) para carnes vermelhas retiradas da chapa?", a: "De 70 °C a 77 °C (em pelo menos 3 de 4 carnes aferidas)." },
-      { id: 138, level: "Intermediário", cat: "Fritos & McFritas", q: "Qual a temperatura interna mínima de segurança alimentar para carnes brancas (frango)?", a: "Mínimo de 74 °C." },
-      { id: 139, level: "Intermediário", cat: "Chapa & Carnes", q: "Qual o tempo de preparo, o GAP na chapa e o tempo de vida do bacon na linha?", a: "40 segundos de cocção, GAP 90 e 6 horas de validade na mesa." },
-      { id: 140, level: "Intermediário", cat: "Atendimento & Cultura", q: "Qual a política padrão de envio de guardanapos por pedido?", a: "2 para avulsos simples/saladas, 4 para sanduíches de caixinha, 6 para combos médios/sanduíches grandes e 8 para combos grandes." },
-      { id: 141, level: "Intermediário", cat: "Linha & Montagem", q: "Qual a condimentação e quantidades de ingredientes do Quarteirão com Queijo?", a: "1/40 oz de mostarda, 1/2 oz de ketchup, 7 g de cebola fresca, 2 picles, 2 fatias de queijo Cheddar em formato de estrela e 1 carne 4:1." },
-      { id: 142, level: "Intermediário", cat: "Linha & Montagem", q: "Qual a condimentação e quantidades de ingredientes do Cheeseburger?", a: "1/40 oz de mostarda, 1/3 oz de ketchup, 1 picles, 1 fatia de queijo, 1 carne de 10:1 com 3,5 g de cebola." },
-      { id: 143, level: "Intermediário", cat: "Linha & Montagem", q: "Qual a condimentação e quantidades de ingredientes do McNífico Bacon?", a: "1/40 oz de mostarda, 1/2 oz de ketchup, 7 g de cebola fresca, 2/3 oz de maionese, 28 g de alface, 2 fatias de tomate, 2 fatias de bacon, 1 fatia de queijo, 1 carne de 4:1." },
-      { id: 144, level: "Intermediário", cat: "LOPE & Qualidade", q: "Qual o distanciamento e espaçamento que devemos manter entre as caixas nas câmaras?", a: "5 cm do chão e das paredes e 2,5 cm entre as caixas." },
-      { id: 145, level: "Intermediário", cat: "LOPE & Qualidade", q: "Qual o empilhamento máximo para as caixas de batata?", a: "6 caixas." },
-      { id: 146, level: "Intermediário", cat: "LOPE & Qualidade", q: "Qual o empilhamento máximo para as caixas de alface?", a: "6 caixas." },
-      { id: 147, level: "Intermediário", cat: "LOPE & Qualidade", q: "Qual o empilhamento máximo para as caixas de mix?", a: "4 caixas." },
-      { id: 148, level: "Intermediário", cat: "LOPE & Qualidade", q: "Qual o empilhamento máximo para caixas de suco?", a: "4 caixas." },
-      { id: 149, level: "Intermediário", cat: "LOPE & Qualidade", q: "Qual o empilhamento máximo para caixas de queijo?", a: "5 caixas." },
-      { id: 150, level: "Intermediário", cat: "LOPE & Qualidade", q: "O que significa a sigla LOPE?", a: "Limpeza, Organização, Preparação e Estocagem." },
-      { id: 151, level: "Intermediário", cat: "LOPE & Qualidade", q: "Qual é o método de 4 etapas que usamos para lavar utensílios e equipamentos?", a: "Limpar, Lavar, Enxaguar e Sanitizar." },
-      { id: 152, level: "Intermediário", cat: "Bebidas & Sobremesas", q: "Qual a velocidade de extração dos sorvetes?", a: "De 5 a 7,5 oz em 10 segundos." },
-      { id: 153, level: "Intermediário", cat: "Bebidas & Sobremesas", q: "Qual deve ser a proporção correta de suco concentrado e água?", a: "3 partes de suco para 15 de água." },
-      { id: 154, level: "Intermediário", cat: "Bebidas & Sobremesas", q: "Qual a ordem correta de experimentação dos refrigerantes?", a: "Coca, Fanta, Coca Zero, Sprite Zero, Fanta Guaraná." },
-      { id: 155, level: "Intermediário", cat: "Bebidas & Sobremesas", q: "Qual a ordem de experimentação dos sucos?", a: "Laranja e Uva." },
-      { id: 156, level: "Intermediário", cat: "Bebidas & Sobremesas", q: "Qual a temperatura do banho-maria e das coberturas?", a: "De 57° a 63 °C e de 46° a 52 °C, respectivamente." },
-      { id: 157, level: "Intermediário", cat: "Bebidas & Sobremesas", q: "Quantas pedras de gelo colocamos nos refrigerantes P, M e G?", a: "0,5 pá (5 pedras), 2/3 pá (7 pedras) e 1 pá (10 pedras), respectivamente." },
-      { id: 158, level: "Intermediário", cat: "Bebidas & Sobremesas", q: "Quais as quantidades corretas de 1 Sundae?", a: "4 voltas e meia de massa com o bico (4,5 oz), 2 tiros de cobertura (1 oz) e 7 gramas de amendoim." },
-      { id: 159, level: "Intermediário", cat: "Bebidas & Sobremesas", q: "Quais as quantidades corretas de 1 Top Sundae?", a: "6 voltas de massa com o bico (6 oz), 2 tiros de cobertura (sendo 1 no fundo do copo e 1 em cima da massa, totalizando 1 oz), 1 tiro/concha de paçoca (1 oz) e 2 bijus." },
-      { id: 160, level: "Intermediário", cat: "Atendimento & Cultura", q: "Qual a temperatura ambiente do salão?", a: "De 23 a 27 °C." },
-      { id: 161, level: "Intermediário", cat: "Atendimento & Cultura", q: "Quais os materiais necessários que devemos ter no salão para limpeza das mesas e bancos?", a: "1 pano seco e 1 pano úmido para mesas, 1 pano seco e 1 úmido para bancos e 1 borrifador com sanitizante." },
-      { id: 162, level: "Intermediário", cat: "Atendimento & Cultura", q: "Quais são os 4 grupos de produtos que compõem o pedido do cliente?", a: "Sanduíches, acompanhamentos, bebidas e sobremesas." },
-
-      // --- NÍVEL AVANÇADO (163 a 200) ---
-      { id: 163, level: "Avançado", cat: "Linha & Montagem", q: "Qual a temperatura da tostadeira?", a: "Placa A e B 271 °C e placa C 254 °C." },
-      { id: 164, level: "Avançado", cat: "LOPE & Qualidade", q: "O que é contaminação cruzada?", a: "É a transferência de microrganismos de um lugar para outro." },
-      { id: 165, level: "Avançado", cat: "LOPE & Qualidade", q: "O que são Alérgenos?", a: "São substâncias que podem causar reações alérgicas no organismo como resposta do sistema imunológico." },
-      { id: 166, level: "Avançado", cat: "Linha & Montagem", q: "Qual a calibragem do dispensador de ketchup?", a: "Ketchup Regular 6 tiros = 2 oz/60 ml; Quarteirão 6 tiros = 3 oz/90 ml." },
-      { id: 167, level: "Avançado", cat: "Linha & Montagem", q: "Qual a calibragem do dispensador de mostarda?", a: "47 tiros = 1 oz/30 ml." },
-      { id: 168, level: "Avançado", cat: "Linha & Montagem", q: "Qual a calibragem da pistola de molho Big Mac?", a: "4 tiros de 1/2 oz = 2 oz/60 ml." },
-      { id: 169, level: "Avançado", cat: "Linha & Montagem", q: "Qual a velocidade do motor da tostadeira?", a: "A partir de 3300." },
-      { id: 170, level: "Avançado", cat: "LOPE & Qualidade", q: "Qual o procedimento correto de sanitização dos tomates?", a: "1. Retirar a quantidade da câmara de acordo com a tabela chart; 2. Lavar em água corrente; 3. Colocar sanitizante até cobrir os tomates e deixar mergulhado por 15 minutos; 4. Enxaguar em água corrente." },
-      { id: 171, level: "Avançado", cat: "Fritos & McFritas", q: "Qual procedimento devemos seguir ao trabalhar com a tela LOOK & COOK?", a: "OSA: Olha, Serve e Ativa." },
-      { id: 172, level: "Avançado", cat: "Chapa & Carnes", q: "Qual o ponto de partida para as carnes vermelhas?", a: "10:1 a partir de 39\" (nas chapas Next Generation a partir de 41\"); 4:1 a partir de 104\" (nas chapas Next Generation a partir de 126\")." },
-      { id: 173, level: "Avançado", cat: "Chapa & Carnes", q: "Qual o Gap correto para as carnes de 10:1?", a: "225\" por 20 segundos, final 290\"." },
-      { id: 174, level: "Avançado", cat: "Fritos & McFritas", q: "Qual a temperatura da estufa de tortas?", a: "De 66 a 82 °C." },
-      { id: 175, level: "Avançado", cat: "Fritos & McFritas", q: "Qual a capacidade máxima de tortas na estufa?", a: "32 tortas." },
-      { id: 176, level: "Avançado", cat: "Fritos & McFritas", q: "O que significa Manutenção e Recuperação na área de produtos fritos?", a: "Manutenção: ativar quantidade necessária para manter o nível de acordo com o PLS. Recuperação: ativar quantidade necessária para repor o nível de acordo com o PLS, todas as gavetas zeradas." },
-      { id: 177, level: "Avançado", cat: "LOPE & Qualidade", q: "Qual a concentração correta de cloro que devemos ter no sanitizante presente nos panos e borrifadores?", a: "De 50 a 100 ppm." },
-      { id: 178, level: "Avançado", cat: "Linha & Montagem", q: "Qual o rendimento da mostarda pouch?", a: "1235 sanduíches por kg." },
-      { id: 179, level: "Avançado", cat: "Linha & Montagem", q: "Qual o rendimento da alface?", a: "45,4 sanduíches por kg." },
-      { id: 180, level: "Avançado", cat: "Bebidas & Sobremesas", q: "Qual o tempo de vida primário dos sucos?", a: "Uva 180 dias e Laranja 150 dias." },
-      { id: 181, level: "Avançado", cat: "Atendimento & Cultura", q: "Quais são as três dimensões que concretizam a Missão do Embaixador na Experiência do Cliente?", a: "Viagem do Cliente, Experiência Familiar e Construção de Vendas." },
-      { id: 182, level: "Avançado", cat: "Atendimento & Cultura", q: "Em que ano e onde foi fundado o McDonald's?", a: "Em 1955, na cidade de Des Plaines, Illinois, Estados Unidos." },
-      { id: 183, level: "Avançado", cat: "Atendimento & Cultura", q: "Onde e em que ano inaugurou o primeiro McDonald's no Brasil?", a: "Em 1979, na rua Hilário de Gouveia, em Copacabana, no Rio de Janeiro." },
-      { id: 184, level: "Avançado", cat: "Atendimento & Cultura", q: "Quando inaugurou o primeiro McDonald's em São Paulo?", a: "Em 1981, na Av. Paulista." },
-      { id: 185, level: "Avançado", cat: "Linha & Montagem", q: "Qual a condimentação e quantidades de ingredientes do Big Mac?", a: "1 tiro de 1/2 oz de molho Big na base e no clube, 12 gramas de alface na base e 12 no clube (totalizando 24 gramas), 2 picles no clube, 1 fatia de queijo na base e 2 carnes com 3,5 g de cebola (uma na base e uma no clube)." },
-      { id: 186, level: "Avançado", cat: "Linha & Montagem", q: "Qual a condimentação e quantidades de ingredientes do Big Tasty?", a: "2 tiros de 1 oz de molho Tasty na base e na coroa, 10 g de cebola, 28 g de alface, 2 tomates, 3 fatias de queijo Ementhal (1 na coroa sobre os tomates e 2 na base sobre o molho em formato de estrela), carne de 4:1 de acordo com o solicitado (1, 2 ou 3) e destaca a TAG da embalagem." },
-      { id: 187, level: "Avançado", cat: "Chapa & Carnes", q: "Quais são os 7 conceitos da UHC?", a: "1. UHC é o coração da cozinha; 2. Ativar pouco, porém sempre; 3. Usar sistema de garagem corretamente; 4. Conhecer os tempos de preparo das carnes; 5. Acelerar e desacelerar na mesma chamada; 6. Seguir os níveis PLS; 7. Não compensar um erro com outro." },
-      { id: 188, level: "Avançado", cat: "Linha & Montagem", q: "O que é e para que serve a caramelização dos pães?", a: "É a queima de 5% do açúcar do pão e serve para criar uma película que impede que os condimentos penetrem no pão." },
-      { id: 189, level: "Avançado", cat: "LOPE & Qualidade", q: "Quais são as temperaturas da Zona de Risco para crescimento de microrganismos?", a: "De 4,4° a 60 °C." },
-      { id: 190, level: "Avançado", cat: "Bebidas & Sobremesas", q: "Qual a temperatura de extração do sorvete?", a: "-8 a -9 °C." },
-      { id: 191, level: "Avançado", cat: "Bebidas & Sobremesas", q: "Qual a proporção correta de água e xarope para refrigerantes normais?", a: "1 parte de xarope para 5,2 partes de água." },
-      { id: 192, level: "Avançado", cat: "Atendimento & Cultura", q: "Quais são os 7 básicos operacionais?", a: "Plano de Chão, Rota Gerencial, Pré-Plantão, Pós-Plantão, Posicionamento, Checklist e Experimentação." },
-      { id: 193, level: "Avançado", cat: "Bebidas & Sobremesas", q: "O que é overrun do mix e qual o seu percentual?", a: "O overrun mede a proporção entre mix e ar e o seu percentual é de 55 a 65% com ideal 58%." },
-      { id: 194, level: "Avançado", cat: "Bebidas & Sobremesas", q: "Quais as quantidades corretas de complementos dos sorvetes?", a: "Gotas 50 g, Rocks 20 g, Ovomaltine 20 g, Paçoca 20 g, Ovo Shake 54 g." },
-      { id: 195, level: "Avançado", cat: "Bebidas & Sobremesas", q: "Qual a temperatura do café coado?", a: "A partir de 77 °C." },
-      { id: 196, level: "Avançado", cat: "Bebidas & Sobremesas", q: "Qual a proporção correta de água e café para o café coado?", a: "1.100 ml de água para 1 pacote de 50 g de café." },
-      { id: 197, level: "Avançado", cat: "Chapa & Carnes", q: "O que é Best Burger?", a: "É o novo padrão para os hambúrgueres McDonald's. Pequenas mudanças, grande impacto." },
-      { id: 198, level: "Avançado", cat: "Atendimento & Cultura", q: "Quais são as técnicas dos influencers vendedores?", a: "Somos Especialistas, Gostamos de Surpreender, Criamos Oportunidades, Vivenciamos as mesmas coisas, Criamos Tendência, Somos Afetuosos." },
-      { id: 199, level: "Avançado", cat: "Fritos & McFritas", q: "Qual o rendimento da batata?", a: "9,11 batatas pequenas por kg." },
-      { id: 200, level: "Avançado", cat: "Bebidas & Sobremesas", q: "Qual a descrição do padrão ouro de qualidade do suco?", a: "Frio, cor brilhante e sabor doce." }
+      { id: 1, level: "Básico", q: "Quantas gramas de alface colocamos no Big Mac?", a: "12 g na base e 12 g no clube, totalizando 24 gramas." },
+      { id: 2, level: "Básico", q: "Quantas gramas de alface colocamos no McChicken?", a: "28 gramas de alface." },
+      { id: 3, level: "Básico", q: "Quantas gramas (oz) de molho vai no Big Tasty?", a: "1 oz na coroa e 1 oz na base, totalizando 2 oz." },
+      { id: 7, level: "Básico", q: "Por quanto tempo devemos lavar as mãos?", a: "20 segundos." },
+      { id: 8, level: "Básico", q: "Qual o primeiro passo na lavagem das mãos?", a: "Molhar as mãos." },
+      { id: 9, level: "Básico", q: "Qual a frequência correta para lavagem das mãos?", a: "A cada 1 hora." },
+      { id: 10, level: "Básico", q: "Quais são os EPIs necessários para atuar na estação de chapa?", a: "Avental e mangote." },
+      { id: 12, level: "Básico", q: "Qual a compressão do pão e tempo de tostagem da tostadeira?", a: "Compressão 4, tempo de tostagem 22 segundos." },
+      { id: 13, level: "Básico", q: "Qual a temperatura das UHCs de carnes vermelhas e brancas respectivamente?", a: "Carnes vermelhas 79 °C e carnes brancas 85 °C." },
+      { id: 14, level: "Básico", q: "Qual o tempo de vida das carnes vermelhas na UHC?", a: "10 minutos." },
+      { id: 15, level: "Básico", q: "Qual o tempo das carnes brancas na UHC?", a: "Crispy 60 min, Chicken 30 min, Junior e Nuggets 20 min." },
+      { id: 16, level: "Básico", q: "Qual o tempo de vida dos ceboleiros em área e quantos fazemos com 1 pacote?", a: "4 horas e 7 ceboleiros." },
+      { id: 17, level: "Básico", q: "Qual o tempo de reação do iniciador?", a: "De 3 a 5 segundos." },
+      { id: 18, level: "Básico", q: "Qual pessoa da linha nunca pode sair da estação?", a: "A pessoa do iniciador." },
+      { id: 19, level: "Básico", q: "A partir de quantos sanduíches produzidos na hora devemos abrir o lado 2?", a: "125 sanduíches na hora." },
+      { id: 20, level: "Básico", q: "Em qual direção devem ficar a base e a coroa dos pães na linha?", a: "Base sentido UHC e Coroa sentido tostadeira." },
+      { id: 21, level: "Básico", q: "Quantos pães podemos ativar por vez na tostadeira?", a: "2 pães." },
+      { id: 22, level: "Básico", q: "Quantos sanduíches podemos condimentar por vez?", a: "2 sanduíches." },
+      { id: 23, level: "Básico", q: "Quais as cores dos clipes das gavetas da UHC para McChicken e Nuggets?", a: "McChicken amarelo e Nuggets branco." },
+      { id: 25, level: "Básico", q: "Quantos panos devemos ter na linha?", a: "3 panos: 1 para tostadeira, 1 para mesa de condimentação e 1 para UHC." },
+      { id: 27, level: "Básico", q: "Por quanto tempo o tomate deve ficar no sanitizante?", a: "15 minutos." },
+      { id: 28, level: "Básico", q: "Por quanto tempo o tomate deve ficar em ambientação antes de ser cortado?", a: "2 horas." },
+      { id: 29, level: "Básico", q: "Qual o tempo de vida do tomate após ser cortado?", a: "2 horas." },
+      { id: 32, level: "Básico", q: "Qual quantidade de Maionese colocamos no McChicken, Chicken Jr e McNífico Bacon?", a: "2/3 oz de molho maionese." },
+      { id: 33, level: "Básico", q: "Qual quantidade de Molho colocamos no Big Mac?", a: "1 tiro de 1/2 oz na base e 1 no club, totalizando 1 oz de molho Big Mac." },
+      { id: 34, level: "Básico", q: "Quais cores de pegadores temos na linha e qual sua finalidade?", a: "Vermelho: carnes vermelhas c/ cebola; Azul: carnes vermelhas s/ cebola; Verde: carnes brancas." },
+      { id: 37, level: "Básico", q: "Qual o ângulo de raspagem da chapa?", a: "15°." },
+      { id: 38, level: "Básico", q: "Qual a forma correta de ativar, salgar e remover as carnes?", a: "Da direita para a esquerda, da frente para o fundo." },
+      { id: 39, level: "Básico", q: "Qual o empilhamento máximo de carnes de 10:1 e 4:1 na gaveta?", a: "10:1 até 3 carnes; 4:1 apenas 1 carne (não podemos empilhar 4:1)." },
+      { id: 41, level: "Básico", q: "Quantas carnes de 10:1 e 4:1 podemos ativar no máximo em cada platen?", a: "Até 6 carnes de 10:1 e até 4 carnes de 4:1." },
+      { id: 44, level: "Básico", q: "Quantas carnes de 10:1 e 4:1 cabem no máximo em cada gaveta da UHC?", a: "12 carnes de 10:1 e 4 carnes de 4:1." },
+      { id: 48, level: "Básico", q: "Quais as rodadas máximas para ativar carnes brancas e tortas?", a: "McChicken/Jr: 6 carnes; Crispy: 4 carnes; Nuggets: 24 unid; Tortas: 16 unidades." },
+      { id: 55, level: "Básico", q: "Qual a temperatura da câmara de resfriados (Walk-in) e congelados (Chicago)?", a: "Walk-in: 1 °C a 4 °C | Congelados: -18 °C a -23 °C." },
+      { id: 58, level: "Básico", q: "Qual a temperatura do queijo após a ambientação de 2 horas?", a: "De 15 °C a 18 °C, ideal 17,5 °C." },
+      { id: 67, level: "Básico", q: "Qual a temperatura do óleo para carnes brancas/tortas e para McFritas?", a: "Carnes brancas e tortas: 180 °C | McFritas: 168 °C." },
+      { id: 70, level: "Básico", q: "Qual o tempo de fritura, o Duty e o tempo de vida das McFritas?", a: "Fritura: 3 min e 10 seg | Duty: 30 seg | Tempo de vida: 7 minutos." },
+      { id: 73, level: "Básico", q: "Quantas gramas de sal o saleiro das McFritas dispensa?", a: "4 gramas." },
+      { id: 76, level: "Básico", q: "Qual é o tempo MFY (linha) com 1, 2 ou 3 pessoas?", a: "1 pessoa: 50s | 2 pessoas: 42s | 3 pessoas: 35s." },
+      { id: 77, level: "Básico", q: "Qual o tempo de R2P (entrega balcão) e OEPE (Drive)?", a: "R2P: 90 segundos | OEPE: 120 segundos." },
+      { id: 92, level: "Básico", q: "Por que colocamos gelo nos refrigerantes?", a: "Para manter a temperatura e a carbonatação." },
+      { id: 93, level: "Básico", q: "Quais as cores dos esfregões usados na cozinha, balcão/salão e banheiros/externa?", a: "Cozinha: Vermelho | Balcão e salão: Azul | Banheiros e externa: Verde." },
+      { id: 96, level: "Básico", q: "Qual a quantidade de itens nos sacos A, B e C respectivamente?", a: "Saco A: 1 a 3 itens | Saco B: 4 a 6 itens | Saco C: 7 a 9 itens." },
+      { id: 98, level: "Básico", q: "Qual a ordem sequencial correta de montagem das bandejas?", a: "Sanduíches, batatas, bebidas e sobremesas." },
+      { id: 99, level: "Básico", q: "Qual o primeiro passo para fazer o McShake e por quantos segundos batemos?", a: "Colocar 15 ml de leite no fundo do copo; bater por 18 segundos." },
+      { id: 101, level: "Básico", q: "Qual o tamanho padrão da casquinha?", a: "3,5 voltas ou 7,5 cm." },
+      { id: 104, level: "Básico", q: "Quais são as 5 estações principais do Drive-Thru?", a: "Face (COD), Caixa Drive, Apoio, Entrega e Conferente." },
+      { id: 105, level: "Básico", q: "Qual o objetivo de imprecisão do Delivery dos restaurantes?", a: "1%." },
+      { id: 108, level: "Intermediário", q: "Qual a temperatura da mesa de condimentação?", a: "De 49 °C a 57 °C." },
+      { id: 109, level: "Intermediário", q: "Qual o empilhamento máximo das bandejas de pães?", a: "Big Mac: 26 bandejas | Demais pães: 20 bandejas." },
+      { id: 112, level: "Intermediário", q: "Qual o zoom correto para o monitor KVS da linha?", a: "4x2." },
+      { id: 115, level: "Intermediário", q: "Qual a condimentação correta da Salada Mix?", a: "120 g de alface, 4 tomates cereja, 14 g de cebola shoyu, 4 picles, 16 g de bacon triturado e 1 carne." },
+      { id: 118, level: "Intermediário", q: "Qual o tempo limite de remoção das carnes da chapa?", a: "18 segundos." },
+      { id: 119, level: "Intermediário", q: "Qual o tempo de vida secundário do bacon cru?", a: "5 dias, incluindo o tempo de descongelamento de 12 horas." },
+      { id: 123, level: "Intermediário", q: "Qual o percentual máximo de compostos polares aceitável para o óleo?", a: "24%." },
+      { id: 125, level: "Intermediário", q: "Quais são os 6 inimigos do óleo?", a: "Sal, Ar, Água, Altas temperaturas, Resíduos de carbono e Detergente." },
+      { id: 126, level: "Intermediário", q: "Qual o tempo de vida do queijo na mesa de preparação?", a: "4 horas, incluindo 2 horas de ambientação." },
+      { id: 127, level: "Intermediário", q: "Qual a quantidade e temperatura da água para hidratar 1 pacote de cebola?", a: "3 litros, de 1 °C a 4 °C." },
+      { id: 129, level: "Intermediário", q: "A que altura devemos segurar o saleiro das McFritas e as pistolas de molho?", a: "Saleiro a 20 cm; pistolas de molho com as duas mãos a 2 cm de altura." },
+      { id: 131, level: "Intermediário", q: "Qual o peso das McFritas P, M e G?", a: "P: 73 g | M: 102 g | G: 146 g." },
+      { id: 133, level: "Intermediário", q: "Qual a temperatura e tempo de aquecimento das chapas?", a: "Platen Superior 218 °C / Inferior 177 °C — Aquecimento de 45 minutos." },
+      { id: 136, level: "Intermediário", q: "Quais os princípios da Cooltura de Serviço?", a: "Agilidade, Generosidade, Humildade, Vocação de Serviço e Inclusão." },
+      { id: 140, level: "Intermediário", q: "Qual é a Promessa do Fazer?", a: "Fazer bem, fazer rápido e fazer especial." },
+      { id: 141, level: "Intermediário", q: "Qual a condimentação e ingredientes do Quarteirão?", a: "1/40 oz mostarda, 1/2 oz ketchup, 7 g cebola fresca, 2 picles, 2 queijos em estrela e 1 carne 4:1." },
+      { id: 142, level: "Intermediário", q: "Qual a condimentação e ingredientes do Cheeseburger?", a: "1/40 oz mostarda, 1/3 oz ketchup, 1 picles, 1 fatia de queijo e 1 carne 10:1 com 3,5 g de cebola." },
+      { id: 143, level: "Intermediário", q: "Qual a condimentação e ingredientes do McNífico Bacon?", a: "1/40 oz mostarda, 1/2 oz ketchup, 7 g cebola fresca, 2/3 oz maionese, 28 g alface, 2 tomates, 2 bacons, 1 queijo e 1 carne 4:1." },
+      { id: 144, level: "Intermediário", q: "Qual o distanciamento que devemos manter entre as caixas nas câmaras?", a: "5 cm do chão e das paredes e 2,5 cm entre as caixas." },
+      { id: 145, level: "Intermediário", q: "Qual o empilhamento máximo para caixas de batata, alface, mix, suco e queijo?", a: "Batata: 6 | Alface: 6 | Mix: 4 | Suco: 4 | Queijo: 5 caixas." },
+      { id: 150, level: "Intermediário", q: "O que significa a sigla LOPE?", a: "Limpeza, Organização, Preparação e Estocagem." },
+      { id: 151, level: "Intermediário", q: "Qual é o método de 4 etapas usado para lavar utensílios e equipamentos?", a: "Limpar, Lavar, Enxaguar e Sanitizar." },
+      { id: 152, level: "Intermediário", q: "Qual a velocidade de extração dos sorvetes?", a: "De 5 a 7,5 oz em 10 segundos." },
+      { id: 156, level: "Intermediário", q: "Qual a temperatura do banho-maria e das coberturas?", a: "Banho-maria: de 57 °C a 63 °C | Coberturas: de 46 °C a 52 °C." },
+      { id: 157, level: "Intermediário", q: "Quantas pedras de gelo colocamos nos refrigerantes P, M e G?", a: "P: 0,5 pá (5 pedras) | M: 2/3 pá (7 pedras) | G: 1 pá (10 pedras)." },
+      { id: 158, level: "Intermediário", q: "Quais as quantidades corretas de 1 Sundae?", a: "4,5 voltas de massa (4,5 oz), 2 tiros de cobertura (1 oz) e 7 g de amendoim." },
+      { id: 159, level: "Intermediário", q: "Quais as quantidades corretas de 1 Top Sundae?", a: "6 voltas de massa (6 oz), 2 tiros de cobertura (1 no fundo e 1 em cima = 1 oz), 1 tiro de paçoca (1 oz) e 2 bijus." },
+      { id: 163, level: "Avançado", q: "Qual a temperatura das placas da tostadeira?", a: "Placas A e B: 271 °C | Placa C: 254 °C." },
+      { id: 166, level: "Avançado", q: "Qual a calibragem do dispensador de Ketchup (Regular e Quarteirão)?", a: "Ketchup Regular: 6 tiros = 2 oz/60 ml | Quarteirão: 6 tiros = 3 oz/90 ml." },
+      { id: 167, level: "Avançado", q: "Qual a calibragem do dispensador de Mostarda e da pistola de Big Mac?", a: "Mostarda: 47 tiros = 1 oz/30 ml | Pistola Big Mac: 4 tiros de 1/2 oz = 2 oz/60 ml." },
+      { id: 171, level: "Avançado", q: "Qual procedimento devemos seguir ao trabalhar com a tela LOOK & COOK?", a: "OSA: Olha, Serve e Ativa." },
+      { id: 172, level: "Avançado", q: "Qual o ponto de partida de cozimento para as carnes vermelhas 10:1 e 4:1?", a: "10:1 a partir de 39\" (Next Gen 41\") | 4:1 a partir de 104\" (Next Gen 126\")." },
+      { id: 173, level: "Avançado", q: "Qual o GAP correto para as carnes de 10:1 na chapa?", a: "225\" por 20 segundos, final 290\"." },
+      { id: 177, level: "Avançado", q: "Qual a concentração correta de cloro no sanitizante dos panos e borrifadores?", a: "De 50 a 100 ppm." },
+      { id: 182, level: "Avançado", q: "Em que ano e onde foi fundado o McDonald's nos EUA e no Brasil?", a: "EUA: 1955 em Des Plaines, Illinois | Brasil: 1979 em Copacabana (RJ) e 1981 na Av. Paulista (SP)." },
+      { id: 186, level: "Avançado", q: "Qual a condimentação e quantidades de ingredientes do Big Tasty?", a: "2 tiros de 1 oz molho Tasty (base e coroa), 10 g cebola, 28 g alface, 2 tomates, 3 fatias ementhal e carne 4:1." },
+      { id: 187, level: "Avançado", q: "Quais são os 7 conceitos da UHC?", a: "1. Coração da cozinha; 2. Ativar pouco e sempre; 3. Sistema de garagem; 4. Tempos das carnes; 5. Acelerar/desacelerar na mesma chamada; 6. Níveis PLS; 7. Não compensar erro com outro." },
+      { id: 188, level: "Avançado", q: "O que é e para que serve a caramelização dos pães?", a: "É a queima de 5% do açúcar do pão para criar uma película que impede que os condimentos penetrem no pão." },
+      { id: 189, level: "Avançado", q: "Quais são as temperaturas da Zona de Risco para crescimento de microrganismos?", a: "De 4,4 °C a 60 °C." },
+      { id: 190, level: "Avançado", q: "Qual a temperatura de extração do sorvete?", a: "De -8 °C a -9 °C." },
+      { id: 192, level: "Avançado", q: "Quais são os 7 Básicos Operacionais?", a: "Plano de chão, Rota Gerencial, Pré-Plantão, Pós-Plantão, Posicionamento, Checklist e Experimentação." },
+      { id: 193, level: "Avançado", q: "O que é overrun do mix e qual o seu percentual?", a: "Mede a proporção entre mix e ar; percentual de 55% a 65%, com ideal em 58%." },
+      { id: 194, level: "Avançado", q: "Quais as quantidades corretas de complementos dos sorvetes?", a: "Gotas: 50 g | Rocks: 20 g | Ovomaltine: 20 g | Paçoca: 20 g | Ovo Shake: 54 g." },
+      { id: 195, level: "Avançado", q: "Qual a temperatura e proporção correta para o café coado?", a: "A partir de 77 °C; proporção de 1.100 ml de água para 1 pacote de 50 g de café." }
     ];
 
-    // =========================================================================
-    // ESTADO E ARMAZENAMENTO LOCAL (LOCALSTORAGE)
-    // =========================================================================
-    let currentLevelFilter = "ALL";
-    let openAnswersSet = new Set();
-    let masteredIds = new Set(JSON.parse(localStorage.getItem("mc_mastered_ids") || "[]"));
-    let starredIds = new Set(JSON.parse(localStorage.getItem("mc_starred_ids") || "[]"));
-    let streakDays = parseInt(localStorage.getItem("mc_streak_days") || "1", 10);
+    // GESTÃO DE USUÁRIOS E SENHAS (LOCALSTORAGE)
+    const STORAGE_USERS_KEY = "mequi_olimpiadas_users_v3";
+    const STORAGE_CURRENT_KEY = "mequi_olimpiadas_active_user_v3";
 
-    function saveProgress() {
-      localStorage.setItem("mc_mastered_ids", JSON.stringify([...masteredIds]));
-      localStorage.setItem("mc_starred_ids", JSON.stringify([...starredIds]));
-      updateHeaderStats();
+    let users = JSON.parse(localStorage.getItem(STORAGE_USERS_KEY) || "{}");
+    let currentUserKey = localStorage.getItem(STORAGE_CURRENT_KEY) || null;
+    let currentBookFilter = "ALL";
+    let currentQuizQuestion = null;
+    let currentStreak = 0;
+
+    function saveUsers() {
+      localStorage.setItem(STORAGE_USERS_KEY, JSON.stringify(users));
     }
 
-    function updateHeaderStats() {
-      const count = masteredIds.size;
-      document.getElementById("masteredCount").textContent = `${count}/200`;
-      const pct = Math.round((count / 200) * 100);
-      document.getElementById("globalProgressBar").style.width = `${pct}%`;
-      document.getElementById("streakCount").textContent = streakDays;
+    function getLevelInfo(xp) {
+      if (xp >= 2000) return { level: 5, title: "👑 Nível 5 — Mestre das Olimpíadas", min: 2000, max: 3000 };
+      if (xp >= 1000) return { level: 4, title: "🥇 Nível 4 — Padrão Ouro Venture", min: 1000, max: 2000 };
+      if (xp >= 500)  return { level: 3, title: "🥈 Nível 3 — Especialista de Prata", min: 500, max: 1000 };
+      if (xp >= 200)  return { level: 2, title: "🥉 Nível 2 — Chapa de Bronze", min: 200, max: 500 };
+      return { level: 1, title: "🔰 Nível 1 — Treinador Iniciante", min: 0, max: 200 };
     }
 
-    // =========================================================================
-    // NAVEGAÇÃO ENTRE ABAS
-    // =========================================================================
-    function switchTab(tab) {
-      ["book", "quiz", "flashcards", "cheatsheet"].forEach(t => {
-        document.getElementById(`view-${t}`).classList.add("hidden");
-        const btn = document.getElementById(`tab-${t}`);
-        btn.classList.remove("text-[#DA291C]", "font-extrabold");
-        btn.classList.add("text-slate-400", "font-bold");
+    function switchAuthTab(mode) {
+      document.getElementById("authError").classList.add("hidden");
+      if (mode === "login") {
+        document.getElementById("loginForm").classList.remove("hidden");
+        document.getElementById("registerForm").classList.add("hidden");
+        document.getElementById("tabLoginBtn").className = "flex-1 py-2 text-xs font-extrabold rounded-lg bg-white text-gray-900 shadow";
+        document.getElementById("tabRegisterBtn").className = "flex-1 py-2 text-xs font-extrabold rounded-lg text-gray-500";
+      } else {
+        document.getElementById("loginForm").classList.add("hidden");
+        document.getElementById("registerForm").classList.remove("hidden");
+        document.getElementById("tabRegisterBtn").className = "flex-1 py-2 text-xs font-extrabold rounded-lg bg-white text-gray-900 shadow";
+        document.getElementById("tabLoginBtn").className = "flex-1 py-2 text-xs font-extrabold rounded-lg text-gray-500";
+      }
+    }
+
+    function showAuthError(msg) {
+      const err = document.getElementById("authError");
+      err.textContent = msg;
+      err.classList.remove("hidden");
+    }
+
+    function handleRegister() {
+      const name = document.getElementById("regName").value.trim();
+      const station = document.getElementById("regStation").value;
+      const pass = document.getElementById("regPass").value.trim();
+
+      if (name.length < 2) return showAuthError("Digite seu nome ou apelido válido.");
+      if (pass.length < 4) return showAuthError("A senha precisa ter pelo menos 4 caracteres.");
+
+      const key = name.toLowerCase();
+      if (users[key]) return showAuthError("Este nome já está cadastrado! Use a aba 'Entrar com Senha'.");
+
+      users[key] = {
+        name: name,
+        station: station,
+        password: pass,
+        xp: 0,
+        correctAnswers: 0,
+        createdAt: new Date().toLocaleDateString("pt-BR")
+      };
+
+      saveUsers();
+      currentUserKey = key;
+      localStorage.setItem(STORAGE_CURRENT_KEY, key);
+      document.getElementById("authModal").classList.add("hidden");
+      updateHeaderUI();
+      renderLeaderboard();
+    }
+
+    function handleLogin() {
+      const name = document.getElementById("loginName").value.trim();
+      const pass = document.getElementById("loginPass").value.trim();
+      const key = name.toLowerCase();
+
+      if (!users[key]) return showAuthError("Usuário não encontrado! Clique em 'Novo Cadastro' acima.");
+      if (users[key].password !== pass) return showAuthError("Senha incorreta! Tente novamente.");
+
+      currentUserKey = key;
+      localStorage.setItem(STORAGE_CURRENT_KEY, key);
+      document.getElementById("authModal").classList.add("hidden");
+      updateHeaderUI();
+      renderLeaderboard();
+    }
+
+    function logoutUser() {
+      currentUserKey = null;
+      localStorage.removeItem(STORAGE_CURRENT_KEY);
+      document.getElementById("loginPass").value = "";
+      document.getElementById("authModal").classList.remove("hidden");
+    }
+
+    function addXp(amount) {
+      if (!currentUserKey || !users[currentUserKey]) return;
+      users[currentUserKey].xp += amount;
+      saveUsers();
+      updateHeaderUI();
+      renderLeaderboard();
+    }
+
+    function updateHeaderUI() {
+      if (!currentUserKey || !users[currentUserKey]) return;
+      const u = users[currentUserKey];
+      const info = getLevelInfo(u.xp);
+
+      document.getElementById("userNameDisplay").textContent = u.name;
+      document.getElementById("userStationBadge").textContent = u.station;
+      document.getElementById("userXpDisplay").textContent = `${u.xp} XP`;
+      document.getElementById("userRankTitle").textContent = info.title;
+      document.getElementById("currentLevelNum").textContent = `Nível ${info.level}`;
+
+      const progress = Math.min(100, Math.round(((u.xp - info.min) / (info.max - info.min)) * 100));
+      document.getElementById("xpProgressBar").style.width = `${Math.max(8, progress)}%`;
+
+      if (info.level < 5) {
+        document.getElementById("nextLevelTarget").textContent = `Faltam ${info.max - u.xp} XP para o Nível ${info.level + 1}`;
+      } else {
+        document.getElementById("nextLevelTarget").textContent = `Nível Máximo Alcançado! 👑`;
+      }
+    }
+
+    // SIMULADO INTERATIVO
+    function startNewQuiz() {
+      currentStreak = 0;
+      loadNextQuizQuestion();
+    }
+
+    function loadNextQuizQuestion() {
+      const levelFilter = document.getElementById("quizLevelFilter").value;
+      const pool = levelFilter === "ALL" ? QUESTIONS_DB : QUESTIONS_DB.filter(item => item.level === levelFilter);
+      const randomItem = pool[Math.floor(Math.random() * pool.length)];
+      currentQuizQuestion = randomItem;
+
+      document.getElementById("quizQuestionMeta").textContent = `Pergunta #${randomItem.id} • Nível ${randomItem.level}`;
+      document.getElementById("quizStreakInfo").textContent = `🔥 Sequência: ${currentStreak}`;
+      document.getElementById("quizQuestionText").textContent = randomItem.q;
+      document.getElementById("quizFeedback").classList.add("hidden");
+      document.getElementById("nextQuizBtn").classList.add("hidden");
+
+      // Gerar 3 alternativas incorretas + 1 correta
+      const others = QUESTIONS_DB.filter(item => item.id !== randomItem.id)
+        .sort(() => 0.5 - Math.random())
+        .slice(0, 3)
+        .map(item => item.a);
+
+      const options = [...others, randomItem.a].sort(() => 0.5 - Math.random());
+      const container = document.getElementById("quizOptions");
+      container.innerHTML = "";
+
+      options.forEach(opt => {
+        const btn = document.createElement("button");
+        btn.className = "w-full text-left p-3.5 rounded-xl border-2 border-gray-200 hover:border-amber-400 font-semibold text-xs text-gray-800 transition flex items-center justify-between bg-gray-50";
+        btn.textContent = opt;
+        btn.onclick = () => checkQuizAnswer(btn, opt, randomItem.a);
+        container.appendChild(btn);
       });
-
-      document.getElementById(`view-${tab}`).classList.remove("hidden");
-      const activeBtn = document.getElementById(`tab-${tab}`);
-      activeBtn.classList.remove("text-slate-400", "font-bold");
-      activeBtn.classList.add("text-[#DA291C]", "font-extrabold");
-
-      if (tab === "flashcards") {
-        initFlashcards();
-      }
     }
 
-    // =========================================================================
-    // ABA 1: BOOK COMPLETO (200 PERGUNTAS)
-    // =========================================================================
-    function setLevelFilter(lvl) {
-      currentLevelFilter = lvl;
-      document.querySelectorAll(".lvl-btn").forEach(btn => {
-        btn.className = "lvl-btn shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200";
-      });
-      const active = document.getElementById(`lvl-${lvl}`);
-      if (active) {
-        active.className = "lvl-btn shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold bg-[#DA291C] text-white shadow-sm";
-      }
-      renderBookList();
-    }
+    function checkQuizAnswer(selectedBtn, chosen, correct) {
+      const allBtns = document.querySelectorAll("#quizOptions button");
+      allBtns.forEach(b => b.disabled = true);
 
-    function clearSearch() {
-      document.getElementById("searchInput").value = "";
-      renderBookList();
-    }
+      const fb = document.getElementById("quizFeedback");
+      fb.classList.remove("hidden");
 
-    function getLevelBadgeColor(level) {
-      if (level === "Básico") return "bg-emerald-100 text-emerald-800";
-      if (level === "Intermediário") return "bg-amber-100 text-amber-800";
-      return "bg-rose-100 text-rose-800";
-    }
-
-    function toggleAnswer(id) {
-      if (openAnswersSet.has(id)) {
-        openAnswersSet.delete(id);
+      if (chosen === correct) {
+        selectedBtn.className = "w-full text-left p-3.5 rounded-xl border-2 border-green-600 bg-green-100 font-bold text-xs text-green-900";
+        currentStreak++;
+        if (currentUserKey && users[currentUserKey]) {
+          users[currentUserKey].correctAnswers = (users[currentUserKey].correctAnswers || 0) + 1;
+        }
+        addXp(25);
+        fb.className = "p-3 rounded-xl text-xs font-bold bg-green-100 text-green-800";
+        fb.textContent = "✅ Mandou muito bem! Resposta exata do Book Venture (+25 XP)!";
       } else {
-        openAnswersSet.add(id);
+        selectedBtn.className = "w-full text-left p-3.5 rounded-xl border-2 border-red-600 bg-red-100 font-bold text-xs text-red-900";
+        currentStreak = 0;
+        fb.className = "p-3 rounded-xl text-xs font-bold bg-red-100 text-red-800";
+        fb.innerHTML = `❌ Quase! O gabarito oficial é:<br><span class="underline">${correct}</span>`;
       }
-      const ansEl = document.getElementById(`ans-${id}`);
-      const iconEl = document.getElementById(`icon-${id}`);
-      if (ansEl) {
-        ansEl.classList.toggle("hidden");
-        iconEl.textContent = openAnswersSet.has(id) ? "▲ Ocultar" : "▼ Ver Gabarito";
-      }
+
+      document.getElementById("quizStreakInfo").textContent = `🔥 Sequência: ${currentStreak}`;
+      document.getElementById("nextQuizBtn").classList.remove("hidden");
     }
 
-    function toggleAllAnswers(open) {
-      if (open) {
-        QUESTIONS_DB.forEach(q => openAnswersSet.add(q.id));
-      } else {
-        openAnswersSet.clear();
-      }
-      renderBookList();
-    }
-
-    function toggleMastered(id, event) {
-      event.stopPropagation();
-      if (masteredIds.has(id)) {
-        masteredIds.delete(id);
-      } else {
-        masteredIds.add(id);
-      }
-      saveProgress();
-      renderBookList();
-    }
-
-    function toggleStarred(id, event) {
-      event.stopPropagation();
-      if (starredIds.has(id)) {
-        starredIds.delete(id);
-      } else {
-        starredIds.add(id);
-      }
-      saveProgress();
+    // BOOK COMPLETO
+    function setBookFilter(level) {
+      currentBookFilter = level;
       renderBookList();
     }
 
     function renderBookList() {
-      const query = document.getElementById("searchInput").value.trim().toLowerCase();
-      const clearBtn = document.getElementById("clearSearchBtn");
-      clearBtn.classList.toggle("hidden", query.length === 0);
-
-      const catFilter = document.getElementById("categorySelect").value;
-      const statusFilter = document.getElementById("statusSelect").value;
+      const search = document.getElementById("searchBookInput").value.toLowerCase();
+      const container = document.getElementById("bookQuestionsContainer");
+      container.innerHTML = "";
 
       const filtered = QUESTIONS_DB.filter(item => {
-        if (currentLevelFilter !== "ALL" && item.level !== currentLevelFilter) return false;
-        if (catFilter !== "ALL" && item.cat !== catFilter) return false;
-        if (statusFilter === "STARRED" && !starredIds.has(item.id)) return false;
-        if (statusFilter === "MASTERED" && !masteredIds.has(item.id)) return false;
-        if (statusFilter === "UNMASTERED" && masteredIds.has(item.id)) return false;
-
-        if (query.length > 0) {
-          const matchId = item.id.toString() === query || `#${item.id}` === query;
-          const matchQ = item.q.toLowerCase().includes(query);
-          const matchA = item.a.toLowerCase().includes(query);
-          return matchId || matchQ || matchA;
-        }
-        return true;
+        const matchesLevel = currentBookFilter === "ALL" || item.level === currentBookFilter;
+        const matchesText = item.q.toLowerCase().includes(search) || item.a.toLowerCase().includes(search) || String(item.id).includes(search);
+        return matchesLevel && matchesText;
       });
 
-      document.getElementById("resultsCountText").textContent =
-        `Mostrando ${filtered.length} de 200 perguntas`;
-
-      const container = document.getElementById("questionsContainer");
-      if (filtered.length === 0) {
-        container.innerHTML = `
-          <div class="bg-white rounded-2xl p-8 text-center border border-slate-200">
-            <div class="text-3xl mb-2">🔍</div>
-            <p class="font-bold text-slate-700 text-sm">Nenhuma pergunta encontrada com esses filtros.</p>
-            <p class="text-xs text-slate-400 mt-1">Tente limpar a busca ou selecionar outra categoria.</p>
+      filtered.forEach(item => {
+        const card = document.createElement("div");
+        card.className = "bg-white rounded-2xl p-3.5 shadow-sm border border-gray-100";
+        card.innerHTML = `
+          <div class="flex items-center justify-between mb-1">
+            <span class="text-[10px] font-black px-2 py-0.5 rounded-full bg-red-50 text-red-700">Questão #${item.id} • ${item.level}</span>
+            <button onclick="revealBookAnswer(this)" class="text-[11px] font-bold text-amber-600 underline">Ver Resposta (+5 XP)</button>
           </div>
+          <p class="font-bold text-gray-900 text-xs">${item.q}</p>
+          <p class="hidden mt-2 pt-2 border-t border-gray-100 text-xs font-semibold text-green-700">✅ ${item.a}</p>
         `;
+        container.appendChild(card);
+      });
+    }
+
+    function revealBookAnswer(btn) {
+      const answerEl = btn.parentElement.nextElementSibling.nextElementSibling;
+      if (answerEl.classList.contains("hidden")) {
+        answerEl.classList.remove("hidden");
+        btn.textContent = "Ocultar";
+        addXp(5);
+      } else {
+        answerEl.classList.add("hidden");
+        btn.textContent = "Ver Resposta";
+      }
+    }
+
+    // RANKING GERAL
+    function renderLeaderboard() {
+      const container = document.getElementById("leaderboardContainer");
+      const list = Object.values(users).sort((a, b) => b.xp - a.xp);
+
+      if (list.length === 0) {
+        container.innerHTML = `<p class="text-xs text-gray-400 text-center py-4">Nenhum colaborador cadastrado ainda.</p>`;
         return;
       }
 
-      container.innerHTML = filtered.map(item => {
-        const isOpen = openAnswersSet.has(item.id);
-        const isMastered = masteredIds.has(item.id);
-        const isStarred = starredIds.has(item.id);
-
+      container.innerHTML = list.map((u, idx) => {
+        const medal = idx === 0 ? "🥇 ☕" : idx === 1 ? "🥈" : idx === 2 ? "🥉" : `${idx + 1}º`;
+        const lvl = getLevelInfo(u.xp).level;
         return `
-          <div onclick="toggleAnswer(${item.id})" class="bg-white rounded-2xl p-3.5 shadow-sm border ${isMastered ? 'border-emerald-300 bg-emerald-50/20' : 'border-slate-200/90'} cursor-pointer hover:border-slate-300 transition">
-            <div class="flex items-center justify-between gap-2 mb-1.5">
-              <div class="flex items-center gap-1.5 flex-wrap">
-                <span class="px-2 py-0.5 rounded-lg bg-slate-900 text-white font-black text-[11px]">#${item.id}</span>
-                <span class="px-2 py-0.5 rounded-lg font-bold text-[10px] ${getLevelBadgeColor(item.level)}">${item.level}</span>
-                <span class="text-[10px] font-semibold text-slate-400">${item.cat}</span>
-              </div>
-              <div class="flex items-center gap-1">
-                <button onclick="toggleStarred(${item.id}, event)" title="Favoritar para Revisão" class="px-2 py-1 rounded-lg text-xs ${isStarred ? 'bg-amber-100 text-amber-600 font-bold' : 'bg-slate-100 text-slate-400'}">
-                  ★
-                </button>
-                <button onclick="toggleMastered(${item.id}, event)" title="Marcar como Dominada" class="px-2 py-1 rounded-lg text-xs font-bold ${isMastered ? 'bg-emerald-500 text-white' : 'bg-slate-100 text-slate-500'}">
-                  ${isMastered ? '✓ Dominada' : 'Dominar'}
-                </button>
+          <div class="flex items-center justify-between p-3 rounded-xl ${idx === 0 ? 'bg-amber-50 border border-amber-300' : 'bg-gray-50'}">
+            <div class="flex items-center gap-2.5">
+              <span class="font-black text-sm w-8">${medal}</span>
+              <div>
+                <p class="font-extrabold text-xs text-gray-900">${u.name}</p>
+                <p class="text-[10px] text-gray-500 font-semibold">${u.station} • Nível ${lvl}</p>
               </div>
             </div>
-
-            <h3 class="font-bold text-sm text-slate-800 leading-snug">${item.q}</h3>
-
-            <div class="mt-2 flex items-center justify-between">
-              <span id="icon-${item.id}" class="text-[11px] font-extrabold text-[#DA291C]">
-                ${isOpen ? '▲ Ocultar' : '▼ Ver Gabarito'}
-              </span>
-            </div>
-
-            <div id="ans-${item.id}" class="${isOpen ? '' : 'hidden'} mt-2.5 pt-2.5 border-t border-slate-100">
-              <div class="bg-amber-50 border border-amber-200/80 rounded-xl p-2.5 text-xs font-bold text-slate-800">
-                <span class="text-[#DA291C] font-black uppercase mr-1">Resposta:</span>
-                ${item.a}
-              </div>
+            <div class="text-right">
+              <span class="font-black text-xs text-red-600">${u.xp} XP</span>
+              <span class="block text-[10px] text-gray-400">${u.correctAnswers || 0} acertos</span>
             </div>
           </div>
         `;
       }).join("");
     }
 
-    // =========================================================================
-    // ABA 2: SIMULADO / QUIZ INTERATIVO
-    // =========================================================================
-    let quizConfigLevel = "ALL";
-    let quizConfigCount = 10;
-    let quizPool = [];
-    let quizCurrentIndex = 0;
-    let quizScore = 0;
-    let quizLivesCount = 5;
-    let quizAnswered = false;
-
-    function selectQuizLevel(lvl) {
-      quizConfigLevel = lvl;
-      document.querySelectorAll(".qlvl-btn").forEach(btn => {
-        btn.className = "qlvl-btn p-3 rounded-xl border-2 border-slate-200 bg-white text-slate-700 font-bold text-xs text-center";
+    // NAVEGAÇÃO ENTRE ABAS
+    function switchMainTab(tab) {
+      ["quiz", "book", "prizes", "updates"].forEach(t => {
+        document.getElementById(`tab-${t}`).classList.add("hidden");
+        document.getElementById(`nav-${t}`).className = "flex flex-col items-center text-gray-400 font-bold text-[11px]";
       });
-      const el = document.getElementById(`qlvl-${lvl}`);
-      if (el) {
-        el.className = "qlvl-btn p-3 rounded-xl border-2 border-[#DA291C] bg-red-50 text-[#DA291C] font-bold text-xs text-center";
+      document.getElementById(`tab-${tab}`).classList.remove("hidden");
+      document.getElementById(`nav-${tab}`).className = "flex flex-col items-center text-red-600 font-extrabold text-[11px]";
+    }
+
+    // INICIALIZAÇÃO
+    window.onload = () => {
+      if (currentUserKey && users[currentUserKey]) {
+        document.getElementById("authModal").classList.add("hidden");
+        updateHeaderUI();
       }
-    }
-
-    function selectQuizCount(cnt) {
-      quizConfigCount = cnt;
-      document.querySelectorAll(".qcnt-btn").forEach(btn => {
-        btn.className = "qcnt-btn py-2.5 rounded-xl border-2 border-slate-200 font-bold text-xs text-slate-700";
-      });
-      const el = document.getElementById(`qcnt-${cnt}`);
-      if (el) {
-        el.className = "qcnt-btn py-2.5 rounded-xl border-2 border-[#DA291C] bg-red-50 text-[#DA291C] font-bold text-xs";
-      }
-    }
-
-    function shuffleArray(arr) {
-      const copy = [...arr];
-      for (let i = copy.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [copy[i], copy[j]] = [copy[j], copy[i]];
-      }
-      return copy;
-    }
-
-    function startQuiz() {
-      let source = QUESTIONS_DB;
-      if (quizConfigLevel !== "ALL") {
-        source = QUESTIONS_DB.filter(q => q.level === quizConfigLevel);
-      }
-      quizPool = shuffleArray(source).slice(0, Math.min(quizConfigCount, source.length));
-      quizCurrentIndex = 0;
-      quizScore = 0;
-      quizLivesCount = 5;
-
-      document.getElementById("quizSetupCard").classList.add("hidden");
-      document.getElementById("quizResultCard").classList.add("hidden");
-      document.getElementById("quizActiveCard").classList.remove("hidden");
-
-      renderCurrentQuizQuestion();
-    }
-
-    function renderCurrentQuizQuestion() {
-      quizAnswered = false;
-      const currentQ = quizPool[quizCurrentIndex];
-
-      document.getElementById("quizLives").textContent = quizLivesCount;
-      document.getElementById("quizStepCounter").textContent = `${quizCurrentIndex + 1}/${quizPool.length}`;
-      const pct = Math.round(((quizCurrentIndex + 1) / quizPool.length) * 100);
-      document.getElementById("quizProgressBar").style.width = `${pct}%`;
-
-      document.getElementById("quizBadgeLevel").textContent = `Nível ${currentQ.level} • ${currentQ.cat}`;
-      document.getElementById("quizBadgeLevel").className = `text-[11px] font-extrabold px-2.5 py-0.5 rounded-full ${getLevelBadgeColor(currentQ.level)}`;
-      document.getElementById("quizBadgeNumber").textContent = `Questão #${currentQ.id}`;
-      document.getElementById("quizQuestionText").textContent = currentQ.q;
-
-      document.getElementById("quizFeedbackBox").classList.add("hidden");
-      document.getElementById("quizNextBtn").classList.add("hidden");
-
-      // Pick 3 distractors from the same category/level
-      const sameCat = QUESTIONS_DB.filter(item => item.id !== currentQ.id && item.a !== currentQ.a && item.cat === currentQ.cat);
-      const fallback = QUESTIONS_DB.filter(item => item.id !== currentQ.id && item.a !== currentQ.a);
-      const poolForDistractors = sameCat.length >= 3 ? sameCat : fallback;
-      const distractors = shuffleArray(poolForDistractors).slice(0, 3).map(d => d.a);
-
-      const options = shuffleArray([
-        { text: currentQ.a, isCorrect: true },
-        ...distractors.map(text => ({ text, isCorrect: false }))
-      ]);
-
-      const letters = ["A", "B", "C", "D"];
-      const listEl = document.getElementById("quizOptionsList");
-      listEl.innerHTML = options.map((opt, idx) => `
-        <button
-          onclick="handleQuizOptionClick(${idx}, ${opt.isCorrect})"
-          id="qopt-${idx}"
-          class="w-full text-left p-3.5 rounded-xl border-2 border-slate-200 hover:border-slate-300 bg-white flex items-start gap-3 transition btn-3d"
-        >
-          <span class="w-6 h-6 rounded-lg bg-slate-100 text-slate-700 font-black text-xs flex items-center justify-center shrink-0 mt-0.5">
-            ${letters[idx]}
-          </span>
-          <span class="text-xs sm:text-sm font-bold text-slate-700 leading-snug">${opt.text}</span>
-        </button>
-      `).join("");
-    }
-
-    function handleQuizOptionClick(selectedIndex, isCorrect) {
-      if (quizAnswered) return;
-      quizAnswered = true;
-
-      const currentQ = quizPool[quizCurrentIndex];
-      const selectedBtn = document.getElementById(`qopt-${selectedIndex}`);
-      const feedbackBox = document.getElementById("quizFeedbackBox");
-      const feedbackTitle = document.getElementById("quizFeedbackTitle");
-      const feedbackAnswer = document.getElementById("quizFeedbackAnswer");
-
-      if (isCorrect) {
-        quizScore++;
-        masteredIds.add(currentQ.id);
-        saveProgress();
-        selectedBtn.className = "w-full text-left p-3.5 rounded-xl border-2 border-emerald-500 bg-emerald-50 flex items-start gap-3 transition";
-        feedbackBox.className = "p-3.5 rounded-xl border border-emerald-300 bg-emerald-50 text-xs space-y-1";
-        feedbackTitle.className = "font-black text-sm text-emerald-700";
-        feedbackTitle.textContent = "✅ Mandou muito bem! Resposta exata!";
-        feedbackAnswer.textContent = `Questão #${currentQ.id} marcada como Dominada no seu progresso.`;
-      } else {
-        quizLivesCount = Math.max(0, quizLivesCount - 1);
-        document.getElementById("quizLives").textContent = quizLivesCount;
-        starredIds.add(currentQ.id);
-        saveProgress();
-        selectedBtn.className = "w-full text-left p-3.5 rounded-xl border-2 border-rose-500 bg-rose-50 flex items-start gap-3 transition";
-        feedbackBox.className = "p-3.5 rounded-xl border border-rose-300 bg-rose-50 text-xs space-y-1";
-        feedbackTitle.className = "font-black text-sm text-rose-700";
-        feedbackTitle.textContent = "❌ Quase lá! Veja o Gabarito Oficial:";
-        feedbackAnswer.textContent = currentQ.a;
-      }
-
-      feedbackBox.classList.remove("hidden");
-      document.getElementById("quizNextBtn").classList.remove("hidden");
-    }
-
-    function nextQuizQuestion() {
-      quizCurrentIndex++;
-      if (quizCurrentIndex >= quizPool.length) {
-        finishQuiz();
-      } else {
-        renderCurrentQuizQuestion();
-      }
-    }
-
-    function finishQuiz() {
-      document.getElementById("quizActiveCard").classList.add("hidden");
-      document.getElementById("quizResultCard").classList.remove("hidden");
-
-      const pct = Math.round((quizScore / quizPool.length) * 100);
-      document.getElementById("resCorrect").textContent = `${quizScore}/${quizPool.length}`;
-      document.getElementById("resPercent").textContent = `${pct}%`;
-      document.getElementById("resXP").textContent = `+${quizScore * 15}`;
-
-      const emoji = document.getElementById("quizResultEmoji");
-      const title = document.getElementById("quizResultTitle");
-      if (pct >= 80) {
-        emoji.textContent = "🏆";
-        title.textContent = "Padrão Ouro! Rumo ao 1º Lugar!";
-      } else if (pct >= 50) {
-        emoji.textContent = "🔥";
-        title.textContent = "Bom treino! Continue evoluindo!";
-      } else {
-        emoji.textContent = "💪";
-        title.textContent = "Errou no treino, acertou no plantão!";
-      }
-    }
-
-    function quitQuiz() {
-      resetQuizSetup();
-    }
-
-    function resetQuizSetup() {
-      document.getElementById("quizActiveCard").classList.add("hidden");
-      document.getElementById("quizResultCard").classList.add("hidden");
-      document.getElementById("quizSetupCard").classList.remove("hidden");
-    }
-
-    // =========================================================================
-    // ABA 3: FLASHCARDS
-    // =========================================================================
-    let fcList = [...QUESTIONS_DB];
-    let fcIndex = 0;
-
-    function initFlashcards() {
-      const filter = document.getElementById("fcLevelSelect").value;
-      if (filter === "ALL") {
-        fcList = [...QUESTIONS_DB];
-      } else if (filter === "STARRED") {
-        const favs = QUESTIONS_DB.filter(q => starredIds.has(q.id));
-        fcList = favs.length > 0 ? favs : [...QUESTIONS_DB];
-      } else {
-        fcList = QUESTIONS_DB.filter(q => q.level === filter);
-      }
-      fcIndex = 0;
-      renderFlashcard();
-    }
-
-    function renderFlashcard() {
-      const box = document.getElementById("flashcardBox");
-      box.classList.remove("flipped");
-
-      const item = fcList[fcIndex];
-      document.getElementById("fcFrontBadge").textContent = `Questão #${item.id} • ${item.level}`;
-      document.getElementById("fcCounterText").textContent = `${fcIndex + 1} / ${fcList.length}`;
-      document.getElementById("fcQuestion").textContent = item.q;
-      document.getElementById("fcBackNumber").textContent = `#${item.id} (${item.cat})`;
-      document.getElementById("fcAnswer").textContent = item.a;
-    }
-
-    function flipFlashcard() {
-      document.getElementById("flashcardBox").classList.toggle("flipped");
-    }
-
-    function nextFlashcard() {
-      fcIndex = (fcIndex + 1) % fcList.length;
-      renderFlashcard();
-    }
-
-    function prevFlashcard() {
-      fcIndex = (fcIndex - 1 + fcList.length) % fcList.length;
-      renderFlashcard();
-    }
-
-    function shuffleFlashcards() {
-      fcList = shuffleArray(fcList);
-      fcIndex = 0;
-      renderFlashcard();
-    }
-
-    function markFlashcardMastered() {
-      const item = fcList[fcIndex];
-      masteredIds.add(item.id);
-      saveProgress();
-      nextFlashcard();
-    }
-
-    function markFlashcardReview() {
-      const item = fcList[fcIndex];
-      starredIds.add(item.id);
-      saveProgress();
-      nextFlashcard();
-    }
-
-    // Inicializar na primeira carga
-    window.addEventListener("DOMContentLoaded", () => {
-      updateHeaderStats();
+      startNewQuiz();
       renderBookList();
-    });
+      renderLeaderboard();
+    };
   </script>
 </body>
 </html>
