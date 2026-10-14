@@ -1,4 +1,4 @@
-  <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
@@ -7,7 +7,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="Olimpíadas Méqui" />
-  <title>Olimpíadas do Básico — Venture v5.1</title>
+  <title>Olimpíadas do Básico — Venture v6.0</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
   <style>
@@ -24,61 +24,41 @@
 </head>
 <body class="min-h-screen pb-24">
 
-  <!-- MODAL DE LOGIN E CADASTRO COM SENHA -->
-  <div id="authModal" class="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4">
+  <!-- MODAL DE LOGIN (APENAS CREDENCIAIS CRIADAS PELO ADM) -->
+  <div id="authModal" class="fixed inset-0 bg-black/85 z-50 flex items-center justify-center p-4">
     <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border-4 border-[#FFC72C]">
-      <div class="text-center mb-4">
+      <div class="text-center mb-5">
         <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl mc-red text-[#FFC72C] font-black text-4xl shadow-md mb-2">M</div>
         <h1 class="text-2xl font-black text-gray-900">OLIMPÍADAS DO BÁSICO</h1>
-        <p class="text-xs text-gray-500 font-semibold">Treinamento Oficial Venture • Versão 5.1 🏆</p>
+        <p class="text-xs text-gray-500 font-semibold">Treinamento Oficial Venture • Versão 6.0 🏆</p>
       </div>
 
-      <div class="flex rounded-xl bg-gray-100 p-1 mb-4">
-        <button id="tabLoginBtn" onclick="switchAuthTab('login')" class="flex-1 py-2 text-xs font-extrabold rounded-lg bg-white text-gray-900 shadow">ENTRAR COM SENHA</button>
-        <button id="tabRegisterBtn" onclick="switchAuthTab('register')" class="flex-1 py-2 text-xs font-extrabold rounded-lg text-gray-500">NOVO CADASTRO</button>
+      <div class="bg-amber-50 border border-amber-200 rounded-2xl p-3 mb-4 text-center">
+        <p class="text-[11px] font-bold text-amber-900">🔒 Acesso Exclusivo da Equipe</p>
+        <p class="text-[10px] text-amber-700 mt-0.5">Digite seu nome e a senha fornecida pelo Administrador da loja.</p>
       </div>
 
       <div id="authError" class="hidden mb-3 p-2.5 rounded-xl bg-red-100 text-red-700 text-xs font-bold text-center"></div>
 
       <!-- FORMULÁRIO DE LOGIN -->
-      <div id="loginForm" class="space-y-3">
+      <div class="space-y-3">
         <div>
-          <label class="text-xs font-bold text-gray-700">Seu Nome Completo ou Apelido</label>
-          <input id="loginName" type="text" placeholder="Ex: DANIEL PESSOA DE OLIVEIRA" class="w-full mt-1 px-3.5 py-2.5 rounded-xl border border-gray-300 text-sm focus:outline-none focus:border-red-600" />
+          <label class="text-xs font-bold text-gray-700">Seu Nome ou Usuário</label>
+          <input id="loginName" type="text" placeholder="Digite como o ADM cadastrou" class="w-full mt-1 px-3.5 py-2.5 rounded-xl border border-gray-300 text-sm font-semibold uppercase focus:outline-none focus:border-red-600" />
         </div>
         <div>
           <label class="text-xs font-bold text-gray-700">Sua Senha de Acesso</label>
           <input id="loginPass" type="password" placeholder="••••••" class="w-full mt-1 px-3.5 py-2.5 rounded-xl border border-gray-300 text-sm focus:outline-none focus:border-red-600" />
         </div>
-        <button id="btnLoginSubmit" onclick="handleLogin()" class="w-full mc-red text-white font-black py-3 rounded-xl btn-3d text-sm tracking-wide">
+        <button id="btnLoginSubmit" onclick="handleLogin()" class="w-full mc-red text-white font-black py-3.5 rounded-xl btn-3d text-sm tracking-wide">
           ENTRAR NO TREINAMENTO 🚀
         </button>
       </div>
 
-      <!-- FORMULÁRIO DE CADASTRO -->
-      <div id="registerForm" class="hidden space-y-3">
-        <div>
-          <label class="text-xs font-bold text-gray-700">Nome Completo ou Apelido</label>
-          <input id="regName" type="text" placeholder="Digite seu nome" class="w-full mt-1 px-3.5 py-2.5 rounded-xl border border-gray-300 text-sm focus:outline-none focus:border-red-600" />
-        </div>
-        <div>
-          <label class="text-xs font-bold text-gray-700">Estação Principal</label>
-          <select id="regStation" class="w-full mt-1 px-3.5 py-2.5 rounded-xl border border-gray-300 text-sm bg-white focus:outline-none focus:border-red-600">
-            <option value="Cozinha & Chapa">🍔 Cozinha & Chapa</option>
-            <option value="Balcão & Caixa">🍟 Balcão & Caixa</option>
-            <option value="McFritas & Fritos">🔥 McFritas & Fritos</option>
-            <option value="Bebidas & Sobremesas">🍦 Bebidas & Sobremesas</option>
-            <option value="Drive-Thru & Delivery">🚗 Drive-Thru & Delivery</option>
-            <option value="LOPE & Qualidade">🧹 LOPE & Qualidade</option>
-            <option value="Gerência / Treinador">⭐ Gerência / Treinador</option>
-          </select>
-        </div>
-        <div>
-          <label class="text-xs font-bold text-gray-700">Crie uma Senha de Acesso</label>
-          <input id="regPass" type="password" placeholder="Mínimo 4 dígitos" class="w-full mt-1 px-3.5 py-2.5 rounded-xl border border-gray-300 text-sm focus:outline-none focus:border-red-600" />
-        </div>
-        <button id="btnRegSubmit" onclick="handleRegister()" class="w-full mc-yellow text-gray-900 font-black py-3 rounded-xl btn-yellow-3d text-sm tracking-wide">
-          CRIAR CONTA E SINCRONIZAR ✅
+      <!-- Botão Direto para o Gerente/ADM abrir o painel de criação de senhas -->
+      <div class="mt-5 pt-4 border-t border-gray-200 text-center">
+        <button onclick="openAdminFromLogin()" class="text-xs font-extrabold text-gray-600 hover:text-gray-900 underline">
+          ⚙️ Sou Administrador (Criar Cadastros e Senhas)
         </button>
       </div>
     </div>
@@ -95,7 +75,7 @@
               <span id="userNameDisplay" class="font-extrabold text-sm">Visitante</span>
               <span id="userStationBadge" class="text-[10px] bg-black/25 px-2 py-0.5 rounded-full font-semibold">Estação</span>
             </div>
-            <p id="userRankTitle" class="text-xs text-[#FFC72C] font-bold">🔰 Nível 1 — Iniciante</p>
+            <p id="userRankTitle" class="text-xs text-[#FFC72C] font-bold">🔰 Nível 1 — Treinador Iniciante</p>
           </div>
         </div>
         <div class="flex items-center gap-2">
@@ -103,16 +83,16 @@
             <span class="text-[10px] block uppercase opacity-80">Total XP</span>
             <span id="userXpDisplay" class="font-black text-sm text-[#FFC72C]">0 XP</span>
           </div>
-          <button onclick="logoutUser()" class="bg-white/15 hover:bg-white/25 text-xs font-bold px-2.5 py-2 rounded-xl">Trocar</button>
+          <button onclick="logoutUser()" class="bg-white/15 hover:bg-white/25 text-xs font-bold px-2.5 py-2 rounded-xl">Sair</button>
         </div>
       </div>
 
       <div class="bg-black/30 rounded-full h-3 w-full overflow-hidden p-0.5">
-        <div id="xpProgressBar" class="mc-yellow h-full rounded-full transition-all duration-300" style="width: 10%"></div>
+        <div id="xpProgressBar" class="mc-yellow h-full rounded-full transition-all duration-300" style="width: 6%"></div>
       </div>
       <div class="flex justify-between text-[10px] font-semibold mt-1 opacity-90">
         <span id="currentLevelNum">Nível 1</span>
-        <span id="nextLevelTarget">Faltam 200 XP para o Nível 2</span>
+        <span id="nextLevelTarget">Faltam 500 XP para o Nível 2</span>
       </div>
     </div>
   </header>
@@ -186,6 +166,7 @@
 
     <!-- ABA 3: PREMIAÇÕES E RANKING DA LOJA -->
     <section id="tab-prizes" class="hidden space-y-4">
+      <!-- Prêmio Principal -->
       <div class="bg-gradient-to-br from-[#DA291C] to-[#9e1910] text-white rounded-3xl p-5 shadow-xl relative overflow-hidden border-2 border-[#FFC72C]">
         <div class="flex items-center gap-4">
           <div class="text-5xl bg-white/15 p-3.5 rounded-2xl border border-white/20">☕</div>
@@ -201,11 +182,11 @@
       <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 space-y-3">
         <div class="flex items-center justify-between flex-wrap gap-2">
           <div>
-            <h3 class="font-black text-gray-800 text-sm">🏆 Ranking da Loja (Disputa pela Caneca ☕)</h3>
-            <span id="syncStatusText" class="text-[11px] text-green-600 font-bold">● Conectando à nuvem...</span>
+            <h3 class="font-black text-gray-800 text-sm">🏆 Ranking Oficial da Loja (Disputa pela Caneca ☕)</h3>
+            <span id="syncStatusText" class="text-[11px] text-green-600 font-bold">● Sincronizado em Tempo Real</span>
           </div>
           <button onclick="pullFromCloud(true)" class="bg-red-50 hover:bg-red-100 text-red-700 font-black text-[11px] px-3 py-1.5 rounded-xl border border-red-200">
-            🔄 Sincronizar Agora
+            🔄 Atualizar Placar
           </button>
         </div>
 
@@ -214,6 +195,21 @@
         <button onclick="shareMyScoreWhatsApp()" class="w-full bg-green-600 hover:bg-green-700 text-white font-black py-2.5 rounded-xl text-xs flex items-center justify-center gap-2 shadow">
           <span>📲 Enviar Meu Placar no Grupo do WhatsApp</span>
         </button>
+      </div>
+
+      <!-- Nova Tabela de Patentes por XP (Mais Desafiadora) -->
+      <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 space-y-2">
+        <h3 class="font-black text-gray-800 text-sm">📈 Nova Tabela de Patentes por XP (v6.0)</h3>
+        <p class="text-[11px] text-gray-500">Suba de patente treinando no Simulado (+25 XP), Flashcards (+10 XP) e Book (+5 XP):</p>
+        <div class="space-y-1.5 text-xs font-semibold text-gray-700 pt-1">
+          <div class="flex justify-between p-2 rounded-lg bg-gray-50"><span>🔰 Nível 1 — Treinador Iniciante</span><span>0 a 499 XP</span></div>
+          <div class="flex justify-between p-2 rounded-lg bg-gray-50"><span>🥉 Nível 2 — Chapa de Bronze</span><span>500 a 1.199 XP</span></div>
+          <div class="flex justify-between p-2 rounded-lg bg-gray-50"><span>🥈 Nível 3 — Especialista de Prata</span><span>1.200 a 2.499 XP</span></div>
+          <div class="flex justify-between p-2 rounded-lg bg-gray-50"><span>🥇 Nível 4 — Padrão Ouro Venture</span><span>2.500 a 4.499 XP</span></div>
+          <div class="flex justify-between p-2 rounded-lg bg-blue-50 text-blue-900"><span>💎 Nível 5 — Diamante Best Burger</span><span>4.500 a 6.999 XP</span></div>
+          <div class="flex justify-between p-2 rounded-lg bg-orange-50 text-orange-900"><span>🔥 Nível 6 — Mestre das Olimpíadas</span><span>7.000 a 9.999 XP</span></div>
+          <div class="flex justify-between p-2 rounded-lg bg-amber-100 text-amber-900 font-black"><span>👑 Nível 7 — Lenda do Méqui (Pódio)</span><span>10.000+ XP</span></div>
+        </div>
       </div>
 
       <!-- Quadro de Premiações -->
@@ -243,18 +239,6 @@
           </div>
         </div>
       </div>
-
-      <!-- Tabela do Sistema de Níveis -->
-      <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 space-y-2">
-        <h3 class="font-black text-gray-800 text-sm">📈 Tabela de Patentes por XP</h3>
-        <div class="space-y-1.5 text-xs font-semibold text-gray-700">
-          <div class="flex justify-between p-2 rounded-lg bg-gray-50"><span>🔰 Nível 1 — Treinador Iniciante</span><span>0 a 499 XP</span></div>
-          <div class="flex justify-between p-2 rounded-lg bg-gray-50"><span>🥉 Nível 2 — Chapa de Bronze</span><span>500 a 999 XP</span></div>
-          <div class="flex justify-between p-2 rounded-lg bg-gray-50"><span>🥈 Nível 3 — Especialista de Prata</span><span>1000 a 4999 XP</span></div>
-          <div class="flex justify-between p-2 rounded-lg bg-gray-50"><span>🥇 Nível 4 — Padrão Ouro Venture</span><span> 5000 a 10000 XP</span></div>
-          <div class="flex justify-between p-2 rounded-lg bg-amber-100 text-amber-900 font-bold"><span>👑 Nível 5 — Mestre das Olimpíadas</span><span>2.000+ XP</span></div>
-        </div>
-      </div>
     </section>
 
     <!-- ABA 4: PAINEL ADM PROTEGIDO POR SENHA (342005) -->
@@ -263,7 +247,7 @@
         <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gray-900 text-[#FFC72C] text-2xl font-black">🔒</div>
         <div>
           <h2 class="font-black text-gray-900 text-lg">Painel Restrito do Administrador</h2>
-          <p class="text-xs text-gray-500 font-medium">Digite a senha de gerência para controlar o XP e ver os cadastros da loja.</p>
+          <p class="text-xs text-gray-500 font-medium">Digite a senha de gerência (342005) para criar as senhas da equipe e controlar o XP.</p>
         </div>
         <div id="adminAuthError" class="hidden p-2.5 rounded-xl bg-red-100 text-red-700 text-xs font-bold">Senha incorreta! Acesso negado.</div>
         <input id="adminPassInput" type="password" placeholder="Digite a senha do ADM" class="w-full px-4 py-3 rounded-xl border border-gray-300 text-center font-black tracking-widest text-sm focus:outline-none focus:border-red-600" />
@@ -276,850 +260,60 @@
       <div id="adminDashboard" class="hidden space-y-4">
         <div class="bg-gray-900 text-white rounded-3xl p-4 shadow-lg flex items-center justify-between">
           <div>
-            <span class="bg-[#FFC72C] text-gray-900 text-[10px] font-black px-2 py-0.5 rounded-full uppercase">Modo Gerência Ativo</span>
-            <h2 class="text-base font-black mt-1">⚙️ Controle de XP & Cadastros</h2>
+            <span class="bg-[#FFC72C] text-gray-900 text-[10px] font-black px-2 py-0.5 rounded-full uppercase">Central de Senhas & XP</span>
+            <h2 class="text-base font-black mt-1">⚙️ Gerenciamento da Equipe</h2>
             <p id="adminStatsSummary" class="text-xs text-gray-300">Total: 0 cadastrados</p>
           </div>
-          <button onclick="lockAdminPanel()" class="bg-white/10 hover:bg-white/20 text-xs font-bold px-3 py-2 rounded-xl">Bloquear 🔒</button>
+          <div class="flex gap-2">
+            <button onclick="openLoginModal()" class="bg-[#FFC72C] text-gray-900 text-xs font-black px-3 py-2 rounded-xl">Entrar em Conta</button>
+            <button onclick="lockAdminPanel()" class="bg-white/10 hover:bg-white/20 text-xs font-bold px-3 py-2 rounded-xl">Bloquear 🔒</button>
+          </div>
         </div>
 
-        <!-- Cadastrar ou Atualizar Colaborador Manualmente pelo ADM -->
-        <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-200 space-y-3">
-          <h3 class="font-black text-gray-800 text-sm">➕ Cadastrar / Definir XP de Colaborador</h3>
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-            <input id="admNewName" type="text" placeholder="Nome Completo ou Apelido" class="px-3 py-2 rounded-xl border border-gray-300 text-xs font-semibold" />
-            <select id="admNewStation" class="px-3 py-2 rounded-xl border border-gray-300 text-xs font-semibold bg-white">
-              <option value="Cozinha & Chapa">🍔 Cozinha & Chapa</option>
-              <option value="Balcão & Caixa">🍟 Balcão & Caixa</option>
-              <option value="McFritas & Fritos">🔥 McFritas & Fritos</option>
-              <option value="Bebidas & Sobremesas">🍦 Bebidas & Sobremesas</option>
-              <option value="Drive-Thru & Delivery">🚗 Drive-Thru & Delivery</option>
-              <option value="LOPE & Qualidade">🧹 LOPE & Qualidade</option>
-              <option value="Gerência / Treinador">⭐ Gerência / Treinador</option>
-            </select>
-          </div>
-          <div class="grid grid-cols-3 gap-2">
-            <input id="admNewPass" type="text" placeholder="Senha (ex: 1234)" class="px-3 py-2 rounded-xl border border-gray-300 text-xs font-semibold" />
-            <input id="admNewXp" type="number" placeholder="XP Inicial" class="px-3 py-2 rounded-xl border border-gray-300 text-xs font-semibold" />
-            <input id="admNewHits" type="number" placeholder="Nº Acertos" class="px-3 py-2 rounded-xl border border-gray-300 text-xs font-semibold" />
-          </div>
-          <button onclick="adminSaveMember()" class="w-full mc-red text-white font-black py-2.5 rounded-xl text-xs btn-3d">
-            SALVAR E ENVIAR PARA TODOS OS CELULARES ✅
-          </button>
-        </div>
-
-        <!-- Lista Completa de Pessoas Cadastradas com Controle de XP -->
-        <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-200 space-y-3">
+        <!-- CRIAR CONTA E SENHA PARA NOVO COLABORADOR -->
+        <div class="bg-white rounded-2xl p-4 shadow-sm border-2 border-[#FFC72C] space-y-3">
           <div class="flex items-center justify-between">
-            <h3 class="font-black text-gray-800 text-sm">👥 Pessoas Cadastradas na Loja</h3>
-            <button onclick="pullFromCloud(true)" class="text-xs font-bold text-red-600 underline">🔄 Puxar Novos da Nuvem</button>
+            <h3 class="font-black text-gray-900 text-sm">🔑 Criar Acesso e Senha para Colaborador</h3>
+            <span class="text-[10px] font-bold bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full">Exclusivo ADM</span>
           </div>
-          <div id="adminUsersList" class="space-y-3"></div>
-        </div>
-      </div>
-    </section>
+          <p class="text-[11px] text-gray-500">Cadastre a pessoa aqui e crie a senha dela. Depois clique em "Enviar Acesso" na lista abaixo para mandar a senha no WhatsApp dela!</p>
 
-    <!-- ABA 5: ATUALIZAÇÕES DO APLICATIVO -->
-    <section id="tab-updates" class="hidden space-y-3">
-      <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 space-y-4">
-        <div class="flex items-center justify-between">
-          <h2 class="font-black text-gray-900 text-base">🚀 Histórico de Atualizações</h2>
-          <span class="bg-green-100 text-green-800 text-xs font-black px-2.5 py-0.5 rounded-full">Versão 5.1</span>
-        </div>
-
-        <div class="border-l-4 border-emerald-600 pl-3.5 space-y-1">
-          <span class="text-[11px] font-extrabold text-emerald-700 uppercase">Versão 5.1 • Correção da Nuvem Multi-Aparelhos</span>
-          <h4 class="font-black text-gray-800 text-sm">Sincronização Real entre Celulares Diferentes ☁️📱</h4>
-          <ul class="text-xs text-gray-600 list-disc list-inside space-y-1 pt-1">
-            <li><strong>Correção do Servidor de Nuvem:</strong> Substituído o servidor antigo que caía em "Modo Local" por um banco em nuvem ativo com sincronização automática a cada 8 segundos.</li>
-            <li><strong>Auto-Merge Inteligente:</strong> Quando alguém novo se cadastra no próprio celular, o app junta o cadastro dele com a lista existente na nuvem sem apagar ninguém.</li>
-          </ul>
-        </div>
-
-        <div class="border-l-4 border-purple-600 pl-3.5 space-y-1">
-          <span class="text-[11px] font-extrabold text-purple-700 uppercase">Versão 5.0 • Painel ADM</span>
-          <h4 class="font-black text-gray-800 text-sm">Painel do Administrador com Senha + Fusão Completa (v1 a v5) ⚙️</h4>
-          <p class="text-xs text-gray-600 pt-1">Aba ADM protegida por senha para controlar XP, senhas e cadastros.</p>
-        </div>
-      </div>
-    </section>
-
-  </main>
-
-  <!-- NAVEGAÇÃO INFERIOR -->
-  <nav class="fixed bottom-0 inset-x-0 bg-white border-t border-gray-200 z-40 shadow-lg">
-    <div class="max-w-xl mx-auto grid grid-cols-5 py-2">
-      <button onclick="switchMainTab('quiz')" id="nav-quiz" class="flex flex-col items-center text-red-600 font-extrabold text-[10px]">
-        <span class="text-base">🎯</span>
-        <span>Simulado</span>
-      </button>
-      <button onclick="switchMainTab('book')" id="nav-book" class="flex flex-col items-center text-gray-400 font-bold text-[10px]">
-        <span class="text-base">📖</span>
-        <span>Book</span>
-      </button>
-      <button onclick="switchMainTab('prizes')" id="nav-prizes" class="flex flex-col items-center text-gray-400 font-bold text-[10px]">
-        <span class="text-base">☕</span>
-        <span>Ranking</span>
-      </button>
-      <button onclick="switchMainTab('admin')" id="nav-admin" class="flex flex-col items-center text-gray-400 font-bold text-[10px]">
-        <span class="text-base">⚙️</span>
-        <span>ADM</span>
-      </button>
-      <button onclick="switchMainTab('updates')" id="nav-updates" class="flex flex-col items-center text-gray-400 font-bold text-[10px]">
-        <span class="text-base">🔔</span>
-        <span>Versões</span>
-      </button>
-    </div>
-  </nav>
-
-  <script>
-    const QUESTIONS_DB = [
-      { id: 1, level: "Básico", q: "Quantas gramas de alface colocamos no BigMac?", a: "12 gr na base e 12 gr no clube, totalizando 24 gramas." },
-      { id: 2, level: "Básico", q: "Quantas gramas de alface colocamos no McChicken?", a: "28 gramas de alface." },
-      { id: 3, level: "Básico", q: "Quantas gramas (oz) de molho vai no Big Tasty?", a: "1 oz na coroa e 1 oz na base, totalizando 2 oz." },
-      { id: 7, level: "Básico", q: "Por quanto tempo devemos lavar as mãos?", a: "20 segundos." },
-      { id: 8, level: "Básico", q: "Qual o primeiro passo na lavagem das mãos?", a: "Molhar as mãos." },
-      { id: 9, level: "Básico", q: "Qual a frequência correta para lavagem das mãos?", a: "A cada 1 hora." },
-      { id: 10, level: "Básico", q: "Quais são os EPIs necessários para atuar na estação de chapa?", a: "Avental e mangote." },
-      { id: 11, level: "Básico", q: "Cite bons padrões de higiene essenciais para o trabalho no McDonald's.", a: "Cabelos presos, unhas curtas, sem esmalte e limpas, barba feita, sem adornos e com redinha." },
-      { id: 12, level: "Básico", q: "Qual a compressão do pão e tempo de tostagem da tostadeira?", a: "Compressão 4, tempo de tostagem 22 segundos." },
-      { id: 13, level: "Básico", q: "Qual a temperatura das UHCs de carnes vermelhas e brancas respectivamente?", a: "Carnes vermelhas 79°C e carnes brancas 85°C." },
-      { id: 14, level: "Básico", q: "Qual o tempo de vida das carnes vermelhas na UHC?", a: "10 minutos." },
-      { id: 15, level: "Básico", q: "Qual o tempo das carnes brancas na UHC?", a: "Crispy 60 minutos, Chicken 30 minutos, Junior e Nuggets 20 minutos." },
-      { id: 16, level: "Básico", q: "Qual o tempo de vida dos ceboleiros em área e quantos conseguimos fazer com 1 pacote de cebola?", a: "4 horas e 7 ceboleiros." },
-      { id: 17, level: "Básico", q: "Qual o tempo de reação do iniciador?", a: "De 3 a 5 segundos." },
-      { id: 18, level: "Básico", q: "Qual pessoa da linha nunca pode sair da estação?", a: "A pessoa do iniciador." },
-      { id: 19, level: "Básico", q: "A partir de quantos sanduíches produzidos na hora devemos abrir o lado 2?", a: "125 sanduíches na hora." },
-      { id: 20, level: "Básico", q: "Em qual direção devem ficar a base e a coroa dos pães na linha?", a: "Base sentido UHC e Coroa sentido tostadeira." },
-      { id: 21, level: "Básico", q: "Quantos pães podemos ativar por vez na tostadeira?", a: "2 pães." },
-      { id: 22, level: "Básico", q: "Quantos sanduíches podemos condimentar por vez?", a: "2 sanduíches." },
-      { id: 23, level: "Básico", q: "Quais as cores dos clipes das gavetas da UHC para McChicken e Nuggets?", a: "McChicken amarelo e Nuggets branco." },
-      { id: 24, level: "Básico", q: "Qual o tempo de vida do ceboleiro na estação de chapa?", a: "4 horas." },
-      { id: 25, level: "Básico", q: "Quantos panos devemos ter na linha?", a: "3 panos: 1 para tostadeira, 1 para mesa de condimentação e 1 para UHC." },
-      { id: 26, level: "Básico", q: "Em quantos pedaços devemos cortar a carne de Crispy da Salada Mix?", a: "De 5 a 7 pedaços." },
-      { id: 27, level: "Básico", q: "Por quanto tempo o tomate deve ficar no sanitizante?", a: "15 minutos." },
-      { id: 28, level: "Básico", q: "Por quanto tempo o tomate deve ficar em ambientação antes de ser cortado?", a: "2 horas." },
-      { id: 29, level: "Básico", q: "Qual o tempo de vida do tomate após ser cortado?", a: "2 horas." },
-      { id: 30, level: "Básico", q: "Qual o tempo de ambientação dos molhos Cheddar do Sanduíche e da Batata respectivamente?", a: "2 horas e 4 horas de ambientação." },
-      { id: 31, level: "Básico", q: "Qual o tempo de vida do molho cheddar na pistola?", a: "2 horas de ambientação e 6 horas de tempo de vida, totalizando 8 horas." },
-      { id: 32, level: "Básico", q: "Quais quantidades de Molho Maionese colocamos nos sanduíches McChicken, McChicken Bacon, Chicken Jr e McNífico Bacon?", a: "2/3 oz de molho maionese." },
-      { id: 33, level: "Básico", q: "Qual quantidade de Molho colocamos no Big Mac?", a: "1 tiro de 1/2 oz de molho na base e 1 no club, totalizando 1 oz de molho Big Mac." },
-      { id: 34, level: "Básico", q: "Quais cores de pegadores temos na linha e qual a sua finalidade?", a: "Pegador vermelho para carnes vermelhas com cebola, azul para carnes vermelhas sem cebola, verde para carnes brancas." },
-      { id: 35, level: "Básico", q: "Qual procedimento devemos seguir logo após ativar as carnes na chapa?", a: "Sanitizar as mãos." },
-      { id: 36, level: "Básico", q: "Qual ferramenta define os níveis de carnes que devemos ter nas gavetas?", a: "PLS." },
-      { id: 37, level: "Básico", q: "Qual o ângulo de raspagem da chapa?", a: "15°." },
-      { id: 38, level: "Básico", q: "Qual a forma correta de ativar, salgar e remover as carnes?", a: "Da direita para a esquerda, da frente para o fundo." },
-      { id: 39, level: "Básico", q: "Qual o empilhamento máximo de carnes de 10:1 na gaveta?", a: "3 carnes." },
-      { id: 40, level: "Básico", q: "Qual o empilhamento máximo de carnes de 4:1 na gaveta?", a: "1 carne, não podemos empilhar carnes de 4:1." },
-      { id: 41, level: "Básico", q: "Quantas carnes de 10:1 podemos ativar no máximo em cada platen?", a: "6 carnes." },
-      { id: 42, level: "Básico", q: "Quantas carnes de 4:1 podemos ativar no máximo em cada platen?", a: "4 carnes." },
-      { id: 43, level: "Básico", q: "Quantas carnes de 4:1 podemos colocar no máximo em cada gaveta?", a: "4 carnes." },
-      { id: 44, level: "Básico", q: "Quantas carnes de 10:1 podemos colocar no máximo em cada gaveta?", a: "12 carnes." },
-      { id: 45, level: "Básico", q: "Quantas fatias de bacon podemos ativar por vez em cada platen?", a: "6 fatias." },
-      { id: 46, level: "Básico", q: "Qual pegador devemos usar para ativar as carnes brancas?", a: "Pegador preto." },
-      { id: 47, level: "Básico", q: "Para que serve o pegador bege sem dentes nos produtos fritos?", a: "Para auxiliar a remoção das carnes dos cestos." },
-      { id: 48, level: "Básico", q: "Quais as rodadas máximas para ativar carnes brancas e tortas?", a: "McChicken e Chicken Jr 6 carnes, Crispy 4 carnes, Nuggets 24 bolinhas e Tortas 16 unidades." },
-      { id: 49, level: "Básico", q: "Qual o tempo de resfriamento das tortas?", a: "20 minutos." },
-      { id: 50, level: "Básico", q: "Qual o tempo de fritura das tortas?", a: "6 minutos." },
-      { id: 51, level: "Básico", q: "Qual o tempo de vida das tortas prontas?", a: "2 horas." },
-      { id: 52, level: "Básico", q: "Quais os dois sistemas de ativada que podemos usar nos produtos fritos?", a: "Manutenção e Recuperação." },
-      { id: 53, level: "Básico", q: "Por quanto tempo as carnes devem escorrer sobre o óleo antes de ir para a gaveta?", a: "5 a 10 segundos." },
-      { id: 54, level: "Básico", q: "Quais EPIs a pessoa do LOPE deve usar para acessar as câmaras?", a: "Casaco, Calça, Bota, Touca (balaclava) e luvas." },
-      { id: 55, level: "Básico", q: "Qual a temperatura da câmara de resfriados, Walk-in?", a: "De 1 a 4°C." },
-      { id: 56, level: "Básico", q: "Qual a temperatura da câmara de congelados, Chicago?", a: "De -18 a -23°C." },
-      { id: 57, level: "Básico", q: "Por quanto tempo o queijo deve ambientar antes de ser estocado na mesa de condimentação?", a: "2 horas." },
-      { id: 58, level: "Básico", q: "Qual a temperatura do queijo após a ambientação de 2 horas?", a: "De 15° a 18°C, ideal 17,5°C." },
-      { id: 59, level: "Básico", q: "Como sabemos quantos queijos devemos ambientar para cada hora?", a: "Usando a tabela chart, para saber quantos queijos vamos usar de acordo com as GCs por hora." },
-      { id: 60, level: "Básico", q: "O que é o CARD LOPE?", a: "É a ficha de tarefas da estação LOPE." },
-      { id: 61, level: "Básico", q: "Qual o tempo de vida da cebola reidratada?", a: "24 horas, incluindo 1 hora de hidratação." },
-      { id: 62, level: "Básico", q: "Qual o tempo de vida do suco, após aberto?", a: "7 dias sob refrigeração." },
-      { id: 63, level: "Básico", q: "Qual o tempo de vida do mix, após aberto?", a: "7 dias sob refrigeração." },
-      { id: 64, level: "Básico", q: "Qual o tempo dos queijos cheddar e ementhal após abertos?", a: "24 horas sob refrigeração." },
-      { id: 65, level: "Básico", q: "Qual o tempo de vida da alface e da cebola nas cubas?", a: "2 horas." },
-      { id: 66, level: "Básico", q: "Quando usamos cubas médias para alface na mesa de condimentação?", a: "Nas horas pico." },
-      { id: 67, level: "Básico", q: "Qual a temperatura do óleo para carnes brancas e tortas?", a: "180°C." },
-      { id: 68, level: "Básico", q: "Qual a temperatura do óleo para McFritas?", a: "168°C." },
-      { id: 69, level: "Básico", q: "Qual o tempo de fritura para carnes brancas?", a: "McChicken, Chicken Jr e Nuggets 3min e 15s; Crispy e Tortas 6 minutos." },
-      { id: 70, level: "Básico", q: "Qual o tempo de fritura para McFritas?", a: "3 min e 10 segundos." },
-      { id: 71, level: "Básico", q: "Qual o Duty para McFritas?", a: "30 segundos." },
-      { id: 72, level: "Básico", q: "Qual o tempo de vida das McFritas depois de prontas?", a: "7 minutos." },
-      { id: 73, level: "Básico", q: "Quantas gramas de sal o saleiro das McFritas dispensa?", a: "4 gramas." },
-      { id: 74, level: "Básico", q: "Qual EPI devemos usar para operar as estações de McFritas e Produtos Fritos?", a: "Avental e Mangote." },
-      { id: 75, level: "Básico", q: "Quantos panos devemos manter na estação de McFritas?", a: "2 panos." },
-      { id: 76, level: "Básico", q: "Qual é o tempo MFY (linha) com 1, 2 ou 3 pessoas?", a: "Com 1 pessoa 50 segundos, com 2 pessoas 42 segundos, com 3 pessoas 35 segundos." },
-      { id: 77, level: "Básico", q: "Qual o tempo de R2P (entrega pedido balcão)?", a: "90 segundos." },
-      { id: 78, level: "Básico", q: "Qual o tempo de OEPE (drive)?", a: "120 segundos." },
-      { id: 79, level: "Básico", q: "Qual o tempo de vida secundário da cebola shoyu?", a: "48 horas sob refrigeração na embalagem original e 2 horas na mesa de condimentação." },
-      { id: 80, level: "Básico", q: "De quanto em quanto tempo deve ser retirado queijo para ambientar e por quanto tempo ambienta?", a: "Retiramos a cada hora e ambienta por 2 horas." },
-      { id: 81, level: "Básico", q: "Qual a validade secundária do amendoim?", a: "10 dias na embalagem original e 5 dias no dispensador." },
-      { id: 82, level: "Básico", q: "Qual a validade secundária do Ovomaltine?", a: "30 dias na embalagem original e 7 dias fracionado ou em dispensador." },
-      { id: 83, level: "Básico", q: "Qual a validade secundária do Ovomaltine Rocks?", a: "15 dias na embalagem original e 24 horas fracionado ou em dispensador." },
-      { id: 84, level: "Básico", q: "Qual a validade secundária das gotas de chocolate?", a: "10 dias na embalagem original e 24 horas fracionado ou em dispensador." },
-      { id: 85, level: "Básico", q: "Qual a validade secundária das coberturas?", a: "7 dias." },
-      { id: 86, level: "Básico", q: "Qual a temperatura do Mix no reservatório da máquina?", a: "De 1 a 4°C." },
-      { id: 87, level: "Básico", q: "Qual a validade secundária do biju?", a: "3 dias na embalagem original e 24 horas no dispensador." },
-      { id: 88, level: "Básico", q: "Qual a validade secundária da casquinha/cascão?", a: "3 dias na embalagem original e 12 horas no dispensador." },
-      { id: 89, level: "Básico", q: "Qual a validade secundária da Cebola Crispy?", a: "7 dias na embalagem original e 2 horas na mesa de condimentação." },
-      { id: 90, level: "Básico", q: "Qual a temperatura de extração do refrigerante?", a: "De 1 a 4°C." },
-      { id: 91, level: "Básico", q: "Qual a temperatura de extração dos sucos?", a: "De 1 a 7°C." },
-      { id: 92, level: "Básico", q: "Por que colocamos gelo nos refrigerantes?", a: "Para manter a temperatura e a carbonatação." },
-      { id: 93, level: "Básico", q: "Quais as cores dos esfregões que devemos usar na cozinha, balcão, salão, banheiros e externa?", a: "Cozinha Vermelho, Balcão e salão Azul, Banheiros e externa Verde." },
-      { id: 94, level: "Básico", q: "Qual a quantidade de cobertura que colocamos nos McShakes de Chocolate e Morango?", a: "Chocolate 1 oz e Morango 2 oz." },
-      { id: 95, level: "Básico", q: "Por quantos segundos devemos bater o McShake?", a: "18 segundos." },
-      { id: 96, level: "Básico", q: "Qual a quantidade de itens nos sacos A, B e C respectivamente?", a: "1 a 3, 4 a 6 e 7 a 9 respectivamente." },
-      { id: 97, level: "Básico", q: "Quando devemos servir o pedido na OAT?", a: "Após todos os itens estarem prontos." },
-      { id: 98, level: "Básico", q: "Qual a ordem sequência correta de montagem das bandejas?", a: "Sanduíches, batatas, bebidas e sobremesas." },
-      { id: 99, level: "Básico", q: "Qual o primeiro passo para fazer o McShake?", a: "Colocar 15 ml de leite no fundo do copo." },
-      { id: 100, level: "Básico", q: "De que forma identificamos as bebidas zero?", a: "Colocando a letra Z com caneta no copo." },
-      { id: 101, level: "Básico", q: "Qual o tamanho da casquinha?", a: "3,5 voltas ou 7,5 cm." },
-      { id: 102, level: "Básico", q: "Qual o 5º item que podemos sugerir para complementar a refeição do cliente?", a: "O café." },
-      { id: 103, level: "Básico", q: "Qual o tempo de vida do café coado?", a: "1 hora." },
-      { id: 104, level: "Básico", q: "Quais são as 5 estações principais do Drive-Thru?", a: "Face (COD), Caixa Drive, Apoio, Entrega e Conferente." },
-      { id: 105, level: "Básico", q: "Qual o objetivo de imprecisão do delivery dos restaurantes?", a: "1%." },
-      { id: 106, level: "Básico", q: "A partir de quantas bebidas usamos suporte no drive?", a: "A partir de 2 bebidas." },
-      { id: 107, level: "Básico", q: "O que é sistema PEPS?", a: "Primeiro que entra, primeiro que sai." },
-      { id: 108, level: "Intermediário", q: "Qual a temperatura da mesa de condimentação?", a: "De 49 a 57°C." },
-      { id: 109, level: "Intermediário", q: "Qual o empilhamento máximo dos pães?", a: "Big Mac 26 bandejas, demais 20 bandejas." },
-      { id: 110, level: "Intermediário", q: "Qual sabonete usamos para lavar as mãos?", a: "Sabonete Bactericida." },
-      { id: 111, level: "Intermediário", q: "Onde encontramos informações sobre alérgenos alimentares?", a: "Na lâmina de bandeja, Saber ou site do McDonald's." },
-      { id: 112, level: "Intermediário", q: "Qual o zoom correto para o KVS da linha?", a: "4X2." },
-      { id: 113, level: "Intermediário", q: "Quais as primeiras estações que devemos posicionar na cozinha?", a: "Chapa e LOPE." },
-      { id: 114, level: "Intermediário", q: "Em qual momento o iniciador aperta servido no pedido da linha, quando trabalhamos com 2 pessoas?", a: "Após dar os dois primeiros condimentos ou assim que a pessoa da condimentação assumir." },
-      { id: 115, level: "Intermediário", q: "Qual a condimentação correta da Salada Mix?", a: "120 g de alface, 4 tomates cereja, 14 g de cebola shoyu, 4 picles, 16 g de bacon triturado e uma carne." },
-      { id: 116, level: "Intermediário", q: "Qual o tempo de vida primária do tomate?", a: "Produtos hortifruti in natura não têm tempo de validade." },
-      { id: 117, level: "Intermediário", q: "Quantos panos devemos ter na área de chapa e para que servem?", a: "4 panos: 2 para utensílios, 1 para área gordurosa, 1 para áreas não gordurosas." },
-      { id: 118, level: "Intermediário", q: "Qual o tempo de remoção das carnes?", a: "18 segundos." },
-      { id: 119, level: "Intermediário", q: "Qual o tempo de vida secundário do bacon cru?", a: "5 dias, incluindo o tempo de descongelamento de 12 horas." },
-      { id: 120, level: "Intermediário", q: "Qual o tempo de vida da mostarda depois de aberta?", a: "7 dias sob refrigeração." },
-      { id: 121, level: "Intermediário", q: "Qual o tempo de vida do picles após aberto?", a: "3 dias sob refrigeração (com salmoura). Sem salmoura 24 horas." },
-      { id: 122, level: "Intermediário", q: "Qual o tempo de vida primário da cebola e alface?", a: "10 dias, incluindo a data de fabricação." },
-      { id: 123, level: "Intermediário", q: "Qual o percentual máximo de compostos polares aceitável para a gordura?", a: "24%." },
-      { id: 124, level: "Intermediário", q: "Quais os sinais de decomposição do óleo?", a: "Espuma Amarelada, Cheiro Forte e ácido, Cor escura e Fumaça excessiva." },
-      { id: 125, level: "Intermediário", q: "Quais são os 6 inimigos do óleo?", a: "Sal, Ar, Água, Altas temperaturas, Resíduos de carbono e Detergente." },
-      { id: 126, level: "Intermediário", q: "Qual o tempo de vida do queijo na mesa de preparação?", a: "4 horas, incluindo 2 horas de ambientação." },
-      { id: 127, level: "Intermediário", q: "Qual a quantidade de água que devemos usar para hidratar 1 pacote de cebola?", a: "3 litros, de 1 a 4°C." },
-      { id: 128, level: "Intermediário", q: "Quantas fatias de queijo podemos colocar em cada espaço da cuba de ambientação para queijos?", a: "1 bloco, 40 fatias, dividido em 2 partes." },
-      { id: 129, level: "Intermediário", q: "A que altura devemos segurar o saleiro das McFritas?", a: "20 cm." },
-      { id: 130, level: "Intermediário", q: "De que forma devemos segurar as pistolas de molho ao condimentar os sanduíches?", a: "Com as duas mãos a 2 cm de altura." },
-      { id: 131, level: "Intermediário", q: "Qual o peso das McFritas P, M e G?", a: "73 g, 102 g e 146 g, respectivamente." },
-      { id: 132, level: "Intermediário", q: "Quantas vezes devemos misturar as McFritas após salgá-las?", a: "De 2 a 3 vezes para misturar o sal por igual." },
-      { id: 133, level: "Intermediário", q: "Qual a temperatura e tempo de aquecimento das chapas?", a: "Platen Superior 218°C / Inferior 177°C - Aquecimento 45 minutos." },
-      { id: 134, level: "Intermediário", q: "Qual a temperatura e tempo de congelamento dos congeladores portáteis?", a: "De -18 a -23°C e 45 minutos de congelamento." },
-      { id: 135, level: "Intermediário", q: "Onde devem ser descartados os rejeitos?", a: "Lixeira identificada com etiqueta e saco preto." },
-      { id: 136, level: "Intermediário", q: "Quais os princípios da Cooltura de Serviço?", a: "Agilidade, Generosidade, Humildade, Vocação de Serviço e Inclusão." },
-      { id: 137, level: "Intermediário", q: "Qual o propósito da Marca?", a: "Fazer de cada dia uma oportunidade de alimentar pessoas e construir sonhos." },
-      { id: 138, level: "Intermediário", q: "Qual a declaração de identidade da Marca?", a: "Fazemos as coisas simples, juntos e com paixão." },
-      { id: 139, level: "Intermediário", q: "Com quanto tempo de antecedência deve ser feito o plano de chão?", a: "48 horas." },
-      { id: 140, level: "Intermediário", q: "Qual é a promessa do fazer?", a: "Fazer bem, fazer rápido e fazer especial." },
-      { id: 141, level: "Intermediário", q: "Qual a condimentação e quantidades de ingredientes do Quarteirão?", a: "1/40 oz de mostarda, 1/2 oz de ketchup, 7 g de cebola fresca, 2 picles, 2 fatias de queijo em estrela, 1 carne 4:1." },
-      { id: 142, level: "Intermediário", q: "Qual a condimentação e quantidades de ingredientes do Cheeseburger?", a: "1/40 oz de mostarda, 1/3 oz de ketchup, 1 picles, 1 fatia de queijo, 1 carne de 10:1 com 3,5 g de cebola." },
-      { id: 143, level: "Intermediário", q: "Qual a condimentação e quantidades de ingredientes do McNífico Bacon?", a: "1/40 oz mostarda, 1/2 oz ketchup, 7 g cebola fresca, 2/3 oz maionese, 28 g alface, 2 tomates, 2 bacons, 1 queijo, 1 carne 4:1." },
-      { id: 144, level: "Intermediário", q: "Qual o distanciamento e espaçamento que devemos manter entre as caixas nas câmaras?", a: "5 cm do chão e das paredes e 2,5 cm entre as caixas." },
-      { id: 145, level: "Intermediário", q: "Qual o empilhamento máximo para as caixas de batata?", a: "6 caixas." },
-      { id: 146, level: "Intermediário", q: "Qual o empilhamento máximo para as caixas de alface?", a: "6 caixas." },
-      { id: 147, level: "Intermediário", q: "Qual o empilhamento máximo para as caixas de mix?", a: "4 caixas." },
-      { id: 148, level: "Intermediário", q: "Qual o empilhamento máximo para caixas de suco?", a: "4 caixas." },
-      { id: 149, level: "Intermediário", q: "Qual o empilhamento máximo para caixas de queijo?", a: "5 caixas." },
-      { id: 150, level: "Intermediário", q: "O que significa a sigla LOPE?", a: "Limpeza, Organização, Preparação e Estocagem." },
-      { id: 151, level: "Intermediário", q: "Qual é o método de 4 etapas que usamos para lavar utensílios e equipamentos?", a: "Limpar, Lavar, Enxaguar e Sanitizar." },
-      { id: 152, level: "Intermediário", q: "Qual a velocidade de extração dos sorvetes?", a: "De 5 a 7,5 oz em 10 segundos." },
-      { id: 153, level: "Intermediário", q: "Qual deve ser a proporção correta de suco concentrado e água?", a: "3 partes de suco para 15 de água." },
-      { id: 154, level: "Intermediário", q: "Qual a ordem correta de experimentação dos refrigerantes?", a: "Coca, Fanta, Coca Zero, Sprite Zero, Fanta Guaraná." },
-      { id: 155, level: "Intermediário", q: "Qual a ordem de experimentação dos sucos?", a: "Laranja e uva." },
-      { id: 156, level: "Intermediário", q: "Qual a temperatura do banho-maria e das coberturas?", a: "De 57° a 63°C e de 46° a 52°C, respectivamente." },
-      { id: 157, level: "Intermediário", q: "Quantas pedras de gelo colocamos nos refrigerantes P, M e G?", a: "0,5 pá (5 pedras), 2/3 pá (7 pedras) e 1 pá (10 pedras), respectivamente." },
-      { id: 158, level: "Intermediário", q: "Quais as quantidades corretas de 1 Sundae?", a: "4 voltas e meia de massa (4,5 oz), 2 tiros de cobertura (1 oz) e 7 gramas de amendoim." },
-      { id: 159, level: "Intermediário", q: "Quais as quantidades corretas de 1 Top Sundae?", a: "6 voltas de massa (6 oz), 2 tiros de cobertura (1 no fundo e 1 em cima = 1 oz), 1 tiro de paçoca (1 oz) e 2 bijus." },
-      { id: 160, level: "Intermediário", q: "Qual a temperatura ambiente do salão?", a: "De 23 a 27°C." },
-      { id: 161, level: "Intermediário", q: "Quais os materiais necessários que devemos ter no salão para limpeza das mesas e bancos?", a: "1 pano seco e 1 úmido para mesas, 1 pano seco e 1 úmido para bancos e 1 borrifador com sanitizante." },
-      { id: 162, level: "Intermediário", q: "Quais são os 4 grupos de produtos que compõem o pedido do cliente?", a: "Sanduíches, acompanhamentos, bebidas e sobremesas." },
-      { id: 163, level: "Avançado", q: "Qual a temperatura da tostadeira?", a: "Placa A e B 271°C e Placa C 254°C." },
-      { id: 164, level: "Avançado", q: "O que é contaminação cruzada?", a: "É a transferência de microrganismos de um lugar para outro." },
-      { id: 165, level: "Avançado", q: "O que são Alérgenos?", a: "São substâncias que podem causar reações alérgicas no organismo como resposta do sistema imunológico." },
-      { id: 166, level: "Avançado", q: "Qual a calibragem do dispensador de ketchup?", a: "Ketchup Regular 6 tiros = 2 oz/60 ml, Quarteirão 6 tiros = 3 oz/90 ml." },
-      { id: 167, level: "Avançado", q: "Qual a calibragem do dispensador de mostarda?", a: "47 tiros = 1 oz/30 ml." },
-      { id: 168, level: "Avançado", q: "Qual a calibragem da pistola de molho Big Mac?", a: "4 tiros de 1/2 oz = 2 oz/60 ml." },
-      { id: 169, level: "Avançado", q: "Qual a velocidade do motor da tostadeira?", a: "A partir de 3300." },
-      { id: 170, level: "Avançado", q: "Qual o procedimento correto de sanitização dos tomates?", a: "1. Retirar pela tabela chart; 2. Lavar em água corrente; 3. Cobrir com sanitizante por 15 min; 4. Enxaguar em água corrente." },
-      { id: 171, level: "Avançado", q: "Qual procedimento devemos seguir ao trabalhar com a tela LOOK & COOK?", a: "OSA: Olha, Serve e Ativa." },
-      { id: 172, level: "Avançado", q: "Qual o ponto de partida para as carnes vermelhas?", a: "10:1 a partir de 39\" (Next Gen 41\") | 4:1 a partir de 104\" (Next Gen 126\")." },
-      { id: 173, level: "Avançado", q: "Qual o Gap correto para as carnes de 10:1?", a: "225\" por 20 segundos, final 290\"." },
-      { id: 174, level: "Avançado", q: "Qual a temperatura da estufa de tortas?", a: "De 66 a 82°C." },
-      { id: 175, level: "Avançado", q: "Qual a capacidade máxima de tortas na estufa?", a: "32 tortas." },
-      { id: 176, level: "Avançado", q: "O que significa Manutenção e Recuperação na área de produtos fritos?", a: "Manutenção: ativar para manter o nível PLS. Recuperação: ativar para repor o nível PLS com gavetas zeradas." },
-      { id: 177, level: "Avançado", q: "Qual a concentração correta de cloro no sanitizante presente nos panos e borrifadores?", a: "De 50 a 100 ppm." },
-      { id: 178, level: "Avançado", q: "Qual o rendimento da mostarda pouch?", a: "1235 sanduíches por kg." },
-      { id: 179, level: "Avançado", q: "Qual o rendimento da Alface?", a: "45,4 sanduíches por kg." },
-      { id: 180, level: "Avançado", q: "Qual o tempo de vida primário dos sucos?", a: "Uva 180 dias e Laranja 150 dias." },
-      { id: 181, level: "Avançado", q: "Quais são as três dimensões que concretizam a Missão do Embaixador na Experiência do Cliente?", a: "Viagem do cliente, Experiência Familiar e Construção de Vendas." },
-      { id: 182, level: "Avançado", q: "Em que ano e onde foi fundado o McDonald's?", a: "Em 1955, na cidade de Des Plaines, Illinois, Estados Unidos." },
-      { id: 183, level: "Avançado", q: "Onde e em que ano inaugurou o primeiro McDonald's no Brasil?", a: "Em 1979, na rua Hilário de Gouveia, em Copacabana, no Rio de Janeiro." },
-      { id: 184, level: "Avançado", q: "Quando inaugurou o primeiro McDonald's em São Paulo?", a: "Em 1981, na Av. Paulista." },
-      { id: 185, level: "Avançado", q: "Qual a condimentação e quantidades de ingredientes do Big Mac?", a: "1 tiro de 1/2 oz de molho Big na base e no club, 12 g de alface na base e 12 g no club (24 g), 2 picles no club, 1 queijo na base e 2 carnes 10:1 com 3,5 g de cebola." },
-      { id: 186, level: "Avançado", q: "Qual a condimentação e quantidades de ingredientes do Big Tasty?", a: "2 tiros de 1 oz molho Tasty (base e coroa), 10 g cebola, 28 g alface, 2 tomates, 3 queijos ementhal, carne 4:1 (1, 2 ou 3) destacando a TAG." },
-      { id: 187, level: "Avançado", q: "Quais são os 7 conceitos da UHC?", a: "UHC é o coração da cozinha; Ativar pouco, porém sempre; Usar sistema de garagem; Conhecer tempos das carnes; Acelerar/desacelerar na mesma chamada; Seguir níveis PLS; Não compensar um erro com outro." },
-      { id: 188, level: "Avançado", q: "O que é e para que serve a caramelização dos pães?", a: "É a queima de 5% do açúcar do pão e serve para criar uma película que impede que os condimentos penetrem no pão." },
-      { id: 189, level: "Avançado", q: "Quais são as temperaturas da Zona de Risco para crescimento de microrganismos?", a: "De 4,4°C a 60°C." },
-      { id: 190, level: "Avançado", q: "Qual a temperatura de extração do sorvete?", a: "-8 a -9°C." },
-      { id: 191, level: "Avançado", q: "Qual a proporção correta de água e xarope para refrigerantes normais?", a: "1 parte de xarope para 5,2 partes de água." },
-      { id: 192, level: "Avançado", q: "Quais são os 7 básicos operacionais?", a: "Plano de chão, Rota Gerencial, Pré-Plantão, Pós-Plantão, Posicionamento, Checklist e Experimentação." },
-      { id: 193, level: "Avançado", q: "O que é overrun do mix e qual o seu percentual?", a: "Mede a proporção entre mix e ar; seu percentual é de 55 a 65% com ideal 58%." },
-      { id: 194, level: "Avançado", q: "Quais as quantidades corretas de complementos dos sorvetes?", a: "Gotas 50 g, Rocks 20 g, Ovomaltine 20 g, Paçoca 20 g, Ovo Shake 54 g." },
-      { id: 195, level: "Avançado", q: "Qual a temperatura do café coado?", a: "A partir de 77°C." },
-      { id: 196, level: "Avançado", q: "Qual a proporção correta de água e café para o café coado?", a: "1.100 ml de água para 1 pacote de 50 g de café." },
-      { id: 197, level: "Avançado", q: "O que é Best Burger?", a: "É o novo padrão para os hambúrgueres McDonald's. Pequenas mudanças, grande impacto." },
-      { id: 198, level: "Avançado", q: "Quais são as técnicas dos influencers vendedores?", a: "Somos Especialistas, Gostamos de Surpreender, Criamos Oportunidades, Vivenciamos as mesmas coisas, Criamos tendência, Somos Afetuosos." },
-      { id: 199, level: "Avançado", q: "Qual o rendimento da batata?", a: "9,11 batatas pequenas por kg." },
-      { id: 200, level: "Avançado", q: "Qual a descrição do padrão ouro de qualidade do suco?", a: "Frio, cor brilhante e sabor doce." }
-    ];
-
-    const STORAGE_USERS_KEY = "mequi_olimpiadas_users_v5";
-    const STORAGE_CURRENT_KEY = "mequi_olimpiadas_active_user_v5";
-    const ADMIN_SECRET_PASS = "342005";
-
-    // Nuvem Global Compartilhada em Tempo Real (Keyvalue / Npoint / TextDB)
-    const CLOUD_SYNC_URL = "https://keyvalue.immanuel.co/api/KeyVal/GetValue/9x8v7b6n/mequi_olimpiadas_2026";
-    const CLOUD_SAVE_URL = "https://keyvalue.immanuel.co/api/KeyVal/UpdateValue/9x8v7b6n/mequi_olimpiadas_2026";
-
-    let users = JSON.parse(localStorage.getItem(STORAGE_USERS_KEY) || "{}");
-
-    if (!users["daniel pessoa de oliveira"]) {
-      users["daniel pessoa de oliveira"] = {
-        name: "DANIEL PESSOA DE OLIVEIRA",
-        station: "Gerência / Treinador",
-        password: "1234",
-        xp: 250,
-        correctAnswers: 2,
-        updatedAt: Date.now()
-      };
-    }
-
-    let currentUserKey = localStorage.getItem(STORAGE_CURRENT_KEY) || null;
-    let currentBookFilter = "ALL";
-    let currentStreak = 0;
-    let currentHearts = 5;
-    let isAdminUnlocked = false;
-
-    function mergeUserDictionaries(localDict, remoteDict) {
-      const merged = { ...localDict };
-      if (!remoteDict || typeof remoteDict !== "object") return merged;
-
-      Object.keys(remoteDict).forEach(k => {
-        const rUser = remoteDict[k];
-        if (!rUser || !rUser.name) return;
-        if (rUser._deleted) {
-          delete merged[k];
-          return;
-        }
-        if (!merged[k]) {
-          merged[k] = rUser;
-        } else {
-          const localTime = merged[k].updatedAt || 0;
-          const remoteTime = rUser.updatedAt || 0;
-          if (remoteTime > localTime || (rUser.xp || 0) > (merged[k].xp || 0)) {
-            merged[k] = {
-              ...merged[k],
-              ...rUser,
-              xp: Math.max(merged[k].xp || 0, rUser.xp || 0),
-              correctAnswers: Math.max(merged[k].correctAnswers || 0, rUser.correctAnswers || 0)
-            };
-          }
-        }
-      });
-      return merged;
-    }
-
-    // Puxa todos os cadastros da nuvem e junta com os locais
-    async function pullFromCloud(showFeedback = false) {
-      const statusEl = document.getElementById("syncStatusText");
-      if (showFeedback && statusEl) statusEl.textContent = "🔄 Buscando novos cadastros...";
-      try {
-        const res = await fetch(CLOUD_SYNC_URL + "?t=" + Date.now(), { cache: "no-store" });
-        if (res.ok) {
-          const rawText = await res.json();
-          if (rawText && rawText !== "null" && rawText !== "") {
-            const decoded = JSON.parse(decodeURIComponent(atob(rawText)));
-            users = mergeUserDictionaries(users, decoded);
-            localStorage.setItem(STORAGE_USERS_KEY, JSON.stringify(users));
-            renderLeaderboard();
-            updateHeaderUI();
-            if (isAdminUnlocked) renderAdminUsersList();
-          } else {
-            await pushToCloud();
-          }
-          if (statusEl) statusEl.textContent = "● Nuvem Sincronizada (Todos os Aparelhos)";
-        }
-      } catch (err) {
-        if (statusEl) statusEl.textContent = "● Sincronização Local";
-      }
-    }
-
-    // Salva unificando primeiro com a nuvem para nunca apagar cadastros de outros celulares
-    async function saveAndSyncUsers(forceOverwrite = false) {
-      localStorage.setItem(STORAGE_USERS_KEY, JSON.stringify(users));
-      renderLeaderboard();
-      updateHeaderUI();
-      if (isAdminUnlocked) renderAdminUsersList();
-
-      try {
-        if (!forceOverwrite) {
-          const res = await fetch(CLOUD_SYNC_URL + "?t=" + Date.now(), { cache: "no-store" });
-          if (res.ok) {
-            const rawText = await res.json();
-            if (rawText && rawText !== "null" && rawText !== "") {
-              const remoteDict = JSON.parse(decodeURIComponent(atob(rawText)));
-              users = mergeUserDictionaries(users, remoteDict);
-              localStorage.setItem(STORAGE_USERS_KEY, JSON.stringify(users));
-            }
-          }
-        }
-        await pushToCloud();
-      } catch (e) {}
-    }
-
-    async function pushToCloud() {
-      try {
-        const base64Payload = btoa(encodeURIComponent(JSON.stringify(users)));
-        await fetch(`${CLOUD_SAVE_URL}/${encodeURIComponent(base64Payload)}`, {
-          method: "POST"
-        });
-        const statusEl = document.getElementById("syncStatusText");
-        if (statusEl) statusEl.textContent = "● Nuvem Sincronizada (Todos os Aparelhos)";
-      } catch (e) {}
-    }
-
-    function getLevelInfo(xp) {
-      if (xp >= 10000) return { level: 5, title: "👑 Nível 5 — Mestre das Olimpíadas", min: 2000, max: 3000 };
-      if (xp >= 5000) return { level: 4, title: "🥇 Nível 4 — Padrão Ouro Venture", min: 1000, max: 2000 };
-      if (xp >= 1000)  return { level: 3, title: "🥈 Nível 3 — Especialista de Prata", min: 500, max: 1000 };
-      if (xp >= 500)  return { level: 2, title: "🥉 Nível 2 — Chapa de Bronze", min: 200, max: 500 };
-      return { level: 1, title: "🔰 Nível 1 — Treinador Iniciante", min: 0, max: 200 };
-    }
-
-    function switchAuthTab(mode) {
-      document.getElementById("authError").classList.add("hidden");
-      if (mode === "login") {
-        document.getElementById("loginForm").classList.remove("hidden");
-        document.getElementById("registerForm").classList.add("hidden");
-        document.getElementById("tabLoginBtn").className = "flex-1 py-2 text-xs font-extrabold rounded-lg bg-white text-gray-900 shadow";
-        document.getElementById("tabRegisterBtn").className = "flex-1 py-2 text-xs font-extrabold rounded-lg text-gray-500";
-      } else {
-        document.getElementById("loginForm").classList.add("hidden");
-        document.getElementById("registerForm").classList.remove("hidden");
-        document.getElementById("tabRegisterBtn").className = "flex-1 py-2 text-xs font-extrabold rounded-lg bg-white text-gray-900 shadow";
-        document.getElementById("tabLoginBtn").className = "flex-1 py-2 text-xs font-extrabold rounded-lg text-gray-500";
-      }
-    }
-
-    function showAuthError(msg) {
-      const err = document.getElementById("authError");
-      err.textContent = msg;
-      err.classList.remove("hidden");
-    }
-
-    async function handleRegister() {
-      const name = document.getElementById("regName").value.trim().toUpperCase();
-      const station = document.getElementById("regStation").value;
-      const pass = document.getElementById("regPass").value.trim();
-
-      if (name.length < 2) return showAuthError("Digite seu nome ou apelido válido.");
-      if (pass.length < 4) return showAuthError("A senha precisa ter pelo menos 4 dígitos.");
-
-      const btn = document.getElementById("btnRegSubmit");
-      btn.textContent = "SINCRONIZANDO NA NUVEM...";
-      btn.disabled = true;
-
-      await pullFromCloud();
-
-      const key = name.toLowerCase();
-      users[key] = {
-        name: name,
-        station: station,
-        password: pass,
-        xp: users[key] ? users[key].xp : 0,
-        correctAnswers: users[key] ? users[key].correctAnswers : 0,
-        updatedAt: Date.now()
-      };
-
-      currentUserKey = key;
-      localStorage.setItem(STORAGE_CURRENT_KEY, key);
-      await saveAndSyncUsers(true);
-
-      btn.textContent = "CRIAR CONTA E SINCRONIZAR ✅";
-      btn.disabled = false;
-      document.getElementById("authModal").classList.add("hidden");
-    }
-
-    async function handleLogin() {
-      const name = document.getElementById("loginName").value.trim();
-      const pass = document.getElementById("loginPass").value.trim();
-      const key = name.toLowerCase();
-
-      const btn = document.getElementById("btnLoginSubmit");
-      btn.textContent = "VERIFICANDO CADASTRO...";
-      btn.disabled = true;
-
-      await pullFromCloud();
-
-      btn.textContent = "ENTRAR NO TREINAMENTO 🚀";
-      btn.disabled = false;
-
-      if (!users[key]) return showAuthError("Usuário não encontrado! Clique na aba 'Novo Cadastro' acima.");
-      if (users[key].password && users[key].password !== pass) return showAuthError("Senha incorreta! Tente novamente.");
-
-      currentUserKey = key;
-      localStorage.setItem(STORAGE_CURRENT_KEY, key);
-      document.getElementById("authModal").classList.add("hidden");
-      updateHeaderUI();
-      renderLeaderboard();
-    }
-
-    function logoutUser() {
-      currentUserKey = null;
-      localStorage.removeItem(STORAGE_CURRENT_KEY);
-      document.getElementById("loginPass").value = "";
-      document.getElementById("authModal").classList.remove("hidden");
-    }
-
-    function addXp(amount) {
-      if (!currentUserKey || !users[currentUserKey]) return;
-      users[currentUserKey].xp = Math.max(0, (users[currentUserKey].xp || 0) + amount);
-      users[currentUserKey].updatedAt = Date.now();
-      saveAndSyncUsers();
-    }
-
-    function updateHeaderUI() {
-      if (!currentUserKey || !users[currentUserKey]) return;
-      const u = users[currentUserKey];
-      const info = getLevelInfo(u.xp || 0);
-
-      document.getElementById("userNameDisplay").textContent = u.name;
-      document.getElementById("userStationBadge").textContent = u.station;
-      document.getElementById("userXpDisplay").textContent = `${u.xp || 0} XP`;
-      document.getElementById("userRankTitle").textContent = info.title;
-      document.getElementById("currentLevelNum").textContent = `Nível ${info.level}`;
-
-      const progress = Math.min(100, Math.round((((u.xp || 0) - info.min) / (info.max - info.min)) * 100));
-      document.getElementById("xpProgressBar").style.width = `${Math.max(8, progress)}%`;
-
-      if (info.level < 5) {
-        document.getElementById("nextLevelTarget").textContent = `Faltam ${info.max - (u.xp || 0)} XP para o Nível ${info.level + 1}`;
-      } else {
-        document.getElementById("nextLevelTarget").textContent = `Nível Máximo Alcançado! 👑`;
-      }
-    }
-
-    function startNewQuiz() {
-      currentStreak = 0;
-      currentHearts = 5;
-      loadNextQuizQuestion();
-    }
-
-    function updateHeartsDisplay() {
-      document.getElementById("quizHeartsInfo").textContent = "❤️".repeat(currentHearts) + "🖤".repeat(5 - currentHearts);
-    }
-
-    function loadNextQuizQuestion() {
-      if (currentHearts <= 0) currentHearts = 5;
-      updateHeartsDisplay();
-
-      const levelFilter = document.getElementById("quizLevelFilter").value;
-      const pool = levelFilter === "ALL" ? QUESTIONS_DB : QUESTIONS_DB.filter(item => item.level === levelFilter);
-      const randomItem = pool[Math.floor(Math.random() * pool.length)];
-
-      document.getElementById("quizQuestionMeta").textContent = `Pergunta #${randomItem.id} • Nível ${randomItem.level}`;
-      document.getElementById("quizStreakInfo").textContent = `🔥 Sequência: ${currentStreak}`;
-      document.getElementById("quizQuestionText").textContent = randomItem.q;
-      document.getElementById("quizFeedback").classList.add("hidden");
-      document.getElementById("nextQuizBtn").classList.add("hidden");
-
-      const others = QUESTIONS_DB.filter(item => item.id !== randomItem.id)
-        .sort(() => 0.5 - Math.random())
-        .slice(0, 3)
-        .map(item => item.a);
-
-      const options = [...others, randomItem.a].sort(() => 0.5 - Math.random());
-      const container = document.getElementById("quizOptions");
-      container.innerHTML = "";
-
-      options.forEach(opt => {
-        const btn = document.createElement("button");
-        btn.className = "w-full text-left p-3.5 rounded-xl border-2 border-gray-200 hover:border-amber-400 font-semibold text-xs text-gray-800 transition flex items-center justify-between bg-gray-50";
-        btn.textContent = opt;
-        btn.onclick = () => checkQuizAnswer(btn, opt, randomItem.a);
-        container.appendChild(btn);
-      });
-    }
-
-    function checkQuizAnswer(selectedBtn, chosen, correct) {
-      const allBtns = document.querySelectorAll("#quizOptions button");
-      allBtns.forEach(b => b.disabled = true);
-
-      const fb = document.getElementById("quizFeedback");
-      fb.classList.remove("hidden");
-
-      if (chosen === correct) {
-        selectedBtn.className = "w-full text-left p-3.5 rounded-xl border-2 border-green-600 bg-green-100 font-bold text-xs text-green-900";
-        currentStreak++;
-        if (currentUserKey && users[currentUserKey]) {
-          users[currentUserKey].correctAnswers = (users[currentUserKey].correctAnswers || 0) + 1;
-        }
-        addXp(25);
-        fb.className = "p-3 rounded-xl text-xs font-bold bg-green-100 text-green-800";
-        fb.textContent = "✅ Mandou muito bem! Resposta exata do Book Venture (+25 XP)!";
-      } else {
-        selectedBtn.className = "w-full text-left p-3.5 rounded-xl border-2 border-red-600 bg-red-100 font-bold text-xs text-red-900";
-        currentStreak = 0;
-        currentHearts = Math.max(0, currentHearts - 1);
-        updateHeartsDisplay();
-        fb.className = "p-3 rounded-xl text-xs font-bold bg-red-100 text-red-800";
-        fb.innerHTML = `❌ Quase! O gabarito oficial é:<br><span class="underline">${correct}</span>`;
-      }
-
-      document.getElementById("quizStreakInfo").textContent = `🔥 Sequência: ${currentStreak}`;
-      document.getElementById("nextQuizBtn").classList.remove("hidden");
-    }
-
-    function loadRandomFlashcard() {
-      const item = QUESTIONS_DB[Math.floor(Math.random() * QUESTIONS_DB.length)];
-      document.getElementById("fcMeta").textContent = `Questão #${item.id} (${item.level}) • Toque para revelar (+10 XP)`;
-      document.getElementById("fcQuestion").textContent = item.q;
-      const ans = document.getElementById("fcAnswer");
-      ans.textContent = `✅ Gabarito: ${item.a}`;
-      ans.classList.add("hidden");
-    }
-
-    function flipFlashcard() {
-      const ans = document.getElementById("fcAnswer");
-      if (ans.classList.contains("hidden")) {
-        ans.classList.remove("hidden");
-        addXp(10);
-      } else {
-        loadRandomFlashcard();
-      }
-    }
-
-    function setBookFilter(level) {
-      currentBookFilter = level;
-      renderBookList();
-    }
-
-    function renderBookList() {
-      const search = document.getElementById("searchBookInput").value.toLowerCase();
-      const container = document.getElementById("bookQuestionsContainer");
-      container.innerHTML = "";
-
-      const filtered = QUESTIONS_DB.filter(item => {
-        const matchesLevel = currentBookFilter === "ALL" || item.level === currentBookFilter;
-        const matchesText = item.q.toLowerCase().includes(search) || item.a.toLowerCase().includes(search) || String(item.id).includes(search);
-        return matchesLevel && matchesText;
-      });
-
-      document.getElementById("bookCountBadge").textContent = `${filtered.length} questões`;
-
-      filtered.forEach(item => {
-        const card = document.createElement("div");
-        card.className = "bg-white rounded-2xl p-3.5 shadow-sm border border-gray-100";
-        card.innerHTML = `
-          <div class="flex items-center justify-between mb-1">
-            <span class="text-[10px] font-black px-2 py-0.5 rounded-full bg-red-50 text-red-700">Questão #${item.id} • ${item.level}</span>
-            <button onclick="revealBookAnswer(this)" class="text-[11px] font-bold text-amber-600 underline">Ver Resposta (+5 XP)</button>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <div>
+              <label class="text-[10px] font-bold text-gray-600 uppercase">Nome do Colaborador</label>
+              <input id="admNewName" type="text" placeholder="Ex: LUCAS SILVA" class="w-full mt-0.5 px-3 py-2 rounded-xl border border-gray-300 text-xs font-bold uppercase" />
+            </div>
+            <div>
+              <label class="text-[10px] font-bold text-gray-600 uppercase">Estação Principal</label>
+              <select id="admNewStation" class="w-full mt-0.5 px-3 py-2 rounded-xl border border-gray-300 text-xs font-semibold bg-white">
+                <option value="Cozinha & Chapa">🍔 Cozinha & Chapa</option>
+                <option value="Balcão & Caixa">🍟 Balcão & Caixa</option>
+                <option value="McFritas & Fritos">🔥 McFritas & Fritos</option>
+                <option value="Bebidas & Sobremesas">🍦 Bebidas & Sobremesas</option>
+                <option value="Drive-Thru & Delivery">🚗 Drive-Thru & Delivery</option>
+                <option value="LOPE & Qualidade">🧹 LOPE & Qualidade</option>
+                <option value="Gerência / Treinador">⭐ Gerência / Treinador</option>
+              </select>
+            </div>
           </div>
-          <p class="font-bold text-gray-900 text-xs">${item.q}</p>
-          <p class="hidden mt-2 pt-2 border-t border-gray-100 text-xs font-semibold text-green-700">✅ ${item.a}</p>
-        `;
-        container.appendChild(card);
-      });
-    }
 
-    function revealBookAnswer(btn) {
-      const answerEl = btn.parentElement.nextElementSibling.nextElementSibling;
-      if (answerEl.classList.contains("hidden")) {
-        answerEl.classList.remove("hidden");
-        btn.textContent = "Ocultar";
-        addXp(5);
-      } else {
-        answerEl.classList.add("hidden");
-        btn.textContent = "Ver Resposta";
-      }
-    }
-
-    function renderLeaderboard() {
-      const container = document.getElementById("leaderboardContainer");
-      const list = Object.values(users).filter(u => u && u.name && !u._deleted).sort((a, b) => (b.xp || 0) - (a.xp || 0));
-
-      container.innerHTML = list.map((u, idx) => {
-        const medal = idx === 0 ? "🥇 ☕" : idx === 1 ? "🥈" : idx === 2 ? "🥉" : `${idx + 1}º`;
-        const lvl = getLevelInfo(u.xp || 0).level;
-        return `
-          <div class="flex items-center justify-between p-3 rounded-xl ${idx === 0 ? 'bg-amber-50 border border-amber-300' : 'bg-gray-50 border border-gray-100'}">
-            <div class="flex items-center gap-2.5">
-              <span class="font-black text-sm w-8">${medal}</span>
-              <div>
-                <p class="font-extrabold text-xs text-gray-900">${u.name}</p>
-                <p class="text-[10px] text-gray-500 font-semibold">${u.station || 'Equipe'} • Nível ${lvl}</p>
+          <div class="grid grid-cols-3 gap-2">
+            <div>
+              <label class="text-[10px] font-bold text-gray-600 uppercase">Criar Senha</label>
+              <div class="flex gap-1 mt-0.5">
+                <input id="admNewPass" type="text" placeholder="Ex: 4820" class="w-full px-2.5 py-2 rounded-xl border border-gray-300 text-xs font-black text-red-600" />
+                <button onclick="generateRandomPass()" title="Gerar senha aleatória" class="bg-gray-200 hover:bg-gray-300 px-2 rounded-xl text-xs font-bold">🎲</button>
               </div>
             </div>
-            <div class="text-right">
-              <span class="font-black text-xs text-red-600">${u.xp || 0} XP</span>
-              <span class="block text-[10px] text-gray-400">${u.correctAnswers || 0} acertos</span>
+            <div>
+              <label class="text-[10px] font-bold text-gray-600 uppercase">XP Inicial</label>
+              <input id="admNewXp" type="number" value="0" class="w-full mt-0.5 px-3 py-2 rounded-xl border border-gray-300 text-xs font-semibold" />
+            </div>
+            <div>
+              <label class="text-[10px] font-bold text-gray-600 uppercase">Nº Acertos</label>
+              <input id="admNewHits" type="number" value="0" class="w-full mt-0.5 px-3 py-2 rounded-xl border border-gray-300 text-xs font-semibold" />
             </div>
           </div>
-        `;
-      }).join("");
-    }
 
-    function shareMyScoreWhatsApp() {
-      if (!currentUserKey || !users[currentUserKey]) return;
-      const u = users[currentUserKey];
-      const lvl = getLevelInfo(u.xp || 0).level;
-      const text = `🏆 *RANKING OLIMPÍADAS DO BÁSICO*\n👤 Colaborador: *${u.name}*\n🍔 Estação: ${u.station}\n⚡ Pontuação: *${u.xp || 0} XP* (Nível ${lvl})\n✅ Acertos: ${u.correctAnswers || 0}`;
-      window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
-    }
-
-    // PAINEL ADM (SENHA: 342005)
-    function unlockAdminPanel() {
-      const pass = document.getElementById("adminPassInput").value.trim();
-      const err = document.getElementById("adminAuthError");
-      if (pass === ADMIN_SECRET_PASS) {
-        isAdminUnlocked = true;
-        err.classList.add("hidden");
-        document.getElementById("adminLockScreen").classList.add("hidden");
-        document.getElementById("adminDashboard").classList.remove("hidden");
-        pullFromCloud(true);
-        renderAdminUsersList();
-      } else {
-        err.classList.remove("hidden");
-      }
-    }
-
-    function lockAdminPanel() {
-      isAdminUnlocked = false;
-      document.getElementById("adminPassInput").value = "";
-      document.getElementById("adminDashboard").classList.add("hidden");
-      document.getElementById("adminLockScreen").classList.remove("hidden");
-    }
-
-    function renderAdminUsersList() {
-      const container = document.getElementById("adminUsersList");
-      const entries = Object.entries(users).filter(([k, u]) => u && u.name && !u._deleted).sort((a, b) => (b[1].xp || 0) - (a[1].xp || 0));
-      document.getElementById("adminStatsSummary").textContent = `Total: ${entries.length} pessoa(s) cadastrada(s) na loja`;
-
-      container.innerHTML = entries.map(([key, u], index) => {
-        const lvl = getLevelInfo(u.xp || 0).level;
-        return `
-          <div class="p-3.5 rounded-2xl bg-gray-50 border border-gray-200 space-y-2.5">
-            <div class="flex items-center justify-between">
-              <div>
-                <span class="text-[10px] font-black px-2 py-0.5 rounded-full bg-gray-900 text-[#FFC72C]">#${index + 1} • Nível ${lvl}</span>
-                <h4 class="font-black text-xs text-gray-900 mt-1">${u.name}</h4>
-                <p class="text-[11px] text-gray-500 font-semibold">${u.station || 'Sem estação'} • 🔑 Senha: <span class="text-gray-800 font-bold">${u.password || '1234'}</span></p>
-              </div>
-              <div class="text-right">
-                <span class="text-sm font-black text-red-600">${u.xp || 0} XP</span>
-                <span class="block text-[10px] text-gray-500 font-bold">${u.correctAnswers || 0} acertos</span>
-              </div>
-            </div>
-
-            <div class="flex flex-wrap items-center gap-1.5 pt-2 border-t border-gray-200">
-              <button onclick="adminAdjustXp('${key}', 25)" class="px-2.5 py-1.5 rounded-lg bg-green-600 text-white font-black text-[10px]">+25 XP</button>
-              <button onclick="adminAdjustXp('${key}', 100)" class="px-2.5 py-1.5 rounded-lg bg-emerald-700 text-white font-black text-[10px]">+100 XP</button>
-              <button onclick="adminAdjustXp('${key}', -25)" class="px-2.5 py-1.5 rounded-lg bg-amber-600 text-white font-black text-[10px]">-25 XP</button>
-              <button onclick="adminSetCustomXp('${key}')" class="px-2.5 py-1.5 rounded-lg bg-blue-600 text-white font-black text-[10px]">✏️ Definir XP</button>
-              <button onclick="adminResetUser('${key}')" class="px-2.5 py-1.5 rounded-lg bg-gray-300 text-gray-800 font-bold text-[10px]">Zerar</button>
-              <button onclick="adminDeleteUser('${key}')" class="px-2.5 py-1.5 rounded-lg bg-red-100 text-red-700 font-bold text-[10px] ml-auto">🗑️ Excluir</button>
-            </div>
-          </div>
-        `;
-      }).join("");
-    }
-
-    function adminAdjustXp(key, delta) {
-      if (!users[key]) return;
-      users[key].xp = Math.max(0, (users[key].xp || 0) + delta);
-      users[key].updatedAt = Date.now();
-      saveAndSyncUsers(true);
-    }
-
-    function adminSetCustomXp(key) {
-      if (!users[key]) return;
-      const val = prompt(`Digite o novo valor exato de XP para ${users[key].name}:`, users[key].xp || 0);
-      if (val === null) return;
-      const parsed = parseInt(val, 10);
-      if (!isNaN(parsed)) {
-        users[key].xp = Math.max(0, parsed);
-        users[key].updatedAt = Date.now();
-        saveAndSyncUsers(true);
-      }
-    }
-
-    function adminResetUser(key) {
-      if (!users[key]) return;
-      if (!confirm(`Zerar o XP e os acertos de ${users[key].name}?`)) return;
-      users[key].xp = 0;
-      users[key].correctAnswers = 0;
-      users[key].updatedAt = Date.now();
-      saveAndSyncUsers(true);
-    }
-
-    function adminDeleteUser(key) {
-      if (!users[key]) return;
-      if (!confirm(`Tem certeza que deseja excluir ${users[key].name} de todos os aparelhos?`)) return;
-      delete users[key];
-      saveAndSyncUsers(true);
-    }
-
-    function adminSaveMember() {
-      const name = document.getElementById("admNewName").value.trim().toUpperCase();
-      const station = document.getElementById("admNewStation").value;
-      const pass = document.getElementById("admNewPass").value.trim() || "1234";
-      const xp = parseInt(document.getElementById("admNewXp").value || "0", 10);
-      const hits = parseInt(document.getElementById("admNewHits").value || "0", 10);
-
-      if (!name) return alert("Digite o nome do colaborador!");
-      const key = name.toLowerCase();
-
-      users[key] = {
-        name: name,
-        station: station,
-        password: pass,
-        xp: Math.max(0, xp),
-        correctAnswers: Math.max(0, hits),
-        updatedAt: Date.now()
-      };
-
-      saveAndSyncUsers(true);
-
-      document.getElementById("admNewName").value = "";
-      document.getElementById("admNewPass").value = "";
-      document.getElementById("admNewXp").value = "";
-      document.getElementById("admNewHits").value = "";
-      alert(`Colaborador ${name} salvo e sincronizado na nuvem!`);
-    }
-
-    function switchMainTab(tab) {
-      ["quiz", "book", "prizes", "admin", "updates"].forEach(t => {
-        document.getElementById(`tab-${t}`).classList.add("hidden");
-        document.getElementById(`nav-${t}`).className = "flex flex-col items-center text-gray-400 font-bold text-[10px]";
-      });
-      document.getElementById(`tab-${tab}`).classList.remove("hidden");
-      document.getElementById(`nav-${tab}`).className = "flex flex-col items-center text-red-600 font-extrabold text-[10px]";
-      if (tab === "prizes" || tab === "admin") pullFromCloud(true);
-    }
-
-    window.onload = async () => {
-      startNewQuiz();
-      loadRandomFlashcard();
-      renderBookList();
-      renderLeaderboard();
-      await pullFromCloud(true);
-      if (currentUserKey && users[currentUserKey]) {
-        document.getElementById("authModal").classList.add("hidden");
-        updateHeaderUI();
-      }
-      // Sincroniza automaticamente a cada 8 segundos
-      setInterval(() => pullFromCloud(false), 8000);
-    };
-  </script>
-</body>
-</html>
+          <button onclick="adminSaveMember()" class="w-full mc-red text-white font-black py-3 rounded-xl text-xs btn-3d">
+            CRIAR CADASTRO E SALVAR NA NUVEM ✅
