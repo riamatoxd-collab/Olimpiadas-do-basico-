@@ -7,37 +7,62 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="Olimpíadas Méqui" />
-  <title>Olimpíadas do Básico — Venture v6.7</title>
+  <title>Olimpíadas do Básico — Venture v7.0 Pro</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <style>
+    :root {
+      --bg-main: #f1f5f9;
+      --bg-card: #ffffff;
+      --bg-subtle: #f8fafc;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --border-color: #e2e8f0;
+    }
+    body.dark-mode {
+      --bg-main: #090d16;
+      --bg-card: #131b2e;
+      --bg-subtle: #1e293b;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --border-color: #26334d;
+    }
     body {
       font-family: 'Plus Jakarta Sans', sans-serif;
-      background-color: #f1f5f9;
-      color: #0f172a;
+      background-color: var(--bg-main);
+      color: var(--text-main);
       -webkit-tap-highlight-color: transparent;
       overflow-x: hidden;
+      transition: background-color 0.25s ease, color 0.25s ease;
     }
-    .mc-gradient { background: linear-gradient(135deg, #DA291C 0%, #991b1b 100%); }
-    .gold-gradient { background: linear-gradient(135deg, #FFC72C 0%, #f59e0b 100%); }
+    .mc-gradient { background: linear-gradient(135deg, #DA291C 0%, #88130b 100%); }
+    .gold-gradient { background: linear-gradient(135deg, #FFE066 0%, #FFC72C 50%, #f59e0b 100%); }
     .dark-gradient { background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); }
 
-    .fast-card {
-      background: #ffffff;
-      border: 1px solid #e2e8f0;
-      box-shadow: 0 4px 15px -3px rgba(15, 23, 42, 0.05);
+    .pro-card {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.06);
       transform: translateZ(0);
+      transition: background-color 0.25s ease, border-color 0.25s ease;
     }
+    .subtle-box {
+      background-color: var(--bg-subtle);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+    }
+    .text-muted-pro { color: var(--text-muted); }
 
+    /* Botões 3D Animados */
     .btn-anim-red {
       position: relative;
       overflow: hidden;
       background: linear-gradient(180deg, #ef4444 0%, #DA291C 100%);
-      box-shadow: 0 5px 0 #991b1b, 0 8px 16px rgba(218, 41, 28, 0.28);
+      box-shadow: 0 5px 0 #991b1b, 0 8px 16px rgba(218, 41, 28, 0.3);
       transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.18s ease;
     }
-    .btn-anim-red:hover { transform: translateY(-2px); box-shadow: 0 7px 0 #991b1b, 0 12px 20px rgba(218, 41, 28, 0.35); }
+    .btn-anim-red:hover { transform: translateY(-2px); box-shadow: 0 7px 0 #991b1b, 0 12px 20px rgba(218, 41, 28, 0.38); }
     .btn-anim-red:active { transform: translateY(4px) scale(0.98); box-shadow: 0 1px 0 #991b1b; }
 
     .btn-anim-yellow {
@@ -55,7 +80,7 @@
       position: absolute;
       top: 0; left: -120%;
       width: 60%; height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.35), transparent);
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.38), transparent);
       transform: skewX(-20deg);
       animation: shineSweep 3.5s infinite;
     }
@@ -65,19 +90,23 @@
       100% { left: 140%; }
     }
 
+    /* Botões de Alternativas A, B, C, D */
     .option-btn {
-      transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1), border-color 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
-      box-shadow: 0 3px 0 #e2e8f0;
+      background-color: var(--bg-card);
+      border: 2px solid var(--border-color);
+      color: var(--text-main);
+      transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1), border-color 0.15s ease, box-shadow 0.15s ease;
+      box-shadow: 0 3px 0 var(--border-color);
       animation: slideUpFade 0.22s ease backwards;
     }
     .option-btn:hover:not(:disabled) {
       transform: translateY(-2px) scale(1.01);
       border-color: #FFC72C;
-      box-shadow: 0 5px 0 #fde68a;
+      box-shadow: 0 5px 0 rgba(255, 199, 44, 0.4);
     }
     .option-btn:active:not(:disabled) {
       transform: translateY(2px) scale(0.98);
-      box-shadow: 0 1px 0 #cbd5e1;
+      box-shadow: 0 1px 0 var(--border-color);
     }
 
     @keyframes slideUpFade {
@@ -99,20 +128,66 @@
       40%, 80% { transform: translateX(5px); }
     }
 
-    .btn-tap { transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1), background-color 0.15s ease; }
-    .btn-tap:hover { transform: translateY(-1px); }
-    .btn-tap:active { transform: scale(0.93); }
+    /* Flashcard 3D Flip */
+    .flip-container { perspective: 1000px; }
+    .flip-inner {
+      position: relative;
+      width: 100%;
+      min-height: 140px;
+      transition: transform 0.55s cubic-bezier(0.34, 1.56, 0.64, 1);
+      transform-style: preserve-3d;
+    }
+    .flip-inner.is-flipped { transform: rotateY(180deg); }
+    .flip-front, .flip-back {
+      position: absolute;
+      inset: 0;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 1.25rem;
+      border-radius: 1.25rem;
+    }
+    .flip-back { transform: rotateY(180deg); }
 
-    .nav-btn { transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1); }
+    /* Animação Flutuante +25 XP */
+    .xp-toast {
+      position: fixed;
+      top: 90px;
+      right: 24px;
+      z-index: 60;
+      pointer-events: none;
+      animation: floatUpXp 1.2s ease-out forwards;
+    }
+    @keyframes floatUpXp {
+      0% { opacity: 0; transform: translateY(15px) scale(0.8); }
+      25% { opacity: 1; transform: translateY(0) scale(1.08); }
+      80% { opacity: 1; transform: translateY(-20px) scale(1); }
+      100% { opacity: 0; transform: translateY(-35px) scale(0.9); }
+    }
+
+    .btn-tap { transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1); }
+    .btn-tap:hover { transform: translateY(-1px); }
+    .btn-tap:active { transform: scale(0.92); }
+
+    /* Barra Inferior Flutuante (Floating Dock) */
+    .nav-btn { transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1); color: var(--text-muted); }
     .nav-btn:active { transform: scale(0.88); }
-    .nav-btn.active-nav { color: #DA291C; font-weight: 800; transform: translateY(-2px); }
+    .nav-btn.active-nav {
+      color: #DA291C;
+      background-color: rgba(218, 41, 28, 0.1);
+      font-weight: 800;
+      transform: translateY(-2px);
+    }
     .nav-btn.active-nav .nav-icon { transform: scale(1.18); display: inline-block; }
 
     .avatar-option { transition: all 0.18s cubic-bezier(0.34, 1.56, 0.64, 1); }
     .avatar-option:active { transform: scale(0.9); }
     .avatar-option.selected {
       border-color: #DA291C;
-      background-color: #fef2f2;
+      background-color: rgba(218, 41, 28, 0.12);
       transform: scale(1.1);
       box-shadow: 0 4px 12px rgba(218, 41, 28, 0.22);
     }
@@ -127,54 +202,57 @@
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
   </style>
 </head>
-<body class="min-h-screen pb-28">
+<body class="min-h-screen pb-32">
+
+  <!-- CONTAINER DE ANIMAÇÃO FLUTUANTE DE XP -->
+  <div id="xpToastContainer"></div>
 
   <!-- MODAL DE LOGIN E CADASTRO -->
-  <div id="authModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto">
-    <div class="bg-white rounded-[2rem] max-w-md w-full p-6 shadow-2xl border-2 border-[#FFC72C] my-auto">
+  <div id="authModal" class="fixed inset-0 bg-slate-950/85 backdrop-blur-md z-50 flex items-center justify-center p-4 overflow-y-auto">
+    <div class="pro-card rounded-[2.25rem] max-w-md w-full p-6 shadow-2xl border-2 border-[#FFC72C] my-auto">
       <div class="text-center mb-5">
-        <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl mc-gradient text-[#FFC72C] font-black text-4xl shadow-lg mb-2.5 border-2 border-[#FFC72C]/40 float-slow">M</div>
-        <h1 class="text-2xl font-black tracking-tight text-slate-900">OLIMPÍADAS DO BÁSICO</h1>
-        <p class="text-xs text-slate-500 font-semibold mt-0.5">Treinamento Oficial Venture • Versão 6.7 🏆</p>
+        <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl mc-gradient text-[#FFC72C] font-black text-4xl shadow-xl mb-2.5 border-2 border-[#FFC72C]/50 float-slow">M</div>
+        <h1 class="text-2xl font-black tracking-tight">OLIMPÍADAS DO BÁSICO</h1>
+        <p class="text-xs text-muted-pro font-semibold mt-0.5">Plataforma Oficial Venture • Versão 7.0 Pro 🏆</p>
       </div>
 
-      <div class="flex rounded-2xl bg-slate-100 p-1.5 mb-5">
-        <button id="tabLoginBtn" onclick="switchAuthTab('login')" class="flex-1 py-2.5 text-xs font-extrabold rounded-xl bg-white text-slate-900 shadow-sm btn-tap">ENTRAR</button>
-        <button id="tabRegisterBtn" onclick="switchAuthTab('register')" class="flex-1 py-2.5 text-xs font-extrabold rounded-xl text-slate-500 btn-tap">CRIAR CONTA</button>
+      <div class="flex rounded-2xl subtle-box p-1.5 mb-5">
+        <button id="tabLoginBtn" onclick="switchAuthTab('login')" class="flex-1 py-2.5 text-xs font-extrabold rounded-xl bg-[#DA291C] text-white shadow-sm btn-tap">ENTRAR</button>
+        <button id="tabRegisterBtn" onclick="switchAuthTab('register')" class="flex-1 py-2.5 text-xs font-extrabold rounded-xl text-muted-pro btn-tap">CRIAR CONTA</button>
       </div>
 
-      <div id="authError" class="hidden mb-4 p-3 rounded-2xl bg-red-50 border border-red-200 text-red-700 text-xs font-bold text-center"></div>
+      <div id="authError" class="hidden mb-4 p-3 rounded-2xl bg-red-500/10 border border-red-500/30 text-red-500 text-xs font-bold text-center"></div>
 
       <!-- FORMULÁRIO DE LOGIN -->
       <div id="loginForm" class="space-y-4">
         <div>
-          <label class="text-xs font-bold text-slate-700 block mb-1">Seu Nome ou Apelido</label>
-          <input id="loginName" type="text" placeholder="Digite seu nome cadastrado" class="w-full px-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-sm font-semibold focus:outline-none focus:border-red-600 focus:bg-white transition" />
+          <label class="text-xs font-bold block mb-1">Seu Nome ou Apelido</label>
+          <input id="loginName" type="text" placeholder="Digite seu nome cadastrado" class="w-full px-4 py-3 rounded-2xl subtle-box text-sm font-semibold focus:outline-none focus:border-red-600 transition" />
         </div>
         <div>
-          <label class="text-xs font-bold text-slate-700 block mb-1">Sua Senha de Acesso</label>
-          <input id="loginPass" type="password" placeholder="••••••" class="w-full px-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-sm font-semibold focus:outline-none focus:border-red-600 focus:bg-white transition" />
+          <label class="text-xs font-bold block mb-1">Sua Senha de Acesso</label>
+          <input id="loginPass" type="password" placeholder="••••••" class="w-full px-4 py-3 rounded-2xl subtle-box text-sm font-semibold focus:outline-none focus:border-red-600 transition" />
         </div>
         <button id="btnLoginSubmit" onclick="handleLogin()" class="w-full text-white font-black py-3.5 rounded-2xl btn-anim-red btn-shine text-sm tracking-wide">
-          ENTRAR NO APLICATIVO 🚀
+          ENTRAR NO TREINAMENTO 🚀
         </button>
       </div>
 
       <!-- FORMULÁRIO DE CADASTRO -->
       <div id="registerForm" class="hidden space-y-3.5">
         <div>
-          <label class="text-xs font-bold text-slate-700 block mb-1.5">1. Escolha seu Ícone de Perfil</label>
+          <label class="text-xs font-bold block mb-1.5">1. Escolha seu Avatar</label>
           <div id="regAvatarGrid" class="grid grid-cols-6 gap-2"></div>
         </div>
 
         <div>
-          <label class="text-xs font-bold text-slate-700 block mb-1">2. Nome Completo ou Apelido</label>
-          <input id="regName" type="text" placeholder="Ex: Lucas Silva" class="w-full px-4 py-2.5 rounded-2xl bg-slate-50 border border-slate-200 text-sm font-semibold focus:outline-none focus:border-red-600 focus:bg-white transition" />
+          <label class="text-xs font-bold block mb-1">2. Nome Completo ou Apelido</label>
+          <input id="regName" type="text" placeholder="Ex: Lucas Silva" class="w-full px-4 py-2.5 rounded-2xl subtle-box text-sm font-semibold focus:outline-none focus:border-red-600 transition" />
         </div>
 
         <div>
-          <label class="text-xs font-bold text-slate-700 block mb-1">3. Seu Cargo na Loja</label>
-          <select id="regRole" class="w-full px-4 py-2.5 rounded-2xl bg-slate-50 border border-slate-200 text-sm font-bold text-slate-800 focus:outline-none focus:border-red-600 focus:bg-white transition">
+          <label class="text-xs font-bold block mb-1">3. Seu Cargo na Loja</label>
+          <select id="regRole" class="w-full px-4 py-2.5 rounded-2xl subtle-box text-sm font-bold focus:outline-none focus:border-red-600 transition">
             <option value="Atendente">🍔 Atendente</option>
             <option value="Treinador">🎓 Treinador</option>
             <option value="Supervisor">📋 Supervisor</option>
@@ -184,11 +262,11 @@
         </div>
 
         <div>
-          <label class="text-xs font-bold text-slate-700 block mb-1">4. Crie uma Senha (mín. 4 dígitos)</label>
-          <input id="regPass" type="password" placeholder="••••••" class="w-full px-4 py-2.5 rounded-2xl bg-slate-50 border border-slate-200 text-sm font-semibold focus:outline-none focus:border-red-600 focus:bg-white transition" />
+          <label class="text-xs font-bold block mb-1">4. Crie uma Senha (mín. 4 dígitos)</label>
+          <input id="regPass" type="password" placeholder="••••••" class="w-full px-4 py-2.5 rounded-2xl subtle-box text-sm font-semibold focus:outline-none focus:border-red-600 transition" />
         </div>
 
-        <button id="btnRegSubmit" onclick="handleRegister()" class="w-full text-slate-900 font-black py-3.5 rounded-2xl btn-anim-yellow btn-shine text-sm tracking-wide mt-2">
+        <button id="btnRegSubmit" onclick="handleRegister()" class="w-full text-slate-950 font-black py-3.5 rounded-2xl btn-anim-yellow btn-shine text-sm tracking-wide mt-2">
           FINALIZAR CADASTRO ✅
         </button>
       </div>
@@ -197,22 +275,22 @@
 
   <!-- MODAL PARA TROCAR ÍCONE DE PERFIL -->
   <div id="avatarPickerModal" class="hidden fixed inset-0 bg-slate-950/75 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-    <div class="bg-white rounded-3xl max-w-sm w-full p-5 shadow-2xl border border-slate-200 space-y-4">
+    <div class="pro-card rounded-3xl max-w-sm w-full p-5 shadow-2xl space-y-4">
       <div class="flex items-center justify-between">
-        <h3 class="font-black text-slate-900 text-base">🎨 Alterar Ícone de Perfil</h3>
-        <button onclick="closeAvatarModal()" class="text-slate-400 hover:text-slate-700 font-bold text-sm btn-tap">✕</button>
+        <h3 class="font-black text-base">🎨 Alterar Ícone de Perfil</h3>
+        <button onclick="closeAvatarModal()" class="text-muted-pro font-bold text-sm btn-tap">✕</button>
       </div>
       <div id="changeAvatarGrid" class="grid grid-cols-4 gap-2.5"></div>
-      <button onclick="closeAvatarModal()" class="w-full py-2.5 rounded-xl bg-slate-100 font-bold text-xs text-slate-700 btn-tap">Fechar</button>
+      <button onclick="closeAvatarModal()" class="w-full py-2.5 rounded-xl subtle-box font-bold text-xs btn-tap">Fechar</button>
     </div>
   </div>
 
-  <!-- CABEÇALHO DO COLABORADOR -->
-  <header class="mc-gradient text-white pt-4 pb-6 px-4 rounded-b-[2.25rem] shadow-xl sticky top-0 z-30 border-b-4 border-[#FFC72C]">
+  <!-- CABEÇALHO DO COLABORADOR PREMIUM -->
+  <header class="mc-gradient text-white pt-4 pb-5 px-4 rounded-b-[2.5rem] shadow-2xl sticky top-0 z-30 border-b-4 border-[#FFC72C]">
     <div class="max-w-xl mx-auto">
-      <div class="flex items-center justify-between gap-2 mb-3.5">
+      <div class="flex items-center justify-between gap-2 mb-3">
         <div class="flex items-center gap-3">
-          <button onclick="openAvatarModal()" title="Toque para trocar seu ícone" class="relative w-12 h-12 rounded-2xl gold-gradient text-slate-900 flex items-center justify-center text-2xl shadow-lg border-2 border-white/80 btn-tap">
+          <button onclick="openAvatarModal()" title="Trocar Avatar" class="relative w-12 h-12 rounded-2xl gold-gradient text-slate-900 flex items-center justify-center text-2xl shadow-lg border-2 border-white btn-tap shrink-0">
             <span id="userAvatarDisplay">🍔</span>
             <span class="absolute -bottom-1 -right-1 bg-slate-900 text-[#FFC72C] text-[9px] font-black px-1.5 py-0.2 rounded-full border border-white">✏️</span>
           </button>
@@ -225,18 +303,23 @@
           </div>
         </div>
 
-        <div class="flex items-center gap-2">
-          <div class="bg-slate-950/30 px-3.5 py-1.5 rounded-2xl text-right border border-white/10">
+        <div class="flex items-center gap-1.5">
+          <!-- Botão Modo Escuro / Claro -->
+          <button onclick="toggleDarkMode()" id="themeToggleBtn" title="Alternar Tema" class="bg-slate-950/30 hover:bg-slate-950/45 w-9 h-9 rounded-2xl flex items-center justify-center text-sm border border-white/15 btn-tap">
+            🌙
+          </button>
+          <div class="bg-slate-950/30 px-3 py-1.5 rounded-2xl text-right border border-white/10">
             <span class="text-[9px] block uppercase tracking-wider opacity-80 font-bold">Total XP</span>
             <span id="userXpDisplay" class="font-black text-sm text-[#FFC72C]">0 XP</span>
           </div>
-          <button onclick="logoutUser()" class="bg-white/15 hover:bg-white/25 btn-tap text-xs font-extrabold px-3 py-2.5 rounded-2xl border border-white/15">
+          <button onclick="logoutUser()" class="bg-white/15 hover:bg-white/25 btn-tap text-xs font-extrabold px-2.5 py-2 rounded-2xl border border-white/15">
             Sair
           </button>
         </div>
       </div>
 
-      <div class="bg-slate-950/35 rounded-full h-3.5 w-full overflow-hidden p-0.5 border border-white/15">
+      <!-- Barra de Progresso de Nível -->
+      <div class="bg-slate-950/40 rounded-full h-3.5 w-full overflow-hidden p-0.5 border border-white/15">
         <div id="xpProgressBar" class="gold-gradient h-full rounded-full transition-all duration-500 shadow-sm" style="width: 8%"></div>
       </div>
       <div class="flex justify-between text-[11px] font-bold mt-1.5 opacity-95">
@@ -248,15 +331,33 @@
 
   <main class="max-w-xl mx-auto px-4 mt-5">
 
-    <!-- ABA 1: SIMULADO INTERATIVO (ÚNICO QUE DÁ XP) -->
+    <!-- ABA 1: SIMULADO INTERATIVO + MINI DASHBOARD -->
     <section id="tab-quiz" class="space-y-4">
-      <div class="fast-card rounded-3xl p-5">
-        <div class="flex flex-wrap items-center justify-between gap-2 mb-4 pb-3 border-b border-slate-100">
+
+      <!-- Mini Painel de Estatísticas Rápidas -->
+      <div class="grid grid-cols-3 gap-2.5">
+        <div class="pro-card rounded-2xl p-3 text-center">
+          <span class="text-[10px] font-extrabold uppercase text-muted-pro block">Acertos</span>
+          <span id="statHitsDisplay" class="font-black text-sm text-emerald-500 mt-0.5 block">0 ✅</span>
+        </div>
+        <div class="pro-card rounded-2xl p-3 text-center">
+          <span class="text-[10px] font-extrabold uppercase text-muted-pro block">Sequência</span>
+          <span id="statStreakDisplay" class="font-black text-sm text-orange-500 mt-0.5 block">0 🔥</span>
+        </div>
+        <div class="pro-card rounded-2xl p-3 text-center">
+          <span class="text-[10px] font-extrabold uppercase text-muted-pro block">Corações</span>
+          <span id="quizHeartsInfo" class="font-black text-xs text-red-500 mt-1 block tracking-tighter">❤️❤️❤️❤️❤️</span>
+        </div>
+      </div>
+
+      <!-- Card Principal do Simulado -->
+      <div class="pro-card rounded-3xl p-5">
+        <div class="flex flex-wrap items-center justify-between gap-2 mb-4 pb-3 border-b border-slate-200/50">
           <div>
-            <span class="text-[10px] font-black uppercase tracking-wider text-red-600 bg-red-50 px-2.5 py-1 rounded-full">Único Modo que Soma XP • A, B, C, D</span>
-            <h2 class="font-black text-slate-900 text-base mt-1">🎯 Simulado Oficial (+25 XP)</h2>
+            <span class="text-[10px] font-black uppercase tracking-wider text-red-500 bg-red-500/10 px-2.5 py-1 rounded-full">Competição Oficial • +25 XP</span>
+            <h2 class="font-black text-base mt-1">🎯 Simulado de Alternativas</h2>
           </div>
-          <select id="quizLevelFilter" onchange="changeQuizLevelFilter()" class="text-xs font-extrabold bg-slate-100 border border-slate-200 text-slate-800 rounded-xl px-3 py-2 focus:outline-none focus:border-red-600 btn-tap">
+          <select id="quizLevelFilter" onchange="changeQuizLevelFilter()" class="text-xs font-extrabold subtle-box rounded-xl px-3 py-2 focus:outline-none focus:border-red-600 btn-tap">
             <option value="ALL">Todos os Níveis</option>
             <option value="Básico">Nível Básico</option>
             <option value="Intermediário">Nível Intermediário</option>
@@ -264,33 +365,29 @@
           </select>
         </div>
 
-        <!-- Barra de Status do Simulado (Vidas e Ofensiva) -->
         <div class="flex items-center justify-between text-xs font-extrabold mb-3">
-          <span id="quizQuestionMeta" class="bg-amber-100 text-amber-900 px-3 py-1 rounded-full">Questão #1</span>
-          <div class="flex items-center gap-3">
-            <span id="quizHeartsInfo" class="text-red-500 tracking-tighter text-sm">❤️❤️❤️❤️❤️</span>
-            <span id="quizStreakInfo" class="bg-orange-50 text-orange-700 px-2.5 py-1 rounded-full border border-orange-200">🔥 0</span>
-          </div>
+          <span id="quizQuestionMeta" class="bg-amber-500/15 text-amber-500 border border-amber-500/30 px-3 py-1 rounded-full">Questão #1</span>
+          <span class="text-[11px] text-muted-pro font-bold">Selecione A, B, C ou D</span>
         </div>
 
         <!-- TELA DE BLOQUEIO DE 10 MINUTOS QUANDO ACABAM OS CORAÇÕES -->
-        <div id="quizCooldownBox" class="hidden p-6 rounded-3xl bg-gradient-to-b from-red-50 to-orange-50 border-2 border-red-200 text-center space-y-3 my-2">
+        <div id="quizCooldownBox" class="hidden p-6 rounded-3xl bg-red-500/10 border-2 border-red-500/30 text-center space-y-3 my-2">
           <div class="text-4xl float-slow">💔⏳</div>
-          <h3 class="font-black text-red-900 text-base">Seus 5 Corações Acabaram!</h3>
-          <p class="text-xs text-red-700 font-semibold leading-relaxed">
-            Você atingiu o limite de erros seguidos nas questões de alternativa. Aguarde a recarga automática para voltar a responder:
+          <h3 class="font-black text-red-500 text-base">Seus 5 Corações Acabaram!</h3>
+          <p class="text-xs text-muted-pro font-semibold leading-relaxed">
+            Você atingiu o limite de 5 erros nas questões de alternativa. Aguarde a recarga automática para voltar a pontuar:
           </p>
           <div class="inline-block bg-slate-900 text-[#FFC72C] font-black text-2xl px-6 py-2.5 rounded-2xl tracking-widest shadow-md border border-[#FFC72C]/40" id="cooldownTimerDisplay">
             10:00
           </div>
-          <p class="text-[11px] text-slate-600 font-bold pt-1">
-            💡 Enquanto seus corações recarregam, aproveite para revisar no <span class="text-red-600 underline cursor-pointer" onclick="switchMainTab('book')">Book Oficial</span> ou nos Flashcards de Estudo abaixo!
+          <p class="text-[11px] text-muted-pro font-bold pt-1">
+            💡 Enquanto seus corações recarregam, revise pelo <span class="text-red-500 underline cursor-pointer" onclick="switchMainTab('book')">Book Oficial</span> ou pelo Flashcard 3D abaixo!
           </p>
         </div>
 
         <!-- ÁREA ATIVA DAS PERGUNTAS DE ALTERNATIVA -->
         <div id="quizActiveArea" class="space-y-4">
-          <p id="quizQuestionText" class="font-extrabold text-slate-900 text-base leading-snug bg-slate-50 p-4 rounded-2xl border border-slate-200/80"></p>
+          <p id="quizQuestionText" class="font-extrabold text-base leading-snug subtle-box p-4 rounded-2xl"></p>
 
           <!-- Opções A, B, C, D Animadas -->
           <div id="quizOptions" class="space-y-2.5"></div>
@@ -303,42 +400,52 @@
         </div>
       </div>
 
-      <!-- Modo Flashcard Rápido (SEM XP - MODO TREINO LIVRE) -->
-      <div class="fast-card rounded-3xl p-5 space-y-3">
+      <!-- Modo Flashcard 3D Real (SEM XP - MODO TREINO LIVRE) -->
+      <div class="pro-card rounded-3xl p-5 space-y-3">
         <div class="flex items-center justify-between">
           <div>
-            <h3 class="font-black text-slate-900 text-sm">🎴 Flashcard de Estudo Livre (Treino sem XP)</h3>
-            <p class="text-[11px] text-slate-500 font-medium">Toque no cartão para memorizar o gabarito antes do Simulado</p>
+            <h3 class="font-black text-sm">🎴 Flashcard 3D (Estudo Livre s/ XP)</h3>
+            <p class="text-[11px] text-muted-pro font-medium">Toque no cartão para girar em 3D e ver a resposta</p>
           </div>
-          <button onclick="loadRandomFlashcard()" class="text-xs font-extrabold text-red-600 bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded-xl btn-tap">Sortear 🔄</button>
+          <button onclick="loadRandomFlashcard()" class="text-xs font-extrabold text-red-500 bg-red-500/10 hover:bg-red-500/20 px-3 py-1.5 rounded-xl btn-tap">Sortear 🔄</button>
         </div>
-        <div onclick="flipFlashcard()" class="cursor-pointer p-5 rounded-2xl bg-gradient-to-br from-amber-50 to-orange-50 border-2 border-amber-200 text-center space-y-2.5 btn-tap">
-          <span id="fcMeta" class="inline-block text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full bg-amber-200/80 text-amber-950">Toque para virar</span>
-          <p id="fcQuestion" class="font-extrabold text-slate-900 text-sm"></p>
-          <p id="fcAnswer" class="hidden pt-3 border-t border-amber-300/80 font-extrabold text-emerald-800 text-xs"></p>
+
+        <div onclick="flipFlashcard()" class="flip-container cursor-pointer">
+          <div id="fcFlipInner" class="flip-inner">
+            <!-- Frente do Cartão -->
+            <div class="flip-front bg-gradient-to-br from-amber-500/15 to-orange-500/10 border-2 border-amber-500/40 text-center space-y-2">
+              <span id="fcMeta" class="inline-block text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full bg-amber-500 text-slate-950">Toque para girar 3D 🔄</span>
+              <p id="fcQuestion" class="font-extrabold text-sm leading-snug"></p>
+            </div>
+            <!-- Verso do Cartão (Gabarito) -->
+            <div class="flip-back bg-gradient-to-br from-emerald-500/20 to-teal-500/15 border-2 border-emerald-500/50 text-center space-y-2">
+              <span class="inline-block text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full bg-emerald-500 text-white">Gabarito Oficial Venture ✅</span>
+              <p id="fcAnswer" class="font-extrabold text-xs leading-relaxed"></p>
+            </div>
+          </div>
         </div>
       </div>
     </section>
 
-    <!-- ABA 2: BOOK OFICIAL COMPLETO (SEM XP - APENAS CONSULTA E ESTUDO) -->
+    <!-- ABA 2: BOOK OFICIAL COMPLETO (SEM XP - APENAS CONSULTA) -->
     <section id="tab-book" class="hidden space-y-3">
-      <div class="fast-card rounded-3xl p-4 sticky top-32 z-20 space-y-3">
+      <div class="pro-card rounded-3xl p-4 sticky top-32 z-20 space-y-3">
         <div class="flex items-center justify-between">
-          <span class="text-xs font-black text-slate-900">📖 Apostila Oficial Venture (Consulta Livre)</span>
-          <span id="bookCountBadge" class="text-[11px] font-extrabold text-red-600 bg-red-50 px-2.5 py-0.5 rounded-full">Carregando...</span>
+          <span class="text-xs font-black">📖 Apostila Oficial Venture (200 Questões)</span>
+          <span id="bookCountBadge" class="text-[11px] font-extrabold text-red-500 bg-red-500/10 px-2.5 py-0.5 rounded-full">Carregando...</span>
         </div>
-        <input id="searchBookInput" oninput="debouncedBookSearch()" type="text" placeholder="🔍 Pesquisar pergunta, tempo ou temperatura..." class="w-full px-4 py-2.5 rounded-2xl bg-slate-100 border border-slate-200 text-xs font-semibold focus:outline-none focus:bg-white focus:border-red-600 transition" />
+        <input id="searchBookInput" oninput="debouncedBookSearch()" type="text" placeholder="🔍 Pesquisar pergunta, tempo ou temperatura..." class="w-full px-4 py-2.5 rounded-2xl subtle-box text-xs font-semibold focus:outline-none focus:border-red-600 transition" />
         <div class="flex gap-1.5 overflow-x-auto no-scrollbar pb-0.5">
           <button onclick="setBookFilter('ALL')" id="filter-ALL" class="px-3.5 py-1.5 rounded-xl text-xs font-extrabold bg-red-600 text-white shadow-sm shrink-0 btn-tap">Todas</button>
-          <button onclick="setBookFilter('Básico')" id="filter-Básico" class="px-3.5 py-1.5 rounded-xl text-xs font-extrabold bg-slate-100 text-slate-600 shrink-0 btn-tap">Nível Básico</button>
-          <button onclick="setBookFilter('Intermediário')" id="filter-Intermediário" class="px-3.5 py-1.5 rounded-xl text-xs font-extrabold bg-slate-100 text-slate-600 shrink-0 btn-tap">Intermediário</button>
-          <button onclick="setBookFilter('Avançado')" id="filter-Avançado" class="px-3.5 py-1.5 rounded-xl text-xs font-extrabold bg-slate-100 text-slate-600 shrink-0 btn-tap">Avançado</button>
+          <button onclick="setBookFilter('Básico')" id="filter-Básico" class="px-3.5 py-1.5 rounded-xl text-xs font-extrabold subtle-box shrink-0 btn-tap">Nível Básico</button>
+          <button onclick="setBookFilter('Intermediário')" id="filter-Intermediário" class="px-3.5 py-1.5 rounded-xl text-xs font-extrabold subtle-box shrink-0 btn-tap">Intermediário</button>
+          <button onclick="setBookFilter('Avançado')" id="filter-Avançado" class="px-3.5 py-1.5 rounded-xl text-xs font-extrabold subtle-box shrink-0 btn-tap">Avançado</button>
         </div>
       </div>
       <div id="bookQuestionsContainer" class="space-y-2.5"></div>
     </section>
 
-    <!-- ABA 3: RANKING DA LOJA E PREMIAÇÕES -->
+    <!-- ABA 3: RANKING DA LOJA COM PÓDIO 3D E PREMIAÇÕES -->
     <section id="tab-prizes" class="hidden space-y-4">
       <div class="mc-gradient text-white rounded-3xl p-5 shadow-xl relative overflow-hidden border-2 border-[#FFC72C]">
         <div class="flex items-center gap-4">
@@ -351,18 +458,22 @@
         </div>
       </div>
 
-      <!-- RANKING EM TEMPO REAL -->
-      <div class="fast-card rounded-3xl p-5 space-y-4">
+      <!-- PÓDIO OLÍMPICO 3D + RANKING GERAL -->
+      <div class="pro-card rounded-3xl p-5 space-y-4">
         <div class="flex items-center justify-between flex-wrap gap-2">
           <div>
-            <h3 class="font-black text-slate-900 text-base">🏆 Ranking Geral da Loja</h3>
-            <span id="syncStatusText" class="text-[11px] text-emerald-600 font-bold">● Servidor Multi-Usuários Estável</span>
+            <h3 class="font-black text-base">🏆 Pódio & Ranking da Loja</h3>
+            <span id="syncStatusText" class="text-[11px] text-emerald-500 font-bold">● Servidor Multi-Usuários Estável</span>
           </div>
-          <button onclick="forceSyncNow()" class="bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 font-extrabold text-xs px-3.5 py-2 rounded-xl btn-tap">
+          <button onclick="forceSyncNow()" class="bg-red-500/10 hover:bg-red-500/20 text-red-500 border border-red-500/25 font-extrabold text-xs px-3.5 py-2 rounded-xl btn-tap">
             🔄 Atualizar Agora
           </button>
         </div>
 
+        <!-- Pódio Visual Top 3 -->
+        <div id="podiumTop3Container" class="grid grid-cols-3 gap-2 items-end pt-4 pb-2"></div>
+
+        <!-- Lista Completa do Ranking -->
         <div id="leaderboardContainer" class="space-y-2.5"></div>
 
         <button onclick="shareMyScoreWhatsApp()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-black py-3.5 rounded-2xl text-xs flex items-center justify-center gap-2 shadow-md btn-tap">
@@ -370,36 +481,36 @@
         </button>
       </div>
 
-      <!-- Tabela do Novo Sistema de 7 Patentes (XP Aumentado) -->
-      <div class="fast-card rounded-3xl p-5 space-y-3">
+      <!-- Tabela do Sistema de 7 Patentes -->
+      <div class="pro-card rounded-3xl p-5 space-y-3">
         <div class="flex items-center justify-between">
-          <h3 class="font-black text-slate-900 text-sm">📈 As 7 Patentes Oficiais de XP</h3>
-          <span class="text-[10px] font-extrabold bg-red-100 text-red-800 px-2.5 py-0.5 rounded-full">Novo Desafio v6.7</span>
+          <h3 class="font-black text-sm">📈 As 7 Patentes Oficiais de XP</h3>
+          <span class="text-[10px] font-extrabold bg-amber-500/20 text-amber-500 px-2.5 py-0.5 rounded-full">Padrão Venture</span>
         </div>
-        <div class="space-y-2 text-xs font-bold text-slate-700">
-          <div class="flex justify-between items-center p-2.5 rounded-xl bg-slate-50 border border-slate-200/70">
+        <div class="space-y-2 text-xs font-bold">
+          <div class="flex justify-between items-center p-2.5 rounded-xl subtle-box">
             <span>🔰 Nível 1 — Iniciante</span>
-            <span class="text-slate-500">0 a 999 XP</span>
+            <span class="text-muted-pro">0 a 999 XP</span>
           </div>
-          <div class="flex justify-between items-center p-2.5 rounded-xl bg-orange-50/60 border border-orange-200/70">
+          <div class="flex justify-between items-center p-2.5 rounded-xl subtle-box">
             <span>🥉 Nível 2 — Chapa de Bronze</span>
-            <span class="text-orange-800">1.000 a 2.999 XP</span>
+            <span class="text-orange-500">1.000 a 2.999 XP</span>
           </div>
-          <div class="flex justify-between items-center p-2.5 rounded-xl bg-slate-100 border border-slate-300/70">
+          <div class="flex justify-between items-center p-2.5 rounded-xl subtle-box">
             <span>🥈 Nível 3 — Especialista de Prata</span>
-            <span class="text-slate-800">3.000 a 5.999 XP</span>
+            <span class="text-slate-400">3.000 a 5.999 XP</span>
           </div>
-          <div class="flex justify-between items-center p-2.5 rounded-xl bg-amber-50 border border-amber-300">
+          <div class="flex justify-between items-center p-2.5 rounded-xl subtle-box">
             <span>🥇 Nível 4 — Padrão Ouro Venture</span>
-            <span class="text-amber-900">6.000 a 9.999 XP</span>
+            <span class="text-amber-500">6.000 a 9.999 XP</span>
           </div>
-          <div class="flex justify-between items-center p-2.5 rounded-xl bg-cyan-50 border border-cyan-300">
+          <div class="flex justify-between items-center p-2.5 rounded-xl subtle-box">
             <span>💎 Nível 5 — Diamante Best Burger</span>
-            <span class="text-cyan-900">10.000 a 14.999 XP</span>
+            <span class="text-cyan-500">10.000 a 14.999 XP</span>
           </div>
-          <div class="flex justify-between items-center p-2.5 rounded-xl bg-rose-50 border border-rose-300">
+          <div class="flex justify-between items-center p-2.5 rounded-xl subtle-box">
             <span>🔥 Nível 6 — Mestre das Olimpíadas</span>
-            <span class="text-rose-900">15.000 a 24.999 XP</span>
+            <span class="text-rose-500">15.000 a 24.999 XP</span>
           </div>
           <div class="flex justify-between items-center p-3 rounded-xl gold-gradient text-slate-950 font-black shadow-sm">
             <span>👑 Nível 7 — Lenda dos Arcos Dourados</span>
@@ -411,14 +522,14 @@
 
     <!-- ABA 4: PAINEL ADM PROTEGIDO POR SENHA (342005) -->
     <section id="tab-admin" class="hidden space-y-4">
-      <div id="adminLockScreen" class="fast-card rounded-3xl p-6 text-center space-y-4">
+      <div id="adminLockScreen" class="pro-card rounded-3xl p-6 text-center space-y-4">
         <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl dark-gradient text-[#FFC72C] text-3xl font-black shadow-lg float-slow">🔒</div>
         <div>
-          <h2 class="font-black text-slate-900 text-lg">Painel do Administrador</h2>
-          <p class="text-xs text-slate-500 font-medium mt-0.5">Acesso restrito para controle de XP, vidas, cargos e cadastros da loja.</p>
+          <h2 class="font-black text-lg">Painel do Administrador</h2>
+          <p class="text-xs text-muted-pro font-medium mt-0.5">Acesso restrito para controle de XP, vidas, cargos e cadastros da loja.</p>
         </div>
-        <div id="adminAuthError" class="hidden p-3 rounded-2xl bg-red-50 border border-red-200 text-red-700 text-xs font-bold">Senha incorreta! Acesso negado.</div>
-        <input id="adminPassInput" type="password" placeholder="Digite a senha do ADM" class="w-full px-4 py-3.5 rounded-2xl bg-slate-50 border border-slate-300 text-center font-black tracking-widest text-sm focus:outline-none focus:border-red-600" />
+        <div id="adminAuthError" class="hidden p-3 rounded-2xl bg-red-500/10 border border-red-500/30 text-red-500 text-xs font-bold">Senha incorreta! Acesso negado.</div>
+        <input id="adminPassInput" type="password" placeholder="Digite a senha do ADM" class="w-full px-4 py-3.5 rounded-2xl subtle-box text-center font-black tracking-widest text-sm focus:outline-none focus:border-red-600" />
         <button onclick="unlockAdminPanel()" class="w-full dark-gradient text-[#FFC72C] font-black py-3.5 rounded-2xl text-xs tracking-wider shadow-lg btn-tap">
           DESBLOQUEAR PAINEL ADM 🔓
         </button>
@@ -436,11 +547,11 @@
         </div>
 
         <!-- Cadastrar ou Editar Colaborador pelo ADM -->
-        <div class="fast-card rounded-3xl p-5 space-y-3">
-          <h3 class="font-black text-slate-900 text-sm">➕ Cadastrar / Atualizar Colaborador</h3>
+        <div class="pro-card rounded-3xl p-5 space-y-3">
+          <h3 class="font-black text-sm">➕ Cadastrar / Atualizar Colaborador</h3>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-            <input id="admNewName" type="text" placeholder="Nome Completo ou Apelido" class="px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs font-bold" />
-            <select id="admNewRole" class="px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs font-bold">
+            <input id="admNewName" type="text" placeholder="Nome Completo ou Apelido" class="px-3.5 py-2.5 rounded-xl subtle-box text-xs font-bold" />
+            <select id="admNewRole" class="px-3.5 py-2.5 rounded-xl subtle-box text-xs font-bold">
               <option value="Atendente">🍔 Atendente</option>
               <option value="Treinador">🎓 Treinador</option>
               <option value="Supervisor">📋 Supervisor</option>
@@ -449,9 +560,9 @@
             </select>
           </div>
           <div class="grid grid-cols-3 gap-2">
-            <input id="admNewPass" type="text" placeholder="Senha (1234)" class="px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs font-bold" />
-            <input id="admNewXp" type="number" placeholder="XP (ex: 1000)" class="px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs font-bold" />
-            <input id="admNewHits" type="number" placeholder="Acertos" class="px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs font-bold" />
+            <input id="admNewPass" type="text" placeholder="Senha (1234)" class="px-3.5 py-2.5 rounded-xl subtle-box text-xs font-bold" />
+            <input id="admNewXp" type="number" placeholder="XP (ex: 1000)" class="px-3.5 py-2.5 rounded-xl subtle-box text-xs font-bold" />
+            <input id="admNewHits" type="number" placeholder="Acertos" class="px-3.5 py-2.5 rounded-xl subtle-box text-xs font-bold" />
           </div>
           <button onclick="adminSaveMember()" class="w-full text-white font-black py-3.5 rounded-2xl text-xs btn-anim-red btn-shine">
             SALVAR E TRANSMITIR PARA TODOS OS CELULARES ✅
@@ -459,150 +570,160 @@
         </div>
 
         <!-- Lista de Cadastrados -->
-        <div class="fast-card rounded-3xl p-5 space-y-3">
+        <div class="pro-card rounded-3xl p-5 space-y-3">
           <div class="flex items-center justify-between">
-            <h3 class="font-black text-slate-900 text-sm">👥 Equipe Cadastrada</h3>
-            <button onclick="forceSyncNow()" class="text-xs font-extrabold text-red-600 bg-red-50 px-3 py-1.5 rounded-xl btn-tap">🔄 Sincronizar Agora</button>
+            <h3 class="font-black text-sm">👥 Equipe Cadastrada</h3>
+            <button onclick="forceSyncNow()" class="text-xs font-extrabold text-red-500 bg-red-500/10 px-3 py-1.5 rounded-xl btn-tap">🔄 Sincronizar Agora</button>
           </div>
           <div id="adminUsersList" class="space-y-3"></div>
         </div>
       </div>
     </section>
 
-    <!-- ABA 5: LISTA COMPLETA DE TODAS AS VERSÕES (v1.0 ATÉ v6.7) -->
+    <!-- ABA 5: LISTA COMPLETA DE TODAS AS VERSÕES (v1.0 ATÉ v7.0) -->
     <section id="tab-updates" class="hidden space-y-3">
-      <div class="fast-card rounded-3xl p-5 space-y-5">
-        <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+      <div class="pro-card rounded-3xl p-5 space-y-5">
+        <div class="flex items-center justify-between border-b border-slate-200/40 pb-3">
           <div>
-            <h2 class="font-black text-slate-900 text-base">🚀 Histórico Completo de Versões</h2>
-            <p class="text-[11px] text-slate-500 font-semibold">Todas as evoluções do aplicativo desde o lançamento</p>
+            <h2 class="font-black text-base">🚀 Histórico Completo de Versões</h2>
+            <p class="text-[11px] text-muted-pro font-semibold">Todas as evoluções do aplicativo desde o lançamento</p>
           </div>
-          <span class="bg-red-100 text-red-800 text-xs font-black px-3 py-1 rounded-full">v6.7 Oficial</span>
+          <span class="bg-red-500/15 text-red-500 text-xs font-black px-3 py-1 rounded-full">v7.0 Pro</span>
+        </div>
+
+        <!-- V7.0 -->
+        <div class="border-l-4 border-[#FFC72C] pl-3.5 space-y-1">
+          <span class="text-[11px] font-extrabold text-amber-500 uppercase">Versão 7.0 • Atualização Atual (Frontend Ultra Pro & Pódio 3D)</span>
+          <h4 class="font-black text-sm">Modo Escuro/Claro, Pódio Olímpico 3D e Flashcard Flip 3D 🎨✨</h4>
+          <ul class="text-xs text-muted-pro list-disc list-inside space-y-1 pt-1">
+            <li><strong>Modo Escuro (Dark Mode 🌙):</strong> Botão no topo para alternar entre tema claro e tema escuro gamer.</li>
+            <li><strong>Pódio Olímpico Visual (Top 3):</strong> Destaque especial em 3 colunas para o 1º, 2º e 3º colocados da loja.</li>
+            <li><strong>Flashcards com Giro 3D Real:</strong> Efeito de rotação 180° ao tocar no cartão e alerta flutuante de <code>+25 XP ⚡</code> nos acertos.</li>
+          </ul>
         </div>
 
         <!-- V6.7 -->
         <div class="border-l-4 border-[#DA291C] pl-3.5 space-y-1">
-          <span class="text-[11px] font-extrabold text-red-600 uppercase">Versão 6.7 • Atualização Atual (7 Patentes & XP Exclusivo no Simulado)</span>
-          <h4 class="font-black text-slate-900 text-sm">Remoção de XP do Book/Flashcards + 7 Patentes Hardcore 💎👑</h4>
-          <ul class="text-xs text-slate-600 list-disc list-inside space-y-1 pt-1">
-            <li><strong>XP Exclusivo no Simulado:</strong> Removido o ganho de XP ao revelar respostas no Book e nos Flashcards para garantir competição 100% justa apenas nas questões de múltipla escolha.</li>
-            <li><strong>2 Novas Patentes & Metas Elevadas:</strong> Adicionados os níveis <strong>Diamante Best Burger (10.000 XP)</strong> e <strong>Lenda dos Arcos Dourados (25.000+ XP)</strong>, totalizando 7 patentes.</li>
+          <span class="text-[11px] font-extrabold text-red-500 uppercase">Versão 6.7 • 7 Patentes & XP Exclusivo no Simulado</span>
+          <h4 class="font-black text-sm">Remoção de XP do Book/Flashcards + 7 Patentes Hardcore 💎👑</h4>
+          <ul class="text-xs text-muted-pro list-disc list-inside space-y-1 pt-1">
+            <li>XP exclusivo para acertos no Simulado e adição das patentes <strong>Diamante Best Burger (10.000 XP)</strong> e <strong>Lenda dos Arcos Dourados (25.000+ XP)</strong>.</li>
           </ul>
         </div>
 
         <!-- V6.6 -->
         <div class="border-l-4 border-pink-600 pl-3.5 space-y-1">
-          <span class="text-[11px] font-extrabold text-pink-600 uppercase">Versão 6.6 • Tempo de Recarga das Vidas</span>
-          <h4 class="font-black text-slate-900 text-sm">Bloqueio de 10 Minutos ao Perder os 5 Corações 💔⏳</h4>
-          <ul class="text-xs text-slate-600 list-disc list-inside space-y-1 pt-1">
-            <li>Cronômetro regressivo de 10 minutos quando o colaborador perde os 5 corações no Simulado, além do botão de restaurar vidas no ADM.</li>
+          <span class="text-[11px] font-extrabold text-pink-500 uppercase">Versão 6.6 • Tempo de Recarga das Vidas</span>
+          <h4 class="font-black text-sm">Bloqueio de 10 Minutos ao Perder os 5 Corações 💔⏳</h4>
+          <ul class="text-xs text-muted-pro list-disc list-inside space-y-1 pt-1">
+            <li>Cronômetro regressivo de 10 minutos quando o colaborador perde os 5 corações no Simulado e botão de restaurar vidas no ADM.</li>
           </ul>
         </div>
 
         <!-- V6.5 -->
         <div class="border-l-4 border-emerald-600 pl-3.5 space-y-1">
-          <span class="text-[11px] font-extrabold text-emerald-600 uppercase">Versão 6.5 • Estabilidade Multi-Usuários</span>
-          <h4 class="font-black text-slate-900 text-sm">Proteção Anti-Queda para Múltiplos Acessos Simultâneos 🛡️⚡</h4>
-          <ul class="text-xs text-slate-600 list-disc list-inside space-y-1 pt-1">
+          <span class="text-[11px] font-extrabold text-emerald-500 uppercase">Versão 6.5 • Estabilidade Multi-Usuários</span>
+          <h4 class="font-black text-sm">Proteção Anti-Queda para Múltiplos Acessos Simultâneos 🛡️⚡</h4>
+          <ul class="text-xs text-muted-pro list-disc list-inside space-y-1 pt-1">
             <li>Agrupador inteligente de tráfego (<em>Write Coalescing</em>) e trava Anti-Loop para suportar dezenas de colaboradores simultâneos sem cair.</li>
           </ul>
         </div>
 
         <!-- V6.4 -->
         <div class="border-l-4 border-orange-500 pl-3.5 space-y-1">
-          <span class="text-[11px] font-extrabold text-orange-600 uppercase">Versão 6.4 • Desempenho Turbo & Animações</span>
-          <h4 class="font-black text-slate-900 text-sm">Otimização de Desempenho + Botões 3D Animados ⚡✨</h4>
-          <ul class="text-xs text-slate-600 list-disc list-inside space-y-1 pt-1">
+          <span class="text-[11px] font-extrabold text-orange-500 uppercase">Versão 6.4 • Desempenho Turbo & Animações</span>
+          <h4 class="font-black text-sm">Otimização de Desempenho + Botões 3D Animados ⚡✨</h4>
+          <ul class="text-xs text-muted-pro list-disc list-inside space-y-1 pt-1">
             <li>Renderização em lote único das 200 questões, busca com <em>Debounce</em> e botões 3D com efeito mola, brilho e animações de acerto/erro.</li>
           </ul>
         </div>
 
         <!-- V6.3 -->
         <div class="border-l-4 border-cyan-600 pl-3.5 space-y-1">
-          <span class="text-[11px] font-extrabold text-cyan-700 uppercase">Versão 6.3 • Nuvem HTTPS Porta 443</span>
-          <h4 class="font-black text-slate-900 text-sm">Sincronização Garantida no GitHub Pages (4G e Wi-Fi) ☁️📲</h4>
-          <ul class="text-xs text-slate-600 list-disc list-inside space-y-1 pt-1">
+          <span class="text-[11px] font-extrabold text-cyan-500 uppercase">Versão 6.3 • Nuvem HTTPS Porta 443</span>
+          <h4 class="font-black text-sm">Sincronização Garantida no GitHub Pages (4G e Wi-Fi) ☁️📲</h4>
+          <ul class="text-xs text-muted-pro list-disc list-inside space-y-1 pt-1">
             <li>Conexão HTTPS direta na porta 443 com histórico salvo na nuvem mesmo com o aparelho fechado.</li>
           </ul>
         </div>
 
         <!-- V6.2 -->
         <div class="border-l-4 border-amber-500 pl-3.5 space-y-1">
-          <span class="text-[11px] font-extrabold text-amber-600 uppercase">Versão 6.2 • Simulado Inteligente A, B, C e D</span>
-          <h4 class="font-black text-slate-900 text-sm">Alternativas Semelhantes à Resposta Original 🧠🎯</h4>
-          <ul class="text-xs text-slate-600 list-disc list-inside space-y-1 pt-1">
+          <span class="text-[11px] font-extrabold text-amber-500 uppercase">Versão 6.2 • Simulado Inteligente A, B, C e D</span>
+          <h4 class="font-black text-sm">Alternativas Semelhantes à Resposta Original 🧠🎯</h4>
+          <ul class="text-xs text-muted-pro list-disc list-inside space-y-1 pt-1">
             <li>Todas as 200 questões passaram a apresentar alternativas A, B, C e D plausíveis com números e procedimentos próximos.</li>
           </ul>
         </div>
 
         <!-- V6.1 -->
         <div class="border-l-4 border-blue-600 pl-3.5 space-y-1">
-          <span class="text-[11px] font-extrabold text-blue-600 uppercase">Versão 6.1 • Resgate Automático</span>
-          <h4 class="font-black text-slate-900 text-sm">Migração Automática de Cadastros Antigos + Link WhatsApp 🔗</h4>
-          <ul class="text-xs text-slate-600 list-disc list-inside space-y-1 pt-1">
+          <span class="text-[11px] font-extrabold text-blue-500 uppercase">Versão 6.1 • Resgate Automático</span>
+          <h4 class="font-black text-sm">Migração Automática de Cadastros Antigos + Link WhatsApp 🔗</h4>
+          <ul class="text-xs text-muted-pro list-disc list-inside space-y-1 pt-1">
             <li>Resgate automático de contas criadas nas versões anteriores (v3 a v5) e compartilhamento com link de sincronia no WhatsApp.</li>
           </ul>
         </div>
 
         <!-- V6.0 -->
         <div class="border-l-4 border-indigo-600 pl-3.5 space-y-1">
-          <span class="text-[11px] font-extrabold text-indigo-600 uppercase">Versão 6.0 • Edição Premium</span>
-          <h4 class="font-black text-slate-900 text-sm">Avatares de Perfil, Cargos Oficiais & Novas Metas de XP 🎨👑</h4>
-          <ul class="text-xs text-slate-600 list-disc list-inside space-y-1 pt-1">
+          <span class="text-[11px] font-extrabold text-indigo-500 uppercase">Versão 6.0 • Edição Premium</span>
+          <h4 class="font-black text-sm">Avatares de Perfil, Cargos Oficiais & Novas Metas de XP 🎨👑</h4>
+          <ul class="text-xs text-muted-pro list-disc list-inside space-y-1 pt-1">
             <li>Escolha de ícones de perfil e cargos oficiais (<strong>Atendente, Treinador, Supervisor, Coordenador e GUN</strong>) e remoção do cadastro fixo.</li>
           </ul>
         </div>
 
         <!-- V5.1 -->
         <div class="border-l-4 border-teal-600 pl-3.5 space-y-1">
-          <span class="text-[11px] font-extrabold text-teal-700 uppercase">Versão 5.1 • Auto-Merge de Dados</span>
-          <h4 class="font-black text-slate-900 text-sm">Fusão Inteligente de Cadastros na Nuvem 🔄</h4>
-          <ul class="text-xs text-slate-600 list-disc list-inside space-y-1 pt-1">
+          <span class="text-[11px] font-extrabold text-teal-500 uppercase">Versão 5.1 • Auto-Merge de Dados</span>
+          <h4 class="font-black text-sm">Fusão Inteligente de Cadastros na Nuvem 🔄</h4>
+          <ul class="text-xs text-muted-pro list-disc list-inside space-y-1 pt-1">
             <li>Proteção contra sobrescrita de dados ao cadastrar novos colaboradores em aparelhos diferentes.</li>
           </ul>
         </div>
 
         <!-- V5.0 -->
         <div class="border-l-4 border-purple-600 pl-3.5 space-y-1">
-          <span class="text-[11px] font-extrabold text-purple-700 uppercase">Versão 5.0 • Painel ADM</span>
-          <h4 class="font-black text-slate-900 text-sm">Aba Restrita do Administrador com Senha ⚙️🔒</h4>
-          <ul class="text-xs text-slate-600 list-disc list-inside space-y-1 pt-1">
+          <span class="text-[11px] font-extrabold text-purple-500 uppercase">Versão 5.0 • Painel ADM</span>
+          <h4 class="font-black text-sm">Aba Restrita do Administrador com Senha ⚙️🔒</h4>
+          <ul class="text-xs text-muted-pro list-disc list-inside space-y-1 pt-1">
             <li>Criação do Painel ADM protegido por senha para visualizar todos os cadastrados, senhas, adicionar/remover XP, zerar ou excluir contas.</li>
           </ul>
         </div>
 
         <!-- V4.0 -->
         <div class="border-l-4 border-green-600 pl-3.5 space-y-1">
-          <span class="text-[11px] font-extrabold text-green-700 uppercase">Versão 4.0 • Ranking Compartilhado</span>
-          <h4 class="font-black text-slate-900 text-sm">Placar da Loja & Envio para Grupo do WhatsApp 📲</h4>
-          <ul class="text-xs text-slate-600 list-disc list-inside space-y-1 pt-1">
+          <span class="text-[11px] font-extrabold text-green-500 uppercase">Versão 4.0 • Ranking Compartilhado</span>
+          <h4 class="font-black text-sm">Placar da Loja & Envio para Grupo do WhatsApp 📲</h4>
+          <ul class="text-xs text-muted-pro list-disc list-inside space-y-1 pt-1">
             <li>Integração do Ranking da Loja com botão para enviar o placar individual direto no grupo do WhatsApp da equipe.</li>
           </ul>
         </div>
 
         <!-- V3.0 -->
         <div class="border-l-4 border-red-500 pl-3.5 space-y-1">
-          <span class="text-[11px] font-extrabold text-red-600 uppercase">Versão 3.0 • Gamificação & Prêmios</span>
-          <h4 class="font-black text-slate-900 text-sm">Cadastro com Senha, Níveis de XP e Prêmio da Caneca ☕🏆</h4>
-          <ul class="text-xs text-slate-600 list-disc list-inside space-y-1 pt-1">
+          <span class="text-[11px] font-extrabold text-red-500 uppercase">Versão 3.0 • Gamificação & Prêmios</span>
+          <h4 class="font-black text-sm">Cadastro com Senha, Níveis de XP e Prêmio da Caneca ☕🏆</h4>
+          <ul class="text-xs text-muted-pro list-disc list-inside space-y-1 pt-1">
             <li>Sistema de login com senha pessoal, barra de progresso de níveis e Aba de Premiações destacando a <strong>Caneca Oficial do McDonald's</strong> para o 1º Lugar.</li>
           </ul>
         </div>
 
         <!-- V2.0 -->
         <div class="border-l-4 border-amber-400 pl-3.5 space-y-1">
-          <span class="text-[11px] font-extrabold text-amber-600 uppercase">Versão 2.0 • Book Venture Completo & Duolingo Style</span>
-          <h4 class="font-black text-slate-900 text-sm">Apostila das 200 Questões, Vidas (❤️) e Flashcards 📖🎴</h4>
-          <ul class="text-xs text-slate-600 list-disc list-inside space-y-1 pt-1">
+          <span class="text-[11px] font-extrabold text-amber-500 uppercase">Versão 2.0 • Book Venture Completo & Duolingo Style</span>
+          <h4 class="font-black text-sm">Apostila das 200 Questões, Vidas (❤️) e Flashcards 📖🎴</h4>
+          <ul class="text-xs text-muted-pro list-disc list-inside space-y-1 pt-1">
             <li>Inclusão das questões oficiais do Book Olimpíadas de Básico (Nível Básico, Intermediário e Avançado), sistema de 5 corações de vida, ofensiva e Modo Flashcard.</li>
           </ul>
         </div>
 
         <!-- V1.0 -->
         <div class="border-l-4 border-slate-400 pl-3.5 space-y-1">
-          <span class="text-[11px] font-extrabold text-slate-500 uppercase">Versão 1.0 • Lançamento Oficial</span>
-          <h4 class="font-black text-slate-900 text-sm">Primeiro Quiz Interativo rumo à 2ª Fase 🚀</h4>
-          <p class="text-xs text-slate-600 pt-1">Criação do primeiro simulado mobile após a loja conquistar o 4º lugar na 1ª fase das Olimpíadas do Básico.</p>
+          <span class="text-[11px] font-extrabold text-muted-pro uppercase">Versão 1.0 • Lançamento Oficial</span>
+          <h4 class="font-black text-sm">Primeiro Quiz Interativo rumo à 2ª Fase 🚀</h4>
+          <p class="text-xs text-muted-pro pt-1">Criação do primeiro simulado mobile após a loja conquistar o 4º lugar na 1ª fase das Olimpíadas do Básico.</p>
         </div>
 
       </div>
@@ -610,31 +731,33 @@
 
   </main>
 
-  <!-- BARRA DE NAVEGAÇÃO INFERIOR -->
-  <nav class="fixed bottom-0 inset-x-0 bg-white/95 backdrop-blur-md border-t border-slate-200/80 z-40 shadow-2xl">
-    <div class="max-w-xl mx-auto grid grid-cols-5 py-2 px-1">
-      <button onclick="switchMainTab('quiz')" id="nav-quiz" class="nav-btn active-nav flex flex-col items-center py-1 rounded-2xl text-[10px]">
-        <span class="nav-icon text-lg transition-transform">🎯</span>
-        <span>Simulado</span>
-      </button>
-      <button onclick="switchMainTab('book')" id="nav-book" class="nav-btn flex flex-col items-center py-1 rounded-2xl text-slate-400 font-bold text-[10px]">
-        <span class="nav-icon text-lg transition-transform">📖</span>
-        <span>Book</span>
-      </button>
-      <button onclick="switchMainTab('prizes')" id="nav-prizes" class="nav-btn flex flex-col items-center py-1 rounded-2xl text-slate-400 font-bold text-[10px]">
-        <span class="nav-icon text-lg transition-transform">🏆</span>
-        <span>Ranking</span>
-      </button>
-      <button onclick="switchMainTab('admin')" id="nav-admin" class="nav-btn flex flex-col items-center py-1 rounded-2xl text-slate-400 font-bold text-[10px]">
-        <span class="nav-icon text-lg transition-transform">⚙️</span>
-        <span>ADM</span>
-      </button>
-      <button onclick="switchMainTab('updates')" id="nav-updates" class="nav-btn flex flex-col items-center py-1 rounded-2xl text-slate-400 font-bold text-[10px]">
-        <span class="nav-icon text-lg transition-transform">🔔</span>
-        <span>Versões</span>
-      </button>
-    </div>
-  </nav>
+  <!-- BARRA DE NAVEGAÇÃO INFERIOR FLUTUANTE (FLOATING DOCK) -->
+  <div class="fixed bottom-3 inset-x-0 px-3 z-40 pointer-events-none">
+    <nav class="max-w-md mx-auto pro-card rounded-3xl p-1.5 shadow-2xl pointer-events-auto border-2 border-[#FFC72C]/40">
+      <div class="grid grid-cols-5 gap-1">
+        <button onclick="switchMainTab('quiz')" id="nav-quiz" class="nav-btn active-nav flex flex-col items-center py-1.5 rounded-2xl text-[10px]">
+          <span class="nav-icon text-base transition-transform">🎯</span>
+          <span>Simulado</span>
+        </button>
+        <button onclick="switchMainTab('book')" id="nav-book" class="nav-btn flex flex-col items-center py-1.5 rounded-2xl font-bold text-[10px]">
+          <span class="nav-icon text-base transition-transform">📖</span>
+          <span>Book</span>
+        </button>
+        <button onclick="switchMainTab('prizes')" id="nav-prizes" class="nav-btn flex flex-col items-center py-1.5 rounded-2xl font-bold text-[10px]">
+          <span class="nav-icon text-base transition-transform">🏆</span>
+          <span>Ranking</span>
+        </button>
+        <button onclick="switchMainTab('admin')" id="nav-admin" class="nav-btn flex flex-col items-center py-1.5 rounded-2xl font-bold text-[10px]">
+          <span class="nav-icon text-base transition-transform">⚙️</span>
+          <span>ADM</span>
+        </button>
+        <button onclick="switchMainTab('updates')" id="nav-updates" class="nav-btn flex flex-col items-center py-1.5 rounded-2xl font-bold text-[10px]">
+          <span class="nav-icon text-base transition-transform">🔔</span>
+          <span>Versões</span>
+        </button>
+      </div>
+    </nav>
+  </div>
 
   <script>
     const AVATAR_LIST = ["🍔", "🍟", "🍦", "🔥", "👨‍🍳", "👑", "⚡", "🏆", "🚀", "🥤", "🥓", "🎯"];
@@ -843,8 +966,9 @@
 
     const STORAGE_USERS_KEY = "mequi_olimpiadas_users_v6";
     const STORAGE_CURRENT_KEY = "mequi_olimpiadas_active_user_v6";
+    const STORAGE_THEME_KEY = "mequi_olimpiadas_theme_v7";
     const ADMIN_SECRET_PASS = "342005";
-    const HEARTS_COOLDOWN_MS = 10 * 60 * 1000; // 10 minutos
+    const HEARTS_COOLDOWN_MS = 10 * 60 * 1000;
 
     const SYNC_MQTT_TOPIC = "mequi/venture/olimpiadas2026/v65_cluster_state";
     const CLOUD_HTTP_URL = "https://ntfy.sh/mequi_venture_olimpiadas_2026_v63_store";
@@ -863,6 +987,31 @@
     let lastLeaderboardHash = "";
     let lastAdminListHash = "";
     let lastHttpFetchTime = 0;
+
+    // TEMA ESCURO / CLARO
+    function initTheme() {
+      const savedTheme = localStorage.getItem(STORAGE_THEME_KEY);
+      if (savedTheme === "dark") {
+        document.body.classList.add("dark-mode");
+        document.getElementById("themeToggleBtn").textContent = "☀️";
+      }
+    }
+
+    function toggleDarkMode() {
+      const isDark = document.body.classList.toggle("dark-mode");
+      localStorage.setItem(STORAGE_THEME_KEY, isDark ? "dark" : "light");
+      document.getElementById("themeToggleBtn").textContent = isDark ? "☀️" : "🌙";
+    }
+
+    // TOAST FLUTUANTE DE +25 XP
+    function showXpToast(amount) {
+      const container = document.getElementById("xpToastContainer");
+      const toast = document.createElement("div");
+      toast.className = "xp-toast gold-gradient text-slate-950 font-black text-xs px-4 py-2 rounded-2xl shadow-xl border-2 border-white";
+      toast.textContent = `+${amount} XP ⚡`;
+      container.appendChild(toast);
+      setTimeout(() => toast.remove(), 1250);
+    }
 
     function rescuePreviousLocalRegistrations() {
       const keysToCheck = [
@@ -987,7 +1136,7 @@
       brokers.forEach((brokerUrl) => {
         try {
           const client = mqtt.connect(brokerUrl, {
-            clientId: "mq67_" + Math.random().toString(16).substring(2, 10),
+            clientId: "mq70_" + Math.random().toString(16).substring(2, 10),
             clean: true,
             connectTimeout: 5000,
             reconnectPeriod: 6000
@@ -997,7 +1146,7 @@
             const statusEl = document.getElementById("syncStatusText");
             if (statusEl) {
               statusEl.textContent = "● Conectado em Tempo Real (Alta Capacidade)";
-              statusEl.className = "text-[11px] text-emerald-600 font-bold";
+              statusEl.className = "text-[11px] text-emerald-500 font-bold";
             }
             client.subscribe(SYNC_MQTT_TOPIC, { qos: 0 });
           });
@@ -1083,7 +1232,7 @@
       } finally {
         if (statusEl) {
           statusEl.textContent = "● Servidor Multi-Usuários Estável";
-          statusEl.className = "text-[11px] text-emerald-600 font-bold";
+          statusEl.className = "text-[11px] text-emerald-500 font-bold";
         }
       }
     }
@@ -1095,7 +1244,7 @@
       fetchCloudHistorySafe(true);
     }
 
-    // NOVO SISTEMA DE 7 PATENTES COM METAS DE XP ELEVADAS (VERSÃO 6.7)
+    // SISTEMA DE 7 PATENTES COM METAS DE XP ELEVADAS
     function getLevelInfo(xp) {
       if (xp >= 25000) return { level: 7, title: "👑 Nível 7 — Lenda dos Arcos Dourados", min: 25000, max: 40000 };
       if (xp >= 15000) return { level: 6, title: "🔥 Nível 6 — Mestre das Olimpíadas", min: 15000, max: 25000 };
@@ -1109,7 +1258,7 @@
     function renderAvatarSelector() {
       const grid = document.getElementById("regAvatarGrid");
       grid.innerHTML = AVATAR_LIST.map(icon => `
-        <button type="button" onclick="selectRegAvatar('${icon}')" class="avatar-option p-2 rounded-2xl border-2 border-slate-200 text-xl flex items-center justify-center ${icon === selectedRegAvatar ? 'selected' : ''}">
+        <button type="button" onclick="selectRegAvatar('${icon}')" class="avatar-option p-2 rounded-2xl border-2 subtle-box text-xl flex items-center justify-center ${icon === selectedRegAvatar ? 'selected' : ''}">
           ${icon}
         </button>
       `).join("");
@@ -1125,7 +1274,7 @@
       const currentIcon = users[currentUserKey].avatar || "🍔";
       const grid = document.getElementById("changeAvatarGrid");
       grid.innerHTML = AVATAR_LIST.map(icon => `
-        <button type="button" onclick="changeUserAvatar('${icon}')" class="p-3 rounded-2xl border-2 ${icon === currentIcon ? 'border-red-600 bg-red-50 scale-105' : 'border-slate-200'} text-2xl flex items-center justify-center btn-tap">
+        <button type="button" onclick="changeUserAvatar('${icon}')" class="p-3 rounded-2xl border-2 ${icon === currentIcon ? 'border-red-600 bg-red-500/15 scale-105' : 'subtle-box'} text-2xl flex items-center justify-center btn-tap">
           ${icon}
         </button>
       `).join("");
@@ -1149,13 +1298,13 @@
       if (mode === "login") {
         document.getElementById("loginForm").classList.remove("hidden");
         document.getElementById("registerForm").classList.add("hidden");
-        document.getElementById("tabLoginBtn").className = "flex-1 py-2.5 text-xs font-extrabold rounded-xl bg-white text-slate-900 shadow-sm btn-tap";
-        document.getElementById("tabRegisterBtn").className = "flex-1 py-2.5 text-xs font-extrabold rounded-xl text-slate-500 btn-tap";
+        document.getElementById("tabLoginBtn").className = "flex-1 py-2.5 text-xs font-extrabold rounded-xl bg-[#DA291C] text-white shadow-sm btn-tap";
+        document.getElementById("tabRegisterBtn").className = "flex-1 py-2.5 text-xs font-extrabold rounded-xl text-muted-pro btn-tap";
       } else {
         document.getElementById("loginForm").classList.add("hidden");
         document.getElementById("registerForm").classList.remove("hidden");
-        document.getElementById("tabRegisterBtn").className = "flex-1 py-2.5 text-xs font-extrabold rounded-xl bg-white text-slate-900 shadow-sm btn-tap";
-        document.getElementById("tabLoginBtn").className = "flex-1 py-2.5 text-xs font-extrabold rounded-xl text-slate-500 btn-tap";
+        document.getElementById("tabRegisterBtn").className = "flex-1 py-2.5 text-xs font-extrabold rounded-xl bg-[#DA291C] text-white shadow-sm btn-tap";
+        document.getElementById("tabLoginBtn").className = "flex-1 py-2.5 text-xs font-extrabold rounded-xl text-muted-pro btn-tap";
       }
     }
 
@@ -1207,7 +1356,7 @@
         await fetchCloudHistorySafe(true);
       }
 
-      btn.textContent = "ENTRAR NO APLICATIVO 🚀";
+      btn.textContent = "ENTRAR NO TREINAMENTO 🚀";
       btn.disabled = false;
 
       if (!users[key] || users[key]._deleted) return showAuthError("Colaborador não encontrado! Clique em 'Criar Conta' acima.");
@@ -1232,6 +1381,7 @@
       if (!currentUserKey || !users[currentUserKey]) return;
       users[currentUserKey].xp = Math.max(0, (users[currentUserKey].xp || 0) + amount);
       users[currentUserKey].updatedAt = Date.now();
+      showXpToast(amount);
       scheduleCloudSync(currentUserKey, false);
     }
 
@@ -1246,6 +1396,7 @@
       document.getElementById("userXpDisplay").textContent = `${u.xp || 0} XP`;
       document.getElementById("userRankTitle").textContent = info.title;
       document.getElementById("currentLevelNum").textContent = `Nível ${info.level}`;
+      document.getElementById("statHitsDisplay").textContent = `${u.correctAnswers || 0} ✅`;
 
       const progress = Math.min(100, Math.round((((u.xp || 0) - info.min) / (info.max - info.min)) * 100));
       document.getElementById("xpProgressBar").style.width = `${Math.max(6, progress)}%`;
@@ -1367,7 +1518,7 @@
       const randomItem = pool[Math.floor(Math.random() * pool.length)];
 
       document.getElementById("quizQuestionMeta").textContent = `Questão #${randomItem.id} • Nível ${randomItem.level}`;
-      document.getElementById("quizStreakInfo").textContent = `🔥 ${currentStreak}`;
+      document.getElementById("statStreakDisplay").textContent = `${currentStreak} 🔥`;
       document.getElementById("quizQuestionText").textContent = randomItem.q;
       document.getElementById("quizFeedback").classList.add("hidden");
       document.getElementById("nextQuizBtn").classList.add("hidden");
@@ -1385,9 +1536,9 @@
         const letter = letters[idx];
         const btn = document.createElement("button");
         btn.style.animationDelay = `${idx * 40}ms`;
-        btn.className = "option-btn w-full text-left p-3.5 rounded-2xl border-2 border-slate-200 font-bold text-xs text-slate-800 flex items-center gap-3 bg-white";
+        btn.className = "option-btn w-full text-left p-3.5 rounded-2xl font-bold text-xs flex items-center gap-3";
         btn.innerHTML = `
-          <span class="letter-badge w-7 h-7 rounded-xl bg-slate-100 text-slate-800 font-black text-xs flex items-center justify-center shrink-0 border border-slate-200">${letter}</span>
+          <span class="w-7 h-7 rounded-xl subtle-box font-black text-xs flex items-center justify-center shrink-0">${letter}</span>
           <span class="flex-1 leading-snug">${optText}</span>
         `;
         btn.onclick = () => checkQuizAnswer(btn, optText, randomItem.a, letter);
@@ -1400,7 +1551,7 @@
       allBtns.forEach(b => {
         b.disabled = true;
         if (b.innerText.includes(correct) && chosen !== correct) {
-          b.className = "w-full text-left p-3.5 rounded-2xl border-2 border-emerald-500 bg-emerald-50/80 font-extrabold text-xs text-emerald-950 flex items-center gap-3";
+          b.className = "w-full text-left p-3.5 rounded-2xl border-2 border-emerald-500 bg-emerald-500/15 font-extrabold text-xs flex items-center gap-3";
         }
       });
 
@@ -1408,18 +1559,18 @@
       fb.classList.remove("hidden");
 
       if (chosen === correct) {
-        selectedBtn.className = "anim-pop-correct w-full text-left p-3.5 rounded-2xl border-2 border-emerald-600 bg-emerald-50 font-extrabold text-xs text-emerald-950 flex items-center gap-3 shadow-md";
+        selectedBtn.className = "anim-pop-correct w-full text-left p-3.5 rounded-2xl border-2 border-emerald-500 bg-emerald-500/20 font-extrabold text-xs flex items-center gap-3 shadow-md";
         currentStreak++;
         if (currentUserKey && users[currentUserKey]) {
           users[currentUserKey].correctAnswers = (users[currentUserKey].correctAnswers || 0) + 1;
         }
         addXp(25);
-        fb.className = "p-3.5 rounded-2xl text-xs font-extrabold bg-emerald-100 text-emerald-900 border border-emerald-300";
+        fb.className = "p-3.5 rounded-2xl text-xs font-extrabold bg-emerald-500/15 text-emerald-500 border border-emerald-500/30";
         fb.textContent = `✅ Alternativa ${letter} Correta! Você ganhou +25 XP!`;
         document.getElementById("nextQuizBtn").textContent = "PRÓXIMA PERGUNTA ➡️";
         document.getElementById("nextQuizBtn").classList.remove("hidden");
       } else {
-        selectedBtn.className = "anim-shake-wrong w-full text-left p-3.5 rounded-2xl border-2 border-red-600 bg-red-50 font-extrabold text-xs text-red-950 flex items-center gap-3";
+        selectedBtn.className = "anim-shake-wrong w-full text-left p-3.5 rounded-2xl border-2 border-red-500 bg-red-500/20 font-extrabold text-xs flex items-center gap-3";
         currentStreak = 0;
         const newHearts = Math.max(0, currentHearts - 1);
 
@@ -1428,41 +1579,39 @@
           setActiveHeartsState(0, lockUntil);
           if (currentUserKey) scheduleCloudSync(currentUserKey, true);
 
-          fb.className = "p-3.5 rounded-2xl text-xs font-extrabold bg-red-100 text-red-900 border border-red-300";
-          fb.innerHTML = `💔 <strong>Você perdeu todos os seus 5 corações!</strong><br>O gabarito oficial era: <span class="underline">${correct}</span>.<br><span class="text-red-700 mt-1 inline-block">⏳ Aguarde 10 minutos para recarregar suas vidas!</span>`;
+          fb.className = "p-3.5 rounded-2xl text-xs font-extrabold bg-red-500/15 text-red-500 border border-red-500/30";
+          fb.innerHTML = `💔 <strong>Você perdeu todos os seus 5 corações!</strong><br>O gabarito oficial era: <span class="underline">${correct}</span>.<br><span class="mt-1 inline-block">⏳ Aguarde 10 minutos para recarregar suas vidas!</span>`;
           document.getElementById("nextQuizBtn").textContent = "VER CRONÔMETRO DE RECARGA (10 MIN) ⏳";
           document.getElementById("nextQuizBtn").classList.remove("hidden");
         } else {
           setActiveHeartsState(newHearts, 0);
           if (currentUserKey) scheduleCloudSync(currentUserKey, false);
 
-          fb.className = "p-3.5 rounded-2xl text-xs font-extrabold bg-red-100 text-red-900 border border-red-300";
+          fb.className = "p-3.5 rounded-2xl text-xs font-extrabold bg-red-500/15 text-red-500 border border-red-500/30";
           fb.innerHTML = `❌ Quase! Você perdeu 1 coração (Restam ${newHearts} ❤️).<br>O gabarito oficial é: <span class="underline mt-1 inline-block">${correct}</span>`;
           document.getElementById("nextQuizBtn").textContent = "PRÓXIMA PERGUNTA ➡️";
           document.getElementById("nextQuizBtn").classList.remove("hidden");
         }
       }
 
-      document.getElementById("quizStreakInfo").textContent = `🔥 ${currentStreak}`;
+      document.getElementById("statStreakDisplay").textContent = `${currentStreak} 🔥`;
     }
 
-    // FLASHCARDS (MODO ESTUDO LIVRE — SEM XP)
+    // FLASHCARDS 3D FLIP (MODO ESTUDO LIVRE — SEM XP)
     function loadRandomFlashcard() {
-      const item = QUESTIONS_DB[Math.floor(Math.random() * QUESTIONS_DB.length)];
-      document.getElementById("fcMeta").textContent = `Questão #${item.id} (${item.level}) • Toque para revelar a resposta`;
-      document.getElementById("fcQuestion").textContent = item.q;
-      const ans = document.getElementById("fcAnswer");
-      ans.textContent = `✅ Gabarito: ${item.a}`;
-      ans.classList.add("hidden");
+      const inner = document.getElementById("fcFlipInner");
+      inner.classList.remove("is-flipped");
+      setTimeout(() => {
+        const item = QUESTIONS_DB[Math.floor(Math.random() * QUESTIONS_DB.length)];
+        document.getElementById("fcMeta").textContent = `Questão #${item.id} (${item.level}) • Toque para girar 3D 🔄`;
+        document.getElementById("fcQuestion").textContent = item.q;
+        document.getElementById("fcAnswer").textContent = item.a;
+      }, 150);
     }
 
     function flipFlashcard() {
-      const ans = document.getElementById("fcAnswer");
-      if (ans.classList.contains("hidden")) {
-        ans.classList.remove("hidden");
-      } else {
-        loadRandomFlashcard();
-      }
+      const inner = document.getElementById("fcFlipInner");
+      inner.classList.toggle("is-flipped");
     }
 
     // BOOK COMPLETO (MODO CONSULTA LIVRE — SEM XP)
@@ -1480,7 +1629,7 @@
         if (btn) {
           btn.className = lvl === level
             ? "px-3.5 py-1.5 rounded-xl text-xs font-extrabold bg-red-600 text-white shadow-sm shrink-0 btn-tap"
-            : "px-3.5 py-1.5 rounded-xl text-xs font-extrabold bg-slate-100 text-slate-600 shrink-0 btn-tap";
+            : "px-3.5 py-1.5 rounded-xl text-xs font-extrabold subtle-box shrink-0 btn-tap";
         }
       });
       renderBookList();
@@ -1499,13 +1648,13 @@
       document.getElementById("bookCountBadge").textContent = `${filtered.length} questões`;
 
       container.innerHTML = filtered.map(item => `
-        <div class="fast-card rounded-2xl p-4">
+        <div class="pro-card rounded-2xl p-4">
           <div class="flex items-center justify-between mb-1.5">
-            <span class="text-[10px] font-black px-2.5 py-0.5 rounded-full bg-red-50 text-red-700 border border-red-100">Questão #${item.id} • ${item.level}</span>
-            <button onclick="revealBookAnswer(this)" class="text-[11px] font-extrabold text-amber-600 hover:text-amber-700 underline btn-tap">Ver Resposta</button>
+            <span class="text-[10px] font-black px-2.5 py-0.5 rounded-full bg-red-500/10 text-red-500 border border-red-500/20">Questão #${item.id} • ${item.level}</span>
+            <button onclick="revealBookAnswer(this)" class="text-[11px] font-extrabold text-amber-500 hover:underline btn-tap">Ver Resposta</button>
           </div>
-          <p class="font-extrabold text-slate-900 text-xs leading-relaxed">${item.q}</p>
-          <p class="hidden mt-2.5 pt-2.5 border-t border-slate-100 text-xs font-bold text-emerald-700">✅ ${item.a}</p>
+          <p class="font-extrabold text-xs leading-relaxed">${item.q}</p>
+          <p class="hidden mt-2.5 pt-2.5 border-t border-slate-500/20 text-xs font-bold text-emerald-500">✅ ${item.a}</p>
         </div>
       `).join("");
     }
@@ -1521,15 +1670,62 @@
       }
     }
 
-    // RANKING GERAL DA LOJA
+    // PÓDIO 3D + RANKING GERAL DA LOJA
     function renderLeaderboard() {
+      const podiumContainer = document.getElementById("podiumTop3Container");
       const container = document.getElementById("leaderboardContainer");
       const list = Object.values(users).filter(u => u && u.name && !u._deleted).sort((a, b) => (b.xp || 0) - (a.xp || 0));
 
       if (list.length === 0) {
-        container.innerHTML = `<div class="p-6 text-center text-xs font-bold text-slate-400 bg-slate-50 rounded-2xl border border-dashed border-slate-200">Nenhum colaborador cadastrado ainda. Crie sua conta para estrear o Ranking!</div>`;
+        podiumContainer.innerHTML = "";
+        container.innerHTML = `<div class="p-6 text-center text-xs font-bold text-muted-pro subtle-box rounded-2xl border-dashed">Nenhum colaborador cadastrado ainda. Crie sua conta para estrear o Pódio!</div>`;
         return;
       }
+
+      // Renderiza Pódio Olímpico 3D (2º, 1º e 3º)
+      const first = list[0];
+      const second = list[1] || null;
+      const third = list[2] || null;
+
+      podiumContainer.innerHTML = `
+        <!-- 2º Lugar -->
+        <div class="flex flex-col items-center">
+          ${second ? `
+            <div class="w-11 h-11 rounded-2xl subtle-box flex items-center justify-center text-xl shadow border-2 border-slate-300 mb-1">${second.avatar || '🍟'}</div>
+            <p class="font-black text-[10px] text-center truncate w-full px-1">${second.name}</p>
+            <span class="text-[10px] font-extrabold text-red-500">${second.xp || 0} XP</span>
+            <div class="w-full h-16 mt-2 rounded-t-2xl bg-gradient-to-b from-slate-300 to-slate-400 text-slate-900 flex flex-col items-center justify-center font-black shadow-inner">
+              <span class="text-lg">🥈</span>
+              <span class="text-[10px]">2º Lugar</span>
+            </div>
+          ` : `<div class="w-full h-16 mt-10 rounded-t-2xl subtle-box opacity-40 flex items-center justify-center text-xs font-bold">2º</div>`}
+        </div>
+
+        <!-- 1º Lugar (Mais alto + Caneca) -->
+        <div class="flex flex-col items-center">
+          <span class="text-lg mb-0.5 float-slow">👑 ☕</span>
+          <div class="w-14 h-14 rounded-2xl gold-gradient text-slate-950 flex items-center justify-center text-2xl shadow-lg border-2 border-white mb-1">${first.avatar || '🍔'}</div>
+          <p class="font-black text-xs text-center truncate w-full px-1">${first.name}</p>
+          <span class="text-[11px] font-black text-amber-500">${first.xp || 0} XP</span>
+          <div class="w-full h-24 mt-2 rounded-t-2xl gold-gradient text-slate-950 flex flex-col items-center justify-center font-black shadow-lg border-t-2 border-white">
+            <span class="text-2xl">🥇</span>
+            <span class="text-[11px] uppercase tracking-wider">1º Lugar</span>
+          </div>
+        </div>
+
+        <!-- 3º Lugar -->
+        <div class="flex flex-col items-center">
+          ${third ? `
+            <div class="w-11 h-11 rounded-2xl subtle-box flex items-center justify-center text-xl shadow border-2 border-amber-700/50 mb-1">${third.avatar || '🍦'}</div>
+            <p class="font-black text-[10px] text-center truncate w-full px-1">${third.name}</p>
+            <span class="text-[10px] font-extrabold text-red-500">${third.xp || 0} XP</span>
+            <div class="w-full h-14 mt-2 rounded-t-2xl bg-gradient-to-b from-amber-600 to-amber-800 text-white flex flex-col items-center justify-center font-black shadow-inner">
+              <span class="text-base">🥉</span>
+              <span class="text-[10px]">3º Lugar</span>
+            </div>
+          ` : `<div class="w-full h-14 mt-12 rounded-t-2xl subtle-box opacity-40 flex items-center justify-center text-xs font-bold">3º</div>`}
+        </div>
+      `;
 
       container.innerHTML = list.map((u, idx) => {
         const medal = idx === 0 ? "🥇 ☕" : idx === 1 ? "🥈" : idx === 2 ? "🥉" : `${idx + 1}º`;
@@ -1537,23 +1733,23 @@
         const avatar = u.avatar || "🍔";
         const role = u.role || u.station || "Atendente";
         return `
-          <div class="flex items-center justify-between p-3.5 rounded-2xl ${idx === 0 ? 'bg-gradient-to-r from-amber-50 to-yellow-50 border-2 border-amber-300 shadow-sm' : 'bg-slate-50 border border-slate-200/70'}">
+          <div class="flex items-center justify-between p-3.5 rounded-2xl ${idx === 0 ? 'bg-amber-500/15 border-2 border-amber-500/50 shadow-sm' : 'subtle-box'}">
             <div class="flex items-center gap-3">
               <span class="font-black text-xs w-7 text-center">${medal}</span>
-              <div class="w-10 h-10 rounded-2xl bg-white shadow-sm border border-slate-200 flex items-center justify-center text-xl shrink-0">
+              <div class="w-10 h-10 rounded-2xl pro-card flex items-center justify-center text-xl shrink-0">
                 ${avatar}
               </div>
               <div>
                 <div class="flex items-center gap-1.5 flex-wrap">
-                  <p class="font-black text-xs text-slate-900">${u.name}</p>
-                  <span class="text-[9px] font-extrabold px-2 py-0.5 rounded-full bg-slate-200/80 text-slate-700 uppercase">${role}</span>
+                  <p class="font-black text-xs">${u.name}</p>
+                  <span class="text-[9px] font-extrabold px-2 py-0.5 rounded-full bg-red-500/15 text-red-500 uppercase">${role}</span>
                 </div>
-                <p class="text-[10px] text-slate-500 font-bold mt-0.5">${info.title}</p>
+                <p class="text-[10px] text-muted-pro font-bold mt-0.5">${info.title}</p>
               </div>
             </div>
             <div class="text-right shrink-0">
-              <span class="font-black text-xs text-red-600">${u.xp || 0} XP</span>
-              <span class="block text-[10px] text-slate-400 font-semibold">${u.correctAnswers || 0} acertos</span>
+              <span class="font-black text-xs text-red-500">${u.xp || 0} XP</span>
+              <span class="block text-[10px] text-muted-pro font-semibold">${u.correctAnswers || 0} acertos</span>
             </div>
           </div>
         `;
@@ -1599,7 +1795,7 @@
       document.getElementById("adminStatsSummary").textContent = `Total: ${entries.length} colaborador(es) cadastrado(s)`;
 
       if (entries.length === 0) {
-        container.innerHTML = `<p class="text-xs text-slate-400 text-center py-4 font-bold">Nenhum colaborador cadastrado.</p>`;
+        container.innerHTML = `<p class="text-xs text-muted-pro text-center py-4 font-bold">Nenhum colaborador cadastrado.</p>`;
         return;
       }
 
@@ -1609,34 +1805,34 @@
         const role = u.role || u.station || "Atendente";
         const isLocked = (u.heartsLockUntil || 0) > now;
         const heartsBadge = isLocked
-          ? `<span class="text-[10px] font-bold text-red-600">⏳ Bloqueado (${formatTimeRemaining(u.heartsLockUntil - now)})</span>`
-          : `<span class="text-[10px] font-bold text-emerald-700">${u.hearts !== undefined ? u.hearts : 5} ❤️ disponíveis</span>`;
+          ? `<span class="text-[10px] font-bold text-red-500">⏳ Bloqueado (${formatTimeRemaining(u.heartsLockUntil - now)})</span>`
+          : `<span class="text-[10px] font-bold text-emerald-500">${u.hearts !== undefined ? u.hearts : 5} ❤️ disponíveis</span>`;
 
         return `
-          <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
+          <div class="p-4 rounded-2xl subtle-box space-y-3">
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-2.5">
-                <span class="text-2xl bg-white p-2 rounded-xl border border-slate-200">${u.avatar || '🍔'}</span>
+                <span class="text-2xl pro-card p-2 rounded-xl">${u.avatar || '🍔'}</span>
                 <div>
                   <span class="text-[10px] font-black px-2 py-0.5 rounded-full bg-slate-900 text-[#FFC72C]">#${index + 1} • Nível ${lvl} • ${role}</span>
-                  <h4 class="font-black text-xs text-slate-900 mt-1">${u.name}</h4>
-                  <p class="text-[11px] text-slate-500 font-semibold">🔑 Senha: <span class="text-slate-800 font-extrabold">${u.password || '1234'}</span> • ${heartsBadge}</p>
+                  <h4 class="font-black text-xs mt-1">${u.name}</h4>
+                  <p class="text-[11px] text-muted-pro font-semibold">🔑 Senha: <span class="font-extrabold">${u.password || '1234'}</span> • ${heartsBadge}</p>
                 </div>
               </div>
               <div class="text-right">
-                <span class="text-sm font-black text-red-600">${u.xp || 0} XP</span>
-                <span class="block text-[10px] text-slate-500 font-bold">${u.correctAnswers || 0} acertos</span>
+                <span class="text-sm font-black text-red-500">${u.xp || 0} XP</span>
+                <span class="block text-[10px] text-muted-pro font-bold">${u.correctAnswers || 0} acertos</span>
               </div>
             </div>
 
-            <div class="flex flex-wrap items-center gap-1.5 pt-2 border-t border-slate-200">
+            <div class="flex flex-wrap items-center gap-1.5 pt-2 border-t border-slate-500/20">
               <button onclick="adminAdjustXp('${key}', 100)" class="px-2.5 py-1.5 rounded-xl bg-emerald-600 text-white font-black text-[10px] btn-tap">+100 XP</button>
               <button onclick="adminAdjustXp('${key}', 500)" class="px-2.5 py-1.5 rounded-xl bg-emerald-800 text-white font-black text-[10px] btn-tap">+500 XP</button>
               <button onclick="adminAdjustXp('${key}', -100)" class="px-2.5 py-1.5 rounded-xl bg-amber-600 text-white font-black text-[10px] btn-tap">-100 XP</button>
               <button onclick="adminSetCustomXp('${key}')" class="px-2.5 py-1.5 rounded-xl bg-blue-600 text-white font-black text-[10px] btn-tap">✏️ Definir XP</button>
               <button onclick="adminRestoreHearts('${key}')" class="px-2.5 py-1.5 rounded-xl bg-pink-600 text-white font-black text-[10px] btn-tap">❤️ Restaurar Vidas</button>
-              <button onclick="adminResetUser('${key}')" class="px-2.5 py-1.5 rounded-xl bg-slate-200 text-slate-800 font-bold text-[10px] btn-tap">Zerar</button>
-              <button onclick="adminDeleteUser('${key}')" class="px-2.5 py-1.5 rounded-xl bg-red-100 text-red-700 font-bold text-[10px] ml-auto btn-tap">🗑️ Excluir</button>
+              <button onclick="adminResetUser('${key}')" class="px-2.5 py-1.5 rounded-xl bg-slate-500/20 font-bold text-[10px] btn-tap">Zerar</button>
+              <button onclick="adminDeleteUser('${key}')" class="px-2.5 py-1.5 rounded-xl bg-red-500/20 text-red-500 font-bold text-[10px] ml-auto btn-tap">🗑️ Excluir</button>
             </div>
           </div>
         `;
@@ -1735,14 +1931,15 @@
     function switchMainTab(tab) {
       ["quiz", "book", "prizes", "admin", "updates"].forEach(t => {
         document.getElementById(`tab-${t}`).classList.add("hidden");
-        document.getElementById(`nav-${t}`).className = "nav-btn flex flex-col items-center py-1 rounded-2xl text-slate-400 font-bold text-[10px]";
+        document.getElementById(`nav-${t}`).className = "nav-btn flex flex-col items-center py-1.5 rounded-2xl font-bold text-[10px]";
       });
       document.getElementById(`tab-${tab}`).classList.remove("hidden");
-      document.getElementById(`nav-${tab}`).className = "nav-btn active-nav flex flex-col items-center py-1 rounded-2xl text-[10px]";
+      document.getElementById(`nav-${tab}`).className = "nav-btn active-nav flex flex-col items-center py-1.5 rounded-2xl text-[10px]";
       if (tab === "prizes" || tab === "admin") fetchCloudHistorySafe(false);
     }
 
     window.onload = () => {
+      initTheme();
       rescuePreviousLocalRegistrations();
       renderAvatarSelector();
       syncActiveUserHeartsState();
