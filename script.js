@@ -1,6 +1,6 @@
 /* =========================================================================
-   OLIMPÍADAS DO BÁSICO — VENTURE (script.js v7.5 COMPLETO)
-   Bolinha Verde Online + Histórico de Duelos 1v1 + Print do Ranking + 200 Questões
+   OLIMPÍADAS DO BÁSICO — VENTURE (script.js v7.6 COMPLETO)
+   Com Jingle Musical do McDonald's ("Pa-ra-pa-pa-pa") ao Subir de Nível
    ========================================================================= */
 
 const AVATAR_LIST = ["🍔", "🍟", "🍦", "🔥", "👨‍🍳", "👑", "⚡", "🏆", "🚀", "🥤", "🥓", "🎯"];
@@ -146,7 +146,7 @@ const QUESTIONS_DB = [
   { id: 139, level: "Intermediário", q: "Com quanto tempo de antecedência deve ser feito o plano de chão?", a: "48 horas.", w: ["24 horas.", "12 horas.", "72 horas."] },
   { id: 140, level: "Intermediário", q: "Qual é a promessa do fazer?", a: "Fazer bem, fazer rápido e fazer especial.", w: ["Fazer limpo, fazer quente e fazer barato.", "Olhar, servir e ativar no tempo certo.", "Limpar, lavar, enxaguar e sanitizar."] },
   { id: 141, level: "Intermediário", q: "Qual a condimentação e quantidades de ingredientes do Quarteirão?", a: "1/40 oz de mostarda, 1/2 oz de ketchup, 7 g de cebola fresca, 2 picles, 2 fatias de queijo em estrela, 1 carne 4:1.", w: ["1/40 oz de mostarda, 1/3 oz de ketchup, 3,5 g de cebola hidratada, 1 picles, 1 queijo, 1 carne 4:1.", "1/2 oz de mostarda, 1/2 oz de ketchup, 10 g de cebola fresca, 3 picles, 2 queijos, 1 carne 10:1.", "1/40 oz de mostarda, 1/2 oz de ketchup, 28 g de alface, 2 tomates, 2 queijos, 1 carne 4:1."] },
-  { id: 142, level: "Intermediário", q: "Qual a condimentação e quantidades de ingredientes do Cheeseburger?", a: "1/40 oz de mostarda, 1/3 oz de ketchup, 1 picles, 1 fatia de queijo, 1 carne de 10:1 com 3,5 g de cebola.", w: ["1/40 oz de mostarda, 1/2 oz de ketchup, 2 picles, 2 queijos, 1 carne 10:1 com 7 g de cebola.", "1/3 oz de mostarda, 1/3 oz de ketchup, 2 picles, 1 queijo, 1 carne 4:1 com 3,5 g de cebola.", "1/40 oz de mostarda, 1/3 oz de ketchup, 12 g de alface, 1 picles, 1 queijo e 1 carne 10:1."] },
+  { id: 142, level: "Intermediário", q: "Qual a condimentação e quantidades de ingredientes do Cheeseburger?", a: "1/40 oz de mostarda, 1/3 oz de ketchup, 1 picles, 1 fatia de queijo, 1 carne de 10:1 com 3,5 g de cebola.", w: ["1/40 oz de mostarda, 1/3 oz de ketchup, 2 picles, 2 queijos, 1 carne 10:1 com 7 g de cebola.", "1/3 oz de mostarda, 1/3 oz de ketchup, 2 picles, 1 queijo, 1 carne 4:1 com 3,5 g de cebola.", "1/40 oz de mostarda, 1/3 oz de ketchup, 12 g de alface, 1 picles, 1 queijo e 1 carne 10:1."] },
   { id: 143, level: "Intermediário", q: "Qual a condimentação e quantidades de ingredientes do McNífico Bacon?", a: "1/40 oz mostarda, 1/2 oz ketchup, 7 g cebola fresca, 2/3 oz maionese, 28 g alface, 2 tomates, 2 bacons, 1 queijo, 1 carne 4:1.", w: ["1/40 oz mostarda, 1/3 oz ketchup, 3,5 g cebola, 1/2 oz maionese, 12 g alface, 1 tomate, 3 bacons, 2 queijos, 1 carne 4:1.", "1 oz molho tasty, 1/2 oz ketchup, 10 g cebola, 28 g alface, 2 tomates, 2 bacons, 3 queijos ementhal, 1 carne 4:1.", "1/40 oz mostarda, 1/2 oz ketchup, 7 g cebola, 2/3 oz maionese, 24 g alface, 1 tomate, 1 bacon, 2 queijos, 1 carne 10:1."] },
   { id: 144, level: "Intermediário", q: "Qual o distanciamento e espaçamento que devemos manter entre as caixas nas câmaras?", a: "5 cm do chão e das paredes e 2,5 cm entre as caixas.", w: ["10 cm do chão e das paredes e 5 cm entre as caixas.", "3 cm do chão e das paredes e 1 cm entre as caixas.", "8 cm do chão e das paredes e 4 cm entre as caixas."] },
   { id: 145, level: "Intermediário", q: "Qual o empilhamento máximo para as caixas de batata?", a: "6 caixas.", w: ["4 caixas.", "5 caixas.", "8 caixas."] },
@@ -202,7 +202,7 @@ const QUESTIONS_DB = [
   { id: 195, level: "Avançado", q: "Qual a temperatura do café coado?", a: "A partir de 77°C.", w: ["A partir de 65°C.", "De 57°C a 63°C.", "A partir de 85°C."] },
   { id: 196, level: "Avançado", q: "Qual a proporção correta de água e café para o café coado?", a: "1.100 ml de água para 1 pacote de 50 g de café.", w: ["1.000 ml de água para 1 pacote de 100 g de café.", "1.500 ml de água para 1 pacote de 50 g de café.", "800 ml de água para 1 pacote de 40 g de café."] },
   { id: 197, level: "Avançado", q: "O que é Best Burger?", a: "É o novo padrão para os hambúrgueres McDonald's. Pequenas mudanças, grande impacto.", w: ["É o sistema de fritura rápida para carnes brancas em 3 minutos.", "É o programa de auditoria semestral de limpeza das chapas.", "É a campanha promocional exclusiva para venda no Drive-Thru."] },
-  { id: 198, level: "Avançado", q: "Quais são das técnicas dos influencers vendedores?", a: "Somos Especialistas, Gostamos de Surpreender, Criamos Oportunidades, Vivenciamos as mesmas coisas, Criamos tendência, Somos Afetuosos.", w: ["Sugestão de Vendas, Venda Sugestiva, Adicionais, Combo Grande, Sobremesa e Café.", "Fazer bem, Fazer rápido, Fazer especial, Sorrir, Agradecer e Despedir.", "Olhar nos olhos, Oferecer bacon, Oferecer batata grande, Cobrar rápido e Entregar."] },
+  { id: 198, level: "Avançado", q: "Quais são as técnicas dos influencers vendedores?", a: "Somos Especialistas, Gostamos de Surpreender, Criamos Oportunidades, Vivenciamos as mesmas coisas, Criamos tendência, Somos Afetuosos.", w: ["Sugestão de Vendas, Venda Sugestiva, Adicionais, Combo Grande, Sobremesa e Café.", "Fazer bem, Fazer rápido, Fazer especial, Sorrir, Agradecer e Despedir.", "Olhar nos olhos, Oferecer bacon, Oferecer batata grande, Cobrar rápido e Entregar."] },
   { id: 199, level: "Avançado", q: "Qual o rendimento da batata?", a: "9,11 batatas pequenas por kg.", w: ["7,50 batatas pequenas por kg.", "12,40 batatas pequenas por kg.", "6,80 batatas pequenas por kg."] },
   { id: 200, level: "Avançado", q: "Qual a descrição do padrão ouro de qualidade do suco?", a: "Frio, cor brilhante e sabor doce.", w: ["Com espuma, cor escura e sabor cítrico ácido.", "Em temperatura ambiente, translúcido e sem açúcar.", "Congelado com cristais de gelo e altamente concentrado."] }
 ];
@@ -225,6 +225,7 @@ let currentBookFilter = "ALL";
 let currentStreak = 0;
 let currentHearts = 5;
 let currentQuizQuestionId = null;
+let lastKnownLevel = 1;
 let isAdminUnlocked = false;
 
 let searchDebounceTimer = null;
@@ -242,7 +243,46 @@ let photoUploadTarget = "register";
 let duelHistoryList = JSON.parse(localStorage.getItem(STORAGE_DUEL_HISTORY) || "[]");
 
 // =========================================================================
-// 1. FOTOS DE PERFIL DA GALERIA / PC
+// 🎵 SINTETIZADOR DO JINGLE OFICIAL DO MCDONALD'S ("Pa-ra-pa-pa-pa")
+// =========================================================================
+
+function playMcDonaldsJingle() {
+  try {
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    if (!AudioContext) return;
+    const ctx = new AudioContext();
+
+    // Notas clássicas do jingle do Méqui: G4, G4, E4, G4, C5 (Dó agudo final)
+    const notes = [
+      { freq: 392.00, start: 0.00, duration: 0.22 }, // Pá
+      { freq: 392.00, start: 0.25, duration: 0.22 }, // ra
+      { freq: 329.63, start: 0.50, duration: 0.22 }, // pa
+      { freq: 392.00, start: 0.75, duration: 0.22 }, // pa
+      { freq: 523.25, start: 1.00, duration: 0.55 }  // paaaaa
+    ];
+
+    notes.forEach(n => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+
+      osc.type = "triangle"; // Som mais suave e alegre
+      osc.frequency.setValueAtTime(n.freq, ctx.currentTime + n.start);
+
+      gain.gain.setValueAtTime(0, ctx.currentTime + n.start);
+      gain.gain.linearRampToValueAtTime(0.35, ctx.currentTime + n.start + 0.04);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + n.start + n.duration);
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc.start(ctx.currentTime + n.start);
+      osc.stop(ctx.currentTime + n.start + n.duration);
+    });
+  } catch (e) {}
+}
+
+// =========================================================================
+// FOTOS DE PERFIL DA GALERIA / PC
 // =========================================================================
 
 function isPhotoAvatar(val) {
@@ -303,7 +343,7 @@ function handleGalleryFileSelected(event) {
 }
 
 // =========================================================================
-// 2. PRINT AUTOMÁTICO DO RANKING EM PNG P/ WHATSAPP
+// PRINT AUTOMÁTICO DO RANKING EM PNG P/ WHATSAPP
 // =========================================================================
 
 async function captureAndShareRankingImage() {
@@ -397,7 +437,7 @@ function startHeartbeat() {
       users[currentUserKey].lastSeen = Date.now();
       scheduleCloudSync(currentUserKey, false);
     }
-  }, 10000); // Envia sinal a cada 10 segundos
+  }, 10000);
 }
 
 // =========================================================================
@@ -530,7 +570,7 @@ function initClusterSync() {
   brokers.forEach((brokerUrl) => {
     try {
       const client = mqtt.connect(brokerUrl, {
-        clientId: "mq75_" + Math.random().toString(16).substring(2, 10),
+        clientId: "mq76_" + Math.random().toString(16).substring(2, 10),
         clean: true,
         connectTimeout: 5000,
         reconnectPeriod: 6000
@@ -852,9 +892,20 @@ function logoutUser() {
 
 function addXp(amount) {
   if (!currentUserKey || !users[currentUserKey]) return;
-  users[currentUserKey].xp = Math.max(0, (users[currentUserKey].xp || 0) + amount);
+  const oldXp = users[currentUserKey].xp || 0;
+  const newXp = Math.max(0, oldXp + amount);
+
+  users[currentUserKey].xp = newXp;
   users[currentUserKey].updatedAt = Date.now();
   showXpToast(amount);
+
+  // Verifica se subiu de nível para tocar o Jingle do Méqui
+  const oldLevel = getLevelInfo(oldXp).level;
+  const newLevel = getLevelInfo(newXp).level;
+  if (newLevel > oldLevel) {
+    playMcDonaldsJingle();
+  }
+
   scheduleCloudSync(currentUserKey, false);
 }
 
@@ -1002,7 +1053,7 @@ function checkReviewAnswer(selectedBtn, chosen, correct, qId) {
     fb.innerHTML = `❌ O gabarito oficial é:<br><span class="underline mt-1 inline-block">${correct}</span>`;
   }
 
-  document.getElementById("nextReviewBtn").classList.remove("hidden");
+  document.getElementById("nextReviewBtn").classList.add("hidden");
 }
 
 // =========================================================================
@@ -1173,7 +1224,6 @@ function handleIncomingDuelPacket(pkt) {
     document.getElementById("duelWinnerTitle").textContent = `🏆 ${pkt.winnerName} Venceu!`;
     document.getElementById("duelWinnerSub").textContent = `Placar Final: ${activeDuel.hostName} (${pkt.scoreHost}) x (${pkt.scoreGuest}) ${activeDuel.guestName}`;
 
-    // Salva no histórico de duelos
     saveDuelHistoryRecord({
       p1: activeDuel.hostName,
       p2: activeDuel.guestName,
