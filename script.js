@@ -1,83 +1,10 @@
 /* =========================================================================
-   OLIMPÍADAS DO BÁSICO — VENTURE (script.js v7.6 COMPLETO)
-   Inclui: Som Parapapa + Monta-Lanche + Bolinha Verde Online + Histórico 1v1
+   OLIMPÍADAS DO BÁSICO — VENTURE (script.js v7.5 COMPLETO)
+   Bolinha Verde Online + Histórico de Duelos 1v1 + Print do Ranking + 200 Questões
    ========================================================================= */
 
 const AVATAR_LIST = ["🍔", "🍟", "🍦", "🔥", "👨‍🍳", "👑", "⚡", "🏆", "🚀", "🥤", "🥓", "🎯"];
 let selectedRegAvatar = "🍔";
-
-// RECEITAS OFICIAIS DO SISTEMA DE COZINHA (MONTA-LANCHE BEST BURGER)
-const BURGER_RECIPES = {
-  bigmac: {
-    name: "Big Mac",
-    steps: [
-      "🍞 Tostar Pão Big Mac (Base, Club e Coroa - 22s GAP 4)",
-      "🥣 1 tiro (1/2 oz) de Molho Big Mac na Base e 1 no Club (total 1 oz)",
-      "🥬 12g de Alface na Base e 12g no Club (total 24g)",
-      "🥒 2 fatias de Picles no Club",
-      "🧀 1 fatia de Queijo Cheddar na Base",
-      "🥩 2 Carnes 10:1 (com 3,5g de cebola na chapa) — 1 na Base e 1 no Club",
-      "🍔 Fechar o Club sobre a Base e posicionar a Coroa"
-    ]
-  },
-  quarteirao: {
-    name: "Quarteirão com Queijo",
-    steps: [
-      "🍞 Tostar Pão Quarteirão (22s GAP 4)",
-      "🌭 1/40 oz de Mostarda na Coroa",
-      "🍅 1/2 oz de Ketchup na Coroa",
-      "🧅 7g de Cebola Fresca na Coroa",
-      "🥒 2 fatias de Picles na Coroa",
-      "🧀 2 fatias de Queijo Cheddar em formato de estrela (1 na Base, 1 sobre a carne)",
-      "🥩 1 Carne 4:1 no centro"
-    ]
-  },
-  cheeseburger: {
-    name: "Cheeseburger",
-    steps: [
-      "🍞 Tostar Pão Regular (22s GAP 4)",
-      "🌭 1/40 oz de Mostarda na Coroa",
-      "🍅 1/3 oz de Ketchup na Coroa",
-      "🥒 1 fatia de Picles na Coroa",
-      "🧀 1 fatia de Queijo Cheddar",
-      "🥩 1 Carne 10:1 com 3,5g de Cebola Reidratada na chapa"
-    ]
-  },
-  mcnifico: {
-    name: "McNífico Bacon",
-    steps: [
-      "🍞 Tostar Pão Quarteirão (22s GAP 4)",
-      "🌭 1/40 oz de Mostarda e 1/2 oz de Ketchup",
-      "🧅 7g de Cebola Fresca",
-      "🥣 2/3 oz de Molho Maionese",
-      "🥬 28g de Alface e 2 fatias de Tomate",
-      "🥓 2 fatias de Bacon e 1 fatia de Queijo Cheddar",
-      "🥩 1 Carne 4:1"
-    ]
-  },
-  bigtasty: {
-    name: "Big Tasty",
-    steps: [
-      "🍞 Tostar Pão Big Tasty (22s GAP 4)",
-      "🥣 1 tiro de 1 oz de Molho Tasty na Coroa e 1 oz na Base (total 2 oz)",
-      "🧅 10g de Cebola Fresca",
-      "🥬 28g de Alface e 2 fatias de Tomate",
-      "🧀 3 fatias de Queijo Ementhal",
-      "🥩 Carne 4:1 (1, 2 ou 3 unidades conforme pedido, destacando a TAG)"
-    ]
-  },
-  saladamix: {
-    name: "Salada Mix",
-    steps: [
-      "🥬 120g de Alface na embalagem de salada",
-      "🍅 4 unidades de Tomate Cereja",
-      "🧅 14g de Cebola Shoyu",
-      "🥒 4 fatias de Picles",
-      "🥓 16g de Bacon Triturado",
-      "🍗 1 Carne (se for Crispy, cortar de 5 a 7 pedaços)"
-    ]
-  }
-};
 
 // BANCO OFICIAL DE QUESTÕES — BOOK VENTURE COM ALTERNATIVAS SEMELHANTES (w)
 const QUESTIONS_DB = [
@@ -275,7 +202,7 @@ const QUESTIONS_DB = [
   { id: 195, level: "Avançado", q: "Qual a temperatura do café coado?", a: "A partir de 77°C.", w: ["A partir de 65°C.", "De 57°C a 63°C.", "A partir de 85°C."] },
   { id: 196, level: "Avançado", q: "Qual a proporção correta de água e café para o café coado?", a: "1.100 ml de água para 1 pacote de 50 g de café.", w: ["1.000 ml de água para 1 pacote de 100 g de café.", "1.500 ml de água para 1 pacote de 50 g de café.", "800 ml de água para 1 pacote de 40 g de café."] },
   { id: 197, level: "Avançado", q: "O que é Best Burger?", a: "É o novo padrão para os hambúrgueres McDonald's. Pequenas mudanças, grande impacto.", w: ["É o sistema de fritura rápida para carnes brancas em 3 minutos.", "É o programa de auditoria semestral de limpeza das chapas.", "É a campanha promocional exclusiva para venda no Drive-Thru."] },
-  { id: 198, level: "Avançado", q: "Quais são as técnicas dos influencers vendedores?", a: "Somos Especialistas, Gostamos de Surpreender, Criamos Oportunidades, Vivenciamos as mesmas coisas, Criamos tendência, Somos Afetuosos.", w: ["Sugestão de Vendas, Venda Sugestiva, Adicionais, Combo Grande, Sobremesa e Café.", "Fazer bem, Fazer rápido, Fazer especial, Sorrir, Agradecer e Despedir.", "Olhar nos olhos, Oferecer bacon, Oferecer batata grande, Cobrar rápido e Entregar."] },
+  { id: 198, level: "Avançado", q: "Quais são das técnicas dos influencers vendedores?", a: "Somos Especialistas, Gostamos de Surpreender, Criamos Oportunidades, Vivenciamos as mesmas coisas, Criamos tendência, Somos Afetuosos.", w: ["Sugestão de Vendas, Venda Sugestiva, Adicionais, Combo Grande, Sobremesa e Café.", "Fazer bem, Fazer rápido, Fazer especial, Sorrir, Agradecer e Despedir.", "Olhar nos olhos, Oferecer bacon, Oferecer batata grande, Cobrar rápido e Entregar."] },
   { id: 199, level: "Avançado", q: "Qual o rendimento da batata?", a: "9,11 batatas pequenas por kg.", w: ["7,50 batatas pequenas por kg.", "12,40 batatas pequenas por kg.", "6,80 batatas pequenas por kg."] },
   { id: 200, level: "Avançado", q: "Qual a descrição do padrão ouro de qualidade do suco?", a: "Frio, cor brilhante e sabor doce.", w: ["Com espuma, cor escura e sabor cítrico ácido.", "Em temperatura ambiente, translúcido e sem açúcar.", "Congelado com cristais de gelo e altamente concentrado."] }
 ];
@@ -299,7 +226,6 @@ let currentStreak = 0;
 let currentHearts = 5;
 let currentQuizQuestionId = null;
 let isAdminUnlocked = false;
-let lastCheckedLevel = null;
 
 let searchDebounceTimer = null;
 let cloudSyncQueueTimer = null;
@@ -315,178 +241,8 @@ let currentReviewItem = null;
 let photoUploadTarget = "register";
 let duelHistoryList = JSON.parse(localStorage.getItem(STORAGE_DUEL_HISTORY) || "[]");
 
-// Estado do Monta-Lanche (Sistema de Cozinha)
-let currentBurgerMode = "guide";
-let currentBurgerStepIndex = 0;
-
 // =========================================================================
-// 1. EFEITO SONORO "PA-PA-PA-PA-PA" (MÉQUI JINGLE) AO SUBIR DE NÍVEL
-// =========================================================================
-
-function playMequiLevelUpSound() {
-  try {
-    const AudioCtx = window.AudioContext || window.webkitAudioContext;
-    if (!AudioCtx) return;
-    const audioCtx = new AudioCtx();
-
-    // Melodia clássica "Ba-da-ba-ba-ba" (I'm lovin' it)
-    const notes = [
-      { freq: 392.00, duration: 0.14, delay: 0.00 }, // Sol (Ba)
-      { freq: 440.00, duration: 0.14, delay: 0.16 }, // Lá (da)
-      { freq: 493.88, duration: 0.14, delay: 0.32 }, // Si (ba)
-      { freq: 659.25, duration: 0.16, delay: 0.52 }, // Mi agudo (ba)
-      { freq: 587.33, duration: 0.42, delay: 0.72 }  // Ré agudo (baaa!)
-    ];
-
-    notes.forEach(note => {
-      setTimeout(() => {
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-
-        osc.type = "triangle";
-        osc.frequency.setValueAtTime(note.freq, audioCtx.currentTime);
-
-        gain.gain.setValueAtTime(0.32, audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + note.duration);
-
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-
-        osc.start();
-        osc.stop(audioCtx.currentTime + note.duration);
-      }, note.delay * 1000);
-    });
-  } catch (e) {}
-}
-
-function checkLevelUpTrigger(newXp) {
-  const currentLevel = getLevelInfo(newXp).level;
-  if (lastCheckedLevel === null) {
-    lastCheckedLevel = currentLevel;
-    return;
-  }
-  if (currentLevel > lastCheckedLevel) {
-    lastCheckedLevel = currentLevel;
-    playMequiLevelUpSound();
-
-    const banner = document.createElement("div");
-    banner.className = "fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none";
-    banner.innerHTML = `
-      <div class="gold-gradient text-slate-950 font-black text-xl sm:text-2xl px-7 py-5 rounded-3xl shadow-2xl border-4 border-white animate-bounce text-center">
-        🎵 PA-PA-PA-PA-PA! 🎵<br>
-        🎉 PARABÉNS! VOCÊ SUBIU PARA O NÍVEL ${currentLevel}! 👑🍟
-      </div>
-    `;
-    document.body.appendChild(banner);
-    setTimeout(() => banner.remove(), 3500);
-  }
-}
-
-// =========================================================================
-// 2. SISTEMA DE COZINHA: MONTA-LANCHE (COMO FAZER OS LANCHES)
-// =========================================================================
-
-function openBurgerModal() {
-  document.getElementById("burgerBuilderModal").classList.remove("hidden");
-  selectBurgerRecipe();
-}
-
-function closeBurgerModal() {
-  document.getElementById("burgerBuilderModal").classList.add("hidden");
-}
-
-function setBurgerMode(mode) {
-  currentBurgerMode = mode;
-  if (mode === "guide") {
-    document.getElementById("burgerGuideArea").classList.remove("hidden");
-    document.getElementById("burgerGameArea").classList.add("hidden");
-    document.getElementById("btnModeGuide").className = "flex-1 py-2 rounded-xl text-xs font-extrabold bg-[#DA291C] text-white btn-tap";
-    document.getElementById("btnModeGame").className = "flex-1 py-2 rounded-xl text-xs font-extrabold text-muted-pro btn-tap";
-  } else {
-    document.getElementById("burgerGuideArea").classList.add("hidden");
-    document.getElementById("burgerGameArea").classList.remove("hidden");
-    document.getElementById("btnModeGame").className = "flex-1 py-2 rounded-xl text-xs font-extrabold bg-[#DA291C] text-white btn-tap";
-    document.getElementById("btnModeGuide").className = "flex-1 py-2 rounded-xl text-xs font-extrabold text-muted-pro btn-tap";
-    resetBurgerGame();
-  }
-}
-
-function selectBurgerRecipe() {
-  const key = document.getElementById("burgerRecipeSelect").value;
-  const recipe = BURGER_RECIPES[key];
-  if (!recipe) return;
-
-  const guideContainer = document.getElementById("burgerGuideSteps");
-  guideContainer.innerHTML = recipe.steps.map((step, i) => `
-    <div class="p-2.5 rounded-xl subtle-box flex items-center gap-2.5 text-xs font-bold">
-      <span class="w-6 h-6 rounded-lg bg-red-600 text-white font-black text-[11px] flex items-center justify-center shrink-0">${i + 1}º</span>
-      <span>${step}</span>
-    </div>
-  `).join("");
-
-  if (currentBurgerMode === "game") {
-    resetBurgerGame();
-  }
-}
-
-function resetBurgerGame() {
-  const key = document.getElementById("burgerRecipeSelect").value;
-  const recipe = BURGER_RECIPES[key];
-  if (!recipe) return;
-
-  currentBurgerStepIndex = 0;
-  document.getElementById("burgerGameProgress").textContent = `Montando: ${recipe.name} (Passo 1 de${recipe.steps.length})`;
-  document.getElementById("burgerTrayBuilt").innerHTML = `<span class="text-muted-pro text-[11px]">Toque no 1º passo abaixo para iniciar a montagem!</span>`;
-  document.getElementById("burgerGameFeedback").classList.add("hidden");
-
-  const shuffledSteps = [...recipe.steps].sort(() => 0.5 - Math.random());
-  const pool = document.getElementById("burgerIngredientsPool");
-  pool.innerHTML = "";
-
-  shuffledSteps.forEach(stepText => {
-    const btn = document.createElement("button");
-    btn.className = "option-btn p-2.5 rounded-xl text-left text-[11px] font-bold leading-snug";
-    btn.textContent = stepText;
-    btn.onclick = () => handleBurgerStepClick(btn, stepText, recipe);
-    pool.appendChild(btn);
-  });
-}
-
-function handleBurgerStepClick(btn, chosenStep, recipe) {
-  const expectedStep = recipe.steps[currentBurgerStepIndex];
-  const fb = document.getElementById("burgerGameFeedback");
-  fb.classList.remove("hidden");
-
-  if (chosenStep === expectedStep) {
-    btn.disabled = true;
-    btn.className = "p-2.5 rounded-xl text-left text-[11px] font-bold bg-emerald-500/20 border-2 border-emerald-500 text-emerald-500 opacity-60";
-    currentBurgerStepIndex++;
-
-    const tray = document.getElementById("burgerTrayBuilt");
-    if (currentBurgerStepIndex === 1) tray.innerHTML = "";
-    const chip = document.createElement("span");
-    chip.className = "px-2.5 py-1 rounded-lg bg-amber-500/20 border border-amber-500/40 text-[10px] font-extrabold";
-    chip.textContent = `${currentBurgerStepIndex}º ${chosenStep.slice(0, 26)}...`;
-    tray.appendChild(chip);
-
-    if (currentBurgerStepIndex >= recipe.steps.length) {
-      playMequiLevelUpSound();
-      fb.className = "p-3 rounded-xl text-xs font-black bg-emerald-500/20 text-emerald-500 border border-emerald-500/40 text-center";
-      fb.textContent = `🎉 Perfeito! Você montou o ${recipe.name} na sequência Padrão Ouro!`;
-      document.getElementById("burgerGameProgress").textContent = `✅ Lanche Finalizado!`;
-    } else {
-      fb.className = "p-2 rounded-xl text-xs font-extrabold bg-emerald-500/15 text-emerald-500 text-center";
-      fb.textContent = `✅ Passo ${currentBurgerStepIndex} correto! Escolha o próximo ingrediente.`;
-      document.getElementById("burgerGameProgress").textContent = `Passo ${currentBurgerStepIndex + 1} de${recipe.steps.length}`;
-    }
-  } else {
-    fb.className = "p-2.5 rounded-xl text-xs font-extrabold bg-red-500/15 text-red-500 border border-red-500/30 text-center";
-    fb.textContent = `❌ Ordem incorreta! Revise no modo 'Como Fazer' ou tente outro ingrediente.`;
-  }
-}
-
-// =========================================================================
-// 3. FOTOS DE PERFIL DA GALERIA / PC & PRINT DO RANKING P/ WHATSAPP
+// 1. FOTOS DE PERFIL DA GALERIA / PC
 // =========================================================================
 
 function isPhotoAvatar(val) {
@@ -498,7 +254,7 @@ function renderAvatarBadge(avatarVal, sizeClasses = "w-10 h-10", textClasses = "
   if (isPhotoAvatar(val)) {
     return `<img src="${val}" alt="Foto" class="${sizeClasses} rounded-2xl object-cover border-2 border-[#FFC72C] shadow-sm shrink-0" />`;
   }
-  return `<div class="${sizeClasses} rounded-2xl${extraClasses} flex items-center justify-center ${textClasses} shrink-0">${val}</div>`;
+  return `<div class="${sizeClasses} rounded-2xl ${extraClasses} flex items-center justify-center ${textClasses} shrink-0">${val}</div>`;
 }
 
 function triggerPhotoUpload(targetMode) {
@@ -546,6 +302,10 @@ function handleGalleryFileSelected(event) {
   reader.readAsDataURL(file);
 }
 
+// =========================================================================
+// 2. PRINT AUTOMÁTICO DO RANKING EM PNG P/ WHATSAPP
+// =========================================================================
+
 async function captureAndShareRankingImage() {
   const printArea = document.getElementById("rankingPrintArea");
   const btn = document.getElementById("btnPrintRanking");
@@ -574,7 +334,7 @@ async function captureAndShareRankingImage() {
       const file = new File([blob], fileName, { type: "image/png" });
 
       const list = Object.values(users).filter(u => u && u.name && !u._deleted).sort((a, b) => (b.xp || 0) - (a.xp || 0));
-      const topSummary = list.slice(0, 3).map((u, i) => `${i === 0 ? '🥇' : i === 1 ? '🥈' : '🥉'} ${u.name}:${u.xp || 0} XP`).join("\n");
+      const topSummary = list.slice(0, 3).map((u, i) => `${i === 0 ? '🥇' : i === 1 ? '🥈' : '🥉'} ${u.name}: ${u.xp || 0} XP`).join("\n");
       const shareCaption = `🏆 *RANKING OFICIAL — OLIMPÍADAS DO BÁSICO (VENTURE)*\n\n${topSummary}\n\n🔗 Participe no link: ${window.location.origin}${window.location.pathname}`;
 
       if (navigator.canShare && navigator.canShare({ files: [file] })) {
@@ -637,7 +397,7 @@ function startHeartbeat() {
       users[currentUserKey].lastSeen = Date.now();
       scheduleCloudSync(currentUserKey, false);
     }
-  }, 10000);
+  }, 10000); // Envia sinal a cada 10 segundos
 }
 
 // =========================================================================
@@ -770,7 +530,7 @@ function initClusterSync() {
   brokers.forEach((brokerUrl) => {
     try {
       const client = mqtt.connect(brokerUrl, {
-        clientId: "mq76_" + Math.random().toString(16).substring(2, 10),
+        clientId: "mq75_" + Math.random().toString(16).substring(2, 10),
         clean: true,
         connectTimeout: 5000,
         reconnectPeriod: 6000
@@ -1018,7 +778,6 @@ function handleRegister() {
   };
 
   currentUserKey = key;
-  lastCheckedLevel = getLevelInfo(users[key].xp || 0).level;
   localStorage.setItem(STORAGE_CURRENT_KEY, key);
   document.getElementById("authModal").classList.add("hidden");
   syncActiveUserHeartsState();
@@ -1061,7 +820,6 @@ async function handleLogin() {
     }
     users[key]._deleted = false;
     currentUserKey = key;
-    lastCheckedLevel = getLevelInfo(users[key].xp || 0).level;
     localStorage.setItem(STORAGE_CURRENT_KEY, key);
     document.getElementById("authModal").classList.add("hidden");
     syncActiveUserHeartsState();
@@ -1078,7 +836,6 @@ async function handleLogin() {
   }
 
   currentUserKey = key;
-  lastCheckedLevel = getLevelInfo(users[key].xp || 0).level;
   localStorage.setItem(STORAGE_CURRENT_KEY, key);
   document.getElementById("authModal").classList.add("hidden");
   syncActiveUserHeartsState();
@@ -1088,7 +845,6 @@ async function handleLogin() {
 
 function logoutUser() {
   currentUserKey = null;
-  lastCheckedLevel = null;
   localStorage.removeItem(STORAGE_CURRENT_KEY);
   document.getElementById("loginPass").value = "";
   document.getElementById("authModal").classList.remove("hidden");
@@ -1096,15 +852,9 @@ function logoutUser() {
 
 function addXp(amount) {
   if (!currentUserKey || !users[currentUserKey]) return;
-  const oldXp = users[currentUserKey].xp || 0;
-  const newXp = Math.max(0, oldXp + amount);
-
-  users[currentUserKey].xp = newXp;
-  users[currentUserKey].lastSeen = Date.now();
+  users[currentUserKey].xp = Math.max(0, (users[currentUserKey].xp || 0) + amount);
   users[currentUserKey].updatedAt = Date.now();
-
   showXpToast(amount);
-  checkLevelUpTrigger(newXp);
   scheduleCloudSync(currentUserKey, false);
 }
 
@@ -1112,7 +862,6 @@ function updateHeaderUI() {
   if (!currentUserKey || !users[currentUserKey]) return;
   const u = users[currentUserKey];
   const info = getLevelInfo(u.xp || 0);
-  if (lastCheckedLevel === null) lastCheckedLevel = info.level;
 
   const avatarEl = document.getElementById("userAvatarDisplay");
   if (avatarEl) {
@@ -1211,7 +960,7 @@ function loadNextReviewQuestion() {
   const item = QUESTIONS_DB.find(q => q.id === randomId) || QUESTIONS_DB[0];
   currentReviewItem = item;
 
-  document.getElementById("reviewMetaBadge").textContent = `Questão #${item.id} •${item.level}`;
+  document.getElementById("reviewMetaBadge").textContent = `Questão #${item.id} • ${item.level}`;
   document.getElementById("reviewRemainingBadge").textContent = `Faltam zerar: ${mistakes.length}`;
   document.getElementById("reviewQuestionText").textContent = item.q;
   document.getElementById("reviewFeedbackBox").classList.add("hidden");
@@ -1419,12 +1168,12 @@ function handleIncomingDuelPacket(pkt) {
     activeDuel.scoreHost = pkt.scoreHost;
     activeDuel.scoreGuest = pkt.scoreGuest;
     updateDuelScoreboardUI();
-    playMequiLevelUpSound();
     document.getElementById("duelQuestionArea").classList.add("hidden");
     document.getElementById("duelWinnerBox").classList.remove("hidden");
     document.getElementById("duelWinnerTitle").textContent = `🏆 ${pkt.winnerName} Venceu!`;
-    document.getElementById("duelWinnerSub").textContent = `Placar Final: ${activeDuel.hostName} (${pkt.scoreHost}) x (${pkt.scoreGuest})${activeDuel.guestName}`;
+    document.getElementById("duelWinnerSub").textContent = `Placar Final: ${activeDuel.hostName} (${pkt.scoreHost}) x (${pkt.scoreGuest}) ${activeDuel.guestName}`;
 
+    // Salva no histórico de duelos
     saveDuelHistoryRecord({
       p1: activeDuel.hostName,
       p2: activeDuel.guestName,
@@ -1444,7 +1193,7 @@ function handleIncomingDuelPacket(pkt) {
 
 function saveDuelHistoryRecord(record) {
   duelHistoryList.unshift(record);
-  if (duelHistoryList.length > 8) duelHistoryList.pop();
+  if (duelHistoryList.length > 5) duelHistoryList.pop();
   localStorage.setItem(STORAGE_DUEL_HISTORY, JSON.stringify(duelHistoryList));
   renderDuelHistory();
 }
@@ -1465,7 +1214,7 @@ function renderDuelHistory() {
         <span><strong>${h.p1}</strong> (${h.score1}) x (${h.score2}) <strong>${h.p2}</strong></span>
       </div>
       <div class="text-right">
-        <span class="text-amber-500 font-black">🏆 Vencedor: ${h.winner}</span>
+        <span class="text-amber-500 font-black">🏆 ${h.winner}</span>
         <span class="block text-[9px] text-muted-pro">${h.date}</span>
       </div>
     </div>
@@ -1552,7 +1301,7 @@ function renderDuelRoundUI() {
   updateDuelScoreboardUI();
 
   const qObj = activeDuel.currentQuestion;
-  document.getElementById("duelQuestionText").textContent = `(#${qObj.id})${qObj.q}`;
+  document.getElementById("duelQuestionText").textContent = `(#${qObj.id}) ${qObj.q}`;
 
   const letters = ["A", "B", "C", "D"];
   const container = document.getElementById("duelOptionsContainer");
@@ -1787,7 +1536,7 @@ function checkQuizAnswer(selectedBtn, chosen, correct, letter) {
       if (currentUserKey) scheduleCloudSync(currentUserKey, true);
 
       fb.className = "p-3.5 rounded-2xl text-xs font-extrabold bg-red-500/15 text-red-500 border border-red-500/30";
-      fb.innerHTML = `💔 <strong>Você perdeu todos os seus 5 corações!</strong><br>Gabarito: <span class="underline">${correct}</span>.<br><span class="mt-1 inline-block">⏳ Aguarde 10 minutos (ou treine no Monta-Lanche abaixo)!</span>`;
+      fb.innerHTML = `💔 <strong>Você perdeu todos os seus 5 corações!</strong><br>Gabarito: <span class="underline">${correct}</span>.<br><span class="mt-1 inline-block">⏳ Aguarde 10 minutos (ou revise suas dúvidas abaixo)!</span>`;
       document.getElementById("nextQuizBtn").textContent = "VER CRONÔMETRO DE RECARGA (10 MIN) ⏳";
       document.getElementById("nextQuizBtn").classList.remove("hidden");
     } else {
@@ -1857,4 +1606,322 @@ function renderBookList() {
 
   container.innerHTML = filtered.map(item => `
     <div class="pro-card rounded-2xl p-4">
-      <div class="flex items-center justify-
+      <div class="flex items-center justify-between mb-1.5">
+        <span class="text-[10px] font-black px-2.5 py-0.5 rounded-full bg-red-500/10 text-red-500 border border-red-500/20">Questão #${item.id} • ${item.level}</span>
+        <button onclick="revealBookAnswer(this)" class="text-[11px] font-extrabold text-amber-500 hover:underline btn-tap">Ver Resposta</button>
+      </div>
+      <p class="font-extrabold text-xs leading-relaxed">${item.q}</p>
+      <p class="hidden mt-2.5 pt-2.5 border-t border-slate-500/20 text-xs font-bold text-emerald-500">✅ ${item.a}</p>
+    </div>
+  `).join("");
+}
+
+function revealBookAnswer(btn) {
+  const answerEl = btn.parentElement.nextElementSibling.nextElementSibling;
+  if (answerEl.classList.contains("hidden")) {
+    answerEl.classList.remove("hidden");
+    btn.textContent = "Ocultar";
+  } else {
+    answerEl.classList.add("hidden");
+    btn.textContent = "Ver Resposta";
+  }
+}
+
+function renderLeaderboard() {
+  const podiumContainer = document.getElementById("podiumTop3Container");
+  const container = document.getElementById("leaderboardContainer");
+  const list = Object.values(users).filter(u => u && u.name && !u._deleted).sort((a, b) => (b.xp || 0) - (a.xp || 0));
+
+  if (list.length === 0) {
+    if (podiumContainer) podiumContainer.innerHTML = "";
+    if (container) container.innerHTML = `<div class="p-6 text-center text-xs font-bold text-muted-pro subtle-box rounded-2xl border-dashed">Nenhum colaborador cadastrado ainda. Crie sua conta para estrear o Pódio!</div>`;
+    return;
+  }
+
+  const first = list[0];
+  const second = list[1] || null;
+  const third = list[2] || null;
+
+  if (podiumContainer) {
+    podiumContainer.innerHTML = `
+      <div class="flex flex-col items-center">
+        ${second ? `
+          <div class="mb-1">${renderAvatarBadge(second.avatar, "w-11 h-11", "text-xl", "subtle-box border-2 border-slate-300")}</div>
+          <p class="font-black text-[10px] text-center truncate w-full px-1">${second.name}</p>
+          <span class="text-[10px] font-extrabold text-red-500">${second.xp || 0} XP</span>
+          <div class="w-full h-16 mt-2 rounded-t-2xl bg-gradient-to-b from-slate-300 to-slate-400 text-slate-900 flex flex-col items-center justify-center font-black shadow-inner">
+            <span class="text-lg">🥈</span>
+            <span class="text-[10px]">2º Lugar</span>
+          </div>
+        ` : `<div class="w-full h-16 mt-10 rounded-t-2xl subtle-box opacity-40 flex items-center justify-center text-xs font-bold">2º</div>`}
+      </div>
+
+      <div class="flex flex-col items-center">
+        <span class="text-lg mb-0.5 float-slow">👑 ☕</span>
+        <div class="mb-1">${renderAvatarBadge(first.avatar, "w-14 h-14", "text-2xl", "gold-gradient text-slate-950 border-2 border-white shadow-lg")}</div>
+        <p class="font-black text-xs text-center truncate w-full px-1">${first.name}</p>
+        <span class="text-[11px] font-black text-amber-500">${first.xp || 0} XP</span>
+        <div class="w-full h-24 mt-2 rounded-t-2xl gold-gradient text-slate-950 flex flex-col items-center justify-center font-black shadow-lg border-t-2 border-white">
+          <span class="text-2xl">🥇</span>
+          <span class="text-[11px] uppercase tracking-wider">1º Lugar</span>
+        </div>
+      </div>
+
+      <div class="flex flex-col items-center">
+        ${third ? `
+          <div class="mb-1">${renderAvatarBadge(third.avatar, "w-11 h-11", "text-xl", "subtle-box border-2 border-amber-700/50")}</div>
+          <p class="font-black text-[10px] text-center truncate w-full px-1">${third.name}</p>
+          <span class="text-[10px] font-extrabold text-red-500">${third.xp || 0} XP</span>
+          <div class="w-full h-14 mt-2 rounded-t-2xl bg-gradient-to-b from-amber-600 to-amber-800 text-white flex flex-col items-center justify-center font-black shadow-inner">
+            <span class="text-base">🥉</span>
+            <span class="text-[10px]">3º Lugar</span>
+          </div>
+        ` : `<div class="w-full h-14 mt-12 rounded-t-2xl subtle-box opacity-40 flex items-center justify-center text-xs font-bold">3º</div>`}
+      </div>
+    `;
+  }
+
+  if (container) {
+    const now = Date.now();
+    container.innerHTML = list.map((u, idx) => {
+      const medal = idx === 0 ? "🥇 ☕" : idx === 1 ? "🥈" : idx === 2 ? "🥉" : `${idx + 1}º`;
+      const info = getLevelInfo(u.xp || 0);
+      const role = u.role || u.station || "Atendente";
+      const isOnline = (now - (u.lastSeen || 0)) < 25000;
+      const onlineDot = isOnline
+        ? `<span class="w-2.5 h-2.5 bg-emerald-500 rounded-full inline-block ml-1 shadow-sm" title="Online agora"></span>`
+        : `<span class="w-2.5 h-2.5 bg-slate-400/50 rounded-full inline-block ml-1" title="Offline"></span>`;
+
+      return `
+        <div class="flex items-center justify-between p-3.5 rounded-2xl ${idx === 0 ? 'bg-amber-500/15 border-2 border-amber-500/50 shadow-sm' : 'subtle-box'}">
+          <div class="flex items-center gap-3">
+            <span class="font-black text-xs w-7 text-center">${medal}</span>
+            ${renderAvatarBadge(u.avatar, "w-10 h-10", "text-xl", "pro-card")}
+            <div>
+              <div class="flex items-center gap-1.5 flex-wrap">
+                <p class="font-black text-xs">${u.name} ${onlineDot}</p>
+                <span class="text-[9px] font-extrabold px-2 py-0.5 rounded-full bg-red-500/15 text-red-500 uppercase">${role}</span>
+              </div>
+              <p class="text-[10px] text-muted-pro font-bold mt-0.5">${info.title}</p>
+            </div>
+          </div>
+          <div class="text-right shrink-0">
+            <span class="font-black text-xs text-red-500">${u.xp || 0} XP</span>
+            <span class="block text-[10px] text-muted-pro font-semibold">${u.correctAnswers || 0} acertos</span>
+          </div>
+        </div>
+      `;
+    }).join("");
+  }
+}
+
+function shareMyScoreWhatsApp() {
+  if (!currentUserKey || !users[currentUserKey]) return;
+  const u = users[currentUserKey];
+  const info = getLevelInfo(u.xp || 0);
+  const copyUser = { ...u, avatar: isPhotoAvatar(u.avatar) ? "🍔" : (u.avatar || "🍔") };
+  const encodedUser = btoa(encodeURIComponent(JSON.stringify(copyUser)));
+  const syncUrl = `${window.location.origin}${window.location.pathname}?syncUser=${encodeURIComponent(encodedUser)}`;
+  const text = `🏆 *OLIMPÍADAS DO BÁSICO — VENTURE*\n👤 Colaborador: *${u.name}*\n🎖️ Cargo: ${u.role || 'Atendente'}\n⚡ Pontuação: *${u.xp || 0} XP* (${info.title})\n✅ Acertos: ${u.correctAnswers || 0}\n\n🔗 *Link de Sincronia no Ranking:* ${syncUrl}`;
+  window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
+}
+
+// =========================================================================
+// PAINEL ADM (SENHA: 342005)
+// =========================================================================
+
+function unlockAdminPanel() {
+  const pass = document.getElementById("adminPassInput").value.trim();
+  const err = document.getElementById("adminAuthError");
+  if (pass === ADMIN_SECRET_PASS) {
+    isAdminUnlocked = true;
+    err.classList.add("hidden");
+    document.getElementById("adminLockScreen").classList.add("hidden");
+    document.getElementById("adminDashboard").classList.remove("hidden");
+    renderAdminUsersList();
+    fetchCloudHistorySafe(true);
+  } else {
+    err.classList.remove("hidden");
+  }
+}
+
+function lockAdminPanel() {
+  isAdminUnlocked = false;
+  document.getElementById("adminPassInput").value = "";
+  document.getElementById("adminDashboard").classList.add("hidden");
+  document.getElementById("adminLockScreen").classList.remove("hidden");
+}
+
+function renderAdminUsersList() {
+  const container = document.getElementById("adminUsersList");
+  const entries = Object.entries(users).filter(([k, u]) => u && u.name && !u._deleted).sort((a, b) => (b[1].xp || 0) - (a[1].xp || 0));
+  document.getElementById("adminStatsSummary").textContent = `Total: ${entries.length} colaborador(es) cadastrado(s)`;
+
+  if (entries.length === 0) {
+    container.innerHTML = `<p class="text-xs text-muted-pro text-center py-4 font-bold">Nenhum colaborador cadastrado.</p>`;
+    return;
+  }
+
+  const now = Date.now();
+  container.innerHTML = entries.map(([key, u], index) => {
+    const lvl = getLevelInfo(u.xp || 0).level;
+    const role = u.role || u.station || "Atendente";
+    const isLocked = (u.heartsLockUntil || 0) > now;
+    const heartsBadge = isLocked
+      ? `<span class="text-[10px] font-bold text-red-500">⏳ Bloqueado (${formatTimeRemaining(u.heartsLockUntil - now)})</span>`
+      : `<span class="text-[10px] font-bold text-emerald-500">${u.hearts !== undefined ? u.hearts : 5} ❤️ disponíveis</span>`;
+
+    return `
+      <div class="p-4 rounded-2xl subtle-box space-y-3">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2.5">
+            ${renderAvatarBadge(u.avatar, "w-11 h-11", "text-2xl", "pro-card")}
+            <div>
+              <span class="text-[10px] font-black px-2 py-0.5 rounded-full bg-slate-900 text-[#FFC72C]">#${index + 1} • Nível ${lvl} • ${role}</span>
+              <h4 class="font-black text-xs mt-1">${u.name}</h4>
+              <p class="text-[11px] text-muted-pro font-semibold">🔑 Senha: <span class="font-extrabold">${u.password || '1234'}</span> • ${heartsBadge}</p>
+            </div>
+          </div>
+          <div class="text-right">
+            <span class="text-sm font-black text-red-500">${u.xp || 0} XP</span>
+            <span class="block text-[10px] text-muted-pro font-bold">${u.correctAnswers || 0} acertos</span>
+          </div>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-1.5 pt-2 border-t border-slate-500/20">
+          <button onclick="adminAdjustXp('${key}', 100)" class="px-2.5 py-1.5 rounded-xl bg-emerald-600 text-white font-black text-[10px] btn-tap">+100 XP</button>
+          <button onclick="adminAdjustXp('${key}', 500)" class="px-2.5 py-1.5 rounded-xl bg-emerald-800 text-white font-black text-[10px] btn-tap">+500 XP</button>
+          <button onclick="adminAdjustXp('${key}', -100)" class="px-2.5 py-1.5 rounded-xl bg-amber-600 text-white font-black text-[10px] btn-tap">-100 XP</button>
+          <button onclick="adminSetCustomXp('${key}')" class="px-2.5 py-1.5 rounded-xl bg-blue-600 text-white font-black text-[10px] btn-tap">✏️ Definir XP</button>
+          <button onclick="adminRestoreHearts('${key}')" class="px-2.5 py-1.5 rounded-xl bg-pink-600 text-white font-black text-[10px] btn-tap">❤️ Restaurar Vidas</button>
+          <button onclick="adminResetUser('${key}')" class="px-2.5 py-1.5 rounded-xl bg-slate-500/20 font-bold text-[10px] btn-tap">Zerar</button>
+          <button onclick="adminDeleteUser('${key}')" class="px-2.5 py-1.5 rounded-xl bg-red-500/20 text-red-500 font-bold text-[10px] ml-auto btn-tap">🗑️ Excluir</button>
+        </div>
+      </div>
+    `;
+  }).join("");
+}
+
+function adminRestoreHearts(key) {
+  if (!users[key]) return;
+  users[key].hearts = 5;
+  users[key].heartsLockUntil = 0;
+  users[key].updatedAt = Date.now();
+  users[key].adminOverrideAt = Date.now();
+  if (key === currentUserKey) {
+    setActiveHeartsState(5, 0);
+    checkAndRenderCooldownScreen();
+    loadNextQuizQuestion();
+  }
+  scheduleCloudSync(key, true);
+  renderAdminUsersList();
+}
+
+function adminAdjustXp(key, delta) {
+  if (!users[key]) return;
+  users[key].xp = Math.max(0, (users[key].xp || 0) + delta);
+  users[key].updatedAt = Date.now();
+  users[key].adminOverrideAt = Date.now();
+  scheduleCloudSync(key, true);
+}
+
+function adminSetCustomXp(key) {
+  if (!users[key]) return;
+  const val = prompt(`Digite o novo valor exato de XP para ${users[key].name}:`, users[key].xp || 0);
+  if (val === null) return;
+  const parsed = parseInt(val, 10);
+  if (!isNaN(parsed)) {
+    users[key].xp = Math.max(0, parsed);
+    users[key].updatedAt = Date.now();
+    users[key].adminOverrideAt = Date.now();
+    scheduleCloudSync(key, true);
+  }
+}
+
+function adminResetUser(key) {
+  if (!users[key]) return;
+  if (!confirm(`Zerar o XP e os acertos de ${users[key].name}?`)) return;
+  users[key].xp = 0;
+  users[key].correctAnswers = 0;
+  users[key].hearts = 5;
+  users[key].heartsLockUntil = 0;
+  users[key].updatedAt = Date.now();
+  users[key].adminOverrideAt = Date.now();
+  scheduleCloudSync(key, true);
+}
+
+function adminDeleteUser(key) {
+  if (!users[key]) return;
+  if (!confirm(`Excluir permanentemente ${users[key].name} do Ranking?`)) return;
+  users[key]._deleted = true;
+  users[key].updatedAt = Date.now();
+  users[key].adminOverrideAt = Date.now();
+  scheduleCloudSync(key, true);
+}
+
+function adminSaveMember() {
+  const name = document.getElementById("admNewName").value.trim().toUpperCase();
+  const role = document.getElementById("admNewRole").value;
+  const pass = document.getElementById("admNewPass").value.trim() || "1234";
+  const xp = parseInt(document.getElementById("admNewXp").value || "0", 10);
+  const hits = parseInt(document.getElementById("admNewHits").value || "0", 10);
+
+  if (!name) return alert("Digite o nome do colaborador!");
+  const key = name.toLowerCase();
+
+  users[key] = {
+    name: name,
+    role: role,
+    _deleted: false,
+    avatar: users[key]?.avatar || "🍔",
+    password: pass,
+    xp: Math.max(0, xp),
+    correctAnswers: Math.max(0, hits),
+    hearts: 5,
+    heartsLockUntil: 0,
+    mistakes: users[key]?.mistakes || [],
+    lastSeen: Date.now(),
+    updatedAt: Date.now(),
+    adminOverrideAt: Date.now()
+  };
+
+  scheduleCloudSync(key, true);
+
+  document.getElementById("admNewName").value = "";
+  document.getElementById("admNewPass").value = "";
+  document.getElementById("admNewXp").value = "";
+  document.getElementById("admNewHits").value = "";
+  alert(`Colaborador ${name} (${role}) salvo com sucesso!`);
+}
+
+function switchMainTab(tab) {
+  ["quiz", "book", "prizes", "admin", "updates"].forEach(t => {
+    document.getElementById(`tab-${t}`).classList.add("hidden");
+    const navEl = document.getElementById(`nav-${t}`);
+    if (navEl) navEl.className = "nav-btn flex flex-col items-center py-1.5 rounded-2xl font-bold text-[10px]";
+  });
+  document.getElementById(`tab-${tab}`).classList.remove("hidden");
+  const activeNav = document.getElementById(`nav-${tab}`);
+  if (activeNav) activeNav.className = "nav-btn active-nav flex flex-col items-center py-1.5 rounded-2xl text-[10px]";
+  if (tab === "prizes" || tab === "admin") fetchCloudHistorySafe(false);
+}
+
+window.onload = () => {
+  initTheme();
+  rescuePreviousLocalRegistrations();
+  renderAvatarSelector();
+  syncActiveUserHeartsState();
+  loadNextQuizQuestion();
+  loadRandomFlashcard();
+  renderBookList();
+  refreshUIIfNeeded();
+
+  if (currentUserKey && users[currentUserKey] && !users[currentUserKey]._deleted) {
+    document.getElementById("authModal").classList.add("hidden");
+    updateHeaderUI();
+  }
+
+  initClusterSync();
+  startHeartbeat();
+  fetchCloudHistorySafe(true);
+};
