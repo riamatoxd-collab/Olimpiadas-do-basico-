@@ -1499,7 +1499,54 @@ function renderLeaderboard() {
     }).join("");
   }
 }
+// Variável que guarda a foto escolhida (ou o emoji padrão)
+let fotoPerfilEscolhida = "🍔";
 
+function carregarFotoDaGaleria(event) {
+  const arquivo = event.target.files[0];
+  if (!arquivo) return;
+
+  const leitor = new FileReader();
+
+  leitor.onload = function (e) {
+    const img = new Image();
+    img.onload = function () {
+      // 1. Cria um quadro de 120x120 pixels para deixar a foto super leve
+      const canvas = document.createElement("canvas");
+      const tamanho = 120;
+      canvas.width = tamanho;
+      canvas.height = tamanho;
+      const ctx = canvas.getContext("2d");
+
+      // 2. Recorta a foto exatamente no centro (formato quadrado 1:1)
+      const menorLado = Math.min(img.width, img.height);
+      const corteX = (img.width - menorLado) / 2;
+      const corteY = (img.height - menorLado) / 2;
+
+      ctx.drawImage(img, corteX, corteY, menorLado, menorLado, 0, 0, tamanho, tamanho);
+
+      // 3. Converte para imagem leve (JPEG 75% de qualidade = ~3 KB)
+      const fotoComprimidaBase64 = canvas.toDataURL("image/jpeg", 0.75);
+      fotoPerfilEscolhida = fotoComprimidaBase64;
+
+      // 4. Mostra a foto na hora dentro do quadradinho de prévia!
+      const previa = document.getElementById("previaAvatar");
+      if (previa) {
+        previa.innerHTML = `<img src="${fotoComprimidaBase64}" class="w-full h-full object-cover" />`;
+      }
+
+      // 5. Se o usuário já estiver logado no site, já salva no perfil e envia pro Ranking:
+      if (typeof currentUserKey !== "undefined" && currentUserKey && users[currentUserKey]) {
+        users[currentUserKey].avatar = fotoComprimidaBase64;
+        users[currentUserKey].updatedAt = Date.now();
+        scheduleCloudSync(currentUserKey, true);
+      }
+    };
+    img.src = e.target.result;
+  };
+
+  leitor.readAsDataURL(arquivo);
+}
 function shareMyScoreWhatsApp() {
   if (!currentUserKey || !users[currentUserKey]) return;
   const u = users[currentUserKey];
