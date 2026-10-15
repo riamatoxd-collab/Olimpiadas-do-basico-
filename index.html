@@ -54,7 +54,6 @@
     }
     .text-muted-pro { color: var(--text-muted); }
 
-    /* Botões 3D Animados */
     .btn-anim-red {
       position: relative;
       overflow: hidden;
@@ -90,7 +89,6 @@
       100% { left: 140%; }
     }
 
-    /* Botões de Alternativas A, B, C, D */
     .option-btn {
       background-color: var(--bg-card);
       border: 2px solid var(--border-color);
@@ -128,7 +126,6 @@
       40%, 80% { transform: translateX(5px); }
     }
 
-    /* Flashcard 3D Flip */
     .flip-container { perspective: 1000px; }
     .flip-inner {
       position: relative;
@@ -152,7 +149,6 @@
     }
     .flip-back { transform: rotateY(180deg); }
 
-    /* Animação Flutuante +25 XP */
     .xp-toast {
       position: fixed;
       top: 90px;
@@ -172,7 +168,6 @@
     .btn-tap:hover { transform: translateY(-1px); }
     .btn-tap:active { transform: scale(0.92); }
 
-    /* Barra Inferior Flutuante (Floating Dock) */
     .nav-btn { transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1); color: var(--text-muted); }
     .nav-btn:active { transform: scale(0.88); }
     .nav-btn.active-nav {
@@ -204,7 +199,6 @@
 </head>
 <body class="min-h-screen pb-32">
 
-  <!-- CONTAINER DE ANIMAÇÃO FLUTUANTE DE XP -->
   <div id="xpToastContainer"></div>
 
   <!-- MODAL DE LOGIN E CADASTRO -->
@@ -285,7 +279,7 @@
     </div>
   </div>
 
-  <!-- CABEÇALHO DO COLABORADOR PREMIUM -->
+  <!-- CABEÇALHO DO COLABORADOR -->
   <header class="mc-gradient text-white pt-4 pb-5 px-4 rounded-b-[2.5rem] shadow-2xl sticky top-0 z-30 border-b-4 border-[#FFC72C]">
     <div class="max-w-xl mx-auto">
       <div class="flex items-center justify-between gap-2 mb-3">
@@ -304,7 +298,6 @@
         </div>
 
         <div class="flex items-center gap-1.5">
-          <!-- Botão Modo Escuro / Claro -->
           <button onclick="toggleDarkMode()" id="themeToggleBtn" title="Alternar Tema" class="bg-slate-950/30 hover:bg-slate-950/45 w-9 h-9 rounded-2xl flex items-center justify-center text-sm border border-white/15 btn-tap">
             🌙
           </button>
@@ -318,7 +311,6 @@
         </div>
       </div>
 
-      <!-- Barra de Progresso de Nível -->
       <div class="bg-slate-950/40 rounded-full h-3.5 w-full overflow-hidden p-0.5 border border-white/15">
         <div id="xpProgressBar" class="gold-gradient h-full rounded-full transition-all duration-500 shadow-sm" style="width: 8%"></div>
       </div>
@@ -333,8 +325,6 @@
 
     <!-- ABA 1: SIMULADO INTERATIVO + MINI DASHBOARD -->
     <section id="tab-quiz" class="space-y-4">
-
-      <!-- Mini Painel de Estatísticas Rápidas -->
       <div class="grid grid-cols-3 gap-2.5">
         <div class="pro-card rounded-2xl p-3 text-center">
           <span class="text-[10px] font-extrabold uppercase text-muted-pro block">Acertos</span>
@@ -350,7 +340,6 @@
         </div>
       </div>
 
-      <!-- Card Principal do Simulado -->
       <div class="pro-card rounded-3xl p-5">
         <div class="flex flex-wrap items-center justify-between gap-2 mb-4 pb-3 border-b border-slate-200/50">
           <div>
@@ -370,7 +359,7 @@
           <span class="text-[11px] text-muted-pro font-bold">Selecione A, B, C ou D</span>
         </div>
 
-        <!-- TELA DE BLOQUEIO DE 10 MINUTOS QUANDO ACABAM OS CORAÇÕES -->
+        <!-- TELA DE BLOQUEIO DE 10 MINUTOS -->
         <div id="quizCooldownBox" class="hidden p-6 rounded-3xl bg-red-500/10 border-2 border-red-500/30 text-center space-y-3 my-2">
           <div class="text-4xl float-slow">💔⏳</div>
           <h3 class="font-black text-red-500 text-base">Seus 5 Corações Acabaram!</h3>
@@ -385,22 +374,18 @@
           </p>
         </div>
 
-        <!-- ÁREA ATIVA DAS PERGUNTAS DE ALTERNATIVA -->
+        <!-- ÁREA ATIVA DAS QUESTÕES -->
         <div id="quizActiveArea" class="space-y-4">
           <p id="quizQuestionText" class="font-extrabold text-base leading-snug subtle-box p-4 rounded-2xl"></p>
-
-          <!-- Opções A, B, C, D Animadas -->
           <div id="quizOptions" class="space-y-2.5"></div>
-
           <div id="quizFeedback" class="hidden p-3.5 rounded-2xl text-xs font-bold"></div>
-
           <button id="nextQuizBtn" onclick="loadNextQuizQuestion()" class="hidden w-full text-white font-black py-3.5 rounded-2xl btn-anim-red btn-shine text-xs tracking-wider">
             PRÓXIMA PERGUNTA ➡️
           </button>
         </div>
       </div>
 
-      <!-- Modo Flashcard 3D Real (SEM XP - MODO TREINO LIVRE) -->
+      <!-- FLASHCARD 3D FLIP -->
       <div class="pro-card rounded-3xl p-5 space-y-3">
         <div class="flex items-center justify-between">
           <div>
@@ -412,12 +397,10 @@
 
         <div onclick="flipFlashcard()" class="flip-container cursor-pointer">
           <div id="fcFlipInner" class="flip-inner">
-            <!-- Frente do Cartão -->
             <div class="flip-front bg-gradient-to-br from-amber-500/15 to-orange-500/10 border-2 border-amber-500/40 text-center space-y-2">
               <span id="fcMeta" class="inline-block text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full bg-amber-500 text-slate-950">Toque para girar 3D 🔄</span>
               <p id="fcQuestion" class="font-extrabold text-sm leading-snug"></p>
             </div>
-            <!-- Verso do Cartão (Gabarito) -->
             <div class="flip-back bg-gradient-to-br from-emerald-500/20 to-teal-500/15 border-2 border-emerald-500/50 text-center space-y-2">
               <span class="inline-block text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full bg-emerald-500 text-white">Gabarito Oficial Venture ✅</span>
               <p id="fcAnswer" class="font-extrabold text-xs leading-relaxed"></p>
@@ -427,7 +410,7 @@
       </div>
     </section>
 
-    <!-- ABA 2: BOOK OFICIAL COMPLETO (SEM XP - APENAS CONSULTA) -->
+    <!-- ABA 2: BOOK OFICIAL COMPLETO -->
     <section id="tab-book" class="hidden space-y-3">
       <div class="pro-card rounded-3xl p-4 sticky top-32 z-20 space-y-3">
         <div class="flex items-center justify-between">
@@ -445,7 +428,7 @@
       <div id="bookQuestionsContainer" class="space-y-2.5"></div>
     </section>
 
-    <!-- ABA 3: RANKING DA LOJA COM PÓDIO 3D E PREMIAÇÕES -->
+    <!-- ABA 3: RANKING DA LOJA COM PÓDIO 3D -->
     <section id="tab-prizes" class="hidden space-y-4">
       <div class="mc-gradient text-white rounded-3xl p-5 shadow-xl relative overflow-hidden border-2 border-[#FFC72C]">
         <div class="flex items-center gap-4">
@@ -458,7 +441,6 @@
         </div>
       </div>
 
-      <!-- PÓDIO OLÍMPICO 3D + RANKING GERAL -->
       <div class="pro-card rounded-3xl p-5 space-y-4">
         <div class="flex items-center justify-between flex-wrap gap-2">
           <div>
@@ -470,10 +452,9 @@
           </button>
         </div>
 
-        <!-- Pódio Visual Top 3 -->
+        <!-- Pódio Top 3 -->
         <div id="podiumTop3Container" class="grid grid-cols-3 gap-2 items-end pt-4 pb-2"></div>
 
-        <!-- Lista Completa do Ranking -->
         <div id="leaderboardContainer" class="space-y-2.5"></div>
 
         <button onclick="shareMyScoreWhatsApp()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-black py-3.5 rounded-2xl text-xs flex items-center justify-center gap-2 shadow-md btn-tap">
@@ -481,7 +462,7 @@
         </button>
       </div>
 
-      <!-- Tabela do Sistema de 7 Patentes -->
+      <!-- Tabela das 7 Patentes -->
       <div class="pro-card rounded-3xl p-5 space-y-3">
         <div class="flex items-center justify-between">
           <h3 class="font-black text-sm">📈 As 7 Patentes Oficiais de XP</h3>
@@ -520,7 +501,7 @@
       </div>
     </section>
 
-    <!-- ABA 4: PAINEL ADM PROTEGIDO POR SENHA (342005) -->
+    <!-- ABA 4: PAINEL ADM -->
     <section id="tab-admin" class="hidden space-y-4">
       <div id="adminLockScreen" class="pro-card rounded-3xl p-6 text-center space-y-4">
         <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl dark-gradient text-[#FFC72C] text-3xl font-black shadow-lg float-slow">🔒</div>
@@ -535,7 +516,6 @@
         </button>
       </div>
 
-      <!-- Dashboard Desbloqueado do ADM -->
       <div id="adminDashboard" class="hidden space-y-4">
         <div class="dark-gradient text-white rounded-3xl p-5 shadow-xl flex items-center justify-between">
           <div>
@@ -546,7 +526,6 @@
           <button onclick="lockAdminPanel()" class="bg-white/10 hover:bg-white/20 text-xs font-bold px-3.5 py-2 rounded-xl border border-white/15 btn-tap">Bloquear 🔒</button>
         </div>
 
-        <!-- Cadastrar ou Editar Colaborador pelo ADM -->
         <div class="pro-card rounded-3xl p-5 space-y-3">
           <h3 class="font-black text-sm">➕ Cadastrar / Atualizar Colaborador</h3>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
@@ -569,7 +548,6 @@
           </button>
         </div>
 
-        <!-- Lista de Cadastrados -->
         <div class="pro-card rounded-3xl p-5 space-y-3">
           <div class="flex items-center justify-between">
             <h3 class="font-black text-sm">👥 Equipe Cadastrada</h3>
@@ -580,7 +558,7 @@
       </div>
     </section>
 
-    <!-- ABA 5: LISTA COMPLETA DE TODAS AS VERSÕES (v1.0 ATÉ v7.0) -->
+    <!-- ABA 5: HISTÓRICO DE VERSÕES -->
     <section id="tab-updates" class="hidden space-y-3">
       <div class="pro-card rounded-3xl p-5 space-y-5">
         <div class="flex items-center justify-between border-b border-slate-200/40 pb-3">
@@ -591,7 +569,7 @@
           <span class="bg-red-500/15 text-red-500 text-xs font-black px-3 py-1 rounded-full">v7.0 Pro</span>
         </div>
 
-        <!-- V7.0 -->
+        <!-- Versão 7.0 -->
         <div class="border-l-4 border-[#FFC72C] pl-3.5 space-y-1">
           <span class="text-[11px] font-extrabold text-amber-500 uppercase">Versão 7.0 • Atualização Atual (Frontend Ultra Pro & Pódio 3D)</span>
           <h4 class="font-black text-sm">Modo Escuro/Claro, Pódio Olímpico 3D e Flashcard Flip 3D 🎨✨</h4>
@@ -599,139 +577,99 @@
             <li><strong>Modo Escuro (Dark Mode 🌙):</strong> Botão no topo para alternar entre tema claro e tema escuro gamer.</li>
             <li><strong>Pódio Olímpico Visual (Top 3):</strong> Destaque especial em 3 colunas para o 1º, 2º e 3º colocados da loja.</li>
             <li><strong>Flashcards com Giro 3D Real:</strong> Efeito de rotação 180° ao tocar no cartão e alerta flutuante de <code>+25 XP ⚡</code> nos acertos.</li>
+            <li><strong>Separação Modular:</strong> Código dividido em <code>index.html</code> e <code>script.js</code>.</li>
           </ul>
         </div>
 
-        <!-- V6.7 -->
+        <!-- Versão 6.7 -->
         <div class="border-l-4 border-[#DA291C] pl-3.5 space-y-1">
-          <span class="text-[11px] font-extrabold text-red-500 uppercase">Versão 6.7 • 7 Patentes & XP Exclusivo no Simulado</span>
+          <span class="text-[11px] font-extrabold text-red-500 uppercase">Versão 6.7</span>
           <h4 class="font-black text-sm">Remoção de XP do Book/Flashcards + 7 Patentes Hardcore 💎👑</h4>
-          <ul class="text-xs text-muted-pro list-disc list-inside space-y-1 pt-1">
-            <li>XP exclusivo para acertos no Simulado e adição das patentes <strong>Diamante Best Burger (10.000 XP)</strong> e <strong>Lenda dos Arcos Dourados (25.000+ XP)</strong>.</li>
-          </ul>
+          <p class="text-xs text-muted-pro pt-1">XP exclusivo para o Simulado e adição das patentes Diamante Best Burger e Lenda dos Arcos Dourados.</p>
         </div>
 
-        <!-- V6.6 -->
+        <!-- Versão 6.6 -->
         <div class="border-l-4 border-pink-600 pl-3.5 space-y-1">
-          <span class="text-[11px] font-extrabold text-pink-500 uppercase">Versão 6.6 • Tempo de Recarga das Vidas</span>
+          <span class="text-[11px] font-extrabold text-pink-500 uppercase">Versão 6.6</span>
           <h4 class="font-black text-sm">Bloqueio de 10 Minutos ao Perder os 5 Corações 💔⏳</h4>
-          <ul class="text-xs text-muted-pro list-disc list-inside space-y-1 pt-1">
-            <li>Cronômetro regressivo de 10 minutos quando o colaborador perde os 5 corações no Simulado e botão de restaurar vidas no ADM.</li>
-          </ul>
+          <p class="text-xs text-muted-pro pt-1">Cronômetro regressivo ao vivo ao zerar vidas e botão de recarga imediata no ADM.</p>
         </div>
 
-        <!-- V6.5 -->
+        <!-- Versão 6.5 -->
         <div class="border-l-4 border-emerald-600 pl-3.5 space-y-1">
-          <span class="text-[11px] font-extrabold text-emerald-500 uppercase">Versão 6.5 • Estabilidade Multi-Usuários</span>
+          <span class="text-[11px] font-extrabold text-emerald-500 uppercase">Versão 6.5</span>
           <h4 class="font-black text-sm">Proteção Anti-Queda para Múltiplos Acessos Simultâneos 🛡️⚡</h4>
-          <ul class="text-xs text-muted-pro list-disc list-inside space-y-1 pt-1">
-            <li>Agrupador inteligente de tráfego (<em>Write Coalescing</em>) e trava Anti-Loop para suportar dezenas de colaboradores simultâneos sem cair.</li>
-          </ul>
+          <p class="text-xs text-muted-pro pt-1">Agrupador inteligente de tráfego (Write Coalescing) e trava Anti-Loop.</p>
         </div>
 
-        <!-- V6.4 -->
+        <!-- Versão 6.4 -->
         <div class="border-l-4 border-orange-500 pl-3.5 space-y-1">
-          <span class="text-[11px] font-extrabold text-orange-500 uppercase">Versão 6.4 • Desempenho Turbo & Animações</span>
+          <span class="text-[11px] font-extrabold text-orange-500 uppercase">Versão 6.4</span>
           <h4 class="font-black text-sm">Otimização de Desempenho + Botões 3D Animados ⚡✨</h4>
-          <ul class="text-xs text-muted-pro list-disc list-inside space-y-1 pt-1">
-            <li>Renderização em lote único das 200 questões, busca com <em>Debounce</em> e botões 3D com efeito mola, brilho e animações de acerto/erro.</li>
-          </ul>
+          <p class="text-xs text-muted-pro pt-1">Renderização em lote único e botões 3D com efeito mola e brilho.</p>
         </div>
 
-        <!-- V6.3 -->
+        <!-- Versão 6.3 -->
         <div class="border-l-4 border-cyan-600 pl-3.5 space-y-1">
-          <span class="text-[11px] font-extrabold text-cyan-500 uppercase">Versão 6.3 • Nuvem HTTPS Porta 443</span>
-          <h4 class="font-black text-sm">Sincronização Garantida no GitHub Pages (4G e Wi-Fi) ☁️📲</h4>
-          <ul class="text-xs text-muted-pro list-disc list-inside space-y-1 pt-1">
-            <li>Conexão HTTPS direta na porta 443 com histórico salvo na nuvem mesmo com o aparelho fechado.</li>
-          </ul>
+          <span class="text-[11px] font-extrabold text-cyan-500 uppercase">Versão 6.3</span>
+          <h4 class="font-black text-sm">Nuvem HTTPS Porta 443 ☁️📲</h4>
+          <p class="text-xs text-muted-pro pt-1">Sincronização garantida em redes 4G/Wi-Fi com histórico na nuvem.</p>
         </div>
 
-        <!-- V6.2 -->
+        <!-- Versão 6.2 -->
         <div class="border-l-4 border-amber-500 pl-3.5 space-y-1">
-          <span class="text-[11px] font-extrabold text-amber-500 uppercase">Versão 6.2 • Simulado Inteligente A, B, C e D</span>
-          <h4 class="font-black text-sm">Alternativas Semelhantes à Resposta Original 🧠🎯</h4>
-          <ul class="text-xs text-muted-pro list-disc list-inside space-y-1 pt-1">
-            <li>Todas as 200 questões passaram a apresentar alternativas A, B, C e D plausíveis com números e procedimentos próximos.</li>
-          </ul>
+          <span class="text-[11px] font-extrabold text-amber-500 uppercase">Versão 6.2</span>
+          <h4 class="font-black text-sm">Simulado Inteligente A, B, C e D 🧠🎯</h4>
+          <p class="text-xs text-muted-pro pt-1">Alternativas plausíveis com números e procedimentos próximos ao gabarito.</p>
         </div>
 
-        <!-- V6.1 -->
+        <!-- Versão 6.1 -->
         <div class="border-l-4 border-blue-600 pl-3.5 space-y-1">
-          <span class="text-[11px] font-extrabold text-blue-500 uppercase">Versão 6.1 • Resgate Automático</span>
-          <h4 class="font-black text-sm">Migração Automática de Cadastros Antigos + Link WhatsApp 🔗</h4>
-          <ul class="text-xs text-muted-pro list-disc list-inside space-y-1 pt-1">
-            <li>Resgate automático de contas criadas nas versões anteriores (v3 a v5) e compartilhamento com link de sincronia no WhatsApp.</li>
-          </ul>
+          <span class="text-[11px] font-extrabold text-blue-500 uppercase">Versão 6.1</span>
+          <h4 class="font-black text-sm">Resgate Automático de Cadastros Antigos 🔗</h4>
+          <p class="text-xs text-muted-pro pt-1">Migração automática de dados e compartilhamento no WhatsApp.</p>
         </div>
 
-        <!-- V6.0 -->
+        <!-- Versão 6.0 -->
         <div class="border-l-4 border-indigo-600 pl-3.5 space-y-1">
-          <span class="text-[11px] font-extrabold text-indigo-500 uppercase">Versão 6.0 • Edição Premium</span>
-          <h4 class="font-black text-sm">Avatares de Perfil, Cargos Oficiais & Novas Metas de XP 🎨👑</h4>
-          <ul class="text-xs text-muted-pro list-disc list-inside space-y-1 pt-1">
-            <li>Escolha de ícones de perfil e cargos oficiais (<strong>Atendente, Treinador, Supervisor, Coordenador e GUN</strong>) e remoção do cadastro fixo.</li>
-          </ul>
+          <span class="text-[11px] font-extrabold text-indigo-500 uppercase">Versão 6.0</span>
+          <h4 class="font-black text-sm">Avatares de Perfil e Cargos Oficiais 🎨👑</h4>
+          <p class="text-xs text-muted-pro pt-1">Seleção de funções (Atendente, Treinador, Supervisor, Coordenador e GUN).</p>
         </div>
 
-        <!-- V5.1 -->
-        <div class="border-l-4 border-teal-600 pl-3.5 space-y-1">
-          <span class="text-[11px] font-extrabold text-teal-500 uppercase">Versão 5.1 • Auto-Merge de Dados</span>
-          <h4 class="font-black text-sm">Fusão Inteligente de Cadastros na Nuvem 🔄</h4>
-          <ul class="text-xs text-muted-pro list-disc list-inside space-y-1 pt-1">
-            <li>Proteção contra sobrescrita de dados ao cadastrar novos colaboradores em aparelhos diferentes.</li>
-          </ul>
-        </div>
-
-        <!-- V5.0 -->
+        <!-- Versão 5.0 -->
         <div class="border-l-4 border-purple-600 pl-3.5 space-y-1">
-          <span class="text-[11px] font-extrabold text-purple-500 uppercase">Versão 5.0 • Painel ADM</span>
-          <h4 class="font-black text-sm">Aba Restrita do Administrador com Senha ⚙️🔒</h4>
-          <ul class="text-xs text-muted-pro list-disc list-inside space-y-1 pt-1">
-            <li>Criação do Painel ADM protegido por senha para visualizar todos os cadastrados, senhas, adicionar/remover XP, zerar ou excluir contas.</li>
-          </ul>
+          <span class="text-[11px] font-extrabold text-purple-500 uppercase">Versão 5.0</span>
+          <h4 class="font-black text-sm">Painel ADM com Senha ⚙️🔒</h4>
+          <p class="text-xs text-muted-pro pt-1">Aba restrita com senha 342005 para controle de XP e colaboradores.</p>
         </div>
 
-        <!-- V4.0 -->
-        <div class="border-l-4 border-green-600 pl-3.5 space-y-1">
-          <span class="text-[11px] font-extrabold text-green-500 uppercase">Versão 4.0 • Ranking Compartilhado</span>
-          <h4 class="font-black text-sm">Placar da Loja & Envio para Grupo do WhatsApp 📲</h4>
-          <ul class="text-xs text-muted-pro list-disc list-inside space-y-1 pt-1">
-            <li>Integração do Ranking da Loja com botão para enviar o placar individual direto no grupo do WhatsApp da equipe.</li>
-          </ul>
-        </div>
-
-        <!-- V3.0 -->
+        <!-- Versão 3.0 -->
         <div class="border-l-4 border-red-500 pl-3.5 space-y-1">
-          <span class="text-[11px] font-extrabold text-red-500 uppercase">Versão 3.0 • Gamificação & Prêmios</span>
-          <h4 class="font-black text-sm">Cadastro com Senha, Níveis de XP e Prêmio da Caneca ☕🏆</h4>
-          <ul class="text-xs text-muted-pro list-disc list-inside space-y-1 pt-1">
-            <li>Sistema de login com senha pessoal, barra de progresso de níveis e Aba de Premiações destacando a <strong>Caneca Oficial do McDonald's</strong> para o 1º Lugar.</li>
-          </ul>
+          <span class="text-[11px] font-extrabold text-red-500 uppercase">Versão 3.0</span>
+          <h4 class="font-black text-sm">Prêmio da Caneca e Níveis de XP ☕🏆</h4>
+          <p class="text-xs text-muted-pro pt-1">Prêmio oficial de 1º lugar e sistema de carreira por XP.</p>
         </div>
 
-        <!-- V2.0 -->
+        <!-- Versão 2.0 -->
         <div class="border-l-4 border-amber-400 pl-3.5 space-y-1">
-          <span class="text-[11px] font-extrabold text-amber-500 uppercase">Versão 2.0 • Book Venture Completo & Duolingo Style</span>
-          <h4 class="font-black text-sm">Apostila das 200 Questões, Vidas (❤️) e Flashcards 📖🎴</h4>
-          <ul class="text-xs text-muted-pro list-disc list-inside space-y-1 pt-1">
-            <li>Inclusão das questões oficiais do Book Olimpíadas de Básico (Nível Básico, Intermediário e Avançado), sistema de 5 corações de vida, ofensiva e Modo Flashcard.</li>
-          </ul>
+          <span class="text-[11px] font-extrabold text-amber-500 uppercase">Versão 2.0</span>
+          <h4 class="font-black text-sm">Book Oficial Venture 📖</h4>
+          <p class="text-xs text-muted-pro pt-1">Integração das 200 questões de Nível Básico, Intermediário e Avançado.</p>
         </div>
 
-        <!-- V1.0 -->
+        <!-- Versão 1.0 -->
         <div class="border-l-4 border-slate-400 pl-3.5 space-y-1">
-          <span class="text-[11px] font-extrabold text-muted-pro uppercase">Versão 1.0 • Lançamento Oficial</span>
-          <h4 class="font-black text-sm">Primeiro Quiz Interativo rumo à 2ª Fase 🚀</h4>
-          <p class="text-xs text-muted-pro pt-1">Criação do primeiro simulado mobile após a loja conquistar o 4º lugar na 1ª fase das Olimpíadas do Básico.</p>
+          <span class="text-[11px] font-extrabold text-muted-pro uppercase">Versão 1.0</span>
+          <h4 class="font-black text-sm">Lançamento Oficial 🚀</h4>
+          <p class="text-xs text-muted-pro pt-1">Primeiro quiz de treino após a classificação em 4º lugar para a 2ª fase.</p>
         </div>
-
       </div>
     </section>
 
   </main>
 
-  <!-- BARRA DE NAVEGAÇÃO INFERIOR FLUTUANTE (FLOATING DOCK) -->
+  <!-- BARRA DE NAVEGAÇÃO FLUTUANTE -->
   <div class="fixed bottom-3 inset-x-0 px-3 z-40 pointer-events-none">
     <nav class="max-w-md mx-auto pro-card rounded-3xl p-1.5 shadow-2xl pointer-events-auto border-2 border-[#FFC72C]/40">
       <div class="grid grid-cols-5 gap-1">
@@ -759,7 +697,7 @@
     </nav>
   </div>
 
-  <script src="script.js"> 
-</script>
+  <!-- CONEXÃO COM O ARQUIVO JAVASCRIPT EXTERNO -->
+  <script src="script.js"></script>
 </body>
 </html>
