@@ -1,3 +1,4 @@
+
 /* =========================================================================
    OLIMPÍADAS DO BÁSICO — VENTURE (script.js v7.6 COMPLETO)
    Com Jingle Musical do McDonald's ("Pa-ra-pa-pa-pa") ao Subir de Nível
