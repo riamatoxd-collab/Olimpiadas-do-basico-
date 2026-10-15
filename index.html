@@ -7,50 +7,50 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="Olimpíadas Méqui" />
-  <title>Olimpíadas do Básico — Venture v7.4</title>
+  <title>Olimpíadas do Básico — Venture v7.5</title>
 
   <!-- Favicon Oficial: Arcos Dourados em Vetor SVG -->
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='24' fill='%23DA291C'/%3E%3Cpath fill='%23FFC72C' d='M50 46c-3.6-13.8-10.8-23.5-19.6-23.5-12 0-21.6 18.5-21.6 52.5h9.1c0-26.4 6.4-42.8 12.5-42.8 6 0 12 17.6 12.5 42.8H50zm0 0c3.6-13.8 10.8-23.5 19.6-23.5 12 0 21.6 18.5 21.6 52.5h-9.1c0-26.4-6.4-42.8-12.5-42.8-6 0-12 17.6-12.5 42.8H50z'/%3E%3C/svg%3E" />
 
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
-  <!-- Biblioteca para Gerar Print Automático em Imagem PNG -->
+  <!-- Biblioteca para Print Automático em PNG -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css" />
 </head>
 <body class="min-h-screen pb-32">
 
-  <!-- Input invisível que abre a Galeria de Fotos do Celular ou pastas do PC -->
+  <!-- Input invisível para galeria / PC -->
   <input type="file" id="hiddenGalleryInput" accept="image/*" class="hidden" onchange="handleGalleryFileSelected(event)" />
 
   <div id="xpToastContainer"></div>
 
-  <!-- POP-UP DE CONVITE AO VIVO DE DUELO 1v1 -->
+  <!-- POP-UP DE CONVITE DE DUELO 1v1 -->
   <div id="duelInvitePopup" class="hidden fixed inset-0 bg-slate-950/85 backdrop-blur-md z-50 flex items-center justify-center p-4">
     <div class="pro-card rounded-[2rem] max-w-sm w-full p-6 text-center space-y-4 border-4 border-[#FFC72C] shadow-2xl">
       <div class="text-5xl float-slow">⚔️🔥</div>
-      <span class="bg-red-500/15 text-red-500 text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-wider">Convite de Duelo em Tempo Real</span>
+      <span class="bg-red-500/15 text-red-500 text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-wider">Convite de Duelo Ao Vivo</span>
       <h3 class="text-lg font-black"><span id="inviteFromNameDisplay">Colega</span> te desafiou!</h3>
       <p class="text-xs text-muted-pro font-semibold leading-relaxed">
-        Disputa 1 vs 1 ao vivo (Melhor de 5 pontos). Quem responder certo primeiro no próprio celular marca o ponto!
+        Disputa 1 vs 1 (Melhor de 5 pontos). Quem responder certo primeiro no próprio celular marca o ponto!
       </p>
       <div class="grid grid-cols-2 gap-2.5 pt-2">
         <button onclick="declineDuelInvite()" class="py-3 rounded-2xl subtle-box font-extrabold text-xs btn-tap">
           ❌ Recusar
         </button>
         <button onclick="acceptDuelInvite()" class="py-3 rounded-2xl text-slate-950 font-black text-xs btn-anim-yellow btn-shine">
-          ✅ ACEITAR DUELO
+          ✅ ACEITAR
         </button>
       </div>
     </div>
   </div>
 
-  <!-- MODAL DA ARENA DE DUELO 1 vs 1 AO VIVO -->
+  <!-- MODAL DA ARENA DE DUELO 1 vs 1 -->
   <div id="duelArenaModal" class="hidden fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 flex items-center justify-center p-4 overflow-y-auto">
     <div class="pro-card rounded-[2rem] max-w-md w-full p-5 border-2 border-[#FFC72C] shadow-2xl space-y-4 my-auto">
       <div class="flex items-center justify-between border-b border-slate-500/20 pb-3">
-        <span class="text-xs font-black text-amber-500 uppercase tracking-wider">⚔️ Arena 1 vs 1 Ao Vivo (Meta: 5 pts)</span>
+        <span class="text-xs font-black text-amber-500 uppercase tracking-wider">⚔️ Arena 1 vs 1 (Meta: 5 pts)</span>
         <button onclick="leaveActiveDuel()" class="text-xs font-extrabold text-red-500 bg-red-500/10 px-3 py-1 rounded-xl btn-tap">Sair ✕</button>
       </div>
 
@@ -74,7 +74,6 @@
       <div id="duelWaitingBox" class="hidden py-6 text-center space-y-3">
         <div class="text-4xl float-slow">📡⏳</div>
         <p id="duelWaitingText" class="font-extrabold text-sm">Aguardando o colega aceitar o convite no celular dele...</p>
-        <p class="text-xs text-muted-pro">Se ele estiver com o app fechado, envie o convite direto no WhatsApp:</p>
         <button onclick="sendDuelInviteWhatsApp()" class="w-full py-3 rounded-2xl bg-emerald-600 text-white font-black text-xs btn-tap">
           📲 Chamar Oponente pelo WhatsApp
         </button>
@@ -97,7 +96,7 @@
     </div>
   </div>
 
-  <!-- MODAL DE REVISÃO DE DÚVIDAS PENDENTES -->
+  <!-- MODAL DE REVISÃO DE DÚVIDAS -->
   <div id="reviewMistakesModal" class="hidden fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 flex items-center justify-center p-4 overflow-y-auto">
     <div class="pro-card rounded-[2rem] max-w-md w-full p-5 border-2 border-purple-500 shadow-2xl space-y-4 my-auto">
       <div class="flex items-center justify-between border-b border-slate-500/20 pb-3">
@@ -132,7 +131,7 @@
           </svg>
         </div>
         <h1 class="text-2xl font-black tracking-tight">OLIMPÍADAS DO BÁSICO</h1>
-        <p class="text-xs text-muted-pro font-semibold mt-0.5">Plataforma Oficial Venture • Versão 7.4 🏆</p>
+        <p class="text-xs text-muted-pro font-semibold mt-0.5">Plataforma Oficial Venture • Versão 7.5 🏆</p>
       </div>
 
       <div class="flex rounded-2xl subtle-box p-1.5 mb-5">
@@ -186,7 +185,7 @@
     </div>
   </div>
 
-  <!-- MODAL DE TROCAR AVATAR OU ENVIAR FOTO DA GALERIA -->
+  <!-- MODAL DE TROCAR FOTO/AVATAR -->
   <div id="avatarPickerModal" class="hidden fixed inset-0 bg-slate-950/75 backdrop-blur-sm z-50 flex items-center justify-center p-4">
     <div class="pro-card rounded-3xl max-w-sm w-full p-5 shadow-2xl space-y-4">
       <div class="flex items-center justify-between">
@@ -198,15 +197,18 @@
     </div>
   </div>
 
-  <!-- CABEÇALHO DO COLABORADOR -->
+  <!-- CABEÇALHO DO COLABORADOR COM BOLINHA VERDE ONLINE -->
   <header class="mc-gradient text-white pt-4 pb-5 px-4 rounded-b-[2.5rem] shadow-2xl sticky top-0 z-30 border-b-4 border-[#FFC72C]">
     <div class="max-w-xl mx-auto">
       <div class="flex items-center justify-between gap-2 mb-3">
         <div class="flex items-center gap-3">
-          <button onclick="openAvatarModal()" title="Trocar Foto/Avatar" class="relative w-12 h-12 rounded-2xl gold-gradient text-slate-900 flex items-center justify-center text-2xl shadow-lg border-2 border-white btn-tap shrink-0 overflow-hidden">
-            <span id="userAvatarDisplay" class="w-full h-full flex items-center justify-center">🍔</span>
-            <span class="absolute -bottom-0.5 -right-0.5 bg-slate-900 text-[#FFC72C] text-[9px] font-black px-1 rounded-tl-lg border-t border-l border-white">📷</span>
-          </button>
+          <div class="relative">
+            <button onclick="openAvatarModal()" title="Trocar Foto/Avatar" class="relative w-12 h-12 rounded-2xl gold-gradient text-slate-900 flex items-center justify-center text-2xl shadow-lg border-2 border-white btn-tap shrink-0 overflow-hidden">
+              <span id="userAvatarDisplay" class="w-full h-full flex items-center justify-center">🍔</span>
+            </button>
+            <!-- Bolinha Verde de Status Online -->
+            <span class="absolute -top-1 -right-1 w-3.5 h-3.5 bg-emerald-500 rounded-full border-2 border-white shadow animate-pulse"></span>
+          </div>
           <div>
             <div class="flex items-center gap-1.5 flex-wrap">
               <span id="userNameDisplay" class="font-black text-sm tracking-tight">Colaborador</span>
@@ -242,7 +244,7 @@
 
   <main class="max-w-xl mx-auto px-4 mt-5">
 
-    <!-- ABA 1: SIMULADO INTERATIVO + DUELO 1v1 + REVISAR DÚVIDAS -->
+    <!-- ABA 1: SIMULADO INTERATIVO + DUELO + REVISÃO -->
     <section id="tab-quiz" class="space-y-4">
       <div class="grid grid-cols-3 gap-2.5">
         <div class="pro-card rounded-2xl p-3 text-center">
@@ -259,7 +261,7 @@
         </div>
       </div>
 
-      <!-- CARD PRINCIPAL DO SIMULADO -->
+      <!-- SIMULADO -->
       <div class="pro-card rounded-3xl p-5">
         <div class="flex flex-wrap items-center justify-between gap-2 mb-4 pb-3 border-b border-slate-200/50">
           <div>
@@ -290,7 +292,7 @@
             10:00
           </div>
           <p class="text-[11px] text-muted-pro font-bold pt-1">
-            💡 Enquanto recarrega, revise abaixo no <strong>Revisar Minhas Dúvidas</strong>, no <strong>Duelo 1 vs 1</strong> ou no <span class="text-red-500 underline cursor-pointer" onclick="switchMainTab('book')">Book Oficial</span>!
+            💡 Enquanto recarrega, revise em <strong>Revisar Minhas Dúvidas</strong>, no <strong>Duelo 1 vs 1</strong> ou no <span class="text-red-500 underline cursor-pointer" onclick="switchMainTab('book')">Book Oficial</span>!
           </p>
         </div>
 
@@ -314,7 +316,7 @@
                 <h3 class="font-black text-sm">Revisar Minhas Dúvidas</h3>
                 <span id="mistakesCountBadge" class="text-[10px] font-black px-2 py-0.5 rounded-full bg-purple-500 text-white">0 pendentes</span>
               </div>
-              <p class="text-[11px] text-muted-pro font-medium">Treine apenas as perguntas que você errou no Simulado até zerar!</p>
+              <p class="text-[11px] text-muted-pro font-medium">Treine apenas as perguntas que você errou no Simulado!</p>
             </div>
           </div>
           <button onclick="openReviewModal()" class="px-4 py-2.5 rounded-2xl bg-purple-600 hover:bg-purple-700 text-white font-black text-xs shrink-0 btn-tap shadow">
@@ -323,7 +325,7 @@
         </div>
       </div>
 
-      <!-- DUELO ONLINE 1 vs 1 POR CONVITE ENTRE CELULARES -->
+      <!-- DUELO 1 vs 1 AO VIVO (COM STATUS ONLINE) -->
       <div class="pro-card rounded-3xl p-5 border-2 border-amber-500/40 space-y-3">
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-3">
@@ -331,7 +333,7 @@
             <div>
               <span class="text-[10px] font-black uppercase text-amber-500">Multiplayer em Tempo Real</span>
               <h3 class="font-black text-sm">Duelo 1 vs 1 (Convidar Colega)</h3>
-              <p class="text-[11px] text-muted-pro font-medium">Envie um convite para o celular de outro colaborador da loja!</p>
+              <p class="text-[11px] text-muted-pro font-medium">Desafie quem estiver com a bolinha verde online na loja!</p>
             </div>
           </div>
         </div>
@@ -346,7 +348,7 @@
         </div>
       </div>
 
-      <!-- FLASHCARD COM GIRO 3D REAL -->
+      <!-- FLASHCARD 3D -->
       <div class="pro-card rounded-3xl p-5 space-y-3">
         <div class="flex items-center justify-between">
           <div>
@@ -371,7 +373,7 @@
       </div>
     </section>
 
-    <!-- ABA 2: BOOK OFICIAL COMPLETO -->
+    <!-- ABA 2: BOOK OFICIAL -->
     <section id="tab-book" class="hidden space-y-3">
       <div class="pro-card rounded-3xl p-4 sticky top-32 z-20 space-y-3">
         <div class="flex items-center justify-between">
@@ -389,7 +391,7 @@
       <div id="bookQuestionsContainer" class="space-y-2.5"></div>
     </section>
 
-    <!-- ABA 3: RANKING COM PÓDIO 3D + PRINT AUTOMÁTICO PARA WHATSAPP -->
+    <!-- ABA 3: RANKING COM PÓDIO 3D + HISTÓRICO DE DUELOS + PRINT WHATSAPP -->
     <section id="tab-prizes" class="hidden space-y-4">
       <div class="mc-gradient text-white rounded-3xl p-5 shadow-xl relative overflow-hidden border-2 border-[#FFC72C]">
         <div class="flex items-center gap-4">
@@ -402,7 +404,7 @@
         </div>
       </div>
 
-      <!-- ÁREA DO RANKING QUE SERÁ FOTOGRAFADA PELO BOTÃO DE PRINT -->
+      <!-- ÁREA DE PRINT DO RANKING -->
       <div id="rankingPrintArea" class="pro-card rounded-3xl p-5 space-y-4">
         <div class="flex items-center justify-between flex-wrap gap-2">
           <div>
@@ -414,14 +416,25 @@
           </button>
         </div>
 
-        <!-- Pódio Olímpico 3D Top 3 -->
+        <!-- Pódio Top 3 -->
         <div id="podiumTop3Container" class="grid grid-cols-3 gap-2 items-end pt-4 pb-2"></div>
 
-        <!-- Lista Geral do Ranking -->
+        <!-- Lista Geral -->
         <div id="leaderboardContainer" class="space-y-2.5"></div>
       </div>
 
-      <!-- BOTÕES DE COMPARTILHAMENTO NO WHATSAPP (PRINT EM IMAGEM + TEXTO) -->
+      <!-- HISTÓRICO RECENTE DE DUELOS 1 vs 1 (QUEM VENCEU E QUEM PERDEU) -->
+      <div class="pro-card rounded-3xl p-5 space-y-3 border-2 border-amber-500/30">
+        <div class="flex items-center justify-between">
+          <h3 class="font-black text-sm">⚔️ Histórico Recente de Duelos 1 vs 1</h3>
+          <span class="text-[10px] font-extrabold text-amber-500 bg-amber-500/10 px-2.5 py-0.5 rounded-full">Placar Ao Vivo</span>
+        </div>
+        <div id="duelHistoryContainer" class="space-y-2">
+          <div class="p-3 rounded-xl subtle-box text-xs text-center text-muted-pro">Nenhum duelo finalizado recentemente. Desafie alguém na aba Simulado!</div>
+        </div>
+      </div>
+
+      <!-- BOTÕES DE COMPARTILHAMENTO WHATSAPP -->
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
         <button id="btnPrintRanking" onclick="captureAndShareRankingImage()" class="w-full text-slate-950 font-black py-3.5 px-4 rounded-2xl text-xs flex items-center justify-center gap-2 btn-anim-yellow btn-shine">
           <span>📸 Tirar Print do Ranking e Mandar no WhatsApp</span>
@@ -528,7 +541,7 @@
       </div>
     </section>
 
-    <!-- ABA 5: HISTÓRICO DE VERSÕES (v1.0 a v7.4) -->
+    <!-- ABA 5: VERSÕES -->
     <section id="tab-updates" class="hidden space-y-3">
       <div class="pro-card rounded-3xl p-5 space-y-5">
         <div class="flex items-center justify-between border-b border-slate-200/40 pb-3">
@@ -536,38 +549,17 @@
             <h2 class="font-black text-base">🚀 Histórico Completo de Versões</h2>
             <p class="text-[11px] text-muted-pro font-semibold">Todas as evoluções do aplicativo desde o lançamento</p>
           </div>
-          <span class="bg-red-500/15 text-red-500 text-xs font-black px-3 py-1 rounded-full">v7.4 Oficial</span>
+          <span class="bg-red-500/15 text-red-500 text-xs font-black px-3 py-1 rounded-full">v7.5 Oficial</span>
         </div>
 
-        <!-- Versão 7.4 -->
+        <!-- Versão 7.5 -->
         <div class="border-l-4 border-emerald-500 pl-3.5 space-y-1">
-          <span class="text-[11px] font-extrabold text-emerald-500 uppercase">Versão 7.4 • Atualização Atual (Print do Ranking & Fotos da Galeria)</span>
-          <h4 class="font-black text-sm">Print Automático do Ranking p/ WhatsApp + Fotos da Galeria 📸📲</h4>
+          <span class="text-[11px] font-extrabold text-emerald-500 uppercase">Versão 7.5 • Atualização Atual (Status Online & Histórico de Duelos)</span>
+          <h4 class="font-black text-sm">Bolinha Verde Online (● On) + Histórico de Vencedores do 1v1 🟢⚔️</h4>
           <ul class="text-xs text-muted-pro list-disc list-inside space-y-1 pt-1">
-            <li><strong>Print do Ranking com 1 Toque:</strong> Gera automaticamente a imagem PNG do Pódio 3D + Ranking Geral e compartilha direto no WhatsApp.</li>
-            <li><strong>Fotos de Perfil da Galeria / PC:</strong> Recorte quadrado e compressão inteligente para exibir a foto real do colaborador no Topo, Pódio e Duelo.</li>
+            <li><strong>Bolinha Verde de Status Online:</strong> Identifique em tempo real quem está com o aplicativo aberto na loja.</li>
+            <li><strong>Placar de Duelos 1 vs 1:</strong> Histórico detalhado na aba de Ranking mostrando quem desafiou, quem venceu e o placar final.</li>
           </ul>
-        </div>
-
-        <!-- Versão 7.1 -->
-        <div class="border-l-4 border-purple-500 pl-3.5 space-y-1">
-          <span class="text-[11px] font-extrabold text-purple-500 uppercase">Versão 7.1 • Duelo Online & Revisão</span>
-          <h4 class="font-black text-sm">Convite Ao Vivo entre Celulares (1 vs 1) + Revisar Minhas Dúvidas ⚔️🧠</h4>
-          <p class="text-xs text-muted-pro pt-1">Desafios em tempo real entre aparelhos e caderno automático de questões erradas.</p>
-        </div>
-
-        <!-- Versão 7.0 -->
-        <div class="border-l-4 border-[#FFC72C] pl-3.5 space-y-1">
-          <span class="text-[11px] font-extrabold text-amber-500 uppercase">Versão 7.0 • Frontend Ultra Pro</span>
-          <h4 class="font-black text-sm">Design Pro, Pódio 3D, Dark Mode & Favicon dos Arcos Dourados 🍟✨</h4>
-          <p class="text-xs text-muted-pro pt-1">Arquivos separados (HTML, CSS e JS), modo escuro/claro, Pódio Top 3 e Flashcards com giro 3D.</p>
-        </div>
-
-        <!-- Versões 1.0 a 6.7 -->
-        <div class="border-l-4 border-[#DA291C] pl-3.5 space-y-1">
-          <span class="text-[11px] font-extrabold text-red-500 uppercase">Versões 1.0 a 6.7 • Base Completa</span>
-          <h4 class="font-black text-sm">7 Patentes, Recarga de 10 min dos Corações, Nuvem Anti-Queda & ADM</h4>
-          <p class="text-xs text-muted-pro pt-1">200 questões do Book Venture com alternativas A, B, C e D semelhantes, 7 níveis de XP (até 25.000+ XP), recarga de 10 minutos das vidas e Painel ADM.</p>
         </div>
       </div>
     </section>
