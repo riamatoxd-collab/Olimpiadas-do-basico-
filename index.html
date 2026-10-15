@@ -14,114 +14,42 @@
 
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
-  <!-- Biblioteca para Print Automático em PNG -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css" />
 </head>
 <body class="min-h-screen pb-32">
 
-  <!-- Áudio opcional caso você suba o arquivo parapapapa.mp3 no GitHub -->
-  <audio id="mcJingleAudio" src="parapapapa.mp3" preload="auto"></audio>
-
-  <!-- Input invisível para Galeria do Celular / PC -->
+  <!-- Input invisível que abre a Galeria de Fotos do Celular ou pastas do PC -->
   <input type="file" id="hiddenGalleryInput" accept="image/*" class="hidden" onchange="handleGalleryFileSelected(event)" />
 
   <div id="xpToastContainer"></div>
 
-  <!-- MODAL FESTIVO DE SUBIDA DE NÍVEL (TOCA O PARAPAPAPA DO MCDONALD'S) -->
-  <div id="levelUpModal" class="hidden fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 flex items-center justify-center p-4">
-    <div class="pro-card rounded-[2.25rem] max-w-sm w-full p-6 text-center space-y-4 border-4 border-[#FFC72C] shadow-2xl relative overflow-hidden">
-      <div class="inline-flex items-center justify-center w-20 h-20 rounded-3xl mc-gradient shadow-xl border-2 border-[#FFC72C] float-slow p-3 mx-auto">
-        <svg viewBox="0 0 100 85" fill="#FFC72C" class="w-full h-full drop-shadow">
-          <path d="M50 35.8c-3.8-13.6-11.5-23.7-20.9-23.7-12.8 0-23.1 18.7-23.1 52.8h9.8c0-26.6 6.8-43.2 13.3-43.2 6.5 0 12.8 17.8 13.3 43.2H50zm0 0c3.8-13.6 11.5-23.7 20.9-23.7 12.8 0 23.1 18.7 23.1 52.8h-9.8c0-26.6-6.8-43.2-13.3-43.2-6.5 0-12.8 17.8-13.3 43.2H50z"/>
-        </svg>
-      </div>
-      <div>
-        <span class="bg-[#FFC72C] text-slate-950 text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest">🎵 Pa-ra-pa-pa-pá! • Level Up!</span>
-        <h2 class="text-2xl font-black mt-2">VOCÊ SUBIU DE NÍVEL!</h2>
-        <p id="levelUpNewTitle" class="text-sm font-black text-amber-500 mt-1">🥇 Nova Patente Alcançada!</p>
-      </div>
-      <p class="text-xs text-muted-pro font-semibold leading-relaxed">
-        Parabéns pelo desempenho no treinamento oficial das Olimpíadas do Básico Venture! Continue avançando rumo ao topo do Pódio!
-      </p>
-      <div class="flex gap-2 pt-2">
-        <button onclick="playMcJingleSound()" class="px-4 py-3.5 rounded-2xl subtle-box font-black text-xs btn-tap">
-          🔊 Ouvir de Novo
-        </button>
-        <button onclick="closeLevelUpModal()" class="flex-1 py-3.5 rounded-2xl text-slate-950 font-black text-xs btn-anim-yellow btn-shine">
-          CONTINUAR BRILHANDO 🚀
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- MODAL DO MINI-GAME DA COZINHA: MONTA-LANCHE -->
-  <div id="burgerGameModal" class="hidden fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 flex items-center justify-center p-4 overflow-y-auto">
-    <div class="pro-card rounded-[2rem] max-w-md w-full p-5 border-2 border-[#FFC72C] shadow-2xl space-y-4 my-auto">
-      <div class="flex items-center justify-between border-b border-slate-500/20 pb-3">
-        <div>
-          <span class="text-[10px] font-black uppercase text-amber-500">Linha de Condimentação • Padrão Ouro</span>
-          <h3 class="font-black text-sm">🍔 Mini-Game: Monta-Lanche</h3>
-        </div>
-        <button onclick="closeBurgerGameModal()" class="text-xs font-extrabold text-muted-pro subtle-box px-3 py-1 rounded-xl btn-tap">Fechar ✕</button>
-      </div>
-
-      <div class="flex items-center gap-2">
-        <select id="burgerRecipeSelect" onchange="startBurgerGameRound()" class="flex-1 px-3 py-2 rounded-xl subtle-box text-xs font-extrabold focus:outline-none focus:border-amber-500">
-          <option value="bigmac">🍔 Big Mac (Padrão Oficial)</option>
-          <option value="quarteirao">🧀 Quarteirão com Queijo</option>
-          <option value="cheeseburger">🍔 Cheeseburger</option>
-          <option value="mcnifico">🥓 McNífico Bacon</option>
-          <option value="bigtasty">🔥 Big Tasty</option>
-          <option value="saladamix">🥗 Salada Mix</option>
-        </select>
-        <button onclick="startBurgerGameRound()" class="px-3 py-2 rounded-xl bg-amber-500/15 text-amber-500 font-black text-xs btn-tap">Reiniciar 🔄</button>
-      </div>
-
-      <!-- Progresso da Montagem -->
-      <div class="subtle-box p-3.5 rounded-2xl space-y-2">
-        <div class="flex justify-between items-center text-[11px] font-extrabold">
-          <span id="burgerStepCounter" class="text-amber-500">Passo 1 de 6</span>
-          <span class="text-muted-pro">Toque nos ingredientes na ordem correta:</span>
-        </div>
-        <div id="burgerTrayBuilt" class="min-h-[54px] flex flex-wrap gap-1.5 items-center p-2 rounded-xl bg-slate-950/10 border border-dashed border-slate-400/40 text-xs font-bold">
-          <span class="text-muted-pro text-[11px]">Bandeja vazia... Escolha o 1º item abaixo!</span>
-        </div>
-      </div>
-
-      <!-- Botões de Ingredientes Embaralhados -->
-      <div id="burgerIngredientsPool" class="grid grid-cols-2 gap-2"></div>
-
-      <div id="burgerGameFeedback" class="hidden p-3 rounded-2xl text-xs font-extrabold text-center"></div>
-    </div>
-  </div>
-
-  <!-- POP-UP DE CONVITE DE DUELO 1v1 -->
+  <!-- POP-UP DE CONVITE AO VIVO DE DUELO 1v1 -->
   <div id="duelInvitePopup" class="hidden fixed inset-0 bg-slate-950/85 backdrop-blur-md z-50 flex items-center justify-center p-4">
     <div class="pro-card rounded-[2rem] max-w-sm w-full p-6 text-center space-y-4 border-4 border-[#FFC72C] shadow-2xl">
       <div class="text-5xl float-slow">⚔️🔥</div>
-      <span class="bg-red-500/15 text-red-500 text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-wider">Convite de Duelo Ao Vivo</span>
+      <span class="bg-red-500/15 text-red-500 text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-wider">Convite de Duelo em Tempo Real</span>
       <h3 class="text-lg font-black"><span id="inviteFromNameDisplay">Colega</span> te desafiou!</h3>
       <p class="text-xs text-muted-pro font-semibold leading-relaxed">
-        Disputa 1 vs 1 (Melhor de 5 pontos). Quem responder certo primeiro no próprio celular marca o ponto!
+        Disputa 1 vs 1 ao vivo (Melhor de 5 pontos). Quem responder certo primeiro no próprio celular marca o ponto!
       </p>
       <div class="grid grid-cols-2 gap-2.5 pt-2">
         <button onclick="declineDuelInvite()" class="py-3 rounded-2xl subtle-box font-extrabold text-xs btn-tap">
           ❌ Recusar
         </button>
         <button onclick="acceptDuelInvite()" class="py-3 rounded-2xl text-slate-950 font-black text-xs btn-anim-yellow btn-shine">
-          ✅ ACEITAR
+          ✅ ACEITAR DUELO
         </button>
       </div>
     </div>
   </div>
 
-  <!-- MODAL DA ARENA DE DUELO 1 vs 1 -->
+  <!-- MODAL DA ARENA DE DUELO 1 vs 1 AO VIVO -->
   <div id="duelArenaModal" class="hidden fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 flex items-center justify-center p-4 overflow-y-auto">
     <div class="pro-card rounded-[2rem] max-w-md w-full p-5 border-2 border-[#FFC72C] shadow-2xl space-y-4 my-auto">
       <div class="flex items-center justify-between border-b border-slate-500/20 pb-3">
-        <span class="text-xs font-black text-amber-500 uppercase tracking-wider">⚔️ Arena 1 vs 1 (Meta: 5 pts)</span>
+        <span class="text-xs font-black text-amber-500 uppercase tracking-wider">⚔️ Arena 1 vs 1 Ao Vivo (Meta: 5 pts)</span>
         <button onclick="leaveActiveDuel()" class="text-xs font-extrabold text-red-500 bg-red-500/10 px-3 py-1 rounded-xl btn-tap">Sair ✕</button>
       </div>
 
@@ -163,6 +91,60 @@
         <button onclick="leaveActiveDuel()" class="w-full py-3.5 rounded-2xl text-white font-black text-xs btn-anim-red btn-shine">
           FECHAR ARENA ⚔️
         </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL DO SISTEMA DE COZINHA: MONTA-LANCHE (COMO FAZER OS LANCHES) -->
+  <div id="burgerBuilderModal" class="hidden fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 flex items-center justify-center p-4 overflow-y-auto">
+    <div class="pro-card rounded-[2rem] max-w-md w-full p-5 border-2 border-amber-500 shadow-2xl space-y-4 my-auto">
+      <div class="flex items-center justify-between border-b border-slate-500/20 pb-3">
+        <div>
+          <span class="text-[10px] font-black uppercase text-amber-500">Padrão Best Burger • Cozinha</span>
+          <h3 class="font-black text-sm">🍔 Monta-Lanche & Receitas Oficiais</h3>
+        </div>
+        <button onclick="closeBurgerModal()" class="text-xs font-extrabold text-muted-pro subtle-box px-3 py-1 rounded-xl btn-tap">Fechar ✕</button>
+      </div>
+
+      <!-- Escolha do Lanche -->
+      <div>
+        <label class="text-[11px] font-extrabold text-muted-pro block mb-1">Escolha o Lanche para Treinar ou Consultar:</label>
+        <select id="burgerRecipeSelect" onchange="selectBurgerRecipe()" class="w-full px-3.5 py-2.5 rounded-2xl subtle-box text-xs font-extrabold focus:outline-none focus:border-amber-500">
+          <option value="bigmac">🍔 Big Mac</option>
+          <option value="quarteirao">🧀 Quarteirão com Queijo</option>
+          <option value="cheeseburger">🍔 Cheeseburger</option>
+          <option value="mcnifico">🥓 McNífico Bacon</option>
+          <option value="bigtasty">🔥 Big Tasty</option>
+          <option value="saladamix">🥗 Salada Mix</option>
+        </select>
+      </div>
+
+      <!-- Abas: Modo Guia (Como Faz) vs Modo Desafio (Montar na Ordem) -->
+      <div class="flex rounded-2xl subtle-box p-1">
+        <button id="btnModeGuide" onclick="setBurgerMode('guide')" class="flex-1 py-2 rounded-xl text-xs font-extrabold bg-[#DA291C] text-white btn-tap">📖 Como Fazer (Ordem)</button>
+        <button id="btnModeGame" onclick="setBurgerMode('game')" class="flex-1 py-2 rounded-xl text-xs font-extrabold text-muted-pro btn-tap">🎮 Praticar Montagem</button>
+      </div>
+
+      <!-- MODO 1: GUIA DE RECEITA OFICIAL -->
+      <div id="burgerGuideArea" class="space-y-2.5">
+        <p class="text-[11px] text-muted-pro font-bold">Sequência oficial de condimentação e quantidades exatas:</p>
+        <div id="burgerGuideSteps" class="space-y-1.5 max-h-64 overflow-y-auto pr-1"></div>
+      </div>
+
+      <!-- MODO 2: JOGO INTERATIVO DE MONTAGEM -->
+      <div id="burgerGameArea" class="hidden space-y-3">
+        <div class="flex items-center justify-between text-xs font-extrabold">
+          <span id="burgerGameProgress" class="text-amber-500">Passo 1</span>
+          <button onclick="resetBurgerGame()" class="text-[11px] text-red-500 underline btn-tap">Reiniciar 🔄</button>
+        </div>
+
+        <div id="burgerTrayBuilt" class="min-h-[70px] p-3 rounded-2xl subtle-box border-2 border-dashed border-amber-500/40 flex flex-wrap gap-1.5 items-center justify-center text-xs font-bold">
+          <span class="text-muted-pro text-[11px]">Toque nos ingredientes abaixo na ordem correta!</span>
+        </div>
+
+        <div id="burgerGameFeedback" class="hidden p-2.5 rounded-xl text-xs font-extrabold text-center"></div>
+
+        <div id="burgerIngredientsPool" class="grid grid-cols-2 gap-2 pt-1"></div>
       </div>
     </div>
   </div>
@@ -268,7 +250,7 @@
     </div>
   </div>
 
-  <!-- CABEÇALHO DO COLABORADOR COM BOLINHA VERDE ONLINE E BOTÃO DE SOM PARAPAPAPA -->
+  <!-- CABEÇALHO DO COLABORADOR COM SOM PARAPAPA E BOLINHA VERDE ONLINE -->
   <header class="mc-gradient text-white pt-4 pb-5 px-4 rounded-b-[2.5rem] shadow-2xl sticky top-0 z-30 border-b-4 border-[#FFC72C]">
     <div class="max-w-xl mx-auto">
       <div class="flex items-center justify-between gap-2 mb-3">
@@ -277,7 +259,6 @@
             <button onclick="openAvatarModal()" title="Trocar Foto/Avatar" class="relative w-12 h-12 rounded-2xl gold-gradient text-slate-900 flex items-center justify-center text-2xl shadow-lg border-2 border-white btn-tap shrink-0 overflow-hidden">
               <span id="userAvatarDisplay" class="w-full h-full flex items-center justify-center">🍔</span>
             </button>
-            <!-- Bolinha Verde Online -->
             <span class="absolute -top-1 -right-1 w-3.5 h-3.5 bg-emerald-500 rounded-full border-2 border-white shadow animate-pulse" title="Você está Online"></span>
           </div>
           <div>
@@ -290,9 +271,9 @@
         </div>
 
         <div class="flex items-center gap-1.5">
-          <!-- Botão para testar o som Parapapapa -->
-          <button onclick="playMcJingleSound()" title="Tocar Parapapapa do Méqui" class="bg-slate-950/30 hover:bg-slate-950/45 w-9 h-9 rounded-2xl flex items-center justify-center text-sm border border-white/15 btn-tap">
-            🔊
+          <!-- Botão para ouvir o Jingle Parapapa do Méqui -->
+          <button onclick="playMequiLevelUpSound()" title="Tocar Jingle Parapapa" class="bg-slate-950/30 hover:bg-slate-950/45 w-9 h-9 rounded-2xl flex items-center justify-center text-sm border border-white/15 btn-tap">
+            🎵
           </button>
           <button onclick="toggleDarkMode()" id="themeToggleBtn" title="Alternar Tema" class="bg-slate-950/30 hover:bg-slate-950/45 w-9 h-9 rounded-2xl flex items-center justify-center text-sm border border-white/15 btn-tap">
             🌙
@@ -319,7 +300,7 @@
 
   <main class="max-w-xl mx-auto px-4 mt-5">
 
-    <!-- ABA 1: SIMULADO + MONTA-LANCHE + DUELO + REVISÃO -->
+    <!-- ABA 1: SIMULADO + SISTEMA DE COZINHA (MONTA-LANCHE) + DUELO 1v1 + DÚVIDAS -->
     <section id="tab-quiz" class="space-y-4">
       <div class="grid grid-cols-3 gap-2.5">
         <div class="pro-card rounded-2xl p-3 text-center">
@@ -336,7 +317,7 @@
         </div>
       </div>
 
-      <!-- SIMULADO -->
+      <!-- CARD PRINCIPAL DO SIMULADO -->
       <div class="pro-card rounded-3xl p-5">
         <div class="flex flex-wrap items-center justify-between gap-2 mb-4 pb-3 border-b border-slate-200/50">
           <div>
@@ -367,7 +348,7 @@
             10:00
           </div>
           <p class="text-[11px] text-muted-pro font-bold pt-1">
-            💡 Enquanto recarrega, treine no <strong>Monta-Lanche da Cozinha</strong>, em <strong>Revisar Minhas Dúvidas</strong> ou no <strong>Duelo 1 vs 1</strong> abaixo!
+            💡 Enquanto recarrega, treine no <strong>Monta-Lanche da Cozinha</strong>, em <strong>Revisar Dúvidas</strong> ou no <strong>Duelo 1 vs 1</strong>!
           </p>
         </div>
 
@@ -381,19 +362,19 @@
         </div>
       </div>
 
-      <!-- NOVO: SISTEMA DE COZINHA (MINI-GAME MONTA-LANCHE) -->
+      <!-- NOVO: SISTEMA DE COZINHA (COMO FAZER OS LANCHES / MONTA-LANCHE) -->
       <div class="pro-card rounded-3xl p-5 border-2 border-red-500/30 space-y-3">
         <div class="flex items-center justify-between gap-2">
           <div class="flex items-center gap-3">
             <div class="w-11 h-11 rounded-2xl mc-gradient text-[#FFC72C] flex items-center justify-center text-2xl font-black shrink-0 shadow">🍔</div>
             <div>
-              <span class="text-[10px] font-black uppercase text-red-500">Simulador da Linha de Cozinha</span>
-              <h3 class="font-black text-sm">Como Faz os Lanches (Monta-Lanche)</h3>
-              <p class="text-[11px] text-muted-pro font-medium">Treine a ordem de condimentação e gramaturas do Big Mac, Quarteirão, Tasty e mais!</p>
+              <span class="text-[10px] font-black uppercase text-red-500">Treinamento de Linha & Condimentação</span>
+              <h3 class="font-black text-sm">Como Fazer os Lanches (Monta-Lanche)</h3>
+              <p class="text-[11px] text-muted-pro font-medium">Veja a receita passo a passo ou pratique a ordem dos ingredientes!</p>
             </div>
           </div>
-          <button onclick="openBurgerGameModal()" class="px-4 py-2.5 rounded-2xl text-white font-black text-xs shrink-0 btn-anim-red">
-            Montar 👨‍🍳
+          <button onclick="openBurgerModal()" class="px-4 py-2.5 rounded-2xl text-white font-black text-xs shrink-0 btn-anim-red">
+            Abrir 🍔
           </button>
         </div>
       </div>
@@ -425,7 +406,7 @@
             <div>
               <span class="text-[10px] font-black uppercase text-amber-500">Multiplayer em Tempo Real</span>
               <h3 class="font-black text-sm">Duelo 1 vs 1 (Convidar Colega)</h3>
-              <p class="text-[11px] text-muted-pro font-medium">Veja quem está com a bolinha verde 🟢 [Online] e envie o desafio!</p>
+              <p class="text-[11px] text-muted-pro font-medium">Desafie quem estiver com a bolinha verde (🟢 Online) agora!</p>
             </div>
           </div>
         </div>
@@ -483,7 +464,7 @@
       <div id="bookQuestionsContainer" class="space-y-2.5"></div>
     </section>
 
-    <!-- ABA 3: RANKING COM PÓDIO 3D + HISTÓRICO DE DUELOS + PRINT WHATSAPP -->
+    <!-- ABA 3: RANKING + PÓDIO 3D + HISTÓRICO DE DUELOS + PRINT WHATSAPP -->
     <section id="tab-prizes" class="hidden space-y-4">
       <div class="mc-gradient text-white rounded-3xl p-5 shadow-xl relative overflow-hidden border-2 border-[#FFC72C]">
         <div class="flex items-center gap-4">
@@ -501,29 +482,24 @@
         <div class="flex items-center justify-between flex-wrap gap-2">
           <div>
             <h3 class="font-black text-base">🏆 Pódio & Ranking da Loja</h3>
-            <span id="syncStatusText" class="text-[11px] text-emerald-500 font-bold">● Bolinha Verde = Online Agora no App</span>
+            <span id="syncStatusText" class="text-[11px] text-emerald-500 font-bold">● Servidor Multi-Usuários Estável</span>
           </div>
           <button onclick="forceSyncNow()" data-html2canvas-ignore="true" class="bg-red-500/10 hover:bg-red-500/20 text-red-500 border border-red-500/25 font-extrabold text-xs px-3.5 py-2 rounded-xl btn-tap">
             🔄 Atualizar Agora
           </button>
         </div>
 
-        <!-- Pódio Top 3 -->
         <div id="podiumTop3Container" class="grid grid-cols-3 gap-2 items-end pt-4 pb-2"></div>
-
-        <!-- Lista Geral -->
         <div id="leaderboardContainer" class="space-y-2.5"></div>
       </div>
 
-      <!-- HISTÓRICO DE DUELOS 1 vs 1 (QUEM FEZ E QUEM VENCEU) -->
+      <!-- HISTÓRICO DE DUELOS 1 vs 1 (QUEM JOGOU E QUEM VENCEU) -->
       <div class="pro-card rounded-3xl p-5 space-y-3 border-2 border-amber-500/30">
         <div class="flex items-center justify-between">
           <h3 class="font-black text-sm">⚔️ Histórico de Duelos 1 vs 1 (Quem Venceu)</h3>
-          <span class="text-[10px] font-extrabold text-amber-500 bg-amber-500/10 px-2.5 py-0.5 rounded-full">Ao Vivo na Nuvem</span>
+          <span class="text-[10px] font-extrabold text-amber-500 bg-amber-500/10 px-2.5 py-0.5 rounded-full">Arena Ao Vivo</span>
         </div>
-        <div id="duelHistoryContainer" class="space-y-2">
-          <div class="p-3 rounded-xl subtle-box text-xs text-center text-muted-pro">Nenhum duelo finalizado ainda. Desafie alguém na aba Simulado!</div>
-        </div>
+        <div id="duelHistoryContainer" class="space-y-2"></div>
       </div>
 
       <!-- BOTÕES DE COMPARTILHAMENTO WHATSAPP -->
@@ -644,14 +620,13 @@
           <span class="bg-red-500/15 text-red-500 text-xs font-black px-3 py-1 rounded-full">v7.6 Oficial</span>
         </div>
 
-        <!-- Versão 7.6 -->
         <div class="border-l-4 border-[#FFC72C] pl-3.5 space-y-1">
-          <span class="text-[11px] font-extrabold text-amber-500 uppercase">Versão 7.6 • Atualização Atual (Jingle Parapapapa + Monta-Lanche)</span>
-          <h4 class="font-black text-sm">Som "Parapapapa" ao Subir de Nível + Simulador de Lanches + Bolinha Online 🎵🍔🟢</h4>
+          <span class="text-[11px] font-extrabold text-amber-500 uppercase">Versão 7.6 • Atualização Atual (Jingle Parapapa + Monta-Lanche + Online)</span>
+          <h4 class="font-black text-sm">Som "Parapapa" ao Subir de Nível + Sistema de Cozinha + Bolinha Verde 🎵🍔🟢</h4>
           <ul class="text-xs text-muted-pro list-disc list-inside space-y-1 pt-1">
-            <li><strong>Efeito Sonoro "Parapapapa" no Level Up:</strong> Toca o jingle clássico do McDonald's e abre o modal festivo sempre que você sobe de patente.</li>
-            <li><strong>Mini-Game "Monta-Lanche":</strong> Treino interativo da ordem de montagem e dosagens dos sanduíches na linha.</li>
-            <li><strong>Status Online 🟢 e Histórico 1v1:</strong> Bolinha verde ao vivo para quem está no app e placar de quem venceu nos duelos.</li>
+            <li><strong>Jingle Oficial "Parapapa" (Web Audio):</strong> Toca a melodia clássica do comercial do McDonald's automaticamente quando o colaborador sobe de nível.</li>
+            <li><strong>Sistema de Cozinha (Monta-Lanche):</strong> Guia de receitas e jogo interativo para treinar a sequência de montagem dos lanches.</li>
+            <li><strong>Bolinha Verde Online & Histórico 1v1:</strong> Veja quem está online em tempo real e confira no Ranking quem venceu os últimos duelos.</li>
           </ul>
         </div>
       </div>
