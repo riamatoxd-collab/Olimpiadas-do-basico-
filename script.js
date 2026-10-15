@@ -1,6 +1,6 @@
 /* =========================================================================
-   OLIMPÍADAS DO BÁSICO — VENTURE (script.js v7.4 COMPLETO)
-   Inclui: Print do Ranking p/ WhatsApp + Fotos da Galeria + Duelo 1v1 + 200 Questões
+   OLIMPÍADAS DO BÁSICO — VENTURE (script.js v7.5 COMPLETO)
+   Bolinha Verde Online + Histórico de Duelos 1v1 + Print do Ranking + 200 Questões
    ========================================================================= */
 
 const AVATAR_LIST = ["🍔", "🍟", "🍦", "🔥", "👨‍🍳", "👑", "⚡", "🏆", "🚀", "🥤", "🥓", "🎯"];
@@ -202,7 +202,7 @@ const QUESTIONS_DB = [
   { id: 195, level: "Avançado", q: "Qual a temperatura do café coado?", a: "A partir de 77°C.", w: ["A partir de 65°C.", "De 57°C a 63°C.", "A partir de 85°C."] },
   { id: 196, level: "Avançado", q: "Qual a proporção correta de água e café para o café coado?", a: "1.100 ml de água para 1 pacote de 50 g de café.", w: ["1.000 ml de água para 1 pacote de 100 g de café.", "1.500 ml de água para 1 pacote de 50 g de café.", "800 ml de água para 1 pacote de 40 g de café."] },
   { id: 197, level: "Avançado", q: "O que é Best Burger?", a: "É o novo padrão para os hambúrgueres McDonald's. Pequenas mudanças, grande impacto.", w: ["É o sistema de fritura rápida para carnes brancas em 3 minutos.", "É o programa de auditoria semestral de limpeza das chapas.", "É a campanha promocional exclusiva para venda no Drive-Thru."] },
-  { id: 198, level: "Avançado", q: "Quais são as técnicas dos influencers vendedores?", a: "Somos Especialistas, Gostamos de Surpreender, Criamos Oportunidades, Vivenciamos as mesmas coisas, Criamos tendência, Somos Afetuosos.", w: ["Sugestão de Vendas, Venda Sugestiva, Adicionais, Combo Grande, Sobremesa e Café.", "Fazer bem, Fazer rápido, Fazer especial, Sorrir, Agradecer e Despedir.", "Olhar nos olhos, Oferecer bacon, Oferecer batata grande, Cobrar rápido e Entregar."] },
+  { id: 198, level: "Avançado", q: "Quais são das técnicas dos influencers vendedores?", a: "Somos Especialistas, Gostamos de Surpreender, Criamos Oportunidades, Vivenciamos as mesmas coisas, Criamos tendência, Somos Afetuosos.", w: ["Sugestão de Vendas, Venda Sugestiva, Adicionais, Combo Grande, Sobremesa e Café.", "Fazer bem, Fazer rápido, Fazer especial, Sorrir, Agradecer e Despedir.", "Olhar nos olhos, Oferecer bacon, Oferecer batata grande, Cobrar rápido e Entregar."] },
   { id: 199, level: "Avançado", q: "Qual o rendimento da batata?", a: "9,11 batatas pequenas por kg.", w: ["7,50 batatas pequenas por kg.", "12,40 batatas pequenas por kg.", "6,80 batatas pequenas por kg."] },
   { id: 200, level: "Avançado", q: "Qual a descrição do padrão ouro de qualidade do suco?", a: "Frio, cor brilhante e sabor doce.", w: ["Com espuma, cor escura e sabor cítrico ácido.", "Em temperatura ambiente, translúcido e sem açúcar.", "Congelado com cristais de gelo e altamente concentrado."] }
 ];
@@ -210,6 +210,7 @@ const QUESTIONS_DB = [
 const STORAGE_USERS_KEY = "mequi_olimpiadas_users_v6";
 const STORAGE_CURRENT_KEY = "mequi_olimpiadas_active_user_v6";
 const STORAGE_THEME_KEY = "mequi_olimpiadas_theme_v7";
+const STORAGE_DUEL_HISTORY = "mequi_olimpiadas_duel_history_v75";
 const ADMIN_SECRET_PASS = "342005";
 const HEARTS_COOLDOWN_MS = 10 * 60 * 1000;
 
@@ -229,6 +230,7 @@ let isAdminUnlocked = false;
 let searchDebounceTimer = null;
 let cloudSyncQueueTimer = null;
 let cooldownIntervalId = null;
+let heartbeatIntervalId = null;
 let lastLeaderboardHash = "";
 let lastAdminListHash = "";
 let lastHttpFetchTime = 0;
@@ -237,9 +239,10 @@ let pendingDuelInvite = null;
 let activeDuel = null;
 let currentReviewItem = null;
 let photoUploadTarget = "register";
+let duelHistoryList = JSON.parse(localStorage.getItem(STORAGE_DUEL_HISTORY) || "[]");
 
 // =========================================================================
-// 1. FOTOS DE PERFIL DA GALERIA DO CELULAR / PC (RECORTE 1:1 + COMPRESSÃO)
+// 1. FOTOS DE PERFIL DA GALERIA / PC
 // =========================================================================
 
 function isPhotoAvatar(val) {
@@ -300,7 +303,7 @@ function handleGalleryFileSelected(event) {
 }
 
 // =========================================================================
-// 2. PRINT AUTOMÁTICO DO RANKING EM IMAGEM PNG DIRETO PARA O WHATSAPP
+// 2. PRINT AUTOMÁTICO DO RANKING EM PNG P/ WHATSAPP
 // =========================================================================
 
 async function captureAndShareRankingImage() {
@@ -330,24 +333,17 @@ async function captureAndShareRankingImage() {
       const fileName = "Ranking_Olimpiadas_Mequi.png";
       const file = new File([blob], fileName, { type: "image/png" });
 
-      // Textinho de legenda com o Top 3
       const list = Object.values(users).filter(u => u && u.name && !u._deleted).sort((a, b) => (b.xp || 0) - (a.xp || 0));
       const topSummary = list.slice(0, 3).map((u, i) => `${i === 0 ? '🥇' : i === 1 ? '🥈' : '🥉'} ${u.name}: ${u.xp || 0} XP`).join("\n");
       const shareCaption = `🏆 *RANKING OFICIAL — OLIMPÍADAS DO BÁSICO (VENTURE)*\n\n${topSummary}\n\n🔗 Participe no link: ${window.location.origin}${window.location.pathname}`;
 
-      // No Celular (Android/iOS): Abre a gaveta nativa já com a imagem PNG anexada pro WhatsApp!
       if (navigator.canShare && navigator.canShare({ files: [file] })) {
         try {
-          await navigator.share({
-            files: [file],
-            title: "Ranking Olimpíadas do Básico",
-            text: shareCaption
-          });
+          await navigator.share({ files: [file], title: "Ranking Olimpíadas do Básico", text: shareCaption });
           return;
         } catch (err) {}
       }
 
-      // No PC: Faz download automático da imagem PNG e abre o WhatsApp Web
       const link = document.createElement("a");
       link.download = fileName;
       link.href = URL.createObjectURL(blob);
@@ -365,7 +361,7 @@ async function captureAndShareRankingImage() {
 }
 
 // =========================================================================
-// TEMA ESCURO / CLARO E TOAST DE XP
+// TEMA ESCURO / CLARO E HEARTBEAT ONLINE (BOLINHA VERDE)
 // =========================================================================
 
 function initTheme() {
@@ -394,17 +390,22 @@ function showXpToast(amount) {
   setTimeout(() => toast.remove(), 1250);
 }
 
+function startHeartbeat() {
+  if (heartbeatIntervalId) clearInterval(heartbeatIntervalId);
+  heartbeatIntervalId = setInterval(() => {
+    if (currentUserKey && users[currentUserKey] && !users[currentUserKey]._deleted) {
+      users[currentUserKey].lastSeen = Date.now();
+      scheduleCloudSync(currentUserKey, false);
+    }
+  }, 10000); // Envia sinal a cada 10 segundos
+}
+
 // =========================================================================
 // SINCRONIZAÇÃO EM NUVEM E RESGATE DE CONTAS
 // =========================================================================
 
 function rescuePreviousLocalRegistrations() {
-  const keysToCheck = [
-    "mequi_olimpiadas_users_v3",
-    "mequi_olimpiadas_users_v4",
-    "mequi_olimpiadas_users_v5",
-    "mequi_olimpiadas_users_v6"
-  ];
+  const keysToCheck = ["mequi_olimpiadas_users_v3", "mequi_olimpiadas_users_v4", "mequi_olimpiadas_users_v5", "mequi_olimpiadas_users_v6"];
   keysToCheck.forEach(storageKey => {
     try {
       const raw = localStorage.getItem(storageKey);
@@ -422,6 +423,7 @@ function rescuePreviousLocalRegistrations() {
             hearts: u.hearts !== undefined ? u.hearts : 5,
             heartsLockUntil: u.heartsLockUntil || 0,
             mistakes: Array.isArray(u.mistakes) ? u.mistakes : [],
+            lastSeen: u.lastSeen || 0,
             updatedAt: u.updatedAt || Date.now()
           });
         });
@@ -478,6 +480,7 @@ function mergeSingleUser(existing, incoming) {
     hearts: isIncomingNewer && incoming.hearts !== undefined ? incoming.hearts : (existing.hearts !== undefined ? existing.hearts : 5),
     heartsLockUntil: isIncomingNewer && incoming.heartsLockUntil !== undefined ? incoming.heartsLockUntil : (existing.heartsLockUntil || 0),
     mistakes: isIncomingNewer && Array.isArray(incoming.mistakes) ? incoming.mistakes : (Array.isArray(existing.mistakes) ? existing.mistakes : []),
+    lastSeen: Math.max(existing.lastSeen || 0, incoming.lastSeen || 0),
     updatedAt: Math.max(existing.updatedAt || 0, incoming.updatedAt || 0)
   };
 }
@@ -500,12 +503,13 @@ function refreshUIIfNeeded() {
   syncActiveUserHeartsState();
   updateMistakesBadge();
   populateDuelOpponentList();
+  renderDuelHistory();
 
   const sortedList = Object.values(users)
     .filter(u => u && u.name && !u._deleted)
     .sort((a, b) => (b.xp || 0) - (a.xp || 0));
 
-  const currentHash = JSON.stringify(sortedList.map(u => `${u.name}:${u.xp}:${u.correctAnswers}:${(u.avatar || "").slice(-20)}:${u.role}:${u.heartsLockUntil || 0}`));
+  const currentHash = JSON.stringify(sortedList.map(u => `${u.name}:${u.xp}:${u.correctAnswers}:${(u.avatar || "").slice(-20)}:${u.role}:${u.lastSeen || 0}`));
   if (currentHash !== lastLeaderboardHash) {
     lastLeaderboardHash = currentHash;
     renderLeaderboard();
@@ -526,7 +530,7 @@ function initClusterSync() {
   brokers.forEach((brokerUrl) => {
     try {
       const client = mqtt.connect(brokerUrl, {
-        clientId: "mq74_" + Math.random().toString(16).substring(2, 10),
+        clientId: "mq75_" + Math.random().toString(16).substring(2, 10),
         clean: true,
         connectTimeout: 5000,
         reconnectPeriod: 6000
@@ -651,7 +655,7 @@ function forceSyncNow() {
 }
 
 // =========================================================================
-// PATENTES, SELETOR DE AVATAR / FOTO DA GALERIA E LOGIN
+// PATENTES, SELETOR DE AVATAR E LOGIN
 // =========================================================================
 
 function getLevelInfo(xp) {
@@ -769,6 +773,7 @@ function handleRegister() {
     hearts: 5,
     heartsLockUntil: 0,
     mistakes: users[key] && Array.isArray(users[key].mistakes) ? users[key].mistakes : [],
+    lastSeen: Date.now(),
     updatedAt: Date.now()
   };
 
@@ -809,6 +814,7 @@ async function handleLogin() {
         hearts: 5,
         heartsLockUntil: 0,
         mistakes: [],
+        lastSeen: Date.now(),
         updatedAt: Date.now()
       };
     }
@@ -1000,7 +1006,7 @@ function checkReviewAnswer(selectedBtn, chosen, correct, qId) {
 }
 
 // =========================================================================
-// DUELO ONLINE 1 vs 1 POR CONVITE ENTRE CELULARES
+// DUELO ONLINE 1 vs 1 COM STATUS ONLINE E HISTÓRICO DE VENCEDORES
 // =========================================================================
 
 function populateDuelOpponentList() {
@@ -1008,12 +1014,17 @@ function populateDuelOpponentList() {
   if (!select) return;
   const currentVal = select.value;
 
+  const now = Date.now();
   const list = Object.entries(users)
     .filter(([k, u]) => u && u.name && !u._deleted && k !== currentUserKey)
     .sort((a, b) => a[1].name.localeCompare(b[1].name));
 
   select.innerHTML = `<option value="">Selecione quem você quer desafiar...</option>` +
-    list.map(([k, u]) => `<option value="${k}">${isPhotoAvatar(u.avatar) ? '📸' : (u.avatar || '🍔')} ${u.name} (${u.role || 'Atendente'})</option>`).join("");
+    list.map(([k, u]) => {
+      const isOnline = (now - (u.lastSeen || 0)) < 25000;
+      const indicator = isOnline ? "🟢 [Online]" : "⚪ [Offline]";
+      return `<option value="${k}">${indicator} ${u.name} (${u.role || 'Atendente'})</option>`;
+    }).join("");
 
   if (currentVal && users[currentVal]) select.value = currentVal;
 }
@@ -1161,6 +1172,16 @@ function handleIncomingDuelPacket(pkt) {
     document.getElementById("duelWinnerBox").classList.remove("hidden");
     document.getElementById("duelWinnerTitle").textContent = `🏆 ${pkt.winnerName} Venceu!`;
     document.getElementById("duelWinnerSub").textContent = `Placar Final: ${activeDuel.hostName} (${pkt.scoreHost}) x (${pkt.scoreGuest}) ${activeDuel.guestName}`;
+
+    // Salva no histórico de duelos
+    saveDuelHistoryRecord({
+      p1: activeDuel.hostName,
+      p2: activeDuel.guestName,
+      score1: pkt.scoreHost,
+      score2: pkt.scoreGuest,
+      winner: pkt.winnerName,
+      date: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    });
     return;
   }
 
@@ -1168,6 +1189,36 @@ function handleIncomingDuelPacket(pkt) {
     alert("O seu oponente saiu da Arena de Duelo.");
     leaveActiveDuel(false);
   }
+}
+
+function saveDuelHistoryRecord(record) {
+  duelHistoryList.unshift(record);
+  if (duelHistoryList.length > 5) duelHistoryList.pop();
+  localStorage.setItem(STORAGE_DUEL_HISTORY, JSON.stringify(duelHistoryList));
+  renderDuelHistory();
+}
+
+function renderDuelHistory() {
+  const container = document.getElementById("duelHistoryContainer");
+  if (!container) return;
+
+  if (duelHistoryList.length === 0) {
+    container.innerHTML = `<div class="p-3 rounded-xl subtle-box text-xs text-center text-muted-pro">Nenhum duelo finalizado recentemente. Desafie alguém na aba Simulado!</div>`;
+    return;
+  }
+
+  container.innerHTML = duelHistoryList.map(h => `
+    <div class="flex items-center justify-between p-2.5 rounded-xl subtle-box text-xs font-bold">
+      <div class="flex items-center gap-2">
+        <span>⚔️</span>
+        <span><strong>${h.p1}</strong> (${h.score1}) x (${h.score2}) <strong>${h.p2}</strong></span>
+      </div>
+      <div class="text-right">
+        <span class="text-amber-500 font-black">🏆 ${h.winner}</span>
+        <span class="block text-[9px] text-muted-pro">${h.date}</span>
+      </div>
+    </div>
+  `).join("");
 }
 
 function acceptDuelInvite() {
@@ -1214,8 +1265,8 @@ function updateDuelScoreboardUI() {
   if (!activeDuel) return;
   const p1Av = document.getElementById("duelP1Avatar");
   const p2Av = document.getElementById("duelP2Avatar");
-  if (p1Av) p1Av.innerHTML = isPhotoAvatar(activeDuel.hostAvatar) ? `<img src="${activeDuel.hostAvatar}" class="w-9 h-9 rounded-xl object-cover border border-[#FFC72C]" />` : activeDuel.hostAvatar;
-  if (p2Av) p2Av.innerHTML = isPhotoAvatar(activeDuel.guestAvatar) ? `<img src="${activeDuel.guestAvatar}" class="w-9 h-9 rounded-xl object-cover border border-[#FFC72C]" />` : activeDuel.guestAvatar;
+  if (p1Av) p1Av.innerHTML = isPhotoAvatar(activeDuel.hostAvatar) ? `<img src="${activeDuel.hostAvatar}" class="w-9 h-9 rounded-xl object-cover border border-[#FFC72C] mx-auto" />` : activeDuel.hostAvatar;
+  if (p2Av) p2Av.innerHTML = isPhotoAvatar(activeDuel.guestAvatar) ? `<img src="${activeDuel.guestAvatar}" class="w-9 h-9 rounded-xl object-cover border border-[#FFC72C] mx-auto" />` : activeDuel.guestAvatar;
 
   document.getElementById("duelP1Name").textContent = activeDuel.hostName;
   document.getElementById("duelP1Score").textContent = activeDuel.scoreHost;
@@ -1311,7 +1362,7 @@ function leaveActiveDuel(notifyOther = true) {
 }
 
 // =========================================================================
-// CORAÇÕES E CRONÔMETRO DE 10 MINUTOS DO SIMULADO
+// CORAÇÕES E RECARGA DE 10 MINUTOS
 // =========================================================================
 
 function getActiveHeartsLockUntil() {
@@ -1503,7 +1554,7 @@ function checkQuizAnswer(selectedBtn, chosen, correct, letter) {
 }
 
 // =========================================================================
-// FLASHCARDS 3D, BOOK E RANKING COM FOTOS DE PERFIL
+// FLASHCARDS 3D, BOOK E RANKING COM STATUS ONLINE
 // =========================================================================
 
 function loadRandomFlashcard() {
@@ -1631,10 +1682,16 @@ function renderLeaderboard() {
   }
 
   if (container) {
+    const now = Date.now();
     container.innerHTML = list.map((u, idx) => {
       const medal = idx === 0 ? "🥇 ☕" : idx === 1 ? "🥈" : idx === 2 ? "🥉" : `${idx + 1}º`;
       const info = getLevelInfo(u.xp || 0);
       const role = u.role || u.station || "Atendente";
+      const isOnline = (now - (u.lastSeen || 0)) < 25000;
+      const onlineDot = isOnline
+        ? `<span class="w-2.5 h-2.5 bg-emerald-500 rounded-full inline-block ml-1 shadow-sm" title="Online agora"></span>`
+        : `<span class="w-2.5 h-2.5 bg-slate-400/50 rounded-full inline-block ml-1" title="Offline"></span>`;
+
       return `
         <div class="flex items-center justify-between p-3.5 rounded-2xl ${idx === 0 ? 'bg-amber-500/15 border-2 border-amber-500/50 shadow-sm' : 'subtle-box'}">
           <div class="flex items-center gap-3">
@@ -1642,7 +1699,7 @@ function renderLeaderboard() {
             ${renderAvatarBadge(u.avatar, "w-10 h-10", "text-xl", "pro-card")}
             <div>
               <div class="flex items-center gap-1.5 flex-wrap">
-                <p class="font-black text-xs">${u.name}</p>
+                <p class="font-black text-xs">${u.name} ${onlineDot}</p>
                 <span class="text-[9px] font-extrabold px-2 py-0.5 rounded-full bg-red-500/15 text-red-500 uppercase">${role}</span>
               </div>
               <p class="text-[10px] text-muted-pro font-bold mt-0.5">${info.title}</p>
@@ -1823,6 +1880,7 @@ function adminSaveMember() {
     hearts: 5,
     heartsLockUntil: 0,
     mistakes: users[key]?.mistakes || [],
+    lastSeen: Date.now(),
     updatedAt: Date.now(),
     adminOverrideAt: Date.now()
   };
@@ -1864,5 +1922,6 @@ window.onload = () => {
   }
 
   initClusterSync();
+  startHeartbeat();
   fetchCloudHistorySafe(true);
 };
