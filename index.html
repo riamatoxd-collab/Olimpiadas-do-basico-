@@ -184,7 +184,31 @@
       </div>
     </div>
   </div>
+<!-- Input invisível que abre a Galeria do Celular ou pastas do PC -->
+<input 
+  type="file" 
+  id="inputGaleriaFoto" 
+  accept="image/*" 
+  class="hidden" 
+  onchange="carregarFotoDaGaleria(event)" 
+/>
 
+<!-- Botão bonito que o colaborador clica na tela -->
+  <div class="flex items-center gap-3">
+  <!-- Prévia da foto ou ícone atual -->
+  <div id="previaAvatar" class="w-14 h-14 rounded-2xl bg-amber-400 flex items-center justify-center text-2xl font-black overflow-hidden border-2 border-white shadow-md">
+    🍔
+  </div>
+
+  <!-- Botão que aciona a galeria -->
+  <button 
+    type="button" 
+    onclick="document.getElementById('inputGaleriaFoto').click()" 
+    class="px-4 py-3 rounded-2xl bg-red-600 hover:bg-red-700 text-white font-black text-xs shadow flex items-center gap-2"
+  >
+    <span>📸 Escolher Foto da Galeria</span>
+  </button>
+</div>
   <!-- MODAL DE TROCAR AVATAR -->
   <div id="avatarPickerModal" class="hidden fixed inset-0 bg-slate-950/75 backdrop-blur-sm z-50 flex items-center justify-center p-4">
     <div class="pro-card rounded-3xl max-w-sm w-full p-5 shadow-2xl space-y-4">
