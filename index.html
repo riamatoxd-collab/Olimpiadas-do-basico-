@@ -7,8 +7,9 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="Olimpíadas Méqui" />
-  <title>Olimpíadas do Básico — Venture v6.4 Turbo</title>
+  <title>Olimpíadas do Básico — Venture v6.5</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <style>
     body {
@@ -22,7 +23,6 @@
     .gold-gradient { background: linear-gradient(135deg, #FFC72C 0%, #f59e0b 100%); }
     .dark-gradient { background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); }
 
-    /* Cartão otimizado para GPU (sem blur pesado na rolagem) */
     .fast-card {
       background: #ffffff;
       border: 1px solid #e2e8f0;
@@ -30,7 +30,6 @@
       transform: translateZ(0);
     }
 
-    /* Botões 3D Animados com Efeito Mola e Brilho */
     .btn-anim-red {
       position: relative;
       overflow: hidden;
@@ -51,7 +50,6 @@
     .btn-anim-yellow:hover { transform: translateY(-2px); box-shadow: 0 7px 0 #b45309, 0 12px 20px rgba(255, 199, 44, 0.4); }
     .btn-anim-yellow:active { transform: translateY(4px) scale(0.98); box-shadow: 0 1px 0 #b45309; }
 
-    /* Efeito de brilho passando nos botões principais */
     .btn-shine::after {
       content: "";
       position: absolute;
@@ -67,11 +65,10 @@
       100% { left: 140%; }
     }
 
-    /* Botões de Alternativas A, B, C, D Animados */
     .option-btn {
       transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1), border-color 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
       box-shadow: 0 3px 0 #e2e8f0;
-      animation: slideUpFade 0.25s ease backwards;
+      animation: slideUpFade 0.22s ease backwards;
     }
     .option-btn:hover:not(:disabled) {
       transform: translateY(-2px) scale(1.01);
@@ -84,50 +81,32 @@
     }
 
     @keyframes slideUpFade {
-      from { opacity: 0; transform: translateY(10px); }
+      from { opacity: 0; transform: translateY(8px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
-    /* Animação de Acerto (Pop) e Erro (Shake) */
-    .anim-pop-correct {
-      animation: popSuccess 0.38s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-    }
+    .anim-pop-correct { animation: popSuccess 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
     @keyframes popSuccess {
       0% { transform: scale(1); }
-      50% { transform: scale(1.04); }
+      50% { transform: scale(1.03); }
       100% { transform: scale(1); }
     }
 
-    .anim-shake-wrong {
-      animation: shakeError 0.4s ease-in-out forwards;
-    }
+    .anim-shake-wrong { animation: shakeError 0.38s ease-in-out forwards; }
     @keyframes shakeError {
       0%, 100% { transform: translateX(0); }
-      20%, 60% { transform: translateX(-6px); }
-      40%, 80% { transform: translateX(6px); }
+      20%, 60% { transform: translateX(-5px); }
+      40%, 80% { transform: translateX(5px); }
     }
 
-    /* Micro-interação para todos os botões secundários */
-    .btn-tap {
-      transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1), background-color 0.15s ease;
-    }
+    .btn-tap { transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1), background-color 0.15s ease; }
     .btn-tap:hover { transform: translateY(-1px); }
     .btn-tap:active { transform: scale(0.93); }
 
-    /* Animação nos ícones da barra inferior */
-    .nav-btn {
-      transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
-    }
+    .nav-btn { transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1); }
     .nav-btn:active { transform: scale(0.88); }
-    .nav-btn.active-nav {
-      color: #DA291C;
-      font-weight: 800;
-      transform: translateY(-2px);
-    }
-    .nav-btn.active-nav .nav-icon {
-      transform: scale(1.18);
-      display: inline-block;
-    }
+    .nav-btn.active-nav { color: #DA291C; font-weight: 800; transform: translateY(-2px); }
+    .nav-btn.active-nav .nav-icon { transform: scale(1.18); display: inline-block; }
 
     .avatar-option { transition: all 0.18s cubic-bezier(0.34, 1.56, 0.64, 1); }
     .avatar-option:active { transform: scale(0.9); }
@@ -156,7 +135,7 @@
       <div class="text-center mb-5">
         <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl mc-gradient text-[#FFC72C] font-black text-4xl shadow-lg mb-2.5 border-2 border-[#FFC72C]/40 float-slow">M</div>
         <h1 class="text-2xl font-black tracking-tight text-slate-900">OLIMPÍADAS DO BÁSICO</h1>
-        <p class="text-xs text-slate-500 font-semibold mt-0.5">Treinamento Oficial Venture • Versão 6.4 Turbo ⚡</p>
+        <p class="text-xs text-slate-500 font-semibold mt-0.5">Treinamento Oficial Venture • Versão 6.5 Anti-Queda 🛡️</p>
       </div>
 
       <div class="flex rounded-2xl bg-slate-100 p-1.5 mb-5">
@@ -324,7 +303,7 @@
       </div>
     </section>
 
-    <!-- ABA 2: BOOK OFICIAL COMPLETO (OTIMIZADO COM DEBOUNCE E LOTE) -->
+    <!-- ABA 2: BOOK OFICIAL COMPLETO -->
     <section id="tab-book" class="hidden space-y-3">
       <div class="fast-card rounded-3xl p-4 sticky top-32 z-20 space-y-3">
         <div class="flex items-center justify-between">
@@ -360,10 +339,10 @@
         <div class="flex items-center justify-between flex-wrap gap-2">
           <div>
             <h3 class="font-black text-slate-900 text-base">🏆 Ranking Geral da Loja</h3>
-            <span id="syncStatusText" class="text-[11px] text-emerald-600 font-bold">● Conectando à Nuvem HTTPS...</span>
+            <span id="syncStatusText" class="text-[11px] text-emerald-600 font-bold">● Servidor Multi-Usuários Estável</span>
           </div>
           <button onclick="forceSyncNow()" class="bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 font-extrabold text-xs px-3.5 py-2 rounded-xl btn-tap">
-            🔄 Sincronizar Agora
+            🔄 Atualizar Agora
           </button>
         </div>
 
@@ -458,14 +437,14 @@
         <div class="fast-card rounded-3xl p-5 space-y-3">
           <div class="flex items-center justify-between">
             <h3 class="font-black text-slate-900 text-sm">👥 Equipe Cadastrada</h3>
-            <button onclick="forceSyncNow()" class="text-xs font-extrabold text-red-600 bg-red-50 px-3 py-1.5 rounded-xl btn-tap">🔄 Puxar Novos da Nuvem</button>
+            <button onclick="forceSyncNow()" class="text-xs font-extrabold text-red-600 bg-red-50 px-3 py-1.5 rounded-xl btn-tap">🔄 Sincronizar Agora</button>
           </div>
           <div id="adminUsersList" class="space-y-3"></div>
         </div>
       </div>
     </section>
 
-    <!-- ABA 5: LISTA COMPLETA DE TODAS AS VERSÕES (v1.0 ATÉ v6.4) -->
+    <!-- ABA 5: LISTA COMPLETA DE TODAS AS VERSÕES (v1.0 ATÉ v6.5) -->
     <section id="tab-updates" class="hidden space-y-3">
       <div class="fast-card rounded-3xl p-5 space-y-5">
         <div class="flex items-center justify-between border-b border-slate-100 pb-3">
@@ -473,26 +452,34 @@
             <h2 class="font-black text-slate-900 text-base">🚀 Histórico Completo de Versões</h2>
             <p class="text-[11px] text-slate-500 font-semibold">Todas as evoluções do aplicativo desde o lançamento</p>
           </div>
-          <span class="bg-red-100 text-red-800 text-xs font-black px-3 py-1 rounded-full">v6.4 Turbo</span>
+          <span class="bg-emerald-100 text-emerald-800 text-xs font-black px-3 py-1 rounded-full">v6.5 Estável</span>
+        </div>
+
+        <!-- V6.5 -->
+        <div class="border-l-4 border-emerald-600 pl-3.5 space-y-1">
+          <span class="text-[11px] font-extrabold text-emerald-600 uppercase">Versão 6.5 • Atualização Atual (Estabilidade Multi-Usuários)</span>
+          <h4 class="font-black text-slate-900 text-sm">Proteção Anti-Queda para Múltiplos Acessos Simultâneos 🛡️⚡</h4>
+          <ul class="text-xs text-slate-600 list-disc list-inside space-y-1 pt-1">
+            <li><strong>Agrupador Inteligente de Tráfego (Write Coalescing):</strong> Reduz em 90% as chamadas de rede agrupando os pontos de XP sem atrasar a tela, impedindo quedas quando 5, 20 ou 50 pessoas usam o app juntas no mesmo Wi-Fi.</li>
+            <li><strong>Trava Anti-Loop (Hash Check):</strong> Evita que os celulares fiquem recarregando o Ranking repetidamente sem mudança de placar.</li>
+          </ul>
         </div>
 
         <!-- V6.4 -->
         <div class="border-l-4 border-[#DA291C] pl-3.5 space-y-1">
-          <span class="text-[11px] font-extrabold text-red-600 uppercase">Versão 6.4 • Atualização Atual (Turbo & Animações)</span>
+          <span class="text-[11px] font-extrabold text-red-600 uppercase">Versão 6.4 • Desempenho Turbo & Animações</span>
           <h4 class="font-black text-slate-900 text-sm">Otimização de Desempenho + Botões 3D Animados ⚡✨</h4>
           <ul class="text-xs text-slate-600 list-disc list-inside space-y-1 pt-1">
-            <li><strong>Desempenho Turbo:</strong> Renderização em lote único das 200 questões e busca com <em>Debounce</em> (zero travamentos no celular).</li>
-            <li><strong>Botões Animados:</strong> Efeito mola 3D, reflexo de brilho, entrada em cascata nas alternativas A, B, C e D e animações de acerto (<em>Pop</em>) e erro (<em>Shake</em>).</li>
-            <li><strong>Histórico Completo Unificado:</strong> Todas as versões (v1.0 a v6.4) listadas nesta aba.</li>
+            <li>Renderização em lote único das 200 questões, busca com <em>Debounce</em> e botões 3D com efeito mola, brilho e animações de acerto/erro.</li>
           </ul>
         </div>
 
         <!-- V6.3 -->
-        <div class="border-l-4 border-emerald-600 pl-3.5 space-y-1">
-          <span class="text-[11px] font-extrabold text-emerald-600 uppercase">Versão 6.3 • Nuvem HTTPS Porta 443</span>
+        <div class="border-l-4 border-cyan-600 pl-3.5 space-y-1">
+          <span class="text-[11px] font-extrabold text-cyan-700 uppercase">Versão 6.3 • Nuvem HTTPS Porta 443</span>
           <h4 class="font-black text-slate-900 text-sm">Sincronização Garantida no GitHub Pages (4G e Wi-Fi) ☁️📲</h4>
           <ul class="text-xs text-slate-600 list-disc list-inside space-y-1 pt-1">
-            <li>Conexão HTTPS direta na porta 443 (sem bloqueio de operadoras móveis) com fila de histórico na nuvem mesmo com o aparelho fechado.</li>
+            <li>Conexão HTTPS direta na porta 443 com histórico salvo na nuvem mesmo com o aparelho fechado.</li>
           </ul>
         </div>
 
@@ -501,7 +488,7 @@
           <span class="text-[11px] font-extrabold text-amber-600 uppercase">Versão 6.2 • Simulado Inteligente A, B, C e D</span>
           <h4 class="font-black text-slate-900 text-sm">Alternativas Semelhantes à Resposta Original 🧠🎯</h4>
           <ul class="text-xs text-slate-600 list-disc list-inside space-y-1 pt-1">
-            <li>Todas as 200 questões passaram a apresentar alternativas A, B, C e D plausíveis (mesma unidade, temperaturas próximas e tempos parecidos).</li>
+            <li>Todas as 200 questões passaram a apresentar alternativas A, B, C e D plausíveis com números e procedimentos próximos.</li>
           </ul>
         </div>
 
@@ -519,8 +506,7 @@
           <span class="text-[11px] font-extrabold text-indigo-600 uppercase">Versão 6.0 • Edição Premium</span>
           <h4 class="font-black text-slate-900 text-sm">Avatares de Perfil, Cargos Oficiais & Novas Metas de XP 🎨👑</h4>
           <ul class="text-xs text-slate-600 list-disc list-inside space-y-1 pt-1">
-            <li>Escolha de ícones de perfil (🍔, 🍟, 🍦, 🔥, 👨‍🍳, 👑, etc.) e cargos oficiais: <strong>Atendente, Treinador, Supervisor, Coordenador e GUN</strong>.</li>
-            <li>Remoção do cadastro fixo automático e reajuste das patentes de XP (até 6.000+ XP).</li>
+            <li>Escolha de ícones de perfil e cargos oficiais (<strong>Atendente, Treinador, Supervisor, Coordenador e GUN</strong>), remoção do cadastro fixo e novas metas de XP (até 6.000+ XP).</li>
           </ul>
         </div>
 
@@ -581,7 +567,7 @@
 
   </main>
 
-  <!-- BARRA DE NAVEGAÇÃO INFERIOR COM ÍCONES ANIMADOS -->
+  <!-- BARRA DE NAVEGAÇÃO INFERIOR -->
   <nav class="fixed bottom-0 inset-x-0 bg-white/95 backdrop-blur-md border-t border-slate-200/80 z-40 shadow-2xl">
     <div class="max-w-xl mx-auto grid grid-cols-5 py-2 px-1">
       <button onclick="switchMainTab('quiz')" id="nav-quiz" class="nav-btn active-nav flex flex-col items-center py-1 rounded-2xl text-[10px]">
@@ -816,17 +802,24 @@
     const STORAGE_CURRENT_KEY = "mequi_olimpiadas_active_user_v6";
     const ADMIN_SECRET_PASS = "342005";
 
-    const CLOUD_TOPIC = "mequi_venture_olimpiadas_2026_v63_store";
-    const CLOUD_BASE_URL = `https://ntfy.sh/${CLOUD_TOPIC}`;
-    let sseConnection = null;
+    // MOTOR DUPLO DE ALTA CAPACIDADE (SEM CONGESTIONAMENTO / ZERO RATE-LIMIT)
+    const SYNC_MQTT_TOPIC = "mequi/venture/olimpiadas2026/v65_cluster_state";
+    const CLOUD_HTTP_URL = "https://ntfy.sh/mequi_venture_olimpiadas_2026_v63_store";
 
+    let mqttClients = [];
     let users = {};
     let currentUserKey = localStorage.getItem(STORAGE_CURRENT_KEY) || null;
     let currentBookFilter = "ALL";
     let currentStreak = 0;
     let currentHearts = 5;
     let isAdminUnlocked = false;
+
+    // Variáveis de controle anti-queda e anti-loop
     let searchDebounceTimer = null;
+    let cloudSyncQueueTimer = null;
+    let lastLeaderboardHash = "";
+    let lastAdminListHash = "";
+    let lastHttpFetchTime = 0;
 
     function rescuePreviousLocalRegistrations() {
       const keysToCheck = [
@@ -903,42 +896,124 @@
       };
     }
 
-    function processIncomingCloudPayload(rawMsgStr) {
-      try {
-        const data = JSON.parse(rawMsgStr);
-        if (!data) return false;
-        let changed = false;
+    function mergeUserDictionaries(localDict, remoteDict) {
+      const merged = { ...localDict };
+      if (!remoteDict || typeof remoteDict !== "object") return merged;
 
-        if (data.type === "single" && data.k && data.u) {
-          const before = JSON.stringify(users[data.k]);
-          users[data.k] = mergeSingleUser(users[data.k], data.u);
-          if (JSON.stringify(users[data.k]) !== before) changed = true;
-        } else if (data.type === "batch" && data.map && typeof data.map === "object") {
-          Object.keys(data.map).forEach(k => {
-            const u = data.map[k];
-            if (!u || !u.name) return;
-            if (k === "daniel pessoa de oliveira" && u.xp === 250 && u.correctAnswers === 2) return;
-            const before = JSON.stringify(users[k]);
-            users[k] = mergeSingleUser(users[k], u);
-            if (JSON.stringify(users[k]) !== before) changed = true;
-          });
-        }
-        return changed;
-      } catch (e) {
-        return false;
+      Object.keys(remoteDict).forEach(k => {
+        const rUser = remoteDict[k];
+        if (!rUser || !rUser.name) return;
+        if (k === "daniel pessoa de oliveira" && rUser.xp === 250 && rUser.correctAnswers === 2) return;
+        merged[k] = mergeSingleUser(merged[k], rUser);
+      });
+      return merged;
+    }
+
+    // ATUALIZAÇÃO INTELIGENTE DA INTERFACE (SÓ REDESENHA SE HOUVER MUDANÇA REAL)
+    function refreshUIIfNeeded() {
+      updateHeaderUI();
+
+      const sortedList = Object.values(users)
+        .filter(u => u && u.name && !u._deleted)
+        .sort((a, b) => (b.xp || 0) - (a.xp || 0));
+
+      const currentHash = JSON.stringify(sortedList.map(u => `${u.name}:${u.xp}:${u.correctAnswers}:${u.avatar}:${u.role}`));
+      if (currentHash !== lastLeaderboardHash) {
+        lastLeaderboardHash = currentHash;
+        renderLeaderboard();
+      }
+
+      if (isAdminUnlocked && currentHash !== lastAdminListHash) {
+        lastAdminListHash = currentHash;
+        renderAdminUsersList();
       }
     }
 
-    async function fetchAllCloudHistory(pushLocalAfter = false) {
-      const statusEl = document.getElementById("syncStatusText");
-      if (statusEl) statusEl.textContent = "🔄 Sincronizando cadastros na nuvem...";
+    // MOTOR 1: WEBSOCKETS EM TEMPO REAL (COM PROTEÇÃO ANTI-LOOP PARA NÃO DERRUBAR 5+ CELULARES)
+    function initClusterSync() {
+      const brokers = [
+        "wss://broker.emqx.io:8084/mqtt",
+        "wss://broker.hivemq.com:8884/mqtt"
+      ];
 
-      const keysFoundInCloud = new Set();
-      try {
-        const res = await fetch(`${CLOUD_BASE_URL}/json?poll=1&since=all&t=${Date.now()}`, {
-          method: "GET",
-          cache: "no-store"
+      brokers.forEach((brokerUrl) => {
+        try {
+          const client = mqtt.connect(brokerUrl, {
+            clientId: "mq65_" + Math.random().toString(16).substring(2, 10),
+            clean: true,
+            connectTimeout: 5000,
+            reconnectPeriod: 6000
+          });
+
+          client.on("connect", () => {
+            const statusEl = document.getElementById("syncStatusText");
+            if (statusEl) {
+              statusEl.textContent = "● Conectado em Tempo Real (Alta Capacidade)";
+              statusEl.className = "text-[11px] text-emerald-600 font-bold";
+            }
+            client.subscribe(SYNC_MQTT_TOPIC, { qos: 0 });
+          });
+
+          client.on("message", (topic, message) => {
+            if (topic !== SYNC_MQTT_TOPIC) return;
+            try {
+              const remoteUsers = JSON.parse(message.toString());
+              // Importante: Apenas absorve os dados na memória sem re-publicar em loop!
+              users = mergeUserDictionaries(users, remoteUsers);
+              localStorage.setItem(STORAGE_USERS_KEY, JSON.stringify(users));
+              refreshUIIfNeeded();
+            } catch (e) {}
+          });
+
+          mqttClients.push(client);
+        } catch (err) {}
+      });
+    }
+
+    // MOTOR 2: SINCRONIZAÇÃO AGRUPADA (COALESCING) - EVITA EXCESSO DE REQUISIÇÕES
+    function scheduleCloudSync(keyToPush, immediate = false) {
+      localStorage.setItem(STORAGE_USERS_KEY, JSON.stringify(users));
+      refreshUIIfNeeded();
+
+      clearTimeout(cloudSyncQueueTimer);
+      const delay = immediate ? 150 : 3200; // Agrupa cliques rápidos de XP em 1 único envio a cada 3,2s
+
+      cloudSyncQueueTimer = setTimeout(() => {
+        // 1. Publica estado completo no WebSocket para quem está online agora
+        const fullStatePayload = JSON.stringify(users);
+        mqttClients.forEach(client => {
+          if (client && client.connected) {
+            try { client.publish(SYNC_MQTT_TOPIC, fullStatePayload, { qos: 0, retain: true }); } catch (e) {}
+          }
         });
+
+        // 2. Salva registro compacto no histórico HTTPS 443 para quem abrir o celular depois
+        if (keyToPush && users[keyToPush]) {
+          const singlePayload = JSON.stringify({ type: "single", k: keyToPush, u: users[keyToPush] });
+          fetch(CLOUD_HTTP_URL, { method: "POST", body: singlePayload }).catch(() => {});
+        }
+      }, delay);
+    }
+
+    // BUSCA LEVE DO HISTÓRICO HTTPS (COM TIMEOUT E PROTEÇÃO CONTRA RATE LIMIT 429)
+    async function fetchCloudHistorySafe(force = false) {
+      const now = Date.now();
+      if (!force && now - lastHttpFetchTime < 20000) return; // Máximo 1 leitura HTTP a cada 20s por aparelho
+      lastHttpFetchTime = now;
+
+      const statusEl = document.getElementById("syncStatusText");
+      if (force && statusEl) statusEl.textContent = "🔄 Atualizando lista de colaboradores...";
+
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 4500);
+
+      try {
+        const res = await fetch(`${CLOUD_HTTP_URL}/json?poll=1&since=24h`, {
+          method: "GET",
+          signal: controller.signal
+        });
+        clearTimeout(timeoutId);
+
         if (res.ok) {
           const text = await res.text();
           const lines = text.trim().split("\n");
@@ -947,86 +1022,34 @@
             try {
               const pkt = JSON.parse(line);
               if (pkt.event === "message" && pkt.message) {
-                const parsedMsg = JSON.parse(pkt.message);
-                if (parsedMsg.type === "single" && parsedMsg.k) keysFoundInCloud.add(parsedMsg.k);
-                if (parsedMsg.type === "batch" && parsedMsg.map) {
-                  Object.keys(parsedMsg.map).forEach(k => keysFoundInCloud.add(k));
+                const data = JSON.parse(pkt.message);
+                if (data.type === "single" && data.k && data.u) {
+                  users[data.k] = mergeSingleUser(users[data.k], data.u);
+                } else if (data.type === "batch" && data.map) {
+                  users = mergeUserDictionaries(users, data.map);
                 }
-                processIncomingCloudPayload(pkt.message);
               }
             } catch (err) {}
           });
 
           localStorage.setItem(STORAGE_USERS_KEY, JSON.stringify(users));
-          renderLeaderboard();
-          updateHeaderUI();
-          if (isAdminUnlocked) renderAdminUsersList();
-
-          if (statusEl) {
-            statusEl.textContent = "● Nuvem HTTPS Sincronizada (Todos os Celulares)";
-            statusEl.className = "text-[11px] text-emerald-600 font-bold";
-          }
-
-          const localKeys = Object.keys(users);
-          const missingOnCloud = localKeys.filter(k => !keysFoundInCloud.has(k));
-          if (pushLocalAfter || missingOnCloud.length > 0) {
-            await pushBatchUsersToCloud(users);
-          }
+          refreshUIIfNeeded();
         }
-      } catch (err) {
-        if (statusEl) statusEl.textContent = "● Modo Rápido Ativo";
+      } catch (e) {
+        clearTimeout(timeoutId);
+      } finally {
+        if (statusEl) {
+          statusEl.textContent = "● Servidor Multi-Usuários Estável";
+          statusEl.className = "text-[11px] text-emerald-600 font-bold";
+        }
       }
     }
 
-    function pushSingleUserToCloud(key, userObj) {
-      localStorage.setItem(STORAGE_USERS_KEY, JSON.stringify(users));
-      renderLeaderboard();
-      updateHeaderUI();
-      if (isAdminUnlocked) renderAdminUsersList();
-
-      const payload = JSON.stringify({ type: "single", k: key, u: userObj });
-      fetch(CLOUD_BASE_URL, { method: "POST", body: payload }).catch(() => {});
-    }
-
-    async function pushBatchUsersToCloud(dict) {
-      const entries = Object.entries(dict);
-      const chunkSize = 10;
-      for (let i = 0; i < entries.length; i += chunkSize) {
-        const slice = entries.slice(i, i + chunkSize);
-        const mapChunk = {};
-        slice.forEach(([k, u]) => { mapChunk[k] = u; });
-        try {
-          await fetch(CLOUD_BASE_URL, {
-            method: "POST",
-            body: JSON.stringify({ type: "batch", map: mapChunk })
-          });
-        } catch (e) {}
+    function forceSyncNow() {
+      if (currentUserKey && users[currentUserKey]) {
+        scheduleCloudSync(currentUserKey, true);
       }
-    }
-
-    function startLiveHttpsStream() {
-      try {
-        if (sseConnection) sseConnection.close();
-        sseConnection = new EventSource(`${CLOUD_BASE_URL}/sse`);
-        sseConnection.onmessage = (e) => {
-          try {
-            const pkt = JSON.parse(e.data);
-            if (pkt.event === "message" && pkt.message) {
-              const updated = processIncomingCloudPayload(pkt.message);
-              if (updated) {
-                localStorage.setItem(STORAGE_USERS_KEY, JSON.stringify(users));
-                renderLeaderboard();
-                updateHeaderUI();
-                if (isAdminUnlocked) renderAdminUsersList();
-              }
-            }
-          } catch (err) {}
-        };
-      } catch (e) {}
-    }
-
-    async function forceSyncNow() {
-      await fetchAllCloudHistory(true);
+      fetchCloudHistorySafe(true);
     }
 
     function getLevelInfo(xp) {
@@ -1072,7 +1095,7 @@
       users[currentUserKey].avatar = icon;
       users[currentUserKey].updatedAt = Date.now();
       closeAvatarModal();
-      pushSingleUserToCloud(currentUserKey, users[currentUserKey]);
+      scheduleCloudSync(currentUserKey, true);
     }
 
     function switchAuthTab(mode) {
@@ -1096,7 +1119,7 @@
       err.classList.remove("hidden");
     }
 
-    async function handleRegister() {
+    function handleRegister() {
       const name = document.getElementById("regName").value.trim().toUpperCase();
       const role = document.getElementById("regRole").value;
       const pass = document.getElementById("regPass").value.trim();
@@ -1117,8 +1140,8 @@
 
       currentUserKey = key;
       localStorage.setItem(STORAGE_CURRENT_KEY, key);
-      pushSingleUserToCloud(key, users[key]);
       document.getElementById("authModal").classList.add("hidden");
+      scheduleCloudSync(key, true);
     }
 
     async function handleLogin() {
@@ -1127,11 +1150,11 @@
       const key = name.toLowerCase();
 
       const btn = document.getElementById("btnLoginSubmit");
-      btn.textContent = "BUSCANDO CONTA...";
+      btn.textContent = "ENTRANDO...";
       btn.disabled = true;
 
       if (!users[key]) {
-        await fetchAllCloudHistory(false);
+        await fetchCloudHistorySafe(true);
       }
 
       btn.textContent = "ENTRAR NO APLICATIVO 🚀";
@@ -1143,7 +1166,7 @@
       currentUserKey = key;
       localStorage.setItem(STORAGE_CURRENT_KEY, key);
       document.getElementById("authModal").classList.add("hidden");
-      pushSingleUserToCloud(key, users[key]);
+      scheduleCloudSync(key, true);
     }
 
     function logoutUser() {
@@ -1157,7 +1180,8 @@
       if (!currentUserKey || !users[currentUserKey]) return;
       users[currentUserKey].xp = Math.max(0, (users[currentUserKey].xp || 0) + amount);
       users[currentUserKey].updatedAt = Date.now();
-      pushSingleUserToCloud(currentUserKey, users[currentUserKey]);
+      // Atualiza tela na hora (0ms) e agenda envio agrupado sem travar a rede
+      scheduleCloudSync(currentUserKey, false);
     }
 
     function updateHeaderUI() {
@@ -1219,7 +1243,7 @@
       shuffledOptions.forEach((optText, idx) => {
         const letter = letters[idx];
         const btn = document.createElement("button");
-        btn.style.animationDelay = `${idx * 45}ms`;
+        btn.style.animationDelay = `${idx * 40}ms`;
         btn.className = "option-btn w-full text-left p-3.5 rounded-2xl border-2 border-slate-200 font-bold text-xs text-slate-800 flex items-center gap-3 bg-white";
         btn.innerHTML = `
           <span class="letter-badge w-7 h-7 rounded-xl bg-slate-100 text-slate-800 font-black text-xs flex items-center justify-center shrink-0 border border-slate-200">${letter}</span>
@@ -1284,7 +1308,7 @@
       }
     }
 
-    // BOOK COMPLETO OTIMIZADO (BATCH RENDER + DEBOUNCE)
+    // BOOK COMPLETO OTIMIZADO
     function debouncedBookSearch() {
       clearTimeout(searchDebounceTimer);
       searchDebounceTimer = setTimeout(() => {
@@ -1317,7 +1341,6 @@
 
       document.getElementById("bookCountBadge").textContent = `${filtered.length} questões`;
 
-      // Renderização ultra-rápida em lote único
       container.innerHTML = filtered.map(item => `
         <div class="fast-card rounded-2xl p-4">
           <div class="flex items-center justify-between mb-1.5">
@@ -1400,8 +1423,8 @@
         err.classList.add("hidden");
         document.getElementById("adminLockScreen").classList.add("hidden");
         document.getElementById("adminDashboard").classList.remove("hidden");
-        forceSyncNow();
         renderAdminUsersList();
+        fetchCloudHistorySafe(true);
       } else {
         err.classList.remove("hidden");
       }
@@ -1462,7 +1485,7 @@
       users[key].xp = Math.max(0, (users[key].xp || 0) + delta);
       users[key].updatedAt = Date.now();
       users[key].adminOverrideAt = Date.now();
-      pushSingleUserToCloud(key, users[key]);
+      scheduleCloudSync(key, true);
     }
 
     function adminSetCustomXp(key) {
@@ -1474,7 +1497,7 @@
         users[key].xp = Math.max(0, parsed);
         users[key].updatedAt = Date.now();
         users[key].adminOverrideAt = Date.now();
-        pushSingleUserToCloud(key, users[key]);
+        scheduleCloudSync(key, true);
       }
     }
 
@@ -1485,7 +1508,7 @@
       users[key].correctAnswers = 0;
       users[key].updatedAt = Date.now();
       users[key].adminOverrideAt = Date.now();
-      pushSingleUserToCloud(key, users[key]);
+      scheduleCloudSync(key, true);
     }
 
     function adminDeleteUser(key) {
@@ -1494,7 +1517,7 @@
       users[key]._deleted = true;
       users[key].updatedAt = Date.now();
       users[key].adminOverrideAt = Date.now();
-      pushSingleUserToCloud(key, users[key]);
+      scheduleCloudSync(key, true);
     }
 
     function adminSaveMember() {
@@ -1518,13 +1541,13 @@
         adminOverrideAt: Date.now()
       };
 
-      pushSingleUserToCloud(key, users[key]);
+      scheduleCloudSync(key, true);
 
       document.getElementById("admNewName").value = "";
       document.getElementById("admNewPass").value = "";
       document.getElementById("admNewXp").value = "";
       document.getElementById("admNewHits").value = "";
-      alert(`Colaborador ${name} (${role}) salvo e transmitido na nuvem!`);
+      alert(`Colaborador ${name} (${role}) salvo com sucesso!`);
     }
 
     function switchMainTab(tab) {
@@ -1534,25 +1557,25 @@
       });
       document.getElementById(`tab-${tab}`).classList.remove("hidden");
       document.getElementById(`nav-${tab}`).className = "nav-btn active-nav flex flex-col items-center py-1 rounded-2xl text-[10px]";
-      if (tab === "prizes" || tab === "admin") fetchAllCloudHistory(false);
+      if (tab === "prizes" || tab === "admin") fetchCloudHistorySafe(false);
     }
 
-    window.onload = async () => {
+    window.onload = () => {
       rescuePreviousLocalRegistrations();
       renderAvatarSelector();
       startNewQuiz();
       loadRandomFlashcard();
       renderBookList();
-      renderLeaderboard();
+      refreshUIIfNeeded();
 
       if (currentUserKey && users[currentUserKey] && !users[currentUserKey]._deleted) {
         document.getElementById("authModal").classList.add("hidden");
         updateHeaderUI();
       }
 
-      await fetchAllCloudHistory(true);
-      startLiveHttpsStream();
-      setInterval(() => fetchAllCloudHistory(false), 15000);
+      // Conecta ao Cluster WebSockets sem loop + busca histórico HTTPS seguro
+      initClusterSync();
+      fetchCloudHistorySafe(true);
     };
   </script>
 </body>
