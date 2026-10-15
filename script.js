@@ -518,4 +518,1188 @@ function forceSyncNow() {
 function getLevelInfo(xp) {
   if (xp >= 25000) return { level: 7, title: "👑 Nível 7 — Lenda dos Arcos Dourados", min: 25000, max: 40000 };
   if (xp >= 15000) return { level: 6, title: "🔥 Nível 6 — Mestre das Olimpíadas", min: 15000, max: 25000 };
-  if (xp >=
+  if (xp >= 10000) return { level: 5, title: "💎 Nível 5 — Diamante Best Burger", min: 10000, max: 15000 };
+  if (xp >= 6000)  return { level: 4, title: "🥇 Nível 4 — Padrão Ouro Venture", min: 6000, max: 10000 };
+  if (xp >= 3000)  return { level: 3, title: "🥈 Nível 3 — Especialista de Prata", min: 3000, max: 6000 };
+  if (xp >= 1000)  return { level: 2, title: "🥉 Nível 2 — Chapa de Bronze", min: 1000, max: 3000 };
+  return { level: 1, title: "🔰 Nível 1 — Iniciante", min: 0, max: 1000 };
+}
+
+function renderAvatarSelector() {
+  const grid = document.getElementById("regAvatarGrid");
+  if (!grid) return;
+  grid.innerHTML = AVATAR_LIST.map(icon => `
+    <button type="button" onclick="selectRegAvatar('${icon}')" class="avatar-option p-2 rounded-2xl border-2 subtle-box text-xl flex items-center justify-center ${icon === selectedRegAvatar ? 'selected' : ''}">
+      ${icon}
+    </button>
+  `).join("");
+}
+
+function selectRegAvatar(icon) {
+  selectedRegAvatar = icon;
+  renderAvatarSelector();
+}
+
+function openAvatarModal() {
+  if (!currentUserKey || !users[currentUserKey]) return;
+  const currentIcon = users[currentUserKey].avatar || "🍔";
+  const grid = document.getElementById("changeAvatarGrid");
+  if (!grid) return;
+  grid.innerHTML = AVATAR_LIST.map(icon => `
+    <button type="button" onclick="changeUserAvatar('${icon}')" class="p-3 rounded-2xl border-2 ${icon === currentIcon ? 'border-red-600 bg-red-500/15 scale-105' : 'subtle-box'} text-2xl flex items-center justify-center btn-tap">
+      ${icon}
+    </button>
+  `).join("");
+  document.getElementById("avatarPickerModal").classList.remove("hidden");
+}
+
+function closeAvatarModal() {
+  document.getElementById("avatarPickerModal").classList.add("hidden");
+}
+
+function changeUserAvatar(icon) {
+  if (!currentUserKey || !users[currentUserKey]) return;
+  users[currentUserKey].avatar = icon;
+  users[currentUserKey].updatedAt = Date.now();
+  closeAvatarModal();
+  scheduleCloudSync(currentUserKey, true);
+}
+
+function switchAuthTab(mode) {
+  document.getElementById("authError").classList.add("hidden");
+  if (mode === "login") {
+    document.getElementById("loginForm").classList.remove("hidden");
+    document.getElementById("registerForm").classList.add("hidden");
+    document.getElementById("tabLoginBtn").className = "flex-1 py-2.5 text-xs font-extrabold rounded-xl bg-[#DA291C] text-white shadow-sm btn-tap";
+    document.getElementById("tabRegisterBtn").className = "flex-1 py-2.5 text-xs font-extrabold rounded-xl text-muted-pro btn-tap";
+  } else {
+    document.getElementById("loginForm").classList.add("hidden");
+    document.getElementById("registerForm").classList.remove("hidden");
+    document.getElementById("tabRegisterBtn").className = "flex-1 py-2.5 text-xs font-extrabold rounded-xl bg-[#DA291C] text-white shadow-sm btn-tap";
+    document.getElementById("tabLoginBtn").className = "flex-1 py-2.5 text-xs font-extrabold rounded-xl text-muted-pro btn-tap";
+  }
+}
+
+function showAuthError(msg) {
+  const err = document.getElementById("authError");
+  err.textContent = msg;
+  err.classList.remove("hidden");
+}
+
+function handleRegister() {
+  const name = document.getElementById("regName").value.trim().toUpperCase();
+  const role = document.getElementById("regRole").value;
+  const pass = document.getElementById("regPass").value.trim();
+
+  if (name.length < 2) return showAuthError("Digite seu nome ou apelido válido.");
+  if (pass.length < 4) return showAuthError("Sua senha precisa ter pelo menos 4 dígitos.");
+
+  const key = name.toLowerCase();
+  users[key] = {
+    name: name,
+    role: role,
+    avatar: selectedRegAvatar,
+    password: pass,
+    xp: users[key] && !users[key]._deleted ? (users[key].xp || 0) : 0,
+    correctAnswers: users[key] && !users[key]._deleted ? (users[key].correctAnswers || 0) : 0,
+    hearts: users[key] && users[key].hearts !== undefined ? users[key].hearts : 5,
+    heartsLockUntil: users[key] ? (users[key].heartsLockUntil || 0) : 0,
+    mistakes: users[key] && Array.isArray(users[key].mistakes) ? users[key].mistakes : [],
+    updatedAt: Date.now()
+  };
+
+  currentUserKey = key;
+  localStorage.setItem(STORAGE_CURRENT_KEY, key);
+  document.getElementById("authModal").classList.add("hidden");
+  syncActiveUserHeartsState();
+  loadNextQuizQuestion();
+  scheduleCloudSync(key, true);
+}
+
+async function handleLogin() {
+  const name = document.getElementById("loginName").value.trim();
+  const pass = document.getElementById("loginPass").value.trim();
+  const key = name.toLowerCase();
+
+  const btn = document.getElementById("btnLoginSubmit");
+  btn.textContent = "ENTRANDO...";
+  btn.disabled = true;
+
+  if (!users[key]) {
+    await fetchCloudHistorySafe(true);
+  }
+
+  btn.textContent = "ENTRAR NO TREINAMENTO 🚀";
+  btn.disabled = false;
+
+  if (!users[key] || users[key]._deleted) return showAuthError("Colaborador não encontrado! Clique em 'Criar Conta' acima.");
+  if (users[key].password && users[key].password !== pass) return showAuthError("Senha incorreta! Tente novamente.");
+
+  currentUserKey = key;
+  localStorage.setItem(STORAGE_CURRENT_KEY, key);
+  document.getElementById("authModal").classList.add("hidden");
+  syncActiveUserHeartsState();
+  loadNextQuizQuestion();
+  scheduleCloudSync(key, true);
+}
+
+function logoutUser() {
+  currentUserKey = null;
+  localStorage.removeItem(STORAGE_CURRENT_KEY);
+  document.getElementById("loginPass").value = "";
+  document.getElementById("authModal").classList.remove("hidden");
+}
+
+function addXp(amount) {
+  if (!currentUserKey || !users[currentUserKey]) return;
+  users[currentUserKey].xp = Math.max(0, (users[currentUserKey].xp || 0) + amount);
+  users[currentUserKey].updatedAt = Date.now();
+  showXpToast(amount);
+  scheduleCloudSync(currentUserKey, false);
+}
+
+function updateHeaderUI() {
+  if (!currentUserKey || !users[currentUserKey]) return;
+  const u = users[currentUserKey];
+  const info = getLevelInfo(u.xp || 0);
+
+  document.getElementById("userAvatarDisplay").textContent = u.avatar || "🍔";
+  document.getElementById("userNameDisplay").textContent = u.name;
+  document.getElementById("userRoleBadge").textContent = u.role || u.station || "Atendente";
+  document.getElementById("userXpDisplay").textContent = `${u.xp || 0} XP`;
+  document.getElementById("userRankTitle").textContent = info.title;
+  document.getElementById("currentLevelNum").textContent = `Nível ${info.level}`;
+  document.getElementById("statHitsDisplay").textContent = `${u.correctAnswers || 0} ✅`;
+
+  const progress = Math.min(100, Math.round((((u.xp || 0) - info.min) / (info.max - info.min)) * 100));
+  document.getElementById("xpProgressBar").style.width = `${Math.max(6, progress)}%`;
+
+  if (info.level < 7) {
+    document.getElementById("nextLevelTarget").textContent = `Faltam ${info.max - (u.xp || 0)} XP para o Nível ${info.level + 1}`;
+  } else {
+    document.getElementById("nextLevelTarget").textContent = `Patente Máxima Alcançada! 👑`;
+  }
+}
+
+// =========================================================================
+// MODO 1: CADERNO "REVISAR MINHAS DÚVIDAS"
+// =========================================================================
+
+function getActiveUserMistakes() {
+  if (currentUserKey && users[currentUserKey]) {
+    if (!Array.isArray(users[currentUserKey].mistakes)) users[currentUserKey].mistakes = [];
+    return users[currentUserKey].mistakes;
+  }
+  return JSON.parse(localStorage.getItem("mequi_guest_mistakes") || "[]");
+}
+
+function recordMistakeQuestion(qId) {
+  const list = getActiveUserMistakes();
+  if (!list.includes(qId)) {
+    list.push(qId);
+    saveMistakesList(list);
+  }
+}
+
+function removeMistakeQuestion(qId) {
+  const list = getActiveUserMistakes().filter(id => id !== qId);
+  saveMistakesList(list);
+}
+
+function saveMistakesList(list) {
+  if (currentUserKey && users[currentUserKey]) {
+    users[currentUserKey].mistakes = list;
+    users[currentUserKey].updatedAt = Date.now();
+    localStorage.setItem(STORAGE_USERS_KEY, JSON.stringify(users));
+  } else {
+    localStorage.setItem("mequi_guest_mistakes", JSON.stringify(list));
+  }
+  updateMistakesBadge();
+}
+
+function updateMistakesBadge() {
+  const badge = document.getElementById("mistakesCountBadge");
+  if (!badge) return;
+  const count = getActiveUserMistakes().length;
+  badge.textContent = `${count} pendente${count === 1 ? "" : "s"}`;
+  badge.className = count > 0
+    ? "text-[10px] font-black px-2 py-0.5 rounded-full bg-purple-600 text-white"
+    : "text-[10px] font-black px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-500";
+}
+
+function openReviewModal() {
+  const mistakes = getActiveUserMistakes();
+  if (mistakes.length === 0) {
+    return alert("🎉 Parabéns! Você não tem nenhuma dúvida pendente no momento. Quando você errar alguma questão no Simulado, ela aparecerá aqui para você revisar!");
+  }
+  document.getElementById("reviewMistakesModal").classList.remove("hidden");
+  loadNextReviewQuestion();
+}
+
+function closeReviewModal() {
+  document.getElementById("reviewMistakesModal").classList.add("hidden");
+}
+
+function loadNextReviewQuestion() {
+  const mistakes = getActiveUserMistakes();
+  if (mistakes.length === 0) {
+    alert("✅ Sensacional! Você revisou e acertou todas as suas dúvidas pendentes!");
+    closeReviewModal();
+    return;
+  }
+
+  const randomId = mistakes[Math.floor(Math.random() * mistakes.length)];
+  const item = QUESTIONS_DB.find(q => q.id === randomId) || QUESTIONS_DB[0];
+  currentReviewItem = item;
+
+  document.getElementById("reviewMetaBadge").textContent = `Questão #${item.id} • ${item.level}`;
+  document.getElementById("reviewRemainingBadge").textContent = `Faltam zerar: ${mistakes.length}`;
+  document.getElementById("reviewQuestionText").textContent = item.q;
+  document.getElementById("reviewFeedbackBox").classList.add("hidden");
+  document.getElementById("nextReviewBtn").classList.add("hidden");
+
+  const shuffled = [...item.w, item.a].sort(() => 0.5 - Math.random());
+  const letters = ["A", "B", "C", "D"];
+  const container = document.getElementById("reviewOptionsContainer");
+  container.innerHTML = "";
+
+  shuffled.forEach((optText, idx) => {
+    const letter = letters[idx];
+    const btn = document.createElement("button");
+    btn.className = "option-btn w-full text-left p-3.5 rounded-2xl font-bold text-xs flex items-center gap-3";
+    btn.innerHTML = `
+      <span class="w-7 h-7 rounded-xl subtle-box font-black text-xs flex items-center justify-center shrink-0">${letter}</span>
+      <span class="flex-1 leading-snug">${optText}</span>
+    `;
+    btn.onclick = () => checkReviewAnswer(btn, optText, item.a, item.id);
+    container.appendChild(btn);
+  });
+}
+
+function checkReviewAnswer(selectedBtn, chosen, correct, qId) {
+  const allBtns = document.querySelectorAll("#reviewOptionsContainer button");
+  allBtns.forEach(b => b.disabled = true);
+
+  const fb = document.getElementById("reviewFeedbackBox");
+  fb.classList.remove("hidden");
+
+  if (chosen === correct) {
+    selectedBtn.className = "anim-pop-correct w-full text-left p-3.5 rounded-2xl border-2 border-emerald-500 bg-emerald-500/20 font-extrabold text-xs flex items-center gap-3";
+    removeMistakeQuestion(qId);
+    fb.className = "p-3 rounded-2xl text-xs font-extrabold bg-emerald-500/15 text-emerald-500 border border-emerald-500/30";
+    fb.textContent = "✅ Aprendido! Essa questão foi removida da sua lista de dúvidas!";
+  } else {
+    selectedBtn.className = "anim-shake-wrong w-full text-left p-3.5 rounded-2xl border-2 border-red-500 bg-red-500/20 font-extrabold text-xs flex items-center gap-3";
+    fb.className = "p-3 rounded-2xl text-xs font-extrabold bg-red-500/15 text-red-500 border border-red-500/30";
+    fb.innerHTML = `❌ O gabarito oficial é:<br><span class="underline mt-1 inline-block">${correct}</span>`;
+  }
+
+  document.getElementById("nextReviewBtn").classList.remove("hidden");
+}
+
+// =========================================================================
+// MODO 2: DUELO ONLINE 1 vs 1 POR CONVITE ENTRE CELULARES
+// =========================================================================
+
+function populateDuelOpponentList() {
+  const select = document.getElementById("duelOpponentSelect");
+  if (!select) return;
+  const currentVal = select.value;
+
+  const list = Object.entries(users)
+    .filter(([k, u]) => u && u.name && !u._deleted && k !== currentUserKey)
+    .sort((a, b) => a[1].name.localeCompare(b[1].name));
+
+  select.innerHTML = `<option value="">Selecione quem você quer desafiar...</option>` +
+    list.map(([k, u]) => `<option value="${k}">${u.avatar || '🍔'} ${u.name} (${u.role || 'Atendente'})</option>`).join("");
+
+  if (currentVal && users[currentVal]) select.value = currentVal;
+}
+
+function sendLiveDuelInvite() {
+  if (!currentUserKey || !users[currentUserKey]) {
+    return alert("Faça login na sua conta antes de desafiar alguém!");
+  }
+  const targetKey = document.getElementById("duelOpponentSelect").value;
+  if (!targetKey || !users[targetKey]) {
+    return alert("Selecione na lista qual colega da loja você quer convidar para o duelo!");
+  }
+
+  const me = users[currentUserKey];
+  const opp = users[targetKey];
+  const duelId = "duel_" + Date.now() + "_" + Math.random().toString(16).substring(2, 6);
+
+  activeDuel = {
+    duelId: duelId,
+    isHost: true,
+    hostKey: currentUserKey,
+    hostName: me.name,
+    hostAvatar: me.avatar || "🍔",
+    guestKey: targetKey,
+    guestName: opp.name,
+    guestAvatar: opp.avatar || "🍟",
+    scoreHost: 0,
+    scoreGuest: 0,
+    round: 0,
+    status: "waiting"
+  };
+
+  // Abre modal de espera no celular de quem convidou
+  openDuelArenaUI();
+  document.getElementById("duelWaitingBox").classList.remove("hidden");
+  document.getElementById("duelQuestionArea").classList.add("hidden");
+  document.getElementById("duelWinnerBox").classList.add("hidden");
+  document.getElementById("duelWaitingText").textContent = `Convite enviado! Aguardando ${opp.name} aceitar no celular dele(a)...`;
+
+  publishDuelPacket({
+    type: "invite",
+    duelId: duelId,
+    hostKey: currentUserKey,
+    hostName: me.name,
+    hostAvatar: me.avatar || "🍔",
+    guestKey: targetKey,
+    guestName: opp.name,
+    guestAvatar: opp.avatar || "🍟"
+  });
+}
+
+function sendDuelInviteWhatsApp() {
+  if (!activeDuel) return;
+  const link = `${window.location.origin}${window.location.pathname}`;
+  const text = `⚔️ *DESAFIO 1 vs 1 — OLIMPÍADAS DO BÁSICO*\n🔥 *${activeDuel.hostName}* está te chamando para um Duelo ao vivo agora!\n\n📲 Abra o aplicativo para aceitar o convite: ${link}`;
+  window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
+}
+
+function handleIncomingDuelPacket(pkt) {
+  if (!pkt || !pkt.type) return;
+
+  // 1. Recebeu convite de duelo no próprio celular
+  if (pkt.type === "invite" && pkt.guestKey === currentUserKey) {
+    if (activeDuel) return; // Já está em duelo
+    pendingDuelInvite = pkt;
+    document.getElementById("inviteFromNameDisplay").textContent = `${pkt.hostAvatar || '🍔'} ${pkt.hostName}`;
+    document.getElementById("duelInvitePopup").classList.remove("hidden");
+    return;
+  }
+
+  if (!activeDuel || pkt.duelId !== activeDuel.duelId) return;
+
+  // 2. O convidado recusou
+  if (pkt.type === "decline") {
+    alert(`❌ ${activeDuel.guestName} recusou o convite de duelo no momento.`);
+    leaveActiveDuel(false);
+    return;
+  }
+
+  // 3. O convidado aceitou -> O Host sorteia a 1ª pergunta!
+  if (pkt.type === "accept" && activeDuel.isHost && activeDuel.status === "waiting") {
+    activeDuel.status = "playing";
+    hostStartNextDuelRound();
+    return;
+  }
+
+  // 4. Nova pergunta recebida na Arena
+  if (pkt.type === "question") {
+    activeDuel.status = "playing";
+    activeDuel.round = pkt.round;
+    activeDuel.scoreHost = pkt.scoreHost;
+    activeDuel.scoreGuest = pkt.scoreGuest;
+    activeDuel.currentQuestion = pkt.question;
+    activeDuel.roundResolved = false;
+    activeDuel.lockedPlayers = {};
+    renderDuelRoundUI();
+    return;
+  }
+
+  // 5. Algum dos dois jogadores respondeu na rodada
+  if (pkt.type === "answer" && activeDuel.status === "playing" && !activeDuel.roundResolved) {
+    if (pkt.isCorrect) {
+      activeDuel.roundResolved = true;
+      if (pkt.playerKey === activeDuel.hostKey) {
+        activeDuel.scoreHost++;
+      } else {
+        activeDuel.scoreGuest++;
+      }
+      updateDuelScoreboardUI();
+      showDuelBanner(`⚡ ${pkt.playerName} acertou primeiro e marcou +1 ponto!`, "emerald");
+
+      if (activeDuel.isHost) {
+        setTimeout(() => {
+          if (!activeDuel) return;
+          if (activeDuel.scoreHost >= 5 || activeDuel.scoreGuest >= 5) {
+            const winnerName = activeDuel.scoreHost >= 5 ? activeDuel.hostName : activeDuel.guestName;
+            publishDuelPacket({
+              type: "finish",
+              duelId: activeDuel.duelId,
+              winnerName: winnerName,
+              scoreHost: activeDuel.scoreHost,
+              scoreGuest: activeDuel.scoreGuest
+            });
+          } else {
+            hostStartNextDuelRound();
+          }
+        }, 1900);
+      }
+    } else {
+      // Jogador errou -> Trava para ele e avisa o oponente
+      activeDuel.lockedPlayers[pkt.playerKey] = true;
+      if (pkt.playerKey === currentUserKey) {
+        showDuelBanner(`❌ Você errou! Aguardando tentativa de ${pkt.playerKey === activeDuel.hostKey ? activeDuel.guestName : activeDuel.hostName}...`, "red");
+      } else {
+        showDuelBanner(`🔥 ${pkt.playerName} errou! Responda com calma para ganhar o ponto!`, "amber");
+      }
+
+      // Se ambos erraram na mesma rodada, avança para a próxima pergunta
+      if (activeDuel.lockedPlayers[activeDuel.hostKey] && activeDuel.lockedPlayers[activeDuel.guestKey]) {
+        activeDuel.roundResolved = true;
+        showDuelBanner(`😅 Nenhum dos dois acertou! Próxima pergunta...`, "red");
+        if (activeDuel.isHost) {
+          setTimeout(() => {
+            if (activeDuel) hostStartNextDuelRound();
+          }, 1900);
+        }
+      }
+    }
+    return;
+  }
+
+  // 6. Fim da partida
+  if (pkt.type === "finish") {
+    activeDuel.scoreHost = pkt.scoreHost;
+    activeDuel.scoreGuest = pkt.scoreGuest;
+    updateDuelScoreboardUI();
+    document.getElementById("duelQuestionArea").classList.add("hidden");
+    document.getElementById("duelWinnerBox").classList.remove("hidden");
+    document.getElementById("duelWinnerTitle").textContent = `🏆 ${pkt.winnerName} Venceu!`;
+    document.getElementById("duelWinnerSub").textContent = `Placar Final: ${activeDuel.hostName} (${pkt.scoreHost}) x (${pkt.scoreGuest}) ${activeDuel.guestName}`;
+    return;
+  }
+
+  // 7. Oponente saiu da partida
+  if (pkt.type === "leave" && pkt.playerKey !== currentUserKey) {
+    alert("O seu oponente saiu da Arena de Duelo.");
+    leaveActiveDuel(false);
+  }
+}
+
+function acceptDuelInvite() {
+  if (!pendingDuelInvite) return;
+  document.getElementById("duelInvitePopup").classList.add("hidden");
+
+  activeDuel = {
+    duelId: pendingDuelInvite.duelId,
+    isHost: false,
+    hostKey: pendingDuelInvite.hostKey,
+    hostName: pendingDuelInvite.hostName,
+    hostAvatar: pendingDuelInvite.hostAvatar || "🍔",
+    guestKey: pendingDuelInvite.guestKey,
+    guestName: pendingDuelInvite.guestName,
+    guestAvatar: pendingDuelInvite.guestAvatar || "🍟",
+    scoreHost: 0,
+    scoreGuest: 0,
+    round: 0,
+    status: "playing"
+  };
+  pendingDuelInvite = null;
+
+  openDuelArenaUI();
+  document.getElementById("duelWaitingBox").classList.remove("hidden");
+  document.getElementById("duelWaitingText").textContent = "Conectando e sorteando a 1ª pergunta...";
+
+  publishDuelPacket({
+    type: "accept",
+    duelId: activeDuel.duelId
+  });
+}
+
+function declineDuelInvite() {
+  if (!pendingDuelInvite) return;
+  document.getElementById("duelInvitePopup").classList.add("hidden");
+  publishDuelPacket({
+    type: "decline",
+    duelId: pendingDuelInvite.duelId
+  });
+  pendingDuelInvite = null;
+}
+
+function openDuelArenaUI() {
+  if (!activeDuel) return;
+  document.getElementById("duelArenaModal").classList.remove("hidden");
+  updateDuelScoreboardUI();
+}
+
+function updateDuelScoreboardUI() {
+  if (!activeDuel) return;
+  document.getElementById("duelP1Avatar").textContent = activeDuel.hostAvatar;
+  document.getElementById("duelP1Name").textContent = activeDuel.hostName;
+  document.getElementById("duelP1Score").textContent = activeDuel.scoreHost;
+
+  document.getElementById("duelP2Avatar").textContent = activeDuel.guestAvatar;
+  document.getElementById("duelP2Name").textContent = activeDuel.guestName;
+  document.getElementById("duelP2Score").textContent = activeDuel.scoreGuest;
+  document.getElementById("duelRoundBadge").textContent = `Rodada #${activeDuel.round || 1}`;
+}
+
+function hostStartNextDuelRound() {
+  if (!activeDuel || !activeDuel.isHost) return;
+  const nextRound = (activeDuel.round || 0) + 1;
+  const randomItem = QUESTIONS_DB[Math.floor(Math.random() * QUESTIONS_DB.length)];
+  const shuffledOptions = [...randomItem.w, randomItem.a].sort(() => 0.5 - Math.random());
+
+  publishDuelPacket({
+    type: "question",
+    duelId: activeDuel.duelId,
+    round: nextRound,
+    scoreHost: activeDuel.scoreHost,
+    scoreGuest: activeDuel.scoreGuest,
+    question: {
+      id: randomItem.id,
+      level: randomItem.level,
+      q: randomItem.q,
+      a: randomItem.a,
+      options: shuffledOptions
+    }
+  });
+}
+
+function renderDuelRoundUI() {
+  if (!activeDuel || !activeDuel.currentQuestion) return;
+  document.getElementById("duelWaitingBox").classList.add("hidden");
+  document.getElementById("duelWinnerBox").classList.add("hidden");
+  document.getElementById("duelQuestionArea").classList.remove("hidden");
+  document.getElementById("duelStatusBanner").classList.add("hidden");
+
+  updateDuelScoreboardUI();
+
+  const qObj = activeDuel.currentQuestion;
+  document.getElementById("duelQuestionText").textContent = `(#${qObj.id}) ${qObj.q}`;
+
+  const letters = ["A", "B", "C", "D"];
+  const container = document.getElementById("duelOptionsContainer");
+  container.innerHTML = "";
+
+  qObj.options.forEach((optText, idx) => {
+    const letter = letters[idx];
+    const btn = document.createElement("button");
+    btn.className = "option-btn w-full text-left p-3.5 rounded-2xl font-bold text-xs flex items-center gap-3";
+    btn.innerHTML = `
+      <span class="w-7 h-7 rounded-xl subtle-box font-black text-xs flex items-center justify-center shrink-0">${letter}</span>
+      <span class="flex-1 leading-snug">${optText}</span>
+    `;
+    btn.onclick = () => submitDuelAnswer(btn, optText, qObj.a);
+    container.appendChild(btn);
+  });
+}
+
+function submitDuelAnswer(selectedBtn, chosen, correct) {
+  if (!activeDuel || activeDuel.roundResolved) return;
+  if (activeDuel.lockedPlayers && activeDuel.lockedPlayers[currentUserKey]) return;
+
+  const allBtns = document.querySelectorAll("#duelOptionsContainer button");
+  allBtns.forEach(b => b.disabled = true);
+
+  const isCorrect = (chosen === correct);
+  if (isCorrect) {
+    selectedBtn.className = "anim-pop-correct w-full text-left p-3.5 rounded-2xl border-2 border-emerald-500 bg-emerald-500/20 font-extrabold text-xs flex items-center gap-3";
+  } else {
+    selectedBtn.className = "anim-shake-wrong w-full text-left p-3.5 rounded-2xl border-2 border-red-500 bg-red-500/20 font-extrabold text-xs flex items-center gap-3";
+  }
+
+  const myName = (users[currentUserKey] && users[currentUserKey].name) || "Jogador";
+  publishDuelPacket({
+    type: "answer",
+    duelId: activeDuel.duelId,
+    playerKey: currentUserKey,
+    playerName: myName,
+    isCorrect: isCorrect
+  });
+}
+
+function showDuelBanner(msg, color) {
+  const banner = document.getElementById("duelStatusBanner");
+  banner.classList.remove("hidden");
+  if (color === "emerald") {
+    banner.className = "p-3 rounded-2xl text-xs font-extrabold text-center bg-emerald-500/20 text-emerald-500 border border-emerald-500/40";
+  } else if (color === "amber") {
+    banner.className = "p-3 rounded-2xl text-xs font-extrabold text-center bg-amber-500/20 text-amber-500 border border-amber-500/40";
+  } else {
+    banner.className = "p-3 rounded-2xl text-xs font-extrabold text-center bg-red-500/20 text-red-500 border border-red-500/40";
+  }
+  banner.textContent = msg;
+}
+
+function leaveActiveDuel(notifyOther = true) {
+  if (activeDuel && notifyOther) {
+    publishDuelPacket({
+      type: "leave",
+      duelId: activeDuel.duelId,
+      playerKey: currentUserKey
+    });
+  }
+  activeDuel = null;
+  document.getElementById("duelArenaModal").classList.add("hidden");
+}
+
+// =========================================================================
+// CORAÇÕES E CRONÔMETRO DE 10 MINUTOS DO SIMULADO
+// =========================================================================
+
+function getActiveHeartsLockUntil() {
+  if (currentUserKey && users[currentUserKey]) {
+    return users[currentUserKey].heartsLockUntil || 0;
+  }
+  return parseInt(localStorage.getItem("mequi_guest_hearts_lock") || "0", 10);
+}
+
+function setActiveHeartsState(heartsVal, lockUntilVal) {
+  currentHearts = heartsVal;
+  if (currentUserKey && users[currentUserKey]) {
+    users[currentUserKey].hearts = heartsVal;
+    users[currentUserKey].heartsLockUntil = lockUntilVal;
+    users[currentUserKey].updatedAt = Date.now();
+    localStorage.setItem(STORAGE_USERS_KEY, JSON.stringify(users));
+  } else {
+    localStorage.setItem("mequi_guest_hearts", String(heartsVal));
+    localStorage.setItem("mequi_guest_hearts_lock", String(lockUntilVal));
+  }
+  updateHeartsDisplay();
+}
+
+function syncActiveUserHeartsState() {
+  const now = Date.now();
+  let lockUntil = getActiveHeartsLockUntil();
+
+  if (currentUserKey && users[currentUserKey]) {
+    currentHearts = users[currentUserKey].hearts !== undefined ? users[currentUserKey].hearts : 5;
+  } else {
+    currentHearts = parseInt(localStorage.getItem("mequi_guest_hearts") || "5", 10);
+  }
+
+  if (lockUntil > 0 && now >= lockUntil) {
+    setActiveHeartsState(5, 0);
+    lockUntil = 0;
+  }
+
+  updateHeartsDisplay();
+  checkAndRenderCooldownScreen();
+}
+
+function formatTimeRemaining(ms) {
+  const totalSec = Math.max(0, Math.ceil(ms / 1000));
+  const m = Math.floor(totalSec / 60);
+  const s = totalSec % 60;
+  return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+}
+
+function checkAndRenderCooldownScreen() {
+  const lockUntil = getActiveHeartsLockUntil();
+  const now = Date.now();
+  const cooldownBox = document.getElementById("quizCooldownBox");
+  const activeArea = document.getElementById("quizActiveArea");
+  const timerDisplay = document.getElementById("cooldownTimerDisplay");
+
+  if (lockUntil > now) {
+    cooldownBox.classList.remove("hidden");
+    activeArea.classList.add("hidden");
+    timerDisplay.textContent = formatTimeRemaining(lockUntil - now);
+
+    if (!cooldownIntervalId) {
+      cooldownIntervalId = setInterval(() => {
+        const rem = getActiveHeartsLockUntil() - Date.now();
+        if (rem <= 0) {
+          clearInterval(cooldownIntervalId);
+          cooldownIntervalId = null;
+          setActiveHeartsState(5, 0);
+          cooldownBox.classList.add("hidden");
+          activeArea.classList.remove("hidden");
+          loadNextQuizQuestion();
+          if (currentUserKey) scheduleCloudSync(currentUserKey, true);
+        } else {
+          timerDisplay.textContent = formatTimeRemaining(rem);
+        }
+      }, 1000);
+    }
+    return true;
+  } else {
+    if (cooldownIntervalId) {
+      clearInterval(cooldownIntervalId);
+      cooldownIntervalId = null;
+    }
+    if (currentHearts <= 0) {
+      setActiveHeartsState(5, 0);
+    }
+    cooldownBox.classList.add("hidden");
+    activeArea.classList.remove("hidden");
+    return false;
+  }
+}
+
+function changeQuizLevelFilter() {
+  currentStreak = 0;
+  loadNextQuizQuestion();
+}
+
+function updateHeartsDisplay() {
+  const safeHearts = Math.max(0, Math.min(5, currentHearts));
+  const el = document.getElementById("quizHeartsInfo");
+  if (el) el.textContent = "❤️".repeat(safeHearts) + "🖤".repeat(5 - safeHearts);
+}
+
+function loadNextQuizQuestion() {
+  syncActiveUserHeartsState();
+  if (checkAndRenderCooldownScreen()) return;
+
+  const levelFilter = document.getElementById("quizLevelFilter").value;
+  const pool = levelFilter === "ALL" ? QUESTIONS_DB : QUESTIONS_DB.filter(item => item.level === levelFilter);
+  const randomItem = pool[Math.floor(Math.random() * pool.length)];
+  currentQuizQuestionId = randomItem.id;
+
+  document.getElementById("quizQuestionMeta").textContent = `Questão #${randomItem.id} • Nível ${randomItem.level}`;
+  document.getElementById("statStreakDisplay").textContent = `${currentStreak} 🔥`;
+  document.getElementById("quizQuestionText").textContent = randomItem.q;
+  document.getElementById("quizFeedback").classList.add("hidden");
+  document.getElementById("nextQuizBtn").classList.add("hidden");
+
+  const wrongChoices = (randomItem.w && randomItem.w.length === 3)
+    ? [...randomItem.w]
+    : QUESTIONS_DB.filter(item => item.id !== randomItem.id).sort(() => 0.5 - Math.random()).slice(0, 3).map(item => item.a);
+
+  const shuffledOptions = [...wrongChoices, randomItem.a].sort(() => 0.5 - Math.random());
+  const letters = ["A", "B", "C", "D"];
+  const container = document.getElementById("quizOptions");
+  container.innerHTML = "";
+
+  shuffledOptions.forEach((optText, idx) => {
+    const letter = letters[idx];
+    const btn = document.createElement("button");
+    btn.style.animationDelay = `${idx * 40}ms`;
+    btn.className = "option-btn w-full text-left p-3.5 rounded-2xl font-bold text-xs flex items-center gap-3";
+    btn.innerHTML = `
+      <span class="w-7 h-7 rounded-xl subtle-box font-black text-xs flex items-center justify-center shrink-0">${letter}</span>
+      <span class="flex-1 leading-snug">${optText}</span>
+    `;
+    btn.onclick = () => checkQuizAnswer(btn, optText, randomItem.a, letter);
+    container.appendChild(btn);
+  });
+}
+
+function checkQuizAnswer(selectedBtn, chosen, correct, letter) {
+  const allBtns = document.querySelectorAll("#quizOptions button");
+  allBtns.forEach(b => {
+    b.disabled = true;
+    if (b.innerText.includes(correct) && chosen !== correct) {
+      b.className = "w-full text-left p-3.5 rounded-2xl border-2 border-emerald-500 bg-emerald-500/15 font-extrabold text-xs flex items-center gap-3";
+    }
+  });
+
+  const fb = document.getElementById("quizFeedback");
+  fb.classList.remove("hidden");
+
+  if (chosen === correct) {
+    selectedBtn.className = "anim-pop-correct w-full text-left p-3.5 rounded-2xl border-2 border-emerald-500 bg-emerald-500/20 font-extrabold text-xs flex items-center gap-3 shadow-md";
+    currentStreak++;
+    if (currentUserKey && users[currentUserKey]) {
+      users[currentUserKey].correctAnswers = (users[currentUserKey].correctAnswers || 0) + 1;
+    }
+    addXp(25);
+    fb.className = "p-3.5 rounded-2xl text-xs font-extrabold bg-emerald-500/15 text-emerald-500 border border-emerald-500/30";
+    fb.textContent = `✅ Alternativa ${letter} Correta! Você ganhou +25 XP!`;
+    document.getElementById("nextQuizBtn").textContent = "PRÓXIMA PERGUNTA ➡️";
+    document.getElementById("nextQuizBtn").classList.remove("hidden");
+  } else {
+    selectedBtn.className = "anim-shake-wrong w-full text-left p-3.5 rounded-2xl border-2 border-red-500 bg-red-500/20 font-extrabold text-xs flex items-center gap-3";
+    currentStreak = 0;
+
+    // Salva automaticamente no Caderno "Revisar Minhas Dúvidas"
+    if (currentQuizQuestionId) {
+      recordMistakeQuestion(currentQuizQuestionId);
+    }
+
+    const newHearts = Math.max(0, currentHearts - 1);
+
+    if (newHearts <= 0) {
+      const lockUntil = Date.now() + HEARTS_COOLDOWN_MS;
+      setActiveHeartsState(0, lockUntil);
+      if (currentUserKey) scheduleCloudSync(currentUserKey, true);
+
+      fb.className = "p-3.5 rounded-2xl text-xs font-extrabold bg-red-500/15 text-red-500 border border-red-500/30";
+      fb.innerHTML = `💔 <strong>Você perdeu todos os seus 5 corações!</strong><br>O gabarito oficial era: <span class="underline">${correct}</span>.<br><span class="mt-1 inline-block">⏳ Aguarde 10 minutos (ou revise suas dúvidas abaixo)!</span>`;
+      document.getElementById("nextQuizBtn").textContent = "VER CRONÔMETRO DE RECARGA (10 MIN) ⏳";
+      document.getElementById("nextQuizBtn").classList.remove("hidden");
+    } else {
+      setActiveHeartsState(newHearts, 0);
+      if (currentUserKey) scheduleCloudSync(currentUserKey, false);
+
+      fb.className = "p-3.5 rounded-2xl text-xs font-extrabold bg-red-500/15 text-red-500 border border-red-500/30";
+      fb.innerHTML = `❌ Quase! Você perdeu 1 coração (Restam ${newHearts} ❤️) e a questão foi salva em <strong>Minhas Dúvidas</strong>.<br>Gabarito: <span class="underline mt-1 inline-block">${correct}</span>`;
+      document.getElementById("nextQuizBtn").textContent = "PRÓXIMA PERGUNTA ➡️";
+      document.getElementById("nextQuizBtn").classList.remove("hidden");
+    }
+  }
+
+  document.getElementById("statStreakDisplay").textContent = `${currentStreak} 🔥`;
+}
+
+// FLASHCARDS 3D FLIP
+function loadRandomFlashcard() {
+  const inner = document.getElementById("fcFlipInner");
+  if (!inner) return;
+  inner.classList.remove("is-flipped");
+  setTimeout(() => {
+    const item = QUESTIONS_DB[Math.floor(Math.random() * QUESTIONS_DB.length)];
+    document.getElementById("fcMeta").textContent = `Questão #${item.id} (${item.level}) • Toque para girar 3D 🔄`;
+    document.getElementById("fcQuestion").textContent = item.q;
+    document.getElementById("fcAnswer").textContent = item.a;
+  }, 150);
+}
+
+function flipFlashcard() {
+  const inner = document.getElementById("fcFlipInner");
+  if (inner) inner.classList.toggle("is-flipped");
+}
+
+// BOOK COMPLETO
+function debouncedBookSearch() {
+  clearTimeout(searchDebounceTimer);
+  searchDebounceTimer = setTimeout(() => {
+    renderBookList();
+  }, 150);
+}
+
+function setBookFilter(level) {
+  currentBookFilter = level;
+  ["ALL", "Básico", "Intermediário", "Avançado"].forEach(lvl => {
+    const btn = document.getElementById(`filter-${lvl}`);
+    if (btn) {
+      btn.className = lvl === level
+        ? "px-3.5 py-1.5 rounded-xl text-xs font-extrabold bg-red-600 text-white shadow-sm shrink-0 btn-tap"
+        : "px-3.5 py-1.5 rounded-xl text-xs font-extrabold subtle-box shrink-0 btn-tap";
+    }
+  });
+  renderBookList();
+}
+
+function renderBookList() {
+  const search = document.getElementById("searchBookInput").value.toLowerCase();
+  const container = document.getElementById("bookQuestionsContainer");
+
+  const filtered = QUESTIONS_DB.filter(item => {
+    const matchesLevel = currentBookFilter === "ALL" || item.level === currentBookFilter;
+    const matchesText = !search || item.q.toLowerCase().includes(search) || item.a.toLowerCase().includes(search) || String(item.id).includes(search);
+    return matchesLevel && matchesText;
+  });
+
+  document.getElementById("bookCountBadge").textContent = `${filtered.length} questões`;
+
+  container.innerHTML = filtered.map(item => `
+    <div class="pro-card rounded-2xl p-4">
+      <div class="flex items-center justify-between mb-1.5">
+        <span class="text-[10px] font-black px-2.5 py-0.5 rounded-full bg-red-500/10 text-red-500 border border-red-500/20">Questão #${item.id} • ${item.level}</span>
+        <button onclick="revealBookAnswer(this)" class="text-[11px] font-extrabold text-amber-500 hover:underline btn-tap">Ver Resposta</button>
+      </div>
+      <p class="font-extrabold text-xs leading-relaxed">${item.q}</p>
+      <p class="hidden mt-2.5 pt-2.5 border-t border-slate-500/20 text-xs font-bold text-emerald-500">✅ ${item.a}</p>
+    </div>
+  `).join("");
+}
+
+function revealBookAnswer(btn) {
+  const answerEl = btn.parentElement.nextElementSibling.nextElementSibling;
+  if (answerEl.classList.contains("hidden")) {
+    answerEl.classList.remove("hidden");
+    btn.textContent = "Ocultar";
+  } else {
+    answerEl.classList.add("hidden");
+    btn.textContent = "Ver Resposta";
+  }
+}
+
+// PÓDIO 3D + RANKING GERAL
+function renderLeaderboard() {
+  const podiumContainer = document.getElementById("podiumTop3Container");
+  const container = document.getElementById("leaderboardContainer");
+  const list = Object.values(users).filter(u => u && u.name && !u._deleted).sort((a, b) => (b.xp || 0) - (a.xp || 0));
+
+  if (list.length === 0) {
+    if (podiumContainer) podiumContainer.innerHTML = "";
+    if (container) container.innerHTML = `<div class="p-6 text-center text-xs font-bold text-muted-pro subtle-box rounded-2xl border-dashed">Nenhum colaborador cadastrado ainda. Crie sua conta para estrear o Pódio!</div>`;
+    return;
+  }
+
+  const first = list[0];
+  const second = list[1] || null;
+  const third = list[2] || null;
+
+  if (podiumContainer) {
+    podiumContainer.innerHTML = `
+      <div class="flex flex-col items-center">
+        ${second ? `
+          <div class="w-11 h-11 rounded-2xl subtle-box flex items-center justify-center text-xl shadow border-2 border-slate-300 mb-1">${second.avatar || '🍟'}</div>
+          <p class="font-black text-[10px] text-center truncate w-full px-1">${second.name}</p>
+          <span class="text-[10px] font-extrabold text-red-500">${second.xp || 0} XP</span>
+          <div class="w-full h-16 mt-2 rounded-t-2xl bg-gradient-to-b from-slate-300 to-slate-400 text-slate-900 flex flex-col items-center justify-center font-black shadow-inner">
+            <span class="text-lg">🥈</span>
+            <span class="text-[10px]">2º Lugar</span>
+          </div>
+        ` : `<div class="w-full h-16 mt-10 rounded-t-2xl subtle-box opacity-40 flex items-center justify-center text-xs font-bold">2º</div>`}
+      </div>
+
+      <div class="flex flex-col items-center">
+        <span class="text-lg mb-0.5 float-slow">👑 ☕</span>
+        <div class="w-14 h-14 rounded-2xl gold-gradient text-slate-950 flex items-center justify-center text-2xl shadow-lg border-2 border-white mb-1">${first.avatar || '🍔'}</div>
+        <p class="font-black text-xs text-center truncate w-full px-1">${first.name}</p>
+        <span class="text-[11px] font-black text-amber-500">${first.xp || 0} XP</span>
+        <div class="w-full h-24 mt-2 rounded-t-2xl gold-gradient text-slate-950 flex flex-col items-center justify-center font-black shadow-lg border-t-2 border-white">
+          <span class="text-2xl">🥇</span>
+          <span class="text-[11px] uppercase tracking-wider">1º Lugar</span>
+        </div>
+      </div>
+
+      <div class="flex flex-col items-center">
+        ${third ? `
+          <div class="w-11 h-11 rounded-2xl subtle-box flex items-center justify-center text-xl shadow border-2 border-amber-700/50 mb-1">${third.avatar || '🍦'}</div>
+          <p class="font-black text-[10px] text-center truncate w-full px-1">${third.name}</p>
+          <span class="text-[10px] font-extrabold text-red-500">${third.xp || 0} XP</span>
+          <div class="w-full h-14 mt-2 rounded-t-2xl bg-gradient-to-b from-amber-600 to-amber-800 text-white flex flex-col items-center justify-center font-black shadow-inner">
+            <span class="text-base">🥉</span>
+            <span class="text-[10px]">3º Lugar</span>
+          </div>
+        ` : `<div class="w-full h-14 mt-12 rounded-t-2xl subtle-box opacity-40 flex items-center justify-center text-xs font-bold">3º</div>`}
+      </div>
+    `;
+  }
+
+  if (container) {
+    container.innerHTML = list.map((u, idx) => {
+      const medal = idx === 0 ? "🥇 ☕" : idx === 1 ? "🥈" : idx === 2 ? "🥉" : `${idx + 1}º`;
+      const info = getLevelInfo(u.xp || 0);
+      const avatar = u.avatar || "🍔";
+      const role = u.role || u.station || "Atendente";
+      return `
+        <div class="flex items-center justify-between p-3.5 rounded-2xl ${idx === 0 ? 'bg-amber-500/15 border-2 border-amber-500/50 shadow-sm' : 'subtle-box'}">
+          <div class="flex items-center gap-3">
+            <span class="font-black text-xs w-7 text-center">${medal}</span>
+            <div class="w-10 h-10 rounded-2xl pro-card flex items-center justify-center text-xl shrink-0">
+              ${avatar}
+            </div>
+            <div>
+              <div class="flex items-center gap-1.5 flex-wrap">
+                <p class="font-black text-xs">${u.name}</p>
+                <span class="text-[9px] font-extrabold px-2 py-0.5 rounded-full bg-red-500/15 text-red-500 uppercase">${role}</span>
+              </div>
+              <p class="text-[10px] text-muted-pro font-bold mt-0.5">${info.title}</p>
+            </div>
+          </div>
+          <div class="text-right shrink-0">
+            <span class="font-black text-xs text-red-500">${u.xp || 0} XP</span>
+            <span class="block text-[10px] text-muted-pro font-semibold">${u.correctAnswers || 0} acertos</span>
+          </div>
+        </div>
+      `;
+    }).join("");
+  }
+}
+
+function shareMyScoreWhatsApp() {
+  if (!currentUserKey || !users[currentUserKey]) return;
+  const u = users[currentUserKey];
+  const info = getLevelInfo(u.xp || 0);
+  const encodedUser = btoa(encodeURIComponent(JSON.stringify(u)));
+  const syncUrl = `${window.location.origin}${window.location.pathname}?syncUser=${encodeURIComponent(encodedUser)}`;
+  const text = `🏆 *OLIMPÍADAS DO BÁSICO — VENTURE*\n${u.avatar || '🍔'} Colaborador: *${u.name}*\n🎖️ Cargo: ${u.role || 'Atendente'}\n⚡ Pontuação: *${u.xp || 0} XP* (${info.title})\n✅ Acertos: ${u.correctAnswers || 0}\n\n🔗 *Link de Sincronia no Ranking:* ${syncUrl}`;
+  window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
+}
+
+// PAINEL ADM (SENHA: 342005)
+function unlockAdminPanel() {
+  const pass = document.getElementById("adminPassInput").value.trim();
+  const err = document.getElementById("adminAuthError");
+  if (pass === ADMIN_SECRET_PASS) {
+    isAdminUnlocked = true;
+    err.classList.add("hidden");
+    document.getElementById("adminLockScreen").classList.add("hidden");
+    document.getElementById("adminDashboard").classList.remove("hidden");
+    renderAdminUsersList();
+    fetchCloudHistorySafe(true);
+  } else {
+    err.classList.remove("hidden");
+  }
+}
+
+function lockAdminPanel() {
+  isAdminUnlocked = false;
+  document.getElementById("adminPassInput").value = "";
+  document.getElementById("adminDashboard").classList.add("hidden");
+  document.getElementById("adminLockScreen").classList.remove("hidden");
+}
+
+function renderAdminUsersList() {
+  const container = document.getElementById("adminUsersList");
+  const entries = Object.entries(users).filter(([k, u]) => u && u.name && !u._deleted).sort((a, b) => (b[1].xp || 0) - (a[1].xp || 0));
+  document.getElementById("adminStatsSummary").textContent = `Total: ${entries.length} colaborador(es) cadastrado(s)`;
+
+  if (entries.length === 0) {
+    container.innerHTML = `<p class="text-xs text-muted-pro text-center py-4 font-bold">Nenhum colaborador cadastrado.</p>`;
+    return;
+  }
+
+  const now = Date.now();
+  container.innerHTML = entries.map(([key, u], index) => {
+    const lvl = getLevelInfo(u.xp || 0).level;
+    const role = u.role || u.station || "Atendente";
+    const isLocked = (u.heartsLockUntil || 0) > now;
+    const heartsBadge = isLocked
+      ? `<span class="text-[10px] font-bold text-red-500">⏳ Bloqueado (${formatTimeRemaining(u.heartsLockUntil - now)})</span>`
+      : `<span class="text-[10px] font-bold text-emerald-500">${u.hearts !== undefined ? u.hearts : 5} ❤️ disponíveis</span>`;
+
+    return `
+      <div class="p-4 rounded-2xl subtle-box space-y-3">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2.5">
+            <span class="text-2xl pro-card p-2 rounded-xl">${u.avatar || '🍔'}</span>
+            <div>
+              <span class="text-[10px] font-black px-2 py-0.5 rounded-full bg-slate-900 text-[#FFC72C]">#${index + 1} • Nível ${lvl} • ${role}</span>
+              <h4 class="font-black text-xs mt-1">${u.name}</h4>
+              <p class="text-[11px] text-muted-pro font-semibold">🔑 Senha: <span class="font-extrabold">${u.password || '1234'}</span> • ${heartsBadge}</p>
+            </div>
+          </div>
+          <div class="text-right">
+            <span class="text-sm font-black text-red-500">${u.xp || 0} XP</span>
+            <span class="block text-[10px] text-muted-pro font-bold">${u.correctAnswers || 0} acertos</span>
+          </div>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-1.5 pt-2 border-t border-slate-500/20">
+          <button onclick="adminAdjustXp('${key}', 100)" class="px-2.5 py-1.5 rounded-xl bg-emerald-600 text-white font-black text-[10px] btn-tap">+100 XP</button>
+          <button onclick="adminAdjustXp('${key}', 500)" class="px-2.5 py-1.5 rounded-xl bg-emerald-800 text-white font-black text-[10px] btn-tap">+500 XP</button>
+          <button onclick="adminAdjustXp('${key}', -100)" class="px-2.5 py-1.5 rounded-xl bg-amber-600 text-white font-black text-[10px] btn-tap">-100 XP</button>
+          <button onclick="adminSetCustomXp('${key}')" class="px-2.5 py-1.5 rounded-xl bg-blue-600 text-white font-black text-[10px] btn-tap">✏️ Definir XP</button>
+          <button onclick="adminRestoreHearts('${key}')" class="px-2.5 py-1.5 rounded-xl bg-pink-600 text-white font-black text-[10px] btn-tap">❤️ Restaurar Vidas</button>
+          <button onclick="adminResetUser('${key}')" class="px-2.5 py-1.5 rounded-xl bg-slate-500/20 font-bold text-[10px] btn-tap">Zerar</button>
+          <button onclick="adminDeleteUser('${key}')" class="px-2.5 py-1.5 rounded-xl bg-red-500/20 text-red-500 font-bold text-[10px] ml-auto btn-tap">🗑️ Excluir</button>
+        </div>
+      </div>
+    `;
+  }).join("");
+}
+
+function adminRestoreHearts(key) {
+  if (!users[key]) return;
+  users[key].hearts = 5;
+  users[key].heartsLockUntil = 0;
+  users[key].updatedAt = Date.now();
+  users[key].adminOverrideAt = Date.now();
+  if (key === currentUserKey) {
+    setActiveHeartsState(5, 0);
+    checkAndRenderCooldownScreen();
+    loadNextQuizQuestion();
+  }
+  scheduleCloudSync(key, true);
+  renderAdminUsersList();
+}
+
+function adminAdjustXp(key, delta) {
+  if (!users[key]) return;
+  users[key].xp = Math.max(0, (users[key].xp || 0) + delta);
+  users[key].updatedAt = Date.now();
+  users[key].adminOverrideAt = Date.now();
+  scheduleCloudSync(key, true);
+}
+
+function adminSetCustomXp(key) {
+  if (!users[key]) return;
+  const val = prompt(`Digite o novo valor exato de XP para ${users[key].name}:`, users[key].xp || 0);
+  if (val === null) return;
+  const parsed = parseInt(val, 10);
+  if (!isNaN(parsed)) {
+    users[key].xp = Math.max(0, parsed);
+    users[key].updatedAt = Date.now();
+    users[key].adminOverrideAt = Date.now();
+    scheduleCloudSync(key, true);
+  }
+}
+
+function adminResetUser(key) {
+  if (!users[key]) return;
+  if (!confirm(`Zerar o XP e os acertos de ${users[key].name}?`)) return;
+  users[key].xp = 0;
+  users[key].correctAnswers = 0;
+  users[key].hearts = 5;
+  users[key].heartsLockUntil = 0;
+  users[key].updatedAt = Date.now();
+  users[key].adminOverrideAt = Date.now();
+  scheduleCloudSync(key, true);
+}
+
+function adminDeleteUser(key) {
+  if (!users[key]) return;
+  if (!confirm(`Excluir permanentemente ${users[key].name} do Ranking?`)) return;
+  users[key]._deleted = true;
+  users[key].updatedAt = Date.now();
+  users[key].adminOverrideAt = Date.now();
+  scheduleCloudSync(key, true);
+}
+
+function adminSaveMember() {
+  const name = document.getElementById("admNewName").value.trim().toUpperCase();
+  const role = document.getElementById("admNewRole").value;
+  const pass = document.getElementById("admNewPass").value.trim() || "1234";
+  const xp = parseInt(document.getElementById("admNewXp").value || "0", 10);
+  const hits = parseInt(document.getElementById("admNewHits").value || "0", 10);
+
+  if (!name) return alert("Digite o nome do colaborador!");
+  const key = name.toLowerCase();
+
+  users[key] = {
+    name: name,
+    role: role,
+    avatar: users[key]?.avatar || "🍔",
+    password: pass,
+    xp: Math.max(0, xp),
+    correctAnswers: Math.max(0, hits),
+    hearts: 5,
+    heartsLockUntil: 0,
+    mistakes: users[key]?.mistakes || [],
+    updatedAt: Date.now(),
+    adminOverrideAt: Date.now()
+  };
+
+  scheduleCloudSync(key, true);
+
+  document.getElementById("admNewName").value = "";
+  document.getElementById("admNewPass").value = "";
+  document.getElementById("admNewXp").value = "";
+  document.getElementById("admNewHits").value = "";
+  alert(`Colaborador ${name} (${role}) salvo com sucesso!`);
+}
+
+function switchMainTab(tab) {
+  ["quiz", "book", "prizes", "admin", "updates"].forEach(t => {
+    document.getElementById(`tab-${t}`).classList.add("hidden");
+    const navEl = document.getElementById(`nav-${t}`);
+    if (navEl) navEl.className = "nav-btn flex flex-col items-center py-1.5 rounded-2xl font-bold text-[10px]";
+  });
+  document.getElementById(`tab-${tab}`).classList.remove("hidden");
+  const activeNav = document.getElementById(`nav-${tab}`);
+  if (activeNav) activeNav.className = "nav-btn active-nav flex flex-col items-center py-1.5 rounded-2xl text-[10px]";
+  if (tab === "prizes" || tab === "admin") fetchCloudHistorySafe(false);
+}
+
+window.onload = () => {
+  initTheme();
+  rescuePreviousLocalRegistrations();
+  renderAvatarSelector();
+  syncActiveUserHeartsState();
+  loadNextQuizQuestion();
+  loadRandomFlashcard();
+  renderBookList();
+  refreshUIIfNeeded();
+
+  if (currentUserKey && users[currentUserKey] && !users[currentUserKey]._deleted) {
+    document.getElementById("authModal").classList.add("hidden");
+    updateHeaderUI();
+  }
+
+  initClusterSync();
+  fetchCloudHistorySafe(true);
+};
