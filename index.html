@@ -7,49 +7,50 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="Olimpíadas Méqui" />
-  <title>Olimpíadas do Básico — Venture v7.6</title>
+  <title>Olimpíadas do Básico — Venture v7.5</title>
 
   <!-- Favicon Oficial: Arcos Dourados em Vetor SVG -->
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='24' fill='%23DA291C'/%3E%3Cpath fill='%23FFC72C' d='M50 46c-3.6-13.8-10.8-23.5-19.6-23.5-12 0-21.6 18.5-21.6 52.5h9.1c0-26.4 6.4-42.8 12.5-42.8 6 0 12 17.6 12.5 42.8H50zm0 0c3.6-13.8 10.8-23.5 19.6-23.5 12 0 21.6 18.5 21.6 52.5h-9.1c0-26.4-6.4-42.8-12.5-42.8-6 0-12 17.6-12.5 42.8H50z'/%3E%3C/svg%3E" />
 
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+  <!-- Biblioteca para Print Automático em PNG -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css" />
 </head>
 <body class="min-h-screen pb-32">
 
-  <!-- Input invisível que abre a Galeria de Fotos do Celular ou pastas do PC -->
+  <!-- Input invisível para galeria / PC -->
   <input type="file" id="hiddenGalleryInput" accept="image/*" class="hidden" onchange="handleGalleryFileSelected(event)" />
 
   <div id="xpToastContainer"></div>
 
-  <!-- POP-UP DE CONVITE AO VIVO DE DUELO 1v1 -->
+  <!-- POP-UP DE CONVITE DE DUELO 1v1 -->
   <div id="duelInvitePopup" class="hidden fixed inset-0 bg-slate-950/85 backdrop-blur-md z-50 flex items-center justify-center p-4">
     <div class="pro-card rounded-[2rem] max-w-sm w-full p-6 text-center space-y-4 border-4 border-[#FFC72C] shadow-2xl">
       <div class="text-5xl float-slow">⚔️🔥</div>
-      <span class="bg-red-500/15 text-red-500 text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-wider">Convite de Duelo em Tempo Real</span>
+      <span class="bg-red-500/15 text-red-500 text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-wider">Convite de Duelo Ao Vivo</span>
       <h3 class="text-lg font-black"><span id="inviteFromNameDisplay">Colega</span> te desafiou!</h3>
       <p class="text-xs text-muted-pro font-semibold leading-relaxed">
-        Disputa 1 vs 1 ao vivo (Melhor de 5 pontos). Quem responder certo primeiro no próprio celular marca o ponto!
+        Disputa 1 vs 1 (Melhor de 5 pontos). Quem responder certo primeiro no próprio celular marca o ponto!
       </p>
       <div class="grid grid-cols-2 gap-2.5 pt-2">
         <button onclick="declineDuelInvite()" class="py-3 rounded-2xl subtle-box font-extrabold text-xs btn-tap">
           ❌ Recusar
         </button>
         <button onclick="acceptDuelInvite()" class="py-3 rounded-2xl text-slate-950 font-black text-xs btn-anim-yellow btn-shine">
-          ✅ ACEITAR DUELO
+          ✅ ACEITAR
         </button>
       </div>
     </div>
   </div>
 
-  <!-- MODAL DA ARENA DE DUELO 1 vs 1 AO VIVO -->
+  <!-- MODAL DA ARENA DE DUELO 1 vs 1 -->
   <div id="duelArenaModal" class="hidden fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 flex items-center justify-center p-4 overflow-y-auto">
     <div class="pro-card rounded-[2rem] max-w-md w-full p-5 border-2 border-[#FFC72C] shadow-2xl space-y-4 my-auto">
       <div class="flex items-center justify-between border-b border-slate-500/20 pb-3">
-        <span class="text-xs font-black text-amber-500 uppercase tracking-wider">⚔️ Arena 1 vs 1 Ao Vivo (Meta: 5 pts)</span>
+        <span class="text-xs font-black text-amber-500 uppercase tracking-wider">⚔️ Arena 1 vs 1 (Meta: 5 pts)</span>
         <button onclick="leaveActiveDuel()" class="text-xs font-extrabold text-red-500 bg-red-500/10 px-3 py-1 rounded-xl btn-tap">Sair ✕</button>
       </div>
 
@@ -95,60 +96,6 @@
     </div>
   </div>
 
-  <!-- MODAL DO SISTEMA DE COZINHA: MONTA-LANCHE (COMO FAZER OS LANCHES) -->
-  <div id="burgerBuilderModal" class="hidden fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 flex items-center justify-center p-4 overflow-y-auto">
-    <div class="pro-card rounded-[2rem] max-w-md w-full p-5 border-2 border-amber-500 shadow-2xl space-y-4 my-auto">
-      <div class="flex items-center justify-between border-b border-slate-500/20 pb-3">
-        <div>
-          <span class="text-[10px] font-black uppercase text-amber-500">Padrão Best Burger • Cozinha</span>
-          <h3 class="font-black text-sm">🍔 Monta-Lanche & Receitas Oficiais</h3>
-        </div>
-        <button onclick="closeBurgerModal()" class="text-xs font-extrabold text-muted-pro subtle-box px-3 py-1 rounded-xl btn-tap">Fechar ✕</button>
-      </div>
-
-      <!-- Escolha do Lanche -->
-      <div>
-        <label class="text-[11px] font-extrabold text-muted-pro block mb-1">Escolha o Lanche para Treinar ou Consultar:</label>
-        <select id="burgerRecipeSelect" onchange="selectBurgerRecipe()" class="w-full px-3.5 py-2.5 rounded-2xl subtle-box text-xs font-extrabold focus:outline-none focus:border-amber-500">
-          <option value="bigmac">🍔 Big Mac</option>
-          <option value="quarteirao">🧀 Quarteirão com Queijo</option>
-          <option value="cheeseburger">🍔 Cheeseburger</option>
-          <option value="mcnifico">🥓 McNífico Bacon</option>
-          <option value="bigtasty">🔥 Big Tasty</option>
-          <option value="saladamix">🥗 Salada Mix</option>
-        </select>
-      </div>
-
-      <!-- Abas: Modo Guia (Como Faz) vs Modo Desafio (Montar na Ordem) -->
-      <div class="flex rounded-2xl subtle-box p-1">
-        <button id="btnModeGuide" onclick="setBurgerMode('guide')" class="flex-1 py-2 rounded-xl text-xs font-extrabold bg-[#DA291C] text-white btn-tap">📖 Como Fazer (Ordem)</button>
-        <button id="btnModeGame" onclick="setBurgerMode('game')" class="flex-1 py-2 rounded-xl text-xs font-extrabold text-muted-pro btn-tap">🎮 Praticar Montagem</button>
-      </div>
-
-      <!-- MODO 1: GUIA DE RECEITA OFICIAL -->
-      <div id="burgerGuideArea" class="space-y-2.5">
-        <p class="text-[11px] text-muted-pro font-bold">Sequência oficial de condimentação e quantidades exatas:</p>
-        <div id="burgerGuideSteps" class="space-y-1.5 max-h-64 overflow-y-auto pr-1"></div>
-      </div>
-
-      <!-- MODO 2: JOGO INTERATIVO DE MONTAGEM -->
-      <div id="burgerGameArea" class="hidden space-y-3">
-        <div class="flex items-center justify-between text-xs font-extrabold">
-          <span id="burgerGameProgress" class="text-amber-500">Passo 1</span>
-          <button onclick="resetBurgerGame()" class="text-[11px] text-red-500 underline btn-tap">Reiniciar 🔄</button>
-        </div>
-
-        <div id="burgerTrayBuilt" class="min-h-[70px] p-3 rounded-2xl subtle-box border-2 border-dashed border-amber-500/40 flex flex-wrap gap-1.5 items-center justify-center text-xs font-bold">
-          <span class="text-muted-pro text-[11px]">Toque nos ingredientes abaixo na ordem correta!</span>
-        </div>
-
-        <div id="burgerGameFeedback" class="hidden p-2.5 rounded-xl text-xs font-extrabold text-center"></div>
-
-        <div id="burgerIngredientsPool" class="grid grid-cols-2 gap-2 pt-1"></div>
-      </div>
-    </div>
-  </div>
-
   <!-- MODAL DE REVISÃO DE DÚVIDAS -->
   <div id="reviewMistakesModal" class="hidden fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 flex items-center justify-center p-4 overflow-y-auto">
     <div class="pro-card rounded-[2rem] max-w-md w-full p-5 border-2 border-purple-500 shadow-2xl space-y-4 my-auto">
@@ -184,7 +131,7 @@
           </svg>
         </div>
         <h1 class="text-2xl font-black tracking-tight">OLIMPÍADAS DO BÁSICO</h1>
-        <p class="text-xs text-muted-pro font-semibold mt-0.5">Plataforma Oficial Venture • Versão 7.6 🏆</p>
+        <p class="text-xs text-muted-pro font-semibold mt-0.5">Plataforma Oficial Venture • Versão 7.5 🏆</p>
       </div>
 
       <div class="flex rounded-2xl subtle-box p-1.5 mb-5">
@@ -250,7 +197,7 @@
     </div>
   </div>
 
-  <!-- CABEÇALHO DO COLABORADOR COM SOM PARAPAPA E BOLINHA VERDE ONLINE -->
+  <!-- CABEÇALHO DO COLABORADOR COM BOLINHA VERDE ONLINE -->
   <header class="mc-gradient text-white pt-4 pb-5 px-4 rounded-b-[2.5rem] shadow-2xl sticky top-0 z-30 border-b-4 border-[#FFC72C]">
     <div class="max-w-xl mx-auto">
       <div class="flex items-center justify-between gap-2 mb-3">
@@ -259,7 +206,8 @@
             <button onclick="openAvatarModal()" title="Trocar Foto/Avatar" class="relative w-12 h-12 rounded-2xl gold-gradient text-slate-900 flex items-center justify-center text-2xl shadow-lg border-2 border-white btn-tap shrink-0 overflow-hidden">
               <span id="userAvatarDisplay" class="w-full h-full flex items-center justify-center">🍔</span>
             </button>
-            <span class="absolute -top-1 -right-1 w-3.5 h-3.5 bg-emerald-500 rounded-full border-2 border-white shadow animate-pulse" title="Você está Online"></span>
+            <!-- Bolinha Verde de Status Online -->
+            <span class="absolute -top-1 -right-1 w-3.5 h-3.5 bg-emerald-500 rounded-full border-2 border-white shadow animate-pulse"></span>
           </div>
           <div>
             <div class="flex items-center gap-1.5 flex-wrap">
@@ -271,10 +219,6 @@
         </div>
 
         <div class="flex items-center gap-1.5">
-          <!-- Botão para ouvir o Jingle Parapapa do Méqui -->
-          <button onclick="playMequiLevelUpSound()" title="Tocar Jingle Parapapa" class="bg-slate-950/30 hover:bg-slate-950/45 w-9 h-9 rounded-2xl flex items-center justify-center text-sm border border-white/15 btn-tap">
-            🎵
-          </button>
           <button onclick="toggleDarkMode()" id="themeToggleBtn" title="Alternar Tema" class="bg-slate-950/30 hover:bg-slate-950/45 w-9 h-9 rounded-2xl flex items-center justify-center text-sm border border-white/15 btn-tap">
             🌙
           </button>
@@ -300,7 +244,7 @@
 
   <main class="max-w-xl mx-auto px-4 mt-5">
 
-    <!-- ABA 1: SIMULADO + SISTEMA DE COZINHA (MONTA-LANCHE) + DUELO 1v1 + DÚVIDAS -->
+    <!-- ABA 1: SIMULADO INTERATIVO + DUELO + REVISÃO -->
     <section id="tab-quiz" class="space-y-4">
       <div class="grid grid-cols-3 gap-2.5">
         <div class="pro-card rounded-2xl p-3 text-center">
@@ -317,7 +261,7 @@
         </div>
       </div>
 
-      <!-- CARD PRINCIPAL DO SIMULADO -->
+      <!-- SIMULADO -->
       <div class="pro-card rounded-3xl p-5">
         <div class="flex flex-wrap items-center justify-between gap-2 mb-4 pb-3 border-b border-slate-200/50">
           <div>
@@ -348,7 +292,7 @@
             10:00
           </div>
           <p class="text-[11px] text-muted-pro font-bold pt-1">
-            💡 Enquanto recarrega, treine no <strong>Monta-Lanche da Cozinha</strong>, em <strong>Revisar Dúvidas</strong> ou no <strong>Duelo 1 vs 1</strong>!
+            💡 Enquanto recarrega, revise em <strong>Revisar Minhas Dúvidas</strong>, no <strong>Duelo 1 vs 1</strong> ou no <span class="text-red-500 underline cursor-pointer" onclick="switchMainTab('book')">Book Oficial</span>!
           </p>
         </div>
 
@@ -358,23 +302,6 @@
           <div id="quizFeedback" class="hidden p-3.5 rounded-2xl text-xs font-bold"></div>
           <button id="nextQuizBtn" onclick="loadNextQuizQuestion()" class="hidden w-full text-white font-black py-3.5 rounded-2xl btn-anim-red btn-shine text-xs tracking-wider">
             PRÓXIMA PERGUNTA ➡️
-          </button>
-        </div>
-      </div>
-
-      <!-- NOVO: SISTEMA DE COZINHA (COMO FAZER OS LANCHES / MONTA-LANCHE) -->
-      <div class="pro-card rounded-3xl p-5 border-2 border-red-500/30 space-y-3">
-        <div class="flex items-center justify-between gap-2">
-          <div class="flex items-center gap-3">
-            <div class="w-11 h-11 rounded-2xl mc-gradient text-[#FFC72C] flex items-center justify-center text-2xl font-black shrink-0 shadow">🍔</div>
-            <div>
-              <span class="text-[10px] font-black uppercase text-red-500">Treinamento de Linha & Condimentação</span>
-              <h3 class="font-black text-sm">Como Fazer os Lanches (Monta-Lanche)</h3>
-              <p class="text-[11px] text-muted-pro font-medium">Veja a receita passo a passo ou pratique a ordem dos ingredientes!</p>
-            </div>
-          </div>
-          <button onclick="openBurgerModal()" class="px-4 py-2.5 rounded-2xl text-white font-black text-xs shrink-0 btn-anim-red">
-            Abrir 🍔
           </button>
         </div>
       </div>
@@ -398,7 +325,7 @@
         </div>
       </div>
 
-      <!-- DUELO 1 vs 1 AO VIVO (COM BOLINHA VERDE ONLINE) -->
+      <!-- DUELO 1 vs 1 AO VIVO (COM STATUS ONLINE) -->
       <div class="pro-card rounded-3xl p-5 border-2 border-amber-500/40 space-y-3">
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-3">
@@ -406,7 +333,7 @@
             <div>
               <span class="text-[10px] font-black uppercase text-amber-500">Multiplayer em Tempo Real</span>
               <h3 class="font-black text-sm">Duelo 1 vs 1 (Convidar Colega)</h3>
-              <p class="text-[11px] text-muted-pro font-medium">Desafie quem estiver com a bolinha verde (🟢 Online) agora!</p>
+              <p class="text-[11px] text-muted-pro font-medium">Desafie quem estiver com a bolinha verde online na loja!</p>
             </div>
           </div>
         </div>
@@ -464,7 +391,7 @@
       <div id="bookQuestionsContainer" class="space-y-2.5"></div>
     </section>
 
-    <!-- ABA 3: RANKING + PÓDIO 3D + HISTÓRICO DE DUELOS + PRINT WHATSAPP -->
+    <!-- ABA 3: RANKING COM PÓDIO 3D + HISTÓRICO DE DUELOS + PRINT WHATSAPP -->
     <section id="tab-prizes" class="hidden space-y-4">
       <div class="mc-gradient text-white rounded-3xl p-5 shadow-xl relative overflow-hidden border-2 border-[#FFC72C]">
         <div class="flex items-center gap-4">
@@ -489,17 +416,22 @@
           </button>
         </div>
 
+        <!-- Pódio Top 3 -->
         <div id="podiumTop3Container" class="grid grid-cols-3 gap-2 items-end pt-4 pb-2"></div>
+
+        <!-- Lista Geral -->
         <div id="leaderboardContainer" class="space-y-2.5"></div>
       </div>
 
-      <!-- HISTÓRICO DE DUELOS 1 vs 1 (QUEM JOGOU E QUEM VENCEU) -->
+      <!-- HISTÓRICO RECENTE DE DUELOS 1 vs 1 (QUEM VENCEU E QUEM PERDEU) -->
       <div class="pro-card rounded-3xl p-5 space-y-3 border-2 border-amber-500/30">
         <div class="flex items-center justify-between">
-          <h3 class="font-black text-sm">⚔️ Histórico de Duelos 1 vs 1 (Quem Venceu)</h3>
-          <span class="text-[10px] font-extrabold text-amber-500 bg-amber-500/10 px-2.5 py-0.5 rounded-full">Arena Ao Vivo</span>
+          <h3 class="font-black text-sm">⚔️ Histórico Recente de Duelos 1 vs 1</h3>
+          <span class="text-[10px] font-extrabold text-amber-500 bg-amber-500/10 px-2.5 py-0.5 rounded-full">Placar Ao Vivo</span>
         </div>
-        <div id="duelHistoryContainer" class="space-y-2"></div>
+        <div id="duelHistoryContainer" class="space-y-2">
+          <div class="p-3 rounded-xl subtle-box text-xs text-center text-muted-pro">Nenhum duelo finalizado recentemente. Desafie alguém na aba Simulado!</div>
+        </div>
       </div>
 
       <!-- BOTÕES DE COMPARTILHAMENTO WHATSAPP -->
@@ -617,16 +549,16 @@
             <h2 class="font-black text-base">🚀 Histórico Completo de Versões</h2>
             <p class="text-[11px] text-muted-pro font-semibold">Todas as evoluções do aplicativo desde o lançamento</p>
           </div>
-          <span class="bg-red-500/15 text-red-500 text-xs font-black px-3 py-1 rounded-full">v7.6 Oficial</span>
+          <span class="bg-red-500/15 text-red-500 text-xs font-black px-3 py-1 rounded-full">v7.5 Oficial</span>
         </div>
 
-        <div class="border-l-4 border-[#FFC72C] pl-3.5 space-y-1">
-          <span class="text-[11px] font-extrabold text-amber-500 uppercase">Versão 7.6 • Atualização Atual (Jingle Parapapa + Monta-Lanche + Online)</span>
-          <h4 class="font-black text-sm">Som "Parapapa" ao Subir de Nível + Sistema de Cozinha + Bolinha Verde 🎵🍔🟢</h4>
+        <!-- Versão 7.5 -->
+        <div class="border-l-4 border-emerald-500 pl-3.5 space-y-1">
+          <span class="text-[11px] font-extrabold text-emerald-500 uppercase">Versão 7.5 • Atualização Atual (Status Online & Histórico de Duelos)</span>
+          <h4 class="font-black text-sm">Bolinha Verde Online (● On) + Histórico de Vencedores do 1v1 🟢⚔️</h4>
           <ul class="text-xs text-muted-pro list-disc list-inside space-y-1 pt-1">
-            <li><strong>Jingle Oficial "Parapapa" (Web Audio):</strong> Toca a melodia clássica do comercial do McDonald's automaticamente quando o colaborador sobe de nível.</li>
-            <li><strong>Sistema de Cozinha (Monta-Lanche):</strong> Guia de receitas e jogo interativo para treinar a sequência de montagem dos lanches.</li>
-            <li><strong>Bolinha Verde Online & Histórico 1v1:</strong> Veja quem está online em tempo real e confira no Ranking quem venceu os últimos duelos.</li>
+            <li><strong>Bolinha Verde de Status Online:</strong> Identifique em tempo real quem está com o aplicativo aberto na loja.</li>
+            <li><strong>Placar de Duelos 1 vs 1:</strong> Histórico detalhado na aba de Ranking mostrando quem desafiou, quem venceu e o placar final.</li>
           </ul>
         </div>
       </div>
