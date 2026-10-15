@@ -1,7 +1,6 @@
-
 /* =========================================================================
-   OLIMPÍADAS DO BÁSICO — VENTURE (script.js v7.6 COMPLETO)
-   Com Jingle Musical do McDonald's ("Pa-ra-pa-pa-pa") ao Subir de Nível
+   OLIMPÍADAS DO BÁSICO — VENTURE (script.js v7.6.1 COMPLETO UNIFICADO)
+   Áudio Destravado + Botão 🔊 + Jingle Méqui + Fotos + Print + 1v1 + 200 Questões
    ========================================================================= */
 
 const AVATAR_LIST = ["🍔", "🍟", "🍦", "🔥", "👨‍🍳", "👑", "⚡", "🏆", "🚀", "🥤", "🥓", "🎯"];
@@ -147,7 +146,7 @@ const QUESTIONS_DB = [
   { id: 139, level: "Intermediário", q: "Com quanto tempo de antecedência deve ser feito o plano de chão?", a: "48 horas.", w: ["24 horas.", "12 horas.", "72 horas."] },
   { id: 140, level: "Intermediário", q: "Qual é a promessa do fazer?", a: "Fazer bem, fazer rápido e fazer especial.", w: ["Fazer limpo, fazer quente e fazer barato.", "Olhar, servir e ativar no tempo certo.", "Limpar, lavar, enxaguar e sanitizar."] },
   { id: 141, level: "Intermediário", q: "Qual a condimentação e quantidades de ingredientes do Quarteirão?", a: "1/40 oz de mostarda, 1/2 oz de ketchup, 7 g de cebola fresca, 2 picles, 2 fatias de queijo em estrela, 1 carne 4:1.", w: ["1/40 oz de mostarda, 1/3 oz de ketchup, 3,5 g de cebola hidratada, 1 picles, 1 queijo, 1 carne 4:1.", "1/2 oz de mostarda, 1/2 oz de ketchup, 10 g de cebola fresca, 3 picles, 2 queijos, 1 carne 10:1.", "1/40 oz de mostarda, 1/2 oz de ketchup, 28 g de alface, 2 tomates, 2 queijos, 1 carne 4:1."] },
-  { id: 142, level: "Intermediário", q: "Qual a condimentação e quantidades de ingredientes do Cheeseburger?", a: "1/40 oz de mostarda, 1/3 oz de ketchup, 1 picles, 1 fatia de queijo, 1 carne de 10:1 com 3,5 g de cebola.", w: ["1/40 oz de mostarda, 1/3 oz de ketchup, 2 picles, 2 queijos, 1 carne 10:1 com 7 g de cebola.", "1/3 oz de mostarda, 1/3 oz de ketchup, 2 picles, 1 queijo, 1 carne 4:1 com 3,5 g de cebola.", "1/40 oz de mostarda, 1/3 oz de ketchup, 12 g de alface, 1 picles, 1 queijo e 1 carne 10:1."] },
+  { id: 142, level: "Intermediário", q: "Qual a condimentação e quantidades de ingredientes do Cheeseburger?", a: "1/40 oz de mostarda, 1/3 oz de ketchup, 1 picles, 1 fatia de queijo, 1 carne de 10:1 com 3,5 g de cebola.", w: ["1/40 oz de mostarda, 1/2 oz de ketchup, 2 picles, 2 queijos, 1 carne 10:1 com 7 g de cebola.", "1/3 oz de mostarda, 1/3 oz de ketchup, 2 picles, 1 queijo, 1 carne 4:1 com 3,5 g de cebola.", "1/40 oz de mostarda, 1/3 oz de ketchup, 12 g de alface, 1 picles, 1 queijo e 1 carne 10:1."] },
   { id: 143, level: "Intermediário", q: "Qual a condimentação e quantidades de ingredientes do McNífico Bacon?", a: "1/40 oz mostarda, 1/2 oz ketchup, 7 g cebola fresca, 2/3 oz maionese, 28 g alface, 2 tomates, 2 bacons, 1 queijo, 1 carne 4:1.", w: ["1/40 oz mostarda, 1/3 oz ketchup, 3,5 g cebola, 1/2 oz maionese, 12 g alface, 1 tomate, 3 bacons, 2 queijos, 1 carne 4:1.", "1 oz molho tasty, 1/2 oz ketchup, 10 g cebola, 28 g alface, 2 tomates, 2 bacons, 3 queijos ementhal, 1 carne 4:1.", "1/40 oz mostarda, 1/2 oz ketchup, 7 g cebola, 2/3 oz maionese, 24 g alface, 1 tomate, 1 bacon, 2 queijos, 1 carne 10:1."] },
   { id: 144, level: "Intermediário", q: "Qual o distanciamento e espaçamento que devemos manter entre as caixas nas câmaras?", a: "5 cm do chão e das paredes e 2,5 cm entre as caixas.", w: ["10 cm do chão e das paredes e 5 cm entre as caixas.", "3 cm do chão e das paredes e 1 cm entre as caixas.", "8 cm do chão e das paredes e 4 cm entre as caixas."] },
   { id: 145, level: "Intermediário", q: "Qual o empilhamento máximo para as caixas de batata?", a: "6 caixas.", w: ["4 caixas.", "5 caixas.", "8 caixas."] },
@@ -226,7 +225,6 @@ let currentBookFilter = "ALL";
 let currentStreak = 0;
 let currentHearts = 5;
 let currentQuizQuestionId = null;
-let lastKnownLevel = 1;
 let isAdminUnlocked = false;
 
 let searchDebounceTimer = null;
@@ -244,41 +242,99 @@ let photoUploadTarget = "register";
 let duelHistoryList = JSON.parse(localStorage.getItem(STORAGE_DUEL_HISTORY) || "[]");
 
 // =========================================================================
-// 🎵 SINTETIZADOR DO JINGLE OFICIAL DO MCDONALD'S ("Pa-ra-pa-pa-pa")
+// 🎵 MOTOR DE ÁUDIO DESTRAVADO + JINGLE OFICIAL ("Pa-ra-pa-pa-pa")
 // =========================================================================
 
+let globalAudioCtx = null;
+
+function getUnlockedAudioCtx() {
+  const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+  if (!AudioContextClass) return null;
+  if (!globalAudioCtx) {
+    globalAudioCtx = new AudioContextClass();
+  }
+  if (globalAudioCtx.state === "suspended") {
+    globalAudioCtx.resume();
+  }
+  return globalAudioCtx;
+}
+
+// Desbloqueia o áudio automaticamente no primeiro toque ou clique em qualquer lugar da página
+document.addEventListener("click", () => { getUnlockedAudioCtx(); }, { once: true });
+document.addEventListener("touchstart", () => { getUnlockedAudioCtx(); }, { once: true });
+
+// Cria automaticamente o botão 🔊 no cabeçalho para testar o som a qualquer momento
+function ensureSoundTestButton() {
+  const themeBtn = document.getElementById("themeToggleBtn");
+  if (themeBtn && !document.getElementById("soundTestBtn")) {
+    const soundBtn = document.createElement("button");
+    soundBtn.id = "soundTestBtn";
+    soundBtn.title = "Testar Jingle do Méqui";
+    soundBtn.className = "bg-slate-950/30 hover:bg-slate-950/45 w-9 h-9 rounded-2xl flex items-center justify-center text-sm border border-white/15 btn-tap";
+    soundBtn.innerHTML = "🔊";
+    soundBtn.onclick = () => playMcDonaldsJingle();
+    themeBtn.parentNode.insertBefore(soundBtn, themeBtn);
+  }
+}
+
+// 1. Jingle Oficial do Comercial ("Pa-ra-pa-pa-pa" -> Notas: C5, D5, E5, A5, G5)
 function playMcDonaldsJingle() {
   try {
-    const AudioContext = window.AudioContext || window.webkitAudioContext;
-    if (!AudioContext) return;
-    const ctx = new AudioContext();
+    const ctx = getUnlockedAudioCtx();
+    if (!ctx) return;
 
-    // Notas clássicas do jingle do Méqui: G4, G4, E4, G4, C5 (Dó agudo final)
+    const now = ctx.currentTime;
     const notes = [
-      { freq: 392.00, start: 0.00, duration: 0.22 }, // Pá
-      { freq: 392.00, start: 0.25, duration: 0.22 }, // ra
-      { freq: 329.63, start: 0.50, duration: 0.22 }, // pa
-      { freq: 392.00, start: 0.75, duration: 0.22 }, // pa
-      { freq: 523.25, start: 1.00, duration: 0.55 }  // paaaaa
+      { freq: 523.25, start: 0.00, dur: 0.16 }, // Pa (Dó)
+      { freq: 587.33, start: 0.19, dur: 0.16 }, // ra (Ré)
+      { freq: 659.25, start: 0.38, dur: 0.20 }, // pa (Mi)
+      { freq: 880.00, start: 0.65, dur: 0.26 }, // pa (Lá agudo)
+      { freq: 783.99, start: 0.96, dur: 0.65 }  // paaa! (Sol final)
     ];
 
     notes.forEach(n => {
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
+      // Oscilador principal + harmônico para som alto e nítido no celular e no PC
+      [1, 2].forEach((mult, idx) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
 
-      osc.type = "triangle"; // Som mais suave e alegre
-      osc.frequency.setValueAtTime(n.freq, ctx.currentTime + n.start);
+        osc.type = idx === 0 ? "triangle" : "sine";
+        osc.frequency.setValueAtTime(n.freq * mult, now + n.start);
 
-      gain.gain.setValueAtTime(0, ctx.currentTime + n.start);
-      gain.gain.linearRampToValueAtTime(0.35, ctx.currentTime + n.start + 0.04);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + n.start + n.duration);
+        const maxVol = idx === 0 ? 0.75 : 0.25;
+        gain.gain.setValueAtTime(0.001, now + n.start);
+        gain.gain.linearRampToValueAtTime(maxVol, now + n.start + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + n.start + n.dur);
 
-      osc.connect(gain);
-      gain.connect(ctx.destination);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
 
-      osc.start(ctx.currentTime + n.start);
-      osc.stop(ctx.currentTime + n.start + n.duration);
+        osc.start(now + n.start);
+        osc.stop(now + n.start + n.dur + 0.02);
+      });
     });
+  } catch (e) {
+    console.error("Erro ao reproduzir jingle:", e);
+  }
+}
+
+// 2. Som curto de acerto (+25 XP) para confirmar que o som está ativo a cada resposta
+function playHitSuccessSound() {
+  try {
+    const ctx = getUnlockedAudioCtx();
+    if (!ctx) return;
+    const now = ctx.currentTime;
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = "sine";
+    osc.frequency.setValueAtTime(587.33, now);
+    osc.frequency.setValueAtTime(880.00, now + 0.08);
+    gain.gain.setValueAtTime(0.4, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start(now);
+    osc.stop(now + 0.26);
   } catch (e) {}
 }
 
@@ -571,7 +627,7 @@ function initClusterSync() {
   brokers.forEach((brokerUrl) => {
     try {
       const client = mqtt.connect(brokerUrl, {
-        clientId: "mq76_" + Math.random().toString(16).substring(2, 10),
+        clientId: "mq761_" + Math.random().toString(16).substring(2, 10),
         clean: true,
         connectTimeout: 5000,
         reconnectPeriod: 6000
@@ -892,7 +948,10 @@ function logoutUser() {
 }
 
 function addXp(amount) {
-  if (!currentUserKey || !users[currentUserKey]) return;
+  if (!currentUserKey || !users[currentUserKey]) {
+    playHitSuccessSound();
+    return;
+  }
   const oldXp = users[currentUserKey].xp || 0;
   const newXp = Math.max(0, oldXp + amount);
 
@@ -900,11 +959,13 @@ function addXp(amount) {
   users[currentUserKey].updatedAt = Date.now();
   showXpToast(amount);
 
-  // Verifica se subiu de nível para tocar o Jingle do Méqui
   const oldLevel = getLevelInfo(oldXp).level;
   const newLevel = getLevelInfo(newXp).level;
+
   if (newLevel > oldLevel) {
     playMcDonaldsJingle();
+  } else {
+    playHitSuccessSound();
   }
 
   scheduleCloudSync(currentUserKey, false);
@@ -1046,6 +1107,7 @@ function checkReviewAnswer(selectedBtn, chosen, correct, qId) {
   if (chosen === correct) {
     selectedBtn.className = "anim-pop-correct w-full text-left p-3.5 rounded-2xl border-2 border-emerald-500 bg-emerald-500/20 font-extrabold text-xs flex items-center gap-3";
     removeMistakeQuestion(qId);
+    playHitSuccessSound();
     fb.className = "p-3 rounded-2xl text-xs font-extrabold bg-emerald-500/15 text-emerald-500 border border-emerald-500/30";
     fb.textContent = "✅ Aprendido! Essa questão saiu da sua lista de dúvidas!";
   } else {
@@ -1054,7 +1116,7 @@ function checkReviewAnswer(selectedBtn, chosen, correct, qId) {
     fb.innerHTML = `❌ O gabarito oficial é:<br><span class="underline mt-1 inline-block">${correct}</span>`;
   }
 
-  document.getElementById("nextReviewBtn").classList.add("hidden");
+  document.getElementById("nextReviewBtn").classList.remove("hidden");
 }
 
 // =========================================================================
@@ -1178,6 +1240,7 @@ function handleIncomingDuelPacket(pkt) {
       else activeDuel.scoreGuest++;
 
       updateDuelScoreboardUI();
+      playHitSuccessSound();
       showDuelBanner(`⚡ ${pkt.playerName} acertou primeiro e marcou +1 ponto!`, "emerald");
 
       if (activeDuel.isHost) {
@@ -1220,6 +1283,7 @@ function handleIncomingDuelPacket(pkt) {
     activeDuel.scoreHost = pkt.scoreHost;
     activeDuel.scoreGuest = pkt.scoreGuest;
     updateDuelScoreboardUI();
+    playMcDonaldsJingle();
     document.getElementById("duelQuestionArea").classList.add("hidden");
     document.getElementById("duelWinnerBox").classList.remove("hidden");
     document.getElementById("duelWinnerTitle").textContent = `🏆 ${pkt.winnerName} Venceu!`;
@@ -1870,9 +1934,19 @@ function adminRestoreHearts(key) {
 
 function adminAdjustXp(key, delta) {
   if (!users[key]) return;
+  const oldLevel = getLevelInfo(users[key].xp || 0).level;
   users[key].xp = Math.max(0, (users[key].xp || 0) + delta);
+  const newLevel = getLevelInfo(users[key].xp || 0).level;
+
   users[key].updatedAt = Date.now();
   users[key].adminOverrideAt = Date.now();
+
+  if (newLevel > oldLevel) {
+    playMcDonaldsJingle();
+  } else if (delta > 0) {
+    playHitSuccessSound();
+  }
+
   scheduleCloudSync(key, true);
 }
 
@@ -1882,9 +1956,16 @@ function adminSetCustomXp(key) {
   if (val === null) return;
   const parsed = parseInt(val, 10);
   if (!isNaN(parsed)) {
+    const oldLevel = getLevelInfo(users[key].xp || 0).level;
     users[key].xp = Math.max(0, parsed);
+    const newLevel = getLevelInfo(users[key].xp || 0).level;
+
     users[key].updatedAt = Date.now();
     users[key].adminOverrideAt = Date.now();
+
+    if (newLevel > oldLevel) {
+      playMcDonaldsJingle();
+    }
     scheduleCloudSync(key, true);
   }
 }
@@ -1959,6 +2040,7 @@ function switchMainTab(tab) {
 
 window.onload = () => {
   initTheme();
+  ensureSoundTestButton();
   rescuePreviousLocalRegistrations();
   renderAvatarSelector();
   syncActiveUserHeartsState();
