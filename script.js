@@ -163,4 +163,359 @@ const QUESTIONS_DB = [
   { id: 156, level: "Intermediário", q: "Qual a temperatura do banho-maria e das coberturas?", a: "De 57° a 63°C e de 46° a 52°C, respectivamente.", w: ["De 46° a 52°C e de 57° a 63°C, respectivamente.", "De 49° a 57°C e de 40° a 45°C, respectivamente.", "De 65° a 72°C e de 50° a 58°C, respectivamente."] },
   { id: 157, level: "Intermediário", q: "Quantas pedras de gelo colocamos nos refrigerantes P, M e G?", a: "0,5 pá (5 pedras), 2/3 pá (7 pedras) e 1 pá (10 pedras), respectivamente.", w: ["1/3 pá (3 pedras), 0,5 pá (5 pedras) e 2/3 pá (7 pedras), respectivamente.", "0,5 pá (6 pedras), 1 pá (10 pedras) e 1,5 pá (15 pedras), respectivamente.", "4 pedras no P, 8 pedras no M e 12 pedras no G, respectivamente."] },
   { id: 158, level: "Intermediário", q: "Quais as quantidades corretas de 1 Sundae?", a: "4 voltas e meia de massa (4,5 oz), 2 tiros de cobertura (1 oz) e 7 gramas de amendoim.", w: ["6 voltas de massa (6 oz), 2 tiros de cobertura (1 oz) e 14 gramas de amendoim.", "3 voltas e meia de massa (3,5 oz), 1 tiro de cobertura (1/2 oz) e 7 gramas de amendoim.", "4 voltas e meia de massa (4,5 oz), 1 tiro de cobertura (1 oz) e 10 gramas de amendoim."] },
-  { id: 159, level: "Intermediário", q: "Quais as quantidades corretas de 1 Top Sundae?", a: "6 voltas de massa (6 oz), 2 tiros de cobertura (1 no fundo e 1 em cima = 1 oz), 1 tiro de paçoca (1 oz) e 2 bijus.", w: ["4,5 voltas de massa (4,5 oz), 2 tiros de cobertura em cima (1 oz), 7 g de amendoim e 1 biju.", "6 voltas de massa (6 oz), 3 tiros de cobertura (1,5 oz), 2 tiros de paçoca e 1 biju.", "5 voltas de massa (5
+  { id: 159, level: "Intermediário", q: "Quais as quantidades corretas de 1 Top Sundae?", a: "6 voltas de massa (6 oz), 2 tiros de cobertura (1 no fundo e 1 em cima = 1 oz), 1 tiro de paçoca (1 oz) e 2 bijus.", w: ["4,5 voltas de massa (4,5 oz), 2 tiros de cobertura em cima (1 oz), 7 g de amendoim e 1 biju.", "6 voltas de massa (6 oz), 3 tiros de cobertura (1,5 oz), 2 tiros de paçoca e 1 biju.", "5 voltas de massa (5 oz), 2 tiros de cobertura (1 oz), 20 g de paçoca e 2 bijus."] },
+  { id: 160, level: "Intermediário", q: "Qual a temperatura ambiente do salão?", a: "De 23 a 27°C.", w: ["De 18 a 22°C.", "De 20 a 24°C.", "De 25 a 30°C."] },
+  { id: 161, level: "Intermediário", q: "Quais os materiais necessários que devemos ter no salão para limpeza das mesas e bancos?", a: "1 pano seco e 1 úmido para mesas, 1 pano seco e 1 úmido para bancos e 1 borrifador com sanitizante.", w: ["1 pano úmido único para mesas e bancos e 1 borrifador com detergente neutro.", "2 panos secos para mesas, 1 pano para o chão e 1 borrifador com álcool 70%.", "3 panos úmidos (mesas, bancos e totens) e 1 balde com água e sabão."] },
+  { id: 162, level: "Intermediário", q: "Quais são os 4 grupos de produtos que compõem o pedido do cliente?", a: "Sanduíches, acompanhamentos, bebidas e sobremesas.", w: ["Hambúrgueres, frango, saladas e café.", "Pães, carnes, molhos e embalagens.", "Combos, avulsos, adicionais e brinquedos."] },
+  { id: 163, level: "Avançado", q: "Qual a temperatura da tostadeira?", a: "Placa A e B 271°C e Placa C 254°C.", w: ["Placa A e B 254°C e Placa C 271°C.", "Placa A, B e C todas a 260°C.", "Placa A e B 218°C e Placa C 177°C."] },
+  { id: 164, level: "Avançado", q: "O que é contaminação cruzada?", a: "É a transferência de microrganismos de um lugar para outro.", w: ["É a multiplicação de bactérias na zona de perigo térmico.", "É a queima excessiva do óleo de fritura acima de 24%.", "É a reação alérgica causada por glúten ou derivados do leite."] },
+  { id: 165, level: "Avançado", q: "O que são Alérgenos?", a: "São substâncias que podem causar reações alérgicas no organismo como resposta do sistema imunológico.", w: ["São bactérias que se multiplicam entre 4,4°C e 60°C nos alimentos.", "São resíduos químicos de detergente ou sanitizante nos utensílios.", "São compostos polares formados pela degradação da gordura vegetal."] },
+  { id: 166, level: "Avançado", q: "Qual a calibragem do dispensador de ketchup?", a: "Ketchup Regular 6 tiros = 2 oz/60 ml, Quarteirão 6 tiros = 3 oz/90 ml.", w: ["Ketchup Regular 4 tiros = 2 oz/60 ml, Quarteirão 4 tiros = 3 oz/90 ml.", "Ketchup Regular 6 tiros = 3 oz/90 ml, Quarteirão 6 tiros = 2 oz/60 ml.", "Ketchup Regular 10 tiros = 1 oz/30 ml, Quarteirão 6 tiros = 2 oz/60 ml."] },
+  { id: 167, level: "Avançado", q: "Qual a calibragem do dispensador de mostarda?", a: "47 tiros = 1 oz/30 ml.", w: ["40 tiros = 1 oz/30 ml.", "30 tiros = 1 oz/30 ml.", "47 tiros = 2 oz/60 ml."] },
+  { id: 168, level: "Avançado", q: "Qual a calibragem da pistola de molho Big Mac?", a: "4 tiros de 1/2 oz = 2 oz/60 ml.", w: ["6 tiros de 1/2 oz = 3 oz/90 ml.", "4 tiros de 1 oz = 4 oz/120 ml.", "2 tiros de 1/2 oz = 1 oz/30 ml."] },
+  { id: 169, level: "Avançado", q: "Qual a velocidade do motor da tostadeira?", a: "A partir de 3300.", w: ["A partir de 2500.", "A partir de 1800.", "A partir de 4200."] },
+  { id: 170, level: "Avançado", q: "Qual o procedimento correto de sanitização dos tomates?", a: "1. Retirar pela tabela chart; 2. Lavar em água corrente; 3. Cobrir com sanitizante por 15 min; 4. Enxaguar em água corrente.", w: ["1. Retirar 1 caixa inteira; 2. Cobrir com sanitizante por 10 min; 3. Fatiar direto sem enxaguar; 4. Guardar na câmara.", "1. Lavar com sabonete bactericida; 2. Deixar no cloro por 30 min; 3. Secar com pano; 4. Cortar imediatamente.", "1. Retirar pela tabela chart; 2. Deixar no sanitizante por 5 min; 3. Ambientar por 4 horas; 4. Lavar após fatiar."] },
+  { id: 171, level: "Avançado", q: "Qual procedimento devemos seguir ao trabalhar com a tela LOOK & COOK?", a: "OSA: Olha, Serve e Ativa.", w: ["PEPS: Primeiro que Entra, Primeiro que Sai.", "DFS: Medir, Calibrar e Registrar.", "KVS: Iniciar, Condimentar e Embrulhar."] },
+  { id: 172, level: "Avançado", q: "Qual o ponto de partida para as carnes vermelhas?", a: "10:1 a partir de 39\" (Next Gen 41\") | 4:1 a partir de 104\" (Next Gen 126\").", w: ["10:1 a partir de 45\" (Next Gen 50\") | 4:1 a partir de 90\" (Next Gen 110\").", "10:1 a partir de 30\" (Next Gen 35\") | 4:1 a partir de 120\" (Next Gen 140\").", "10:1 a partir de 42\" (Next Gen 39\") | 4:1 a partir de 126\" (Next Gen 104\")."] },
+  { id: 173, level: "Avançado", q: "Qual o Gap correto para as carnes de 10:1?", a: "225\" por 20 segundos, final 290\".", w: ["290\" por 20 segundos, final 225\".", "250\" por 15 segundos, final 310\".", "450\" por 20 segundos, final 290\"."] },
+  { id: 174, level: "Avançado", q: "Qual a temperatura da estufa de tortas?", a: "De 66 a 82°C.", w: ["De 49 a 57°C.", "De 79 a 85°C.", "De 57 a 63°C."] },
+  { id: 175, level: "Avançado", q: "Qual a capacidade máxima de tortas na estufa?", a: "32 tortas.", w: ["16 tortas.", "24 tortas.", "40 tortas."] },
+  { id: 176, level: "Avançado", q: "O que significa Manutenção e Recuperação na área de produtos fritos?", a: "Manutenção: ativar para manter o nível PLS. Recuperação: ativar para repor o nível PLS com gavetas zeradas.", w: ["Manutenção: limpar e filtrar a fritadeira. Recuperação: trocar o óleo quando atingir 24%.", "Manutenção: fritar metade do cesto. Recuperação: fritar o dobro da rodada máxima permitida.", "Manutenção: manter as carnes na UHC por 60 min. Recuperação: voltar as carnes frias para o óleo."] },
+  { id: 177, level: "Avançado", q: "Qual a concentração correta de cloro no sanitizante presente nos panos e borrifadores?", a: "De 50 a 100 ppm.", w: ["De 100 a 200 ppm.", "De 25 a 50 ppm.", "De 150 a 250 ppm."] },
+  { id: 178, level: "Avançado", q: "Qual o rendimento da mostarda pouch?", a: "1235 sanduíches por kg.", w: ["950 sanduíches por kg.", "1500 sanduíches por kg.", "840 sanduíches por kg."] },
+  { id: 179, level: "Avançado", q: "Qual o rendimento da Alface?", a: "45,4 sanduíches por kg.", w: ["35,2 sanduíches por kg.", "60,5 sanduíches por kg.", "28,4 sanduíches por kg."] },
+  { id: 180, level: "Avançado", q: "Qual o tempo de vida primário dos sucos?", a: "Uva 180 dias e Laranja 150 dias.", w: ["Uva 150 dias e Laranja 180 dias.", "Uva 90 dias e Laranja 90 dias.", "Uva 120 dias e Laranja 100 dias."] },
+  { id: 181, level: "Avançado", q: "Quais são as três dimensões que concretizam a Missão do Embaixador na Experiência do Cliente?", a: "Viagem do cliente, Experiência Familiar e Construção de Vendas.", w: ["Fazer bem, Fazer rápido e Fazer especial.", "Qualidade, Serviço e Limpeza.", "Sugestão de Vendas, Venda Sugestiva e Adicionais."] },
+  { id: 182, level: "Avançado", q: "Em que ano e onde foi fundado o McDonald's?", a: "Em 1955, na cidade de Des Plaines, Illinois, Estados Unidos.", w: ["Em 1948, na cidade de Chicago, Califórnia, Estados Unidos.", "Em 1961, na cidade de Nova York, Estados Unidos.", "Em 1952, na cidade de Los Angeles, Estados Unidos."] },
+  { id: 183, level: "Avançado", q: "Onde e em que ano inaugurou o primeiro McDonald's no Brasil?", a: "Em 1979, na rua Hilário de Gouveia, em Copacabana, no Rio de Janeiro.", w: ["Em 1981, na Avenida Paulista, em São Paulo.", "Em 1975, no bairro de Ipanema, no Rio de Janeiro.", "Em 1983, no Centro de São Paulo."] },
+  { id: 184, level: "Avançado", q: "Quando inaugurou o primeiro McDonald's em São Paulo?", a: "Em 1981, na Av. Paulista.", w: ["Em 1979, na Av. Brigadeiro Faria Lima.", "Em 1985, na Rua Augusta.", "Em 1978, no Shopping Ibirapuera."] },
+  { id: 185, level: "Avançado", q: "Qual a condimentação e quantidades de ingredientes do Big Mac?", a: "1 tiro de 1/2 oz de molho Big na base e no club, 12 g de alface na base e 12 g no club (24 g), 2 picles no club, 1 queijo na base e 2 carnes 10:1 com 3,5 g de cebola.", w: ["1 tiro de 1 oz de molho Big na base e no club, 14 g de alface na base e 14 g no club (28 g), 2 picles na base, 2 queijos e 2 carnes 10:1.", "1 tiro de 1/2 oz de molho Big na base e na coroa, 24 g de alface apenas na base, 1 picles no club, 1 queijo no club e 2 carnes 10:1.", "2 tiros de 1/2 oz de molho Big na base, 12 g de alface no club, 4 picles, 2 fatias de queijo cheddar e 2 carnes 10:1 com 7 g de cebola."] },
+  { id: 186, level: "Avançado", q: "Qual a condimentação e quantidades de ingredientes do Big Tasty?", a: "2 tiros de 1 oz molho Tasty (base e coroa), 10 g cebola, 28 g alface, 2 tomates, 3 queijos ementhal, carne 4:1 (1, 2 ou 3) destacando a TAG.", w: ["1 tiro de 1/2 oz molho Tasty (base e coroa), 7 g cebola, 24 g alface, 2 tomates, 2 queijos cheddar, carne 4:1.", "2 tiros de 2/3 oz molho Tasty, 14 g cebola, 28 g alface, 3 tomates, 3 queijos cheddar e carne 10:1.", "1 tiro de 1 oz molho Tasty apenas na coroa, 7 g cebola, 28 g alface, 1 tomate, 2 queijos ementhal e 1 carne 4:1."] },
+  { id: 187, level: "Avançado", q: "Quais são os 7 conceitos da UHC?", a: "UHC é o coração da cozinha; Ativar pouco, porém sempre; Usar sistema de garagem; Conhecer tempos das carnes; Acelerar/desacelerar na mesma chamada; Seguir níveis PLS; Não compensar um erro com outro.", w: ["UHC ligada a 90°C; Ativar lotes máximos sempre; Empilhar 4 carnes 4:1; Desligar timers no rush; Ignorar o PLS; Misturar gavetas antigas com novas; Usar apenas 1 gaveta.", "Plano de chão; Rota Gerencial; Pré-Plantão; Pós-Plantão; Posicionamento; Checklist; Experimentação.", "Limpar; Lavar; Enxaguar; Sanitizar; Secar ao ar; Etiquetar com 24h; Guardar na câmara."] },
+  { id: 188, level: "Avançado", q: "O que é e para que serve a caramelização dos pães?", a: "É a queima de 5% do açúcar do pão e serve para criar uma película que impede que os condimentos penetrem no pão.", w: ["É a queima de 15% do amido do pão para deixá-lo crocante por fora e seco por dentro.", "É o aquecimento a 180°C por 10 segundos apenas para derreter o gergelim da coroa.", "É a perda de 20% da umidade do pão na mesa de condimentação para absorver melhor os molhos."] },
+  { id: 189, level: "Avançado", q: "Quais são as temperaturas da Zona de Risco para crescimento de microrganismos?", a: "De 4,4°C a 60°C.", w: ["De 1°C a 49°C.", "De 10°C a 70°C.", "De 0°C a 45°C."] },
+  { id: 190, level: "Avançado", q: "Qual a temperatura de extração do sorvete?", a: "-8 a -9°C.", w: ["-4 a -6°C.", "-12 a -15°C.", "-1 a -4°C."] },
+  { id: 191, level: "Avançado", q: "Qual a proporção correta de água e xarope para refrigerantes normais?", a: "1 parte de xarope para 5,2 partes de água.", w: ["3 partes de xarope para 15 partes de água.", "1 parte de xarope para 4,0 partes de água.", "2 partes de xarope para 6,5 partes de água."] },
+  { id: 192, level: "Avançado", q: "Quais são os 7 básicos operacionais?", a: "Plano de chão, Rota Gerencial, Pré-Plantão, Pós-Plantão, Posicionamento, Checklist e Experimentação.", w: ["Agilidade, Generosidade, Humildade, Vocação de Serviço, Inclusão, Simpatia e Vendas.", "Chapa, Linha, Fritura, Bebidas, Sobremesas, Balcão e Drive-Thru.", "Limpeza, Organização, Preparação, Estocagem, Recebimento, Contagem e Fechamento."] },
+  { id: 193, level: "Avançado", q: "O que é overrun do mix e qual o seu percentual?", a: "Mede a proporção entre mix e ar; seu percentual é de 55 a 65% com ideal 58%.", w: ["Mede o tempo de congelamento do cilindro; seu percentual é de 40 a 50% com ideal 45%.", "Mede a quantidade de gordura do leite no mix; seu percentual é de 20 a 30% com ideal 24%.", "Mede a velocidade de extração em 10s; seu percentual é de 70 a 80% com ideal 75%."] },
+  { id: 194, level: "Avançado", q: "Quais as quantidades corretas de complementos dos sorvetes?", a: "Gotas 50 g, Rocks 20 g, Ovomaltine 20 g, Paçoca 20 g, Ovo Shake 54 g.", w: ["Gotas 30 g, Rocks 30 g, Ovomaltine 30 g, Paçoca 15 g, Ovo Shake 40 g.", "Gotas 20 g, Rocks 50 g, Ovomaltine 54 g, Paçoca 20 g, Ovo Shake 20 g.", "Gotas 40 g, Rocks 15 g, Ovomaltine 25 g, Paçoca 25 g, Ovo Shake 60 g."] },
+  { id: 195, level: "Avançado", q: "Qual a temperatura do café coado?", a: "A partir de 77°C.", w: ["A partir de 65°C.", "De 57°C a 63°C.", "A partir de 85°C."] },
+  { id: 196, level: "Avançado", q: "Qual a proporção correta de água e café para o café coado?", a: "1.100 ml de água para 1 pacote de 50 g de café.", w: ["1.000 ml de água para 1 pacote de 100 g de café.", "1.500 ml de água para 1 pacote de 50 g de café.", "800 ml de água para 1 pacote de 40 g de café."] },
+  { id: 197, level: "Avançado", q: "O que é Best Burger?", a: "É o novo padrão para os hambúrgueres McDonald's. Pequenas mudanças, grande impacto.", w: ["É o sistema de fritura rápida para carnes brancas e empanados em 3 minutos.", "É o programa de auditoria semestral de limpeza das chapas e fritadeiras.", "É a campanha promocional exclusiva para venda de adicionais no Drive-Thru."] },
+  { id: 198, level: "Avançado", q: "Quais são as técnicas dos influencers vendedores?", a: "Somos Especialistas, Gostamos de Surpreender, Criamos Oportunidades, Vivenciamos as mesmas coisas, Criamos tendência, Somos Afetuosos.", w: ["Sugestão de Vendas, Venda Sugestiva, Adicionais, Combo Grande, Sobremesa e Café.", "Fazer bem, Fazer rápido, Fazer especial, Sorrir, Agradecer e Despedir.", "Olhar nos olhos, Oferecer bacon, Oferecer batata grande, Cobrar rápido e Entregar."] },
+  { id: 199, level: "Avançado", q: "Qual o rendimento da batata?", a: "9,11 batatas pequenas por kg.", w: ["7,50 batatas pequenas por kg.", "12,40 batatas pequenas por kg.", "6,80 batatas pequenas por kg."] },
+  { id: 200, level: "Avançado", q: "Qual a descrição do padrão ouro de qualidade do suco?", a: "Frio, cor brilhante e sabor doce.", w: ["Com espuma, cor escura e sabor cítrico ácido.", "Em temperatura ambiente, translúcido e sem açúcar.", "Congelado com cristais de gelo e altamente concentrado."] }
+];
+
+const STORAGE_USERS_KEY = "mequi_olimpiadas_users_v6";
+const STORAGE_CURRENT_KEY = "mequi_olimpiadas_active_user_v6";
+const STORAGE_THEME_KEY = "mequi_olimpiadas_theme_v7";
+const ADMIN_SECRET_PASS = "342005";
+const HEARTS_COOLDOWN_MS = 10 * 60 * 1000;
+
+const SYNC_MQTT_TOPIC = "mequi/venture/olimpiadas2026/v65_cluster_state";
+const DUEL_MQTT_TOPIC = "mequi/venture/olimpiadas2026/v71_live_duels";
+const CLOUD_HTTP_URL = "https://ntfy.sh/mequi_venture_olimpiadas_2026_v63_store";
+
+let mqttClients = [];
+let users = {};
+let currentUserKey = localStorage.getItem(STORAGE_CURRENT_KEY) || null;
+let currentBookFilter = "ALL";
+let currentStreak = 0;
+let currentHearts = 5;
+let currentQuizQuestionId = null;
+let isAdminUnlocked = false;
+
+let searchDebounceTimer = null;
+let cloudSyncQueueTimer = null;
+let cooldownIntervalId = null;
+let lastLeaderboardHash = "";
+let lastAdminListHash = "";
+let lastHttpFetchTime = 0;
+
+// Estado do Duelo Online 1 vs 1
+let pendingDuelInvite = null;
+let activeDuel = null;
+let currentReviewItem = null;
+
+function initTheme() {
+  const savedTheme = localStorage.getItem(STORAGE_THEME_KEY);
+  if (savedTheme === "dark") {
+    document.body.classList.add("dark-mode");
+    const btn = document.getElementById("themeToggleBtn");
+    if (btn) btn.textContent = "☀️";
+  }
+}
+
+function toggleDarkMode() {
+  const isDark = document.body.classList.toggle("dark-mode");
+  localStorage.setItem(STORAGE_THEME_KEY, isDark ? "dark" : "light");
+  const btn = document.getElementById("themeToggleBtn");
+  if (btn) btn.textContent = isDark ? "☀️" : "🌙";
+}
+
+function showXpToast(amount) {
+  const container = document.getElementById("xpToastContainer");
+  if (!container) return;
+  const toast = document.createElement("div");
+  toast.className = "xp-toast gold-gradient text-slate-950 font-black text-xs px-4 py-2 rounded-2xl shadow-xl border-2 border-white";
+  toast.textContent = `+${amount} XP ⚡`;
+  container.appendChild(toast);
+  setTimeout(() => toast.remove(), 1250);
+}
+
+function rescuePreviousLocalRegistrations() {
+  const keysToCheck = [
+    "mequi_olimpiadas_users_v3",
+    "mequi_olimpiadas_users_v4",
+    "mequi_olimpiadas_users_v5",
+    "mequi_olimpiadas_users_v6"
+  ];
+  keysToCheck.forEach(storageKey => {
+    try {
+      const raw = localStorage.getItem(storageKey);
+      if (!raw) return;
+      const parsed = JSON.parse(raw);
+      if (parsed && typeof parsed === "object") {
+        Object.keys(parsed).forEach(k => {
+          const u = parsed[k];
+          if (!u || !u.name) return;
+          if (k === "daniel pessoa de oliveira" && u.xp === 250 && u.correctAnswers === 2) return;
+          users[k] = mergeSingleUser(users[k], {
+            ...u,
+            role: u.role || u.station || "Atendente",
+            avatar: u.avatar || "🍔",
+            hearts: u.hearts !== undefined ? u.hearts : 5,
+            heartsLockUntil: u.heartsLockUntil || 0,
+            mistakes: Array.isArray(u.mistakes) ? u.mistakes : [],
+            updatedAt: u.updatedAt || Date.now()
+          });
+        });
+      }
+    } catch (e) {}
+  });
+
+  if (!currentUserKey) {
+    const oldActive = localStorage.getItem("mequi_olimpiadas_active_user_v5") || localStorage.getItem("mequi_olimpiadas_active_user_v3");
+    if (oldActive && users[oldActive] && !users[oldActive]._deleted) {
+      currentUserKey = oldActive;
+      localStorage.setItem(STORAGE_CURRENT_KEY, oldActive);
+    }
+  }
+
+  try {
+    const params = new URLSearchParams(window.location.search);
+    const syncParam = params.get("syncUser");
+    if (syncParam) {
+      const imported = JSON.parse(decodeURIComponent(atob(syncParam)));
+      if (imported && imported.name) {
+        const k = imported.name.toLowerCase();
+        users[k] = mergeSingleUser(users[k], imported);
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }
+    }
+  } catch (e) {}
+
+  localStorage.setItem(STORAGE_USERS_KEY, JSON.stringify(users));
+}
+
+function mergeSingleUser(existing, incoming) {
+  if (!existing) return incoming;
+  const existingAdminTime = existing.adminOverrideAt || 0;
+  const incomingAdminTime = incoming.adminOverrideAt || 0;
+
+  if (incomingAdminTime > existingAdminTime) return incoming;
+  if (existingAdminTime > incomingAdminTime) return existing;
+
+  if (incoming._deleted && (incoming.updatedAt || 0) >= (existing.updatedAt || 0)) {
+    return incoming;
+  }
+
+  const isIncomingNewer = (incoming.updatedAt || 0) >= (existing.updatedAt || 0);
+
+  return {
+    ...existing,
+    ...incoming,
+    role: incoming.role || existing.role || incoming.station || "Atendente",
+    avatar: incoming.avatar || existing.avatar || "🍔",
+    xp: Math.max(existing.xp || 0, incoming.xp || 0),
+    correctAnswers: Math.max(existing.correctAnswers || 0, incoming.correctAnswers || 0),
+    hearts: isIncomingNewer && incoming.hearts !== undefined ? incoming.hearts : (existing.hearts !== undefined ? existing.hearts : 5),
+    heartsLockUntil: isIncomingNewer && incoming.heartsLockUntil !== undefined ? incoming.heartsLockUntil : (existing.heartsLockUntil || 0),
+    mistakes: isIncomingNewer && Array.isArray(incoming.mistakes) ? incoming.mistakes : (Array.isArray(existing.mistakes) ? existing.mistakes : []),
+    updatedAt: Math.max(existing.updatedAt || 0, incoming.updatedAt || 0)
+  };
+}
+
+function mergeUserDictionaries(localDict, remoteDict) {
+  const merged = { ...localDict };
+  if (!remoteDict || typeof remoteDict !== "object") return merged;
+
+  Object.keys(remoteDict).forEach(k => {
+    const rUser = remoteDict[k];
+    if (!rUser || !rUser.name) return;
+    if (k === "daniel pessoa de oliveira" && rUser.xp === 250 && rUser.correctAnswers === 2) return;
+    merged[k] = mergeSingleUser(merged[k], rUser);
+  });
+  return merged;
+}
+
+function refreshUIIfNeeded() {
+  updateHeaderUI();
+  syncActiveUserHeartsState();
+  updateMistakesBadge();
+  populateDuelOpponentList();
+
+  const sortedList = Object.values(users)
+    .filter(u => u && u.name && !u._deleted)
+    .sort((a, b) => (b.xp || 0) - (a.xp || 0));
+
+  const currentHash = JSON.stringify(sortedList.map(u => `${u.name}:${u.xp}:${u.correctAnswers}:${u.avatar}:${u.role}:${u.heartsLockUntil || 0}`));
+  if (currentHash !== lastLeaderboardHash) {
+    lastLeaderboardHash = currentHash;
+    renderLeaderboard();
+  }
+
+  if (isAdminUnlocked && currentHash !== lastAdminListHash) {
+    lastAdminListHash = currentHash;
+    renderAdminUsersList();
+  }
+}
+
+function initClusterSync() {
+  const brokers = [
+    "wss://broker.emqx.io:8084/mqtt",
+    "wss://broker.hivemq.com:8884/mqtt"
+  ];
+
+  brokers.forEach((brokerUrl) => {
+    try {
+      const client = mqtt.connect(brokerUrl, {
+        clientId: "mq71_" + Math.random().toString(16).substring(2, 10),
+        clean: true,
+        connectTimeout: 5000,
+        reconnectPeriod: 6000
+      });
+
+      client.on("connect", () => {
+        const statusEl = document.getElementById("syncStatusText");
+        if (statusEl) {
+          statusEl.textContent = "● Conectado em Tempo Real (Alta Capacidade)";
+          statusEl.className = "text-[11px] text-emerald-500 font-bold";
+        }
+        client.subscribe(SYNC_MQTT_TOPIC, { qos: 0 });
+        client.subscribe(DUEL_MQTT_TOPIC, { qos: 0 });
+      });
+
+      client.on("message", (topic, message) => {
+        if (topic === SYNC_MQTT_TOPIC) {
+          try {
+            const remoteUsers = JSON.parse(message.toString());
+            users = mergeUserDictionaries(users, remoteUsers);
+            localStorage.setItem(STORAGE_USERS_KEY, JSON.stringify(users));
+            refreshUIIfNeeded();
+          } catch (e) {}
+        } else if (topic === DUEL_MQTT_TOPIC) {
+          try {
+            const pkt = JSON.parse(message.toString());
+            handleIncomingDuelPacket(pkt);
+          } catch (e) {}
+        }
+      });
+
+      mqttClients.push(client);
+    } catch (err) {}
+  });
+}
+
+function publishDuelPacket(pkt) {
+  const payload = JSON.stringify(pkt);
+  mqttClients.forEach(client => {
+    if (client && client.connected) {
+      try { client.publish(DUEL_MQTT_TOPIC, payload, { qos: 0, retain: false }); } catch (e) {}
+    }
+  });
+}
+
+function scheduleCloudSync(keyToPush, immediate = false) {
+  localStorage.setItem(STORAGE_USERS_KEY, JSON.stringify(users));
+  refreshUIIfNeeded();
+
+  clearTimeout(cloudSyncQueueTimer);
+  const delay = immediate ? 150 : 3200;
+
+  cloudSyncQueueTimer = setTimeout(() => {
+    const fullStatePayload = JSON.stringify(users);
+    mqttClients.forEach(client => {
+      if (client && client.connected) {
+        try { client.publish(SYNC_MQTT_TOPIC, fullStatePayload, { qos: 0, retain: true }); } catch (e) {}
+      }
+    });
+
+    if (keyToPush && users[keyToPush]) {
+      const singlePayload = JSON.stringify({ type: "single", k: keyToPush, u: users[keyToPush] });
+      fetch(CLOUD_HTTP_URL, { method: "POST", body: singlePayload }).catch(() => {});
+    }
+  }, delay);
+}
+
+async function fetchCloudHistorySafe(force = false) {
+  const now = Date.now();
+  if (!force && now - lastHttpFetchTime < 20000) return;
+  lastHttpFetchTime = now;
+
+  const statusEl = document.getElementById("syncStatusText");
+  if (force && statusEl) statusEl.textContent = "🔄 Atualizando lista de colaboradores...";
+
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 4500);
+
+  try {
+    const res = await fetch(`${CLOUD_HTTP_URL}/json?poll=1&since=24h`, {
+      method: "GET",
+      signal: controller.signal
+    });
+    clearTimeout(timeoutId);
+
+    if (res.ok) {
+      const text = await res.text();
+      const lines = text.trim().split("\n");
+      lines.forEach(line => {
+        if (!line) return;
+        try {
+          const pkt = JSON.parse(line);
+          if (pkt.event === "message" && pkt.message) {
+            const data = JSON.parse(pkt.message);
+            if (data.type === "single" && data.k && data.u) {
+              users[data.k] = mergeSingleUser(users[data.k], data.u);
+            } else if (data.type === "batch" && data.map) {
+              users = mergeUserDictionaries(users, data.map);
+            }
+          }
+        } catch (err) {}
+      });
+
+      localStorage.setItem(STORAGE_USERS_KEY, JSON.stringify(users));
+      refreshUIIfNeeded();
+    }
+  } catch (e) {
+    clearTimeout(timeoutId);
+  } finally {
+    if (statusEl) {
+      statusEl.textContent = "● Servidor Multi-Usuários Estável";
+      statusEl.className = "text-[11px] text-emerald-500 font-bold";
+    }
+  }
+}
+
+function forceSyncNow() {
+  if (currentUserKey && users[currentUserKey]) {
+    scheduleCloudSync(currentUserKey, true);
+  }
+  fetchCloudHistorySafe(true);
+}
+
+function getLevelInfo(xp) {
+  if (xp >= 25000) return { level: 7, title: "👑 Nível 7 — Lenda dos Arcos Dourados", min: 25000, max: 40000 };
+  if (xp >= 15000) return { level: 6, title: "🔥 Nível 6 — Mestre das Olimpíadas", min: 15000, max: 25000 };
+  if (xp >=
