@@ -1,5 +1,5 @@
 /* =========================================================================
-   OLIMPÍADAS DO BÁSICO — VENTURE (FOLHA DE ESTILO OFICIAL: style.css)
+   OLIMPÍADAS DO BÁSICO — VENTURE (FOLHA DE ESTILO OFICIAL: style.css v7.4)
    ========================================================================= */
 
 :root {
@@ -33,7 +33,6 @@ body {
   transition: background-color 0.25s ease, color 0.25s ease;
 }
 
-/* Degradês da Marca */
 .mc-gradient { 
   background: linear-gradient(135deg, var(--mc-red) 0%, var(--mc-red-dark) 100%); 
 }
@@ -44,7 +43,6 @@ body {
   background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); 
 }
 
-/* Cartões com Profundidade */
 .pro-card {
   background-color: var(--bg-card);
   border: 1px solid var(--border-color);
@@ -63,7 +61,6 @@ body {
   color: var(--text-muted); 
 }
 
-/* Botões 3D com Efeito Mola e Brilho */
 .btn-anim-red {
   position: relative;
   overflow: hidden;
@@ -111,7 +108,6 @@ body {
   100% { left: 140%; }
 }
 
-/* Botões de Alternativas A, B, C, D */
 .option-btn {
   background-color: var(--bg-card);
   border: 2px solid var(--border-color);
@@ -135,7 +131,6 @@ body {
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* Animações de Sucesso e Erro */
 .anim-pop-correct { 
   animation: popSuccess 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; 
 }
@@ -154,7 +149,6 @@ body {
   40%, 80% { transform: translateX(5px); }
 }
 
-/* Efeito de Giro 3D no Flashcard */
 .flip-container { perspective: 1000px; }
 .flip-inner {
   position: relative;
@@ -178,7 +172,6 @@ body {
 }
 .flip-back { transform: rotateY(180deg); }
 
-/* Toast Flutuante +25 XP */
 .xp-toast {
   position: fixed;
   top: 90px;
@@ -200,7 +193,6 @@ body {
 .btn-tap:hover { transform: translateY(-1px); }
 .btn-tap:active { transform: scale(0.92); }
 
-/* Barra Flutuante de Navegação */
 .nav-btn { 
   transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1); 
   color: var(--text-muted); 
