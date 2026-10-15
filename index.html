@@ -7,7 +7,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="Olimpíadas Méqui" />
-  <title>Olimpíadas do Básico — Venture v6.6</title>
+  <title>Olimpíadas do Básico — Venture v6.7</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -135,7 +135,7 @@
       <div class="text-center mb-5">
         <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl mc-gradient text-[#FFC72C] font-black text-4xl shadow-lg mb-2.5 border-2 border-[#FFC72C]/40 float-slow">M</div>
         <h1 class="text-2xl font-black tracking-tight text-slate-900">OLIMPÍADAS DO BÁSICO</h1>
-        <p class="text-xs text-slate-500 font-semibold mt-0.5">Treinamento Oficial Venture • Versão 6.6 🏆</p>
+        <p class="text-xs text-slate-500 font-semibold mt-0.5">Treinamento Oficial Venture • Versão 6.7 🏆</p>
       </div>
 
       <div class="flex rounded-2xl bg-slate-100 p-1.5 mb-5">
@@ -241,19 +241,19 @@
       </div>
       <div class="flex justify-between text-[11px] font-bold mt-1.5 opacity-95">
         <span id="currentLevelNum">Nível 1</span>
-        <span id="nextLevelTarget">Faltam 500 XP para o Nível 2</span>
+        <span id="nextLevelTarget">Faltam 1000 XP para o Nível 2</span>
       </div>
     </div>
   </header>
 
   <main class="max-w-xl mx-auto px-4 mt-5">
 
-    <!-- ABA 1: SIMULADO INTERATIVO (COM BLOQUEIO DE 10 MINUTOS DOS CORAÇÕES) -->
+    <!-- ABA 1: SIMULADO INTERATIVO (ÚNICO QUE DÁ XP) -->
     <section id="tab-quiz" class="space-y-4">
       <div class="fast-card rounded-3xl p-5">
         <div class="flex flex-wrap items-center justify-between gap-2 mb-4 pb-3 border-b border-slate-100">
           <div>
-            <span class="text-[10px] font-black uppercase tracking-wider text-red-600 bg-red-50 px-2.5 py-1 rounded-full">Modo Competição • A, B, C, D</span>
+            <span class="text-[10px] font-black uppercase tracking-wider text-red-600 bg-red-50 px-2.5 py-1 rounded-full">Único Modo que Soma XP • A, B, C, D</span>
             <h2 class="font-black text-slate-900 text-base mt-1">🎯 Simulado Oficial (+25 XP)</h2>
           </div>
           <select id="quizLevelFilter" onchange="changeQuizLevelFilter()" class="text-xs font-extrabold bg-slate-100 border border-slate-200 text-slate-800 rounded-xl px-3 py-2 focus:outline-none focus:border-red-600 btn-tap">
@@ -284,7 +284,7 @@
             10:00
           </div>
           <p class="text-[11px] text-slate-600 font-bold pt-1">
-            💡 Enquanto seus corações recarregam, aproveite para estudar no <span class="text-red-600 underline cursor-pointer" onclick="switchMainTab('book')">Book Oficial</span> ou nos Flashcards abaixo!
+            💡 Enquanto seus corações recarregam, aproveite para revisar no <span class="text-red-600 underline cursor-pointer" onclick="switchMainTab('book')">Book Oficial</span> ou nos Flashcards de Estudo abaixo!
           </p>
         </div>
 
@@ -303,12 +303,12 @@
         </div>
       </div>
 
-      <!-- Modo Flashcard Rápido -->
+      <!-- Modo Flashcard Rápido (SEM XP - MODO TREINO LIVRE) -->
       <div class="fast-card rounded-3xl p-5 space-y-3">
         <div class="flex items-center justify-between">
           <div>
-            <h3 class="font-black text-slate-900 text-sm">🎴 Flashcard de Estudo Rápido (+10 XP)</h3>
-            <p class="text-[11px] text-slate-500 font-medium">Toque no cartão para revelar o gabarito oficial</p>
+            <h3 class="font-black text-slate-900 text-sm">🎴 Flashcard de Estudo Livre (Treino sem XP)</h3>
+            <p class="text-[11px] text-slate-500 font-medium">Toque no cartão para memorizar o gabarito antes do Simulado</p>
           </div>
           <button onclick="loadRandomFlashcard()" class="text-xs font-extrabold text-red-600 bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded-xl btn-tap">Sortear 🔄</button>
         </div>
@@ -320,11 +320,11 @@
       </div>
     </section>
 
-    <!-- ABA 2: BOOK OFICIAL COMPLETO -->
+    <!-- ABA 2: BOOK OFICIAL COMPLETO (SEM XP - APENAS CONSULTA E ESTUDO) -->
     <section id="tab-book" class="hidden space-y-3">
       <div class="fast-card rounded-3xl p-4 sticky top-32 z-20 space-y-3">
         <div class="flex items-center justify-between">
-          <span class="text-xs font-black text-slate-900">📖 Apostila Oficial Venture</span>
+          <span class="text-xs font-black text-slate-900">📖 Apostila Oficial Venture (Consulta Livre)</span>
           <span id="bookCountBadge" class="text-[11px] font-extrabold text-red-600 bg-red-50 px-2.5 py-0.5 rounded-full">Carregando...</span>
         </div>
         <input id="searchBookInput" oninput="debouncedBookSearch()" type="text" placeholder="🔍 Pesquisar pergunta, tempo ou temperatura..." class="w-full px-4 py-2.5 rounded-2xl bg-slate-100 border border-slate-200 text-xs font-semibold focus:outline-none focus:bg-white focus:border-red-600 transition" />
@@ -370,32 +370,40 @@
         </button>
       </div>
 
-      <!-- Tabela do Sistema de Níveis -->
+      <!-- Tabela do Novo Sistema de 7 Patentes (XP Aumentado) -->
       <div class="fast-card rounded-3xl p-5 space-y-3">
         <div class="flex items-center justify-between">
-          <h3 class="font-black text-slate-900 text-sm">📈 Patentes e Metas de XP</h3>
-          <span class="text-[10px] font-extrabold bg-amber-100 text-amber-900 px-2.5 py-0.5 rounded-full">Padrão Oficial</span>
+          <h3 class="font-black text-slate-900 text-sm">📈 As 7 Patentes Oficiais de XP</h3>
+          <span class="text-[10px] font-extrabold bg-red-100 text-red-800 px-2.5 py-0.5 rounded-full">Novo Desafio v6.7</span>
         </div>
         <div class="space-y-2 text-xs font-bold text-slate-700">
           <div class="flex justify-between items-center p-2.5 rounded-xl bg-slate-50 border border-slate-200/70">
             <span>🔰 Nível 1 — Iniciante</span>
-            <span class="text-slate-500">0 a 499 XP</span>
+            <span class="text-slate-500">0 a 999 XP</span>
           </div>
           <div class="flex justify-between items-center p-2.5 rounded-xl bg-orange-50/60 border border-orange-200/70">
             <span>🥉 Nível 2 — Chapa de Bronze</span>
-            <span class="text-orange-800">500 a 1.499 XP</span>
+            <span class="text-orange-800">1.000 a 2.999 XP</span>
           </div>
           <div class="flex justify-between items-center p-2.5 rounded-xl bg-slate-100 border border-slate-300/70">
             <span>🥈 Nível 3 — Especialista de Prata</span>
-            <span class="text-slate-800">1.500 a 2.999 XP</span>
+            <span class="text-slate-800">3.000 a 5.999 XP</span>
           </div>
           <div class="flex justify-between items-center p-2.5 rounded-xl bg-amber-50 border border-amber-300">
             <span>🥇 Nível 4 — Padrão Ouro Venture</span>
-            <span class="text-amber-900">3.000 a 5.999 XP</span>
+            <span class="text-amber-900">6.000 a 9.999 XP</span>
+          </div>
+          <div class="flex justify-between items-center p-2.5 rounded-xl bg-cyan-50 border border-cyan-300">
+            <span>💎 Nível 5 — Diamante Best Burger</span>
+            <span class="text-cyan-900">10.000 a 14.999 XP</span>
+          </div>
+          <div class="flex justify-between items-center p-2.5 rounded-xl bg-rose-50 border border-rose-300">
+            <span>🔥 Nível 6 — Mestre das Olimpíadas</span>
+            <span class="text-rose-900">15.000 a 24.999 XP</span>
           </div>
           <div class="flex justify-between items-center p-3 rounded-xl gold-gradient text-slate-950 font-black shadow-sm">
-            <span>👑 Nível 5 — Mestre das Olimpíadas</span>
-            <span>6.000+ XP</span>
+            <span>👑 Nível 7 — Lenda dos Arcos Dourados</span>
+            <span>25.000+ XP</span>
           </div>
         </div>
       </div>
@@ -442,7 +450,7 @@
           </div>
           <div class="grid grid-cols-3 gap-2">
             <input id="admNewPass" type="text" placeholder="Senha (1234)" class="px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs font-bold" />
-            <input id="admNewXp" type="number" placeholder="XP (ex: 500)" class="px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs font-bold" />
+            <input id="admNewXp" type="number" placeholder="XP (ex: 1000)" class="px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs font-bold" />
             <input id="admNewHits" type="number" placeholder="Acertos" class="px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs font-bold" />
           </div>
           <button onclick="adminSaveMember()" class="w-full text-white font-black py-3.5 rounded-2xl text-xs btn-anim-red btn-shine">
@@ -461,7 +469,7 @@
       </div>
     </section>
 
-    <!-- ABA 5: LISTA COMPLETA DE TODAS AS VERSÕES (v1.0 ATÉ v6.6) -->
+    <!-- ABA 5: LISTA COMPLETA DE TODAS AS VERSÕES (v1.0 ATÉ v6.7) -->
     <section id="tab-updates" class="hidden space-y-3">
       <div class="fast-card rounded-3xl p-5 space-y-5">
         <div class="flex items-center justify-between border-b border-slate-100 pb-3">
@@ -469,16 +477,25 @@
             <h2 class="font-black text-slate-900 text-base">🚀 Histórico Completo de Versões</h2>
             <p class="text-[11px] text-slate-500 font-semibold">Todas as evoluções do aplicativo desde o lançamento</p>
           </div>
-          <span class="bg-red-100 text-red-800 text-xs font-black px-3 py-1 rounded-full">v6.6 Oficial</span>
+          <span class="bg-red-100 text-red-800 text-xs font-black px-3 py-1 rounded-full">v6.7 Oficial</span>
+        </div>
+
+        <!-- V6.7 -->
+        <div class="border-l-4 border-[#DA291C] pl-3.5 space-y-1">
+          <span class="text-[11px] font-extrabold text-red-600 uppercase">Versão 6.7 • Atualização Atual (7 Patentes & XP Exclusivo no Simulado)</span>
+          <h4 class="font-black text-slate-900 text-sm">Remoção de XP do Book/Flashcards + 7 Patentes Hardcore 💎👑</h4>
+          <ul class="text-xs text-slate-600 list-disc list-inside space-y-1 pt-1">
+            <li><strong>XP Exclusivo no Simulado:</strong> Removido o ganho de XP ao revelar respostas no Book e nos Flashcards para garantir competição 100% justa apenas nas questões de múltipla escolha.</li>
+            <li><strong>2 Novas Patentes & Metas Elevadas:</strong> Adicionados os níveis <strong>Diamante Best Burger (10.000 XP)</strong> e <strong>Lenda dos Arcos Dourados (25.000+ XP)</strong>, totalizando 7 patentes.</li>
+          </ul>
         </div>
 
         <!-- V6.6 -->
-        <div class="border-l-4 border-[#DA291C] pl-3.5 space-y-1">
-          <span class="text-[11px] font-extrabold text-red-600 uppercase">Versão 6.6 • Atualização Atual (Tempo de Recarga das Vidas)</span>
+        <div class="border-l-4 border-pink-600 pl-3.5 space-y-1">
+          <span class="text-[11px] font-extrabold text-pink-600 uppercase">Versão 6.6 • Tempo de Recarga das Vidas</span>
           <h4 class="font-black text-slate-900 text-sm">Bloqueio de 10 Minutos ao Perder os 5 Corações 💔⏳</h4>
           <ul class="text-xs text-slate-600 list-disc list-inside space-y-1 pt-1">
-            <li><strong>Cronômetro de 10 Minutos para Recarga:</strong> Quando o colaborador perde os 5 corações errando questões de alternativa, o Simulado entra em recarga por 10 minutos com contador ao vivo (salvo na memória contra F5).</li>
-            <li><strong>Botão de Restaurar Vidas no ADM:</strong> O administrador pode liberar as 5 vidas de qualquer colaborador instantaneamente pelo Painel ADM.</li>
+            <li>Cronômetro regressivo de 10 minutos quando o colaborador perde os 5 corações no Simulado, além do botão de restaurar vidas no ADM.</li>
           </ul>
         </div>
 
@@ -532,7 +549,7 @@
           <span class="text-[11px] font-extrabold text-indigo-600 uppercase">Versão 6.0 • Edição Premium</span>
           <h4 class="font-black text-slate-900 text-sm">Avatares de Perfil, Cargos Oficiais & Novas Metas de XP 🎨👑</h4>
           <ul class="text-xs text-slate-600 list-disc list-inside space-y-1 pt-1">
-            <li>Escolha de ícones de perfil e cargos oficiais (<strong>Atendente, Treinador, Supervisor, Coordenador e GUN</strong>), remoção do cadastro fixo e novas metas de XP (até 6.000+ XP).</li>
+            <li>Escolha de ícones de perfil e cargos oficiais (<strong>Atendente, Treinador, Supervisor, Coordenador e GUN</strong>) e remoção do cadastro fixo.</li>
           </ul>
         </div>
 
@@ -568,7 +585,7 @@
           <span class="text-[11px] font-extrabold text-red-600 uppercase">Versão 3.0 • Gamificação & Prêmios</span>
           <h4 class="font-black text-slate-900 text-sm">Cadastro com Senha, Níveis de XP e Prêmio da Caneca ☕🏆</h4>
           <ul class="text-xs text-slate-600 list-disc list-inside space-y-1 pt-1">
-            <li>Sistema de login com senha pessoal, barra de progresso do Nível 1 ao Nível 5 e Aba de Premiações destacando a <strong>Caneca Oficial do McDonald's</strong> para o 1º Lugar.</li>
+            <li>Sistema de login com senha pessoal, barra de progresso de níveis e Aba de Premiações destacando a <strong>Caneca Oficial do McDonald's</strong> para o 1º Lugar.</li>
           </ul>
         </div>
 
@@ -827,7 +844,7 @@
     const STORAGE_USERS_KEY = "mequi_olimpiadas_users_v6";
     const STORAGE_CURRENT_KEY = "mequi_olimpiadas_active_user_v6";
     const ADMIN_SECRET_PASS = "342005";
-    const HEARTS_COOLDOWN_MS = 10 * 60 * 1000; // 10 minutos em milissegundos
+    const HEARTS_COOLDOWN_MS = 10 * 60 * 1000; // 10 minutos
 
     const SYNC_MQTT_TOPIC = "mequi/venture/olimpiadas2026/v65_cluster_state";
     const CLOUD_HTTP_URL = "https://ntfy.sh/mequi_venture_olimpiadas_2026_v63_store";
@@ -970,7 +987,7 @@
       brokers.forEach((brokerUrl) => {
         try {
           const client = mqtt.connect(brokerUrl, {
-            clientId: "mq66_" + Math.random().toString(16).substring(2, 10),
+            clientId: "mq67_" + Math.random().toString(16).substring(2, 10),
             clean: true,
             connectTimeout: 5000,
             reconnectPeriod: 6000
@@ -1078,12 +1095,15 @@
       fetchCloudHistorySafe(true);
     }
 
+    // NOVO SISTEMA DE 7 PATENTES COM METAS DE XP ELEVADAS (VERSÃO 6.7)
     function getLevelInfo(xp) {
-      if (xp >= 6000) return { level: 5, title: "👑 Nível 5 — Mestre das Olimpíadas", min: 6000, max: 10000 };
-      if (xp >= 3000) return { level: 4, title: "🥇 Nível 4 — Padrão Ouro Venture", min: 3000, max: 6000 };
-      if (xp >= 1500) return { level: 3, title: "🥈 Nível 3 — Especialista de Prata", min: 1500, max: 3000 };
-      if (xp >= 500)  return { level: 2, title: "🥉 Nível 2 — Chapa de Bronze", min: 500, max: 1500 };
-      return { level: 1, title: "🔰 Nível 1 — Iniciante", min: 0, max: 500 };
+      if (xp >= 25000) return { level: 7, title: "👑 Nível 7 — Lenda dos Arcos Dourados", min: 25000, max: 40000 };
+      if (xp >= 15000) return { level: 6, title: "🔥 Nível 6 — Mestre das Olimpíadas", min: 15000, max: 25000 };
+      if (xp >= 10000) return { level: 5, title: "💎 Nível 5 — Diamante Best Burger", min: 10000, max: 15000 };
+      if (xp >= 6000)  return { level: 4, title: "🥇 Nível 4 — Padrão Ouro Venture", min: 6000, max: 10000 };
+      if (xp >= 3000)  return { level: 3, title: "🥈 Nível 3 — Especialista de Prata", min: 3000, max: 6000 };
+      if (xp >= 1000)  return { level: 2, title: "🥉 Nível 2 — Chapa de Bronze", min: 1000, max: 3000 };
+      return { level: 1, title: "🔰 Nível 1 — Iniciante", min: 0, max: 1000 };
     }
 
     function renderAvatarSelector() {
@@ -1230,7 +1250,7 @@
       const progress = Math.min(100, Math.round((((u.xp || 0) - info.min) / (info.max - info.min)) * 100));
       document.getElementById("xpProgressBar").style.width = `${Math.max(6, progress)}%`;
 
-      if (info.level < 5) {
+      if (info.level < 7) {
         document.getElementById("nextLevelTarget").textContent = `Faltam ${info.max - (u.xp || 0)} XP para o Nível ${info.level + 1}`;
       } else {
         document.getElementById("nextLevelTarget").textContent = `Patente Máxima Alcançada! 👑`;
@@ -1269,7 +1289,6 @@
         currentHearts = parseInt(localStorage.getItem("mequi_guest_hearts") || "5", 10);
       }
 
-      // Se o tempo de 10 minutos já passou, restaura os 5 corações automaticamente
       if (lockUntil > 0 && now >= lockUntil) {
         setActiveHeartsState(5, 0);
         lockUntil = 0;
@@ -1294,7 +1313,6 @@
       const timerDisplay = document.getElementById("cooldownTimerDisplay");
 
       if (lockUntil > now) {
-        // Está bloqueado pelos 10 minutos
         cooldownBox.classList.remove("hidden");
         activeArea.classList.add("hidden");
         timerDisplay.textContent = formatTimeRemaining(lockUntil - now);
@@ -1406,7 +1424,6 @@
         const newHearts = Math.max(0, currentHearts - 1);
 
         if (newHearts <= 0) {
-          // Perdeu todos os 5 corações -> Bloqueia por 10 minutos!
           const lockUntil = Date.now() + HEARTS_COOLDOWN_MS;
           setActiveHeartsState(0, lockUntil);
           if (currentUserKey) scheduleCloudSync(currentUserKey, true);
@@ -1429,10 +1446,10 @@
       document.getElementById("quizStreakInfo").textContent = `🔥 ${currentStreak}`;
     }
 
-    // FLASHCARDS
+    // FLASHCARDS (MODO ESTUDO LIVRE — SEM XP)
     function loadRandomFlashcard() {
       const item = QUESTIONS_DB[Math.floor(Math.random() * QUESTIONS_DB.length)];
-      document.getElementById("fcMeta").textContent = `Questão #${item.id} (${item.level}) • Toque para virar (+10 XP)`;
+      document.getElementById("fcMeta").textContent = `Questão #${item.id} (${item.level}) • Toque para revelar a resposta`;
       document.getElementById("fcQuestion").textContent = item.q;
       const ans = document.getElementById("fcAnswer");
       ans.textContent = `✅ Gabarito: ${item.a}`;
@@ -1443,13 +1460,12 @@
       const ans = document.getElementById("fcAnswer");
       if (ans.classList.contains("hidden")) {
         ans.classList.remove("hidden");
-        addXp(10);
       } else {
         loadRandomFlashcard();
       }
     }
 
-    // BOOK COMPLETO OTIMIZADO
+    // BOOK COMPLETO (MODO CONSULTA LIVRE — SEM XP)
     function debouncedBookSearch() {
       clearTimeout(searchDebounceTimer);
       searchDebounceTimer = setTimeout(() => {
@@ -1486,7 +1502,7 @@
         <div class="fast-card rounded-2xl p-4">
           <div class="flex items-center justify-between mb-1.5">
             <span class="text-[10px] font-black px-2.5 py-0.5 rounded-full bg-red-50 text-red-700 border border-red-100">Questão #${item.id} • ${item.level}</span>
-            <button onclick="revealBookAnswer(this)" class="text-[11px] font-extrabold text-amber-600 hover:text-amber-700 underline btn-tap">Ver Resposta (+5 XP)</button>
+            <button onclick="revealBookAnswer(this)" class="text-[11px] font-extrabold text-amber-600 hover:text-amber-700 underline btn-tap">Ver Resposta</button>
           </div>
           <p class="font-extrabold text-slate-900 text-xs leading-relaxed">${item.q}</p>
           <p class="hidden mt-2.5 pt-2.5 border-t border-slate-100 text-xs font-bold text-emerald-700">✅ ${item.a}</p>
@@ -1499,7 +1515,6 @@
       if (answerEl.classList.contains("hidden")) {
         answerEl.classList.remove("hidden");
         btn.textContent = "Ocultar";
-        addXp(5);
       } else {
         answerEl.classList.add("hidden");
         btn.textContent = "Ver Resposta";
@@ -1615,9 +1630,9 @@
             </div>
 
             <div class="flex flex-wrap items-center gap-1.5 pt-2 border-t border-slate-200">
-              <button onclick="adminAdjustXp('${key}', 50)" class="px-2.5 py-1.5 rounded-xl bg-emerald-600 text-white font-black text-[10px] btn-tap">+50 XP</button>
-              <button onclick="adminAdjustXp('${key}', 200)" class="px-2.5 py-1.5 rounded-xl bg-emerald-800 text-white font-black text-[10px] btn-tap">+200 XP</button>
-              <button onclick="adminAdjustXp('${key}', -50)" class="px-2.5 py-1.5 rounded-xl bg-amber-600 text-white font-black text-[10px] btn-tap">-50 XP</button>
+              <button onclick="adminAdjustXp('${key}', 100)" class="px-2.5 py-1.5 rounded-xl bg-emerald-600 text-white font-black text-[10px] btn-tap">+100 XP</button>
+              <button onclick="adminAdjustXp('${key}', 500)" class="px-2.5 py-1.5 rounded-xl bg-emerald-800 text-white font-black text-[10px] btn-tap">+500 XP</button>
+              <button onclick="adminAdjustXp('${key}', -100)" class="px-2.5 py-1.5 rounded-xl bg-amber-600 text-white font-black text-[10px] btn-tap">-100 XP</button>
               <button onclick="adminSetCustomXp('${key}')" class="px-2.5 py-1.5 rounded-xl bg-blue-600 text-white font-black text-[10px] btn-tap">✏️ Definir XP</button>
               <button onclick="adminRestoreHearts('${key}')" class="px-2.5 py-1.5 rounded-xl bg-pink-600 text-white font-black text-[10px] btn-tap">❤️ Restaurar Vidas</button>
               <button onclick="adminResetUser('${key}')" class="px-2.5 py-1.5 rounded-xl bg-slate-200 text-slate-800 font-bold text-[10px] btn-tap">Zerar</button>
