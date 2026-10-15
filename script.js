@@ -1,6 +1,7 @@
 /* =========================================================================
-   OLIMPÍADAS DO BÁSICO — VENTURE (script.js v7.6.1 COMPLETO UNIFICADO)
-   Áudio Destravado + Botão 🔊 + Jingle Méqui + Fotos + Print + 1v1 + 200 Questões
+   OLIMPÍADAS DO BÁSICO — VENTURE (script.js v7.7 COMPLETO UNIFICADO)
+   Efeitos Sonoros Completos (Cliques, Abas, Erro, Giro 3D, Acerto e Jingle)
+   + Fotos da Galeria + Print WhatsApp + Bolinha Online + Duelo 1v1 + 200 Questões
    ========================================================================= */
 
 const AVATAR_LIST = ["🍔", "🍟", "🍦", "🔥", "👨‍🍳", "👑", "⚡", "🏆", "🚀", "🥤", "🥓", "🎯"];
@@ -242,7 +243,7 @@ let photoUploadTarget = "register";
 let duelHistoryList = JSON.parse(localStorage.getItem(STORAGE_DUEL_HISTORY) || "[]");
 
 // =========================================================================
-// 🎵 MOTOR DE ÁUDIO DESTRAVADO + JINGLE OFICIAL ("Pa-ra-pa-pa-pa")
+// 🎵 MOTOR COMPLETO DE ÁUDIO (JINGLE + CLIQUES DE ABA + ERRO + GIRO 3D)
 // =========================================================================
 
 let globalAudioCtx = null;
@@ -263,7 +264,7 @@ function getUnlockedAudioCtx() {
 document.addEventListener("click", () => { getUnlockedAudioCtx(); }, { once: true });
 document.addEventListener("touchstart", () => { getUnlockedAudioCtx(); }, { once: true });
 
-// Cria automaticamente o botão 🔊 no cabeçalho para testar o som a qualquer momento
+// Cria automaticamente o botão 🔊 no cabeçalho para testar o jingle quando quiser
 function ensureSoundTestButton() {
   const themeBtn = document.getElementById("themeToggleBtn");
   if (themeBtn && !document.getElementById("soundTestBtn")) {
@@ -277,7 +278,7 @@ function ensureSoundTestButton() {
   }
 }
 
-// 1. Jingle Oficial do Comercial ("Pa-ra-pa-pa-pa" -> Notas: C5, D5, E5, A5, G5)
+// 1. Jingle Oficial do Comercial ("Pa-ra-pa-pa-pa" -> Subida de Nível / Vitória)
 function playMcDonaldsJingle() {
   try {
     const ctx = getUnlockedAudioCtx();
@@ -293,7 +294,6 @@ function playMcDonaldsJingle() {
     ];
 
     notes.forEach(n => {
-      // Oscilador principal + harmônico para som alto e nítido no celular e no PC
       [1, 2].forEach((mult, idx) => {
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
@@ -313,12 +313,10 @@ function playMcDonaldsJingle() {
         osc.stop(now + n.start + n.dur + 0.02);
       });
     });
-  } catch (e) {
-    console.error("Erro ao reproduzir jingle:", e);
-  }
+  } catch (e) {}
 }
 
-// 2. Som curto de acerto (+25 XP) para confirmar que o som está ativo a cada resposta
+// 2. Som de Acerto de Pergunta (+25 XP)
 function playHitSuccessSound() {
   try {
     const ctx = getUnlockedAudioCtx();
@@ -329,12 +327,92 @@ function playHitSuccessSound() {
     osc.type = "sine";
     osc.frequency.setValueAtTime(587.33, now);
     osc.frequency.setValueAtTime(880.00, now + 0.08);
-    gain.gain.setValueAtTime(0.4, now);
+    gain.gain.setValueAtTime(0.45, now);
     gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
     osc.connect(gain);
     gain.connect(ctx.destination);
     osc.start(now);
     osc.stop(now + 0.26);
+  } catch (e) {}
+}
+
+// 3. NOVO: Som de Erro de Pergunta ("Buzzer" grave duplo: Bóóó-bóóó)
+function playWrongAnswerSound() {
+  try {
+    const ctx = getUnlockedAudioCtx();
+    if (!ctx) return;
+    const now = ctx.currentTime;
+
+    const tones = [
+      { freq: 220, start: 0.00, dur: 0.14 },
+      { freq: 155, start: 0.16, dur: 0.24 }
+    ];
+
+    tones.forEach(t => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = "sawtooth";
+      osc.frequency.setValueAtTime(t.freq, now + t.start);
+
+      gain.gain.setValueAtTime(0.32, now + t.start);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + t.start + t.dur);
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc.start(now + t.start);
+      osc.stop(now + t.start + t.dur + 0.02);
+    });
+  } catch (e) {}
+}
+
+// 4. NOVO: Som de Clique de Troca de Aba / Botões ("Pop" curto e agradável)
+function playTabClickSound() {
+  try {
+    const ctx = getUnlockedAudioCtx();
+    if (!ctx) return;
+    const now = ctx.currentTime;
+
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = "triangle";
+    osc.frequency.setValueAtTime(520, now);
+    osc.frequency.exponentialRampToValueAtTime(880, now + 0.055);
+
+    gain.gain.setValueAtTime(0.28, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
+
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+
+    osc.start(now);
+    osc.stop(now + 0.065);
+  } catch (e) {}
+}
+
+// 5. NOVO: Som de Virar o Flashcard 3D ("Whoosh / Flip" de carta)
+function playCardFlipSound() {
+  try {
+    const ctx = getUnlockedAudioCtx();
+    if (!ctx) return;
+    const now = ctx.currentTime;
+
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = "sine";
+    osc.frequency.setValueAtTime(240, now);
+    osc.frequency.exponentialRampToValueAtTime(620, now + 0.07);
+    osc.frequency.exponentialRampToValueAtTime(340, now + 0.14);
+
+    gain.gain.setValueAtTime(0.01, now);
+    gain.gain.linearRampToValueAtTime(0.35, now + 0.05);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
+
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+
+    osc.start(now);
+    osc.stop(now + 0.16);
   } catch (e) {}
 }
 
@@ -355,6 +433,7 @@ function renderAvatarBadge(avatarVal, sizeClasses = "w-10 h-10", textClasses = "
 }
 
 function triggerPhotoUpload(targetMode) {
+  playTabClickSound();
   photoUploadTarget = targetMode;
   const input = document.getElementById("hiddenGalleryInput");
   if (input) {
@@ -384,6 +463,8 @@ function handleGalleryFileSelected(event) {
       ctx.drawImage(img, sx, sy, minDim, minDim, 0, 0, size, size);
       const compressedDataUrl = canvas.toDataURL("image/jpeg", 0.74);
 
+      playHitSuccessSound();
+
       if (photoUploadTarget === "register") {
         selectedRegAvatar = compressedDataUrl;
         renderAvatarSelector();
@@ -404,6 +485,7 @@ function handleGalleryFileSelected(event) {
 // =========================================================================
 
 async function captureAndShareRankingImage() {
+  playTabClickSound();
   const printArea = document.getElementById("rankingPrintArea");
   const btn = document.getElementById("btnPrintRanking");
   if (!printArea || typeof html2canvas === "undefined") {
@@ -471,6 +553,7 @@ function initTheme() {
 }
 
 function toggleDarkMode() {
+  playTabClickSound();
   const isDark = document.body.classList.toggle("dark-mode");
   localStorage.setItem(STORAGE_THEME_KEY, isDark ? "dark" : "light");
   const btn = document.getElementById("themeToggleBtn");
@@ -627,7 +710,7 @@ function initClusterSync() {
   brokers.forEach((brokerUrl) => {
     try {
       const client = mqtt.connect(brokerUrl, {
-        clientId: "mq761_" + Math.random().toString(16).substring(2, 10),
+        clientId: "mq77_" + Math.random().toString(16).substring(2, 10),
         clean: true,
         connectTimeout: 5000,
         reconnectPeriod: 6000
@@ -745,6 +828,7 @@ async function fetchCloudHistorySafe(force = false) {
 }
 
 function forceSyncNow() {
+  playTabClickSound();
   if (currentUserKey && users[currentUserKey]) {
     scheduleCloudSync(currentUserKey, true);
   }
@@ -789,11 +873,13 @@ function renderAvatarSelector() {
 }
 
 function selectRegAvatar(icon) {
+  playTabClickSound();
   selectedRegAvatar = icon;
   renderAvatarSelector();
 }
 
 function openAvatarModal() {
+  playTabClickSound();
   if (!currentUserKey || !users[currentUserKey]) return;
   const currentIcon = users[currentUserKey].avatar || "🍔";
   const grid = document.getElementById("changeAvatarGrid");
@@ -818,10 +904,12 @@ function openAvatarModal() {
 }
 
 function closeAvatarModal() {
+  playTabClickSound();
   document.getElementById("avatarPickerModal").classList.add("hidden");
 }
 
 function changeUserAvatar(icon) {
+  playTabClickSound();
   if (!currentUserKey || !users[currentUserKey]) return;
   users[currentUserKey].avatar = icon;
   users[currentUserKey].updatedAt = Date.now();
@@ -830,6 +918,7 @@ function changeUserAvatar(icon) {
 }
 
 function switchAuthTab(mode) {
+  playTabClickSound();
   document.getElementById("authError").classList.add("hidden");
   if (mode === "login") {
     document.getElementById("loginForm").classList.remove("hidden");
@@ -845,6 +934,7 @@ function switchAuthTab(mode) {
 }
 
 function showAuthError(msg) {
+  playWrongAnswerSound();
   const err = document.getElementById("authError");
   err.textContent = msg;
   err.classList.remove("hidden");
@@ -877,6 +967,7 @@ function handleRegister() {
   currentUserKey = key;
   localStorage.setItem(STORAGE_CURRENT_KEY, key);
   document.getElementById("authModal").classList.add("hidden");
+  playHitSuccessSound();
   syncActiveUserHeartsState();
   loadNextQuizQuestion();
   scheduleCloudSync(key, true);
@@ -919,6 +1010,7 @@ async function handleLogin() {
     currentUserKey = key;
     localStorage.setItem(STORAGE_CURRENT_KEY, key);
     document.getElementById("authModal").classList.add("hidden");
+    playHitSuccessSound();
     syncActiveUserHeartsState();
     loadNextQuizQuestion();
     scheduleCloudSync(key, true);
@@ -935,12 +1027,14 @@ async function handleLogin() {
   currentUserKey = key;
   localStorage.setItem(STORAGE_CURRENT_KEY, key);
   document.getElementById("authModal").classList.add("hidden");
+  playHitSuccessSound();
   syncActiveUserHeartsState();
   loadNextQuizQuestion();
   scheduleCloudSync(key, true);
 }
 
 function logoutUser() {
+  playTabClickSound();
   currentUserKey = null;
   localStorage.removeItem(STORAGE_CURRENT_KEY);
   document.getElementById("loginPass").value = "";
@@ -1049,6 +1143,7 @@ function updateMistakesBadge() {
 }
 
 function openReviewModal() {
+  playTabClickSound();
   const mistakes = getActiveUserMistakes();
   if (mistakes.length === 0) {
     return alert("🎉 Parabéns! Você não tem nenhuma dúvida pendente. Quando errar alguma questão no Simulado, ela ficará salva aqui para revisão!");
@@ -1058,12 +1153,15 @@ function openReviewModal() {
 }
 
 function closeReviewModal() {
+  playTabClickSound();
   document.getElementById("reviewMistakesModal").classList.add("hidden");
 }
 
 function loadNextReviewQuestion() {
+  playTabClickSound();
   const mistakes = getActiveUserMistakes();
   if (mistakes.length === 0) {
+    playMcDonaldsJingle();
     alert("✅ Sensacional! Você revisou e zerou todas as suas dúvidas pendentes!");
     closeReviewModal();
     return;
@@ -1112,6 +1210,7 @@ function checkReviewAnswer(selectedBtn, chosen, correct, qId) {
     fb.textContent = "✅ Aprendido! Essa questão saiu da sua lista de dúvidas!";
   } else {
     selectedBtn.className = "anim-shake-wrong w-full text-left p-3.5 rounded-2xl border-2 border-red-500 bg-red-500/20 font-extrabold text-xs flex items-center gap-3";
+    playWrongAnswerSound();
     fb.className = "p-3 rounded-2xl text-xs font-extrabold bg-red-500/15 text-red-500 border border-red-500/30";
     fb.innerHTML = `❌ O gabarito oficial é:<br><span class="underline mt-1 inline-block">${correct}</span>`;
   }
@@ -1144,6 +1243,7 @@ function populateDuelOpponentList() {
 }
 
 function sendLiveDuelInvite() {
+  playTabClickSound();
   if (!currentUserKey || !users[currentUserKey]) {
     return alert("Faça login na sua conta antes de desafiar alguém!");
   }
@@ -1190,6 +1290,7 @@ function sendLiveDuelInvite() {
 }
 
 function sendDuelInviteWhatsApp() {
+  playTabClickSound();
   if (!activeDuel) return;
   const link = `${window.location.origin}${window.location.pathname}`;
   const text = `⚔️ *DESAFIO 1 vs 1 — OLIMPÍADAS DO BÁSICO*\n🔥 *${activeDuel.hostName}* está te chamando para um Duelo ao vivo agora!\n\n📲 Abra o aplicativo para aceitar o convite: ${link}`;
@@ -1202,6 +1303,7 @@ function handleIncomingDuelPacket(pkt) {
   if (pkt.type === "invite" && pkt.guestKey === currentUserKey) {
     if (activeDuel) return;
     pendingDuelInvite = pkt;
+    playHitSuccessSound();
     document.getElementById("inviteFromNameDisplay").textContent = pkt.hostName;
     document.getElementById("duelInvitePopup").classList.remove("hidden");
     return;
@@ -1210,6 +1312,7 @@ function handleIncomingDuelPacket(pkt) {
   if (!activeDuel || pkt.duelId !== activeDuel.duelId) return;
 
   if (pkt.type === "decline") {
+    playWrongAnswerSound();
     alert(`❌ ${activeDuel.guestName} recusou o convite de duelo no momento.`);
     leaveActiveDuel(false);
     return;
@@ -1229,6 +1332,7 @@ function handleIncomingDuelPacket(pkt) {
     activeDuel.currentQuestion = pkt.question;
     activeDuel.roundResolved = false;
     activeDuel.lockedPlayers = {};
+    playCardFlipSound();
     renderDuelRoundUI();
     return;
   }
@@ -1262,6 +1366,7 @@ function handleIncomingDuelPacket(pkt) {
       }
     } else {
       activeDuel.lockedPlayers[pkt.playerKey] = true;
+      playWrongAnswerSound();
       if (pkt.playerKey === currentUserKey) {
         showDuelBanner(`❌ Você errou! Aguardando tentativa do oponente...`, "red");
       } else {
@@ -1337,6 +1442,7 @@ function renderDuelHistory() {
 }
 
 function acceptDuelInvite() {
+  playTabClickSound();
   if (!pendingDuelInvite) return;
   document.getElementById("duelInvitePopup").classList.add("hidden");
 
@@ -1364,6 +1470,7 @@ function acceptDuelInvite() {
 }
 
 function declineDuelInvite() {
+  playTabClickSound();
   if (!pendingDuelInvite) return;
   document.getElementById("duelInvitePopup").classList.add("hidden");
   publishDuelPacket({ type: "decline", duelId: pendingDuelInvite.duelId });
@@ -1469,6 +1576,7 @@ function showDuelBanner(msg, color) {
 }
 
 function leaveActiveDuel(notifyOther = true) {
+  playTabClickSound();
   if (activeDuel && notifyOther) {
     publishDuelPacket({ type: "leave", duelId: activeDuel.duelId, playerKey: currentUserKey });
   }
@@ -1567,6 +1675,7 @@ function checkAndRenderCooldownScreen() {
 }
 
 function changeQuizLevelFilter() {
+  playTabClickSound();
   currentStreak = 0;
   loadNextQuizQuestion();
 }
@@ -1578,6 +1687,7 @@ function updateHeartsDisplay() {
 }
 
 function loadNextQuizQuestion() {
+  playTabClickSound();
   syncActiveUserHeartsState();
   if (checkAndRenderCooldownScreen()) return;
 
@@ -1641,6 +1751,7 @@ function checkQuizAnswer(selectedBtn, chosen, correct, letter) {
   } else {
     selectedBtn.className = "anim-shake-wrong w-full text-left p-3.5 rounded-2xl border-2 border-red-500 bg-red-500/20 font-extrabold text-xs flex items-center gap-3";
     currentStreak = 0;
+    playWrongAnswerSound();
 
     if (currentQuizQuestionId) recordMistakeQuestion(currentQuizQuestionId);
     const newHearts = Math.max(0, currentHearts - 1);
@@ -1669,10 +1780,11 @@ function checkQuizAnswer(selectedBtn, chosen, correct, letter) {
 }
 
 // =========================================================================
-// FLASHCARDS 3D, BOOK E RANKING COM STATUS ONLINE
+// FLASHCARDS 3D (COM SOM DE GIRO), BOOK E RANKING
 // =========================================================================
 
 function loadRandomFlashcard() {
+  playCardFlipSound();
   const inner = document.getElementById("fcFlipInner");
   if (!inner) return;
   inner.classList.remove("is-flipped");
@@ -1685,6 +1797,7 @@ function loadRandomFlashcard() {
 }
 
 function flipFlashcard() {
+  playCardFlipSound();
   const inner = document.getElementById("fcFlipInner");
   if (inner) inner.classList.toggle("is-flipped");
 }
@@ -1695,6 +1808,7 @@ function debouncedBookSearch() {
 }
 
 function setBookFilter(level) {
+  playTabClickSound();
   currentBookFilter = level;
   ["ALL", "Básico", "Intermediário", "Avançado"].forEach(lvl => {
     const btn = document.getElementById(`filter-${lvl}`);
@@ -1732,6 +1846,7 @@ function renderBookList() {
 }
 
 function revealBookAnswer(btn) {
+  playCardFlipSound();
   const answerEl = btn.parentElement.nextElementSibling.nextElementSibling;
   if (answerEl.classList.contains("hidden")) {
     answerEl.classList.remove("hidden");
@@ -1831,6 +1946,7 @@ function renderLeaderboard() {
 }
 
 function shareMyScoreWhatsApp() {
+  playTabClickSound();
   if (!currentUserKey || !users[currentUserKey]) return;
   const u = users[currentUserKey];
   const info = getLevelInfo(u.xp || 0);
@@ -1850,17 +1966,20 @@ function unlockAdminPanel() {
   const err = document.getElementById("adminAuthError");
   if (pass === ADMIN_SECRET_PASS) {
     isAdminUnlocked = true;
+    playHitSuccessSound();
     err.classList.add("hidden");
     document.getElementById("adminLockScreen").classList.add("hidden");
     document.getElementById("adminDashboard").classList.remove("hidden");
     renderAdminUsersList();
     fetchCloudHistorySafe(true);
   } else {
+    playWrongAnswerSound();
     err.classList.remove("hidden");
   }
 }
 
 function lockAdminPanel() {
+  playTabClickSound();
   isAdminUnlocked = false;
   document.getElementById("adminPassInput").value = "";
   document.getElementById("adminDashboard").classList.add("hidden");
@@ -1918,6 +2037,7 @@ function renderAdminUsersList() {
 }
 
 function adminRestoreHearts(key) {
+  playHitSuccessSound();
   if (!users[key]) return;
   users[key].hearts = 5;
   users[key].heartsLockUntil = 0;
@@ -1945,12 +2065,15 @@ function adminAdjustXp(key, delta) {
     playMcDonaldsJingle();
   } else if (delta > 0) {
     playHitSuccessSound();
+  } else {
+    playTabClickSound();
   }
 
   scheduleCloudSync(key, true);
 }
 
 function adminSetCustomXp(key) {
+  playTabClickSound();
   if (!users[key]) return;
   const val = prompt(`Digite o novo valor exato de XP para ${users[key].name}:`, users[key].xp || 0);
   if (val === null) return;
@@ -1965,12 +2088,15 @@ function adminSetCustomXp(key) {
 
     if (newLevel > oldLevel) {
       playMcDonaldsJingle();
+    } else {
+      playHitSuccessSound();
     }
     scheduleCloudSync(key, true);
   }
 }
 
 function adminResetUser(key) {
+  playTabClickSound();
   if (!users[key]) return;
   if (!confirm(`Zerar o XP e os acertos de ${users[key].name}?`)) return;
   users[key].xp = 0;
@@ -1983,6 +2109,7 @@ function adminResetUser(key) {
 }
 
 function adminDeleteUser(key) {
+  playTabClickSound();
   if (!users[key]) return;
   if (!confirm(`Excluir permanentemente ${users[key].name} do Ranking?`)) return;
   users[key]._deleted = true;
@@ -2017,6 +2144,7 @@ function adminSaveMember() {
     adminOverrideAt: Date.now()
   };
 
+  playHitSuccessSound();
   scheduleCloudSync(key, true);
 
   document.getElementById("admNewName").value = "";
@@ -2027,6 +2155,7 @@ function adminSaveMember() {
 }
 
 function switchMainTab(tab) {
+  playTabClickSound();
   ["quiz", "book", "prizes", "admin", "updates"].forEach(t => {
     document.getElementById(`tab-${t}`).classList.add("hidden");
     const navEl = document.getElementById(`nav-${t}`);
