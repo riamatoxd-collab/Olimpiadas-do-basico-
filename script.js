@@ -1,4 +1,5 @@
 <script>
+
     const AVATAR_LIST = ["🍔", "🍟", "🍦", "🔥", "👨‍🍳", "👑", "⚡", "🏆", "🚀", "🥤", "🥓", "🎯"];
     let selectedRegAvatar = "🍔";
 
