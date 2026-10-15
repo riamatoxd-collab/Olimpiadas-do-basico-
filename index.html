@@ -7,7 +7,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="Olimpíadas Méqui" />
-  <title>Olimpíadas do Básico — Venture v6.5</title>
+  <title>Olimpíadas do Básico — Venture v6.6</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -135,7 +135,7 @@
       <div class="text-center mb-5">
         <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl mc-gradient text-[#FFC72C] font-black text-4xl shadow-lg mb-2.5 border-2 border-[#FFC72C]/40 float-slow">M</div>
         <h1 class="text-2xl font-black tracking-tight text-slate-900">OLIMPÍADAS DO BÁSICO</h1>
-        <p class="text-xs text-slate-500 font-semibold mt-0.5">Treinamento Oficial Venture • Versão 6.5 Anti-Queda 🛡️</p>
+        <p class="text-xs text-slate-500 font-semibold mt-0.5">Treinamento Oficial Venture • Versão 6.6 🏆</p>
       </div>
 
       <div class="flex rounded-2xl bg-slate-100 p-1.5 mb-5">
@@ -248,7 +248,7 @@
 
   <main class="max-w-xl mx-auto px-4 mt-5">
 
-    <!-- ABA 1: SIMULADO INTERATIVO (COM BOTÕES ANIMADOS A, B, C, D) -->
+    <!-- ABA 1: SIMULADO INTERATIVO (COM BLOQUEIO DE 10 MINUTOS DOS CORAÇÕES) -->
     <section id="tab-quiz" class="space-y-4">
       <div class="fast-card rounded-3xl p-5">
         <div class="flex flex-wrap items-center justify-between gap-2 mb-4 pb-3 border-b border-slate-100">
@@ -256,7 +256,7 @@
             <span class="text-[10px] font-black uppercase tracking-wider text-red-600 bg-red-50 px-2.5 py-1 rounded-full">Modo Competição • A, B, C, D</span>
             <h2 class="font-black text-slate-900 text-base mt-1">🎯 Simulado Oficial (+25 XP)</h2>
           </div>
-          <select id="quizLevelFilter" onchange="startNewQuiz()" class="text-xs font-extrabold bg-slate-100 border border-slate-200 text-slate-800 rounded-xl px-3 py-2 focus:outline-none focus:border-red-600 btn-tap">
+          <select id="quizLevelFilter" onchange="changeQuizLevelFilter()" class="text-xs font-extrabold bg-slate-100 border border-slate-200 text-slate-800 rounded-xl px-3 py-2 focus:outline-none focus:border-red-600 btn-tap">
             <option value="ALL">Todos os Níveis</option>
             <option value="Básico">Nível Básico</option>
             <option value="Intermediário">Nível Intermediário</option>
@@ -264,15 +264,32 @@
           </select>
         </div>
 
-        <div id="quizCard" class="space-y-4">
-          <div class="flex items-center justify-between text-xs font-extrabold">
-            <span id="quizQuestionMeta" class="bg-amber-100 text-amber-900 px-3 py-1 rounded-full">Questão #1</span>
-            <div class="flex items-center gap-3">
-              <span id="quizHeartsInfo" class="text-red-500 tracking-tighter text-sm">❤️❤️❤️❤️❤️</span>
-              <span id="quizStreakInfo" class="bg-orange-50 text-orange-700 px-2.5 py-1 rounded-full border border-orange-200">🔥 0</span>
-            </div>
+        <!-- Barra de Status do Simulado (Vidas e Ofensiva) -->
+        <div class="flex items-center justify-between text-xs font-extrabold mb-3">
+          <span id="quizQuestionMeta" class="bg-amber-100 text-amber-900 px-3 py-1 rounded-full">Questão #1</span>
+          <div class="flex items-center gap-3">
+            <span id="quizHeartsInfo" class="text-red-500 tracking-tighter text-sm">❤️❤️❤️❤️❤️</span>
+            <span id="quizStreakInfo" class="bg-orange-50 text-orange-700 px-2.5 py-1 rounded-full border border-orange-200">🔥 0</span>
           </div>
+        </div>
 
+        <!-- TELA DE BLOQUEIO DE 10 MINUTOS QUANDO ACABAM OS CORAÇÕES -->
+        <div id="quizCooldownBox" class="hidden p-6 rounded-3xl bg-gradient-to-b from-red-50 to-orange-50 border-2 border-red-200 text-center space-y-3 my-2">
+          <div class="text-4xl float-slow">💔⏳</div>
+          <h3 class="font-black text-red-900 text-base">Seus 5 Corações Acabaram!</h3>
+          <p class="text-xs text-red-700 font-semibold leading-relaxed">
+            Você atingiu o limite de erros seguidos nas questões de alternativa. Aguarde a recarga automática para voltar a responder:
+          </p>
+          <div class="inline-block bg-slate-900 text-[#FFC72C] font-black text-2xl px-6 py-2.5 rounded-2xl tracking-widest shadow-md border border-[#FFC72C]/40" id="cooldownTimerDisplay">
+            10:00
+          </div>
+          <p class="text-[11px] text-slate-600 font-bold pt-1">
+            💡 Enquanto seus corações recarregam, aproveite para estudar no <span class="text-red-600 underline cursor-pointer" onclick="switchMainTab('book')">Book Oficial</span> ou nos Flashcards abaixo!
+          </p>
+        </div>
+
+        <!-- ÁREA ATIVA DAS PERGUNTAS DE ALTERNATIVA -->
+        <div id="quizActiveArea" class="space-y-4">
           <p id="quizQuestionText" class="font-extrabold text-slate-900 text-base leading-snug bg-slate-50 p-4 rounded-2xl border border-slate-200/80"></p>
 
           <!-- Opções A, B, C, D Animadas -->
@@ -390,7 +407,7 @@
         <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl dark-gradient text-[#FFC72C] text-3xl font-black shadow-lg float-slow">🔒</div>
         <div>
           <h2 class="font-black text-slate-900 text-lg">Painel do Administrador</h2>
-          <p class="text-xs text-slate-500 font-medium mt-0.5">Acesso restrito para controle de XP, cargos e cadastros da loja.</p>
+          <p class="text-xs text-slate-500 font-medium mt-0.5">Acesso restrito para controle de XP, vidas, cargos e cadastros da loja.</p>
         </div>
         <div id="adminAuthError" class="hidden p-3 rounded-2xl bg-red-50 border border-red-200 text-red-700 text-xs font-bold">Senha incorreta! Acesso negado.</div>
         <input id="adminPassInput" type="password" placeholder="Digite a senha do ADM" class="w-full px-4 py-3.5 rounded-2xl bg-slate-50 border border-slate-300 text-center font-black tracking-widest text-sm focus:outline-none focus:border-red-600" />
@@ -444,7 +461,7 @@
       </div>
     </section>
 
-    <!-- ABA 5: LISTA COMPLETA DE TODAS AS VERSÕES (v1.0 ATÉ v6.5) -->
+    <!-- ABA 5: LISTA COMPLETA DE TODAS AS VERSÕES (v1.0 ATÉ v6.6) -->
     <section id="tab-updates" class="hidden space-y-3">
       <div class="fast-card rounded-3xl p-5 space-y-5">
         <div class="flex items-center justify-between border-b border-slate-100 pb-3">
@@ -452,22 +469,31 @@
             <h2 class="font-black text-slate-900 text-base">🚀 Histórico Completo de Versões</h2>
             <p class="text-[11px] text-slate-500 font-semibold">Todas as evoluções do aplicativo desde o lançamento</p>
           </div>
-          <span class="bg-emerald-100 text-emerald-800 text-xs font-black px-3 py-1 rounded-full">v6.5 Estável</span>
+          <span class="bg-red-100 text-red-800 text-xs font-black px-3 py-1 rounded-full">v6.6 Oficial</span>
+        </div>
+
+        <!-- V6.6 -->
+        <div class="border-l-4 border-[#DA291C] pl-3.5 space-y-1">
+          <span class="text-[11px] font-extrabold text-red-600 uppercase">Versão 6.6 • Atualização Atual (Tempo de Recarga das Vidas)</span>
+          <h4 class="font-black text-slate-900 text-sm">Bloqueio de 10 Minutos ao Perder os 5 Corações 💔⏳</h4>
+          <ul class="text-xs text-slate-600 list-disc list-inside space-y-1 pt-1">
+            <li><strong>Cronômetro de 10 Minutos para Recarga:</strong> Quando o colaborador perde os 5 corações errando questões de alternativa, o Simulado entra em recarga por 10 minutos com contador ao vivo (salvo na memória contra F5).</li>
+            <li><strong>Botão de Restaurar Vidas no ADM:</strong> O administrador pode liberar as 5 vidas de qualquer colaborador instantaneamente pelo Painel ADM.</li>
+          </ul>
         </div>
 
         <!-- V6.5 -->
         <div class="border-l-4 border-emerald-600 pl-3.5 space-y-1">
-          <span class="text-[11px] font-extrabold text-emerald-600 uppercase">Versão 6.5 • Atualização Atual (Estabilidade Multi-Usuários)</span>
+          <span class="text-[11px] font-extrabold text-emerald-600 uppercase">Versão 6.5 • Estabilidade Multi-Usuários</span>
           <h4 class="font-black text-slate-900 text-sm">Proteção Anti-Queda para Múltiplos Acessos Simultâneos 🛡️⚡</h4>
           <ul class="text-xs text-slate-600 list-disc list-inside space-y-1 pt-1">
-            <li><strong>Agrupador Inteligente de Tráfego (Write Coalescing):</strong> Reduz em 90% as chamadas de rede agrupando os pontos de XP sem atrasar a tela, impedindo quedas quando 5, 20 ou 50 pessoas usam o app juntas no mesmo Wi-Fi.</li>
-            <li><strong>Trava Anti-Loop (Hash Check):</strong> Evita que os celulares fiquem recarregando o Ranking repetidamente sem mudança de placar.</li>
+            <li>Agrupador inteligente de tráfego (<em>Write Coalescing</em>) e trava Anti-Loop para suportar dezenas de colaboradores simultâneos sem cair.</li>
           </ul>
         </div>
 
         <!-- V6.4 -->
-        <div class="border-l-4 border-[#DA291C] pl-3.5 space-y-1">
-          <span class="text-[11px] font-extrabold text-red-600 uppercase">Versão 6.4 • Desempenho Turbo & Animações</span>
+        <div class="border-l-4 border-orange-500 pl-3.5 space-y-1">
+          <span class="text-[11px] font-extrabold text-orange-600 uppercase">Versão 6.4 • Desempenho Turbo & Animações</span>
           <h4 class="font-black text-slate-900 text-sm">Otimização de Desempenho + Botões 3D Animados ⚡✨</h4>
           <ul class="text-xs text-slate-600 list-disc list-inside space-y-1 pt-1">
             <li>Renderização em lote único das 200 questões, busca com <em>Debounce</em> e botões 3D com efeito mola, brilho e animações de acerto/erro.</li>
@@ -801,8 +827,8 @@
     const STORAGE_USERS_KEY = "mequi_olimpiadas_users_v6";
     const STORAGE_CURRENT_KEY = "mequi_olimpiadas_active_user_v6";
     const ADMIN_SECRET_PASS = "342005";
+    const HEARTS_COOLDOWN_MS = 10 * 60 * 1000; // 10 minutos em milissegundos
 
-    // MOTOR DUPLO DE ALTA CAPACIDADE (SEM CONGESTIONAMENTO / ZERO RATE-LIMIT)
     const SYNC_MQTT_TOPIC = "mequi/venture/olimpiadas2026/v65_cluster_state";
     const CLOUD_HTTP_URL = "https://ntfy.sh/mequi_venture_olimpiadas_2026_v63_store";
 
@@ -814,9 +840,9 @@
     let currentHearts = 5;
     let isAdminUnlocked = false;
 
-    // Variáveis de controle anti-queda e anti-loop
     let searchDebounceTimer = null;
     let cloudSyncQueueTimer = null;
+    let cooldownIntervalId = null;
     let lastLeaderboardHash = "";
     let lastAdminListHash = "";
     let lastHttpFetchTime = 0;
@@ -842,6 +868,8 @@
                 ...u,
                 role: u.role || u.station || "Atendente",
                 avatar: u.avatar || "🍔",
+                hearts: u.hearts !== undefined ? u.hearts : 5,
+                heartsLockUntil: u.heartsLockUntil || 0,
                 updatedAt: u.updatedAt || Date.now()
               });
             });
@@ -885,6 +913,8 @@
         return incoming;
       }
 
+      const isIncomingNewer = (incoming.updatedAt || 0) >= (existing.updatedAt || 0);
+
       return {
         ...existing,
         ...incoming,
@@ -892,6 +922,8 @@
         avatar: incoming.avatar || existing.avatar || "🍔",
         xp: Math.max(existing.xp || 0, incoming.xp || 0),
         correctAnswers: Math.max(existing.correctAnswers || 0, incoming.correctAnswers || 0),
+        hearts: isIncomingNewer && incoming.hearts !== undefined ? incoming.hearts : (existing.hearts !== undefined ? existing.hearts : 5),
+        heartsLockUntil: isIncomingNewer && incoming.heartsLockUntil !== undefined ? incoming.heartsLockUntil : (existing.heartsLockUntil || 0),
         updatedAt: Math.max(existing.updatedAt || 0, incoming.updatedAt || 0)
       };
     }
@@ -909,15 +941,15 @@
       return merged;
     }
 
-    // ATUALIZAÇÃO INTELIGENTE DA INTERFACE (SÓ REDESENHA SE HOUVER MUDANÇA REAL)
     function refreshUIIfNeeded() {
       updateHeaderUI();
+      syncActiveUserHeartsState();
 
       const sortedList = Object.values(users)
         .filter(u => u && u.name && !u._deleted)
         .sort((a, b) => (b.xp || 0) - (a.xp || 0));
 
-      const currentHash = JSON.stringify(sortedList.map(u => `${u.name}:${u.xp}:${u.correctAnswers}:${u.avatar}:${u.role}`));
+      const currentHash = JSON.stringify(sortedList.map(u => `${u.name}:${u.xp}:${u.correctAnswers}:${u.avatar}:${u.role}:${u.heartsLockUntil || 0}`));
       if (currentHash !== lastLeaderboardHash) {
         lastLeaderboardHash = currentHash;
         renderLeaderboard();
@@ -929,7 +961,6 @@
       }
     }
 
-    // MOTOR 1: WEBSOCKETS EM TEMPO REAL (COM PROTEÇÃO ANTI-LOOP PARA NÃO DERRUBAR 5+ CELULARES)
     function initClusterSync() {
       const brokers = [
         "wss://broker.emqx.io:8084/mqtt",
@@ -939,7 +970,7 @@
       brokers.forEach((brokerUrl) => {
         try {
           const client = mqtt.connect(brokerUrl, {
-            clientId: "mq65_" + Math.random().toString(16).substring(2, 10),
+            clientId: "mq66_" + Math.random().toString(16).substring(2, 10),
             clean: true,
             connectTimeout: 5000,
             reconnectPeriod: 6000
@@ -958,7 +989,6 @@
             if (topic !== SYNC_MQTT_TOPIC) return;
             try {
               const remoteUsers = JSON.parse(message.toString());
-              // Importante: Apenas absorve os dados na memória sem re-publicar em loop!
               users = mergeUserDictionaries(users, remoteUsers);
               localStorage.setItem(STORAGE_USERS_KEY, JSON.stringify(users));
               refreshUIIfNeeded();
@@ -970,16 +1000,14 @@
       });
     }
 
-    // MOTOR 2: SINCRONIZAÇÃO AGRUPADA (COALESCING) - EVITA EXCESSO DE REQUISIÇÕES
     function scheduleCloudSync(keyToPush, immediate = false) {
       localStorage.setItem(STORAGE_USERS_KEY, JSON.stringify(users));
       refreshUIIfNeeded();
 
       clearTimeout(cloudSyncQueueTimer);
-      const delay = immediate ? 150 : 3200; // Agrupa cliques rápidos de XP em 1 único envio a cada 3,2s
+      const delay = immediate ? 150 : 3200;
 
       cloudSyncQueueTimer = setTimeout(() => {
-        // 1. Publica estado completo no WebSocket para quem está online agora
         const fullStatePayload = JSON.stringify(users);
         mqttClients.forEach(client => {
           if (client && client.connected) {
@@ -987,7 +1015,6 @@
           }
         });
 
-        // 2. Salva registro compacto no histórico HTTPS 443 para quem abrir o celular depois
         if (keyToPush && users[keyToPush]) {
           const singlePayload = JSON.stringify({ type: "single", k: keyToPush, u: users[keyToPush] });
           fetch(CLOUD_HTTP_URL, { method: "POST", body: singlePayload }).catch(() => {});
@@ -995,10 +1022,9 @@
       }, delay);
     }
 
-    // BUSCA LEVE DO HISTÓRICO HTTPS (COM TIMEOUT E PROTEÇÃO CONTRA RATE LIMIT 429)
     async function fetchCloudHistorySafe(force = false) {
       const now = Date.now();
-      if (!force && now - lastHttpFetchTime < 20000) return; // Máximo 1 leitura HTTP a cada 20s por aparelho
+      if (!force && now - lastHttpFetchTime < 20000) return;
       lastHttpFetchTime = now;
 
       const statusEl = document.getElementById("syncStatusText");
@@ -1135,12 +1161,16 @@
         password: pass,
         xp: users[key] && !users[key]._deleted ? (users[key].xp || 0) : 0,
         correctAnswers: users[key] && !users[key]._deleted ? (users[key].correctAnswers || 0) : 0,
+        hearts: users[key] && users[key].hearts !== undefined ? users[key].hearts : 5,
+        heartsLockUntil: users[key] ? (users[key].heartsLockUntil || 0) : 0,
         updatedAt: Date.now()
       };
 
       currentUserKey = key;
       localStorage.setItem(STORAGE_CURRENT_KEY, key);
       document.getElementById("authModal").classList.add("hidden");
+      syncActiveUserHeartsState();
+      loadNextQuizQuestion();
       scheduleCloudSync(key, true);
     }
 
@@ -1166,6 +1196,8 @@
       currentUserKey = key;
       localStorage.setItem(STORAGE_CURRENT_KEY, key);
       document.getElementById("authModal").classList.add("hidden");
+      syncActiveUserHeartsState();
+      loadNextQuizQuestion();
       scheduleCloudSync(key, true);
     }
 
@@ -1180,7 +1212,6 @@
       if (!currentUserKey || !users[currentUserKey]) return;
       users[currentUserKey].xp = Math.max(0, (users[currentUserKey].xp || 0) + amount);
       users[currentUserKey].updatedAt = Date.now();
-      // Atualiza tela na hora (0ms) e agenda envio agrupado sem travar a rede
       scheduleCloudSync(currentUserKey, false);
     }
 
@@ -1206,20 +1237,112 @@
       }
     }
 
-    // SIMULADO INTERATIVO COM BOTÕES ANIMADOS A, B, C, D
-    function startNewQuiz() {
+    // GESTÃO DE CORAÇÕES E BLOQUEIO DE 10 MINUTOS
+    function getActiveHeartsLockUntil() {
+      if (currentUserKey && users[currentUserKey]) {
+        return users[currentUserKey].heartsLockUntil || 0;
+      }
+      return parseInt(localStorage.getItem("mequi_guest_hearts_lock") || "0", 10);
+    }
+
+    function setActiveHeartsState(heartsVal, lockUntilVal) {
+      currentHearts = heartsVal;
+      if (currentUserKey && users[currentUserKey]) {
+        users[currentUserKey].hearts = heartsVal;
+        users[currentUserKey].heartsLockUntil = lockUntilVal;
+        users[currentUserKey].updatedAt = Date.now();
+        localStorage.setItem(STORAGE_USERS_KEY, JSON.stringify(users));
+      } else {
+        localStorage.setItem("mequi_guest_hearts", String(heartsVal));
+        localStorage.setItem("mequi_guest_hearts_lock", String(lockUntilVal));
+      }
+      updateHeartsDisplay();
+    }
+
+    function syncActiveUserHeartsState() {
+      const now = Date.now();
+      let lockUntil = getActiveHeartsLockUntil();
+
+      if (currentUserKey && users[currentUserKey]) {
+        currentHearts = users[currentUserKey].hearts !== undefined ? users[currentUserKey].hearts : 5;
+      } else {
+        currentHearts = parseInt(localStorage.getItem("mequi_guest_hearts") || "5", 10);
+      }
+
+      // Se o tempo de 10 minutos já passou, restaura os 5 corações automaticamente
+      if (lockUntil > 0 && now >= lockUntil) {
+        setActiveHeartsState(5, 0);
+        lockUntil = 0;
+      }
+
+      updateHeartsDisplay();
+      checkAndRenderCooldownScreen();
+    }
+
+    function formatTimeRemaining(ms) {
+      const totalSec = Math.max(0, Math.ceil(ms / 1000));
+      const m = Math.floor(totalSec / 60);
+      const s = totalSec % 60;
+      return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+    }
+
+    function checkAndRenderCooldownScreen() {
+      const lockUntil = getActiveHeartsLockUntil();
+      const now = Date.now();
+      const cooldownBox = document.getElementById("quizCooldownBox");
+      const activeArea = document.getElementById("quizActiveArea");
+      const timerDisplay = document.getElementById("cooldownTimerDisplay");
+
+      if (lockUntil > now) {
+        // Está bloqueado pelos 10 minutos
+        cooldownBox.classList.remove("hidden");
+        activeArea.classList.add("hidden");
+        timerDisplay.textContent = formatTimeRemaining(lockUntil - now);
+
+        if (!cooldownIntervalId) {
+          cooldownIntervalId = setInterval(() => {
+            const rem = getActiveHeartsLockUntil() - Date.now();
+            if (rem <= 0) {
+              clearInterval(cooldownIntervalId);
+              cooldownIntervalId = null;
+              setActiveHeartsState(5, 0);
+              cooldownBox.classList.add("hidden");
+              activeArea.classList.remove("hidden");
+              loadNextQuizQuestion();
+              if (currentUserKey) scheduleCloudSync(currentUserKey, true);
+            } else {
+              timerDisplay.textContent = formatTimeRemaining(rem);
+            }
+          }, 1000);
+        }
+        return true;
+      } else {
+        if (cooldownIntervalId) {
+          clearInterval(cooldownIntervalId);
+          cooldownIntervalId = null;
+        }
+        if (currentHearts <= 0) {
+          setActiveHeartsState(5, 0);
+        }
+        cooldownBox.classList.add("hidden");
+        activeArea.classList.remove("hidden");
+        return false;
+      }
+    }
+
+    function changeQuizLevelFilter() {
       currentStreak = 0;
-      currentHearts = 5;
       loadNextQuizQuestion();
     }
 
     function updateHeartsDisplay() {
-      document.getElementById("quizHeartsInfo").textContent = "❤️".repeat(currentHearts) + "🖤".repeat(5 - currentHearts);
+      const safeHearts = Math.max(0, Math.min(5, currentHearts));
+      document.getElementById("quizHeartsInfo").textContent = "❤️".repeat(safeHearts) + "🖤".repeat(5 - safeHearts);
     }
 
     function loadNextQuizQuestion() {
-      if (currentHearts <= 0) currentHearts = 5;
-      updateHeartsDisplay();
+      syncActiveUserHeartsState();
+      if (checkAndRenderCooldownScreen()) return;
 
       const levelFilter = document.getElementById("quizLevelFilter").value;
       const pool = levelFilter === "ALL" ? QUESTIONS_DB : QUESTIONS_DB.filter(item => item.level === levelFilter);
@@ -1275,17 +1398,35 @@
         addXp(25);
         fb.className = "p-3.5 rounded-2xl text-xs font-extrabold bg-emerald-100 text-emerald-900 border border-emerald-300";
         fb.textContent = `✅ Alternativa ${letter} Correta! Você ganhou +25 XP!`;
+        document.getElementById("nextQuizBtn").textContent = "PRÓXIMA PERGUNTA ➡️";
+        document.getElementById("nextQuizBtn").classList.remove("hidden");
       } else {
         selectedBtn.className = "anim-shake-wrong w-full text-left p-3.5 rounded-2xl border-2 border-red-600 bg-red-50 font-extrabold text-xs text-red-950 flex items-center gap-3";
         currentStreak = 0;
-        currentHearts = Math.max(0, currentHearts - 1);
-        updateHeartsDisplay();
-        fb.className = "p-3.5 rounded-2xl text-xs font-extrabold bg-red-100 text-red-900 border border-red-300";
-        fb.innerHTML = `❌ Quase! O gabarito oficial é:<br><span class="underline mt-1 inline-block">${correct}</span>`;
+        const newHearts = Math.max(0, currentHearts - 1);
+
+        if (newHearts <= 0) {
+          // Perdeu todos os 5 corações -> Bloqueia por 10 minutos!
+          const lockUntil = Date.now() + HEARTS_COOLDOWN_MS;
+          setActiveHeartsState(0, lockUntil);
+          if (currentUserKey) scheduleCloudSync(currentUserKey, true);
+
+          fb.className = "p-3.5 rounded-2xl text-xs font-extrabold bg-red-100 text-red-900 border border-red-300";
+          fb.innerHTML = `💔 <strong>Você perdeu todos os seus 5 corações!</strong><br>O gabarito oficial era: <span class="underline">${correct}</span>.<br><span class="text-red-700 mt-1 inline-block">⏳ Aguarde 10 minutos para recarregar suas vidas!</span>`;
+          document.getElementById("nextQuizBtn").textContent = "VER CRONÔMETRO DE RECARGA (10 MIN) ⏳";
+          document.getElementById("nextQuizBtn").classList.remove("hidden");
+        } else {
+          setActiveHeartsState(newHearts, 0);
+          if (currentUserKey) scheduleCloudSync(currentUserKey, false);
+
+          fb.className = "p-3.5 rounded-2xl text-xs font-extrabold bg-red-100 text-red-900 border border-red-300";
+          fb.innerHTML = `❌ Quase! Você perdeu 1 coração (Restam ${newHearts} ❤️).<br>O gabarito oficial é: <span class="underline mt-1 inline-block">${correct}</span>`;
+          document.getElementById("nextQuizBtn").textContent = "PRÓXIMA PERGUNTA ➡️";
+          document.getElementById("nextQuizBtn").classList.remove("hidden");
+        }
       }
 
       document.getElementById("quizStreakInfo").textContent = `🔥 ${currentStreak}`;
-      document.getElementById("nextQuizBtn").classList.remove("hidden");
     }
 
     // FLASHCARDS
@@ -1447,9 +1588,15 @@
         return;
       }
 
+      const now = Date.now();
       container.innerHTML = entries.map(([key, u], index) => {
         const lvl = getLevelInfo(u.xp || 0).level;
         const role = u.role || u.station || "Atendente";
+        const isLocked = (u.heartsLockUntil || 0) > now;
+        const heartsBadge = isLocked
+          ? `<span class="text-[10px] font-bold text-red-600">⏳ Bloqueado (${formatTimeRemaining(u.heartsLockUntil - now)})</span>`
+          : `<span class="text-[10px] font-bold text-emerald-700">${u.hearts !== undefined ? u.hearts : 5} ❤️ disponíveis</span>`;
+
         return `
           <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
             <div class="flex items-center justify-between">
@@ -1458,7 +1605,7 @@
                 <div>
                   <span class="text-[10px] font-black px-2 py-0.5 rounded-full bg-slate-900 text-[#FFC72C]">#${index + 1} • Nível ${lvl} • ${role}</span>
                   <h4 class="font-black text-xs text-slate-900 mt-1">${u.name}</h4>
-                  <p class="text-[11px] text-slate-500 font-semibold">🔑 Senha: <span class="text-slate-800 font-extrabold">${u.password || '1234'}</span></p>
+                  <p class="text-[11px] text-slate-500 font-semibold">🔑 Senha: <span class="text-slate-800 font-extrabold">${u.password || '1234'}</span> • ${heartsBadge}</p>
                 </div>
               </div>
               <div class="text-right">
@@ -1472,12 +1619,28 @@
               <button onclick="adminAdjustXp('${key}', 200)" class="px-2.5 py-1.5 rounded-xl bg-emerald-800 text-white font-black text-[10px] btn-tap">+200 XP</button>
               <button onclick="adminAdjustXp('${key}', -50)" class="px-2.5 py-1.5 rounded-xl bg-amber-600 text-white font-black text-[10px] btn-tap">-50 XP</button>
               <button onclick="adminSetCustomXp('${key}')" class="px-2.5 py-1.5 rounded-xl bg-blue-600 text-white font-black text-[10px] btn-tap">✏️ Definir XP</button>
+              <button onclick="adminRestoreHearts('${key}')" class="px-2.5 py-1.5 rounded-xl bg-pink-600 text-white font-black text-[10px] btn-tap">❤️ Restaurar Vidas</button>
               <button onclick="adminResetUser('${key}')" class="px-2.5 py-1.5 rounded-xl bg-slate-200 text-slate-800 font-bold text-[10px] btn-tap">Zerar</button>
               <button onclick="adminDeleteUser('${key}')" class="px-2.5 py-1.5 rounded-xl bg-red-100 text-red-700 font-bold text-[10px] ml-auto btn-tap">🗑️ Excluir</button>
             </div>
           </div>
         `;
       }).join("");
+    }
+
+    function adminRestoreHearts(key) {
+      if (!users[key]) return;
+      users[key].hearts = 5;
+      users[key].heartsLockUntil = 0;
+      users[key].updatedAt = Date.now();
+      users[key].adminOverrideAt = Date.now();
+      if (key === currentUserKey) {
+        setActiveHeartsState(5, 0);
+        checkAndRenderCooldownScreen();
+        loadNextQuizQuestion();
+      }
+      scheduleCloudSync(key, true);
+      renderAdminUsersList();
     }
 
     function adminAdjustXp(key, delta) {
@@ -1506,6 +1669,8 @@
       if (!confirm(`Zerar o XP e os acertos de ${users[key].name}?`)) return;
       users[key].xp = 0;
       users[key].correctAnswers = 0;
+      users[key].hearts = 5;
+      users[key].heartsLockUntil = 0;
       users[key].updatedAt = Date.now();
       users[key].adminOverrideAt = Date.now();
       scheduleCloudSync(key, true);
@@ -1537,6 +1702,8 @@
         password: pass,
         xp: Math.max(0, xp),
         correctAnswers: Math.max(0, hits),
+        hearts: 5,
+        heartsLockUntil: 0,
         updatedAt: Date.now(),
         adminOverrideAt: Date.now()
       };
@@ -1563,7 +1730,8 @@
     window.onload = () => {
       rescuePreviousLocalRegistrations();
       renderAvatarSelector();
-      startNewQuiz();
+      syncActiveUserHeartsState();
+      loadNextQuizQuestion();
       loadRandomFlashcard();
       renderBookList();
       refreshUIIfNeeded();
@@ -1573,7 +1741,6 @@
         updateHeaderUI();
       }
 
-      // Conecta ao Cluster WebSockets sem loop + busca histórico HTTPS seguro
       initClusterSync();
       fetchCloudHistorySafe(true);
     };
