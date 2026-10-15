@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -8,195 +7,17 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="Olimpíadas Méqui" />
-  <title>Olimpíadas do Básico — Venture v7.0 Pro</title>
+  <title>Olimpíadas do Básico — Venture</title>
+
+  <!-- Favicon Oficial: Arcos Dourados em Vetor SVG de Alta Definição -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='24' fill='%23DA291C'/%3E%3Cpath fill='%23FFC72C' d='M50 46c-3.6-13.8-10.8-23.5-19.6-23.5-12 0-21.6 18.5-21.6 52.5h9.1c0-26.4 6.4-42.8 12.5-42.8 6 0 12 17.6 12.5 42.8H50zm0 0c3.6-13.8 10.8-23.5 19.6-23.5 12 0 21.6 18.5 21.6 52.5h-9.1c0-26.4-6.4-42.8-12.5-42.8-6 0-12 17.6-12.5 42.8H50z'/%3E%3C/svg%3E" />
+
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --bg-main: #f1f5f9;
-      --bg-card: #ffffff;
-      --bg-subtle: #f8fafc;
-      --text-main: #0f172a;
-      --text-muted: #64748b;
-      --border-color: #e2e8f0;
-    }
-    body.dark-mode {
-      --bg-main: #090d16;
-      --bg-card: #131b2e;
-      --bg-subtle: #1e293b;
-      --text-main: #f8fafc;
-      --text-muted: #94a3b8;
-      --border-color: #26334d;
-    }
-    body {
-      font-family: 'Plus Jakarta Sans', sans-serif;
-      background-color: var(--bg-main);
-      color: var(--text-main);
-      -webkit-tap-highlight-color: transparent;
-      overflow-x: hidden;
-      transition: background-color 0.25s ease, color 0.25s ease;
-    }
-    .mc-gradient { background: linear-gradient(135deg, #DA291C 0%, #88130b 100%); }
-    .gold-gradient { background: linear-gradient(135deg, #FFE066 0%, #FFC72C 50%, #f59e0b 100%); }
-    .dark-gradient { background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); }
-
-    .pro-card {
-      background-color: var(--bg-card);
-      border: 1px solid var(--border-color);
-      box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.06);
-      transform: translateZ(0);
-      transition: background-color 0.25s ease, border-color 0.25s ease;
-    }
-    .subtle-box {
-      background-color: var(--bg-subtle);
-      border: 1px solid var(--border-color);
-      color: var(--text-main);
-    }
-    .text-muted-pro { color: var(--text-muted); }
-
-    .btn-anim-red {
-      position: relative;
-      overflow: hidden;
-      background: linear-gradient(180deg, #ef4444 0%, #DA291C 100%);
-      box-shadow: 0 5px 0 #991b1b, 0 8px 16px rgba(218, 41, 28, 0.3);
-      transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.18s ease;
-    }
-    .btn-anim-red:hover { transform: translateY(-2px); box-shadow: 0 7px 0 #991b1b, 0 12px 20px rgba(218, 41, 28, 0.38); }
-    .btn-anim-red:active { transform: translateY(4px) scale(0.98); box-shadow: 0 1px 0 #991b1b; }
-
-    .btn-anim-yellow {
-      position: relative;
-      overflow: hidden;
-      background: linear-gradient(180deg, #FFD24C 0%, #FFC72C 100%);
-      box-shadow: 0 5px 0 #b45309, 0 8px 16px rgba(255, 199, 44, 0.32);
-      transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.18s ease;
-    }
-    .btn-anim-yellow:hover { transform: translateY(-2px); box-shadow: 0 7px 0 #b45309, 0 12px 20px rgba(255, 199, 44, 0.4); }
-    .btn-anim-yellow:active { transform: translateY(4px) scale(0.98); box-shadow: 0 1px 0 #b45309; }
-
-    .btn-shine::after {
-      content: "";
-      position: absolute;
-      top: 0; left: -120%;
-      width: 60%; height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.38), transparent);
-      transform: skewX(-20deg);
-      animation: shineSweep 3.5s infinite;
-    }
-    @keyframes shineSweep {
-      0% { left: -120%; }
-      35% { left: 140%; }
-      100% { left: 140%; }
-    }
-
-    .option-btn {
-      background-color: var(--bg-card);
-      border: 2px solid var(--border-color);
-      color: var(--text-main);
-      transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1), border-color 0.15s ease, box-shadow 0.15s ease;
-      box-shadow: 0 3px 0 var(--border-color);
-      animation: slideUpFade 0.22s ease backwards;
-    }
-    .option-btn:hover:not(:disabled) {
-      transform: translateY(-2px) scale(1.01);
-      border-color: #FFC72C;
-      box-shadow: 0 5px 0 rgba(255, 199, 44, 0.4);
-    }
-    .option-btn:active:not(:disabled) {
-      transform: translateY(2px) scale(0.98);
-      box-shadow: 0 1px 0 var(--border-color);
-    }
-
-    @keyframes slideUpFade {
-      from { opacity: 0; transform: translateY(8px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .anim-pop-correct { animation: popSuccess 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
-    @keyframes popSuccess {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.03); }
-      100% { transform: scale(1); }
-    }
-
-    .anim-shake-wrong { animation: shakeError 0.38s ease-in-out forwards; }
-    @keyframes shakeError {
-      0%, 100% { transform: translateX(0); }
-      20%, 60% { transform: translateX(-5px); }
-      40%, 80% { transform: translateX(5px); }
-    }
-
-    .flip-container { perspective: 1000px; }
-    .flip-inner {
-      position: relative;
-      width: 100%;
-      min-height: 140px;
-      transition: transform 0.55s cubic-bezier(0.34, 1.56, 0.64, 1);
-      transform-style: preserve-3d;
-    }
-    .flip-inner.is-flipped { transform: rotateY(180deg); }
-    .flip-front, .flip-back {
-      position: absolute;
-      inset: 0;
-      backface-visibility: hidden;
-      -webkit-backface-visibility: hidden;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 1.25rem;
-      border-radius: 1.25rem;
-    }
-    .flip-back { transform: rotateY(180deg); }
-
-    .xp-toast {
-      position: fixed;
-      top: 90px;
-      right: 24px;
-      z-index: 60;
-      pointer-events: none;
-      animation: floatUpXp 1.2s ease-out forwards;
-    }
-    @keyframes floatUpXp {
-      0% { opacity: 0; transform: translateY(15px) scale(0.8); }
-      25% { opacity: 1; transform: translateY(0) scale(1.08); }
-      80% { opacity: 1; transform: translateY(-20px) scale(1); }
-      100% { opacity: 0; transform: translateY(-35px) scale(0.9); }
-    }
-
-    .btn-tap { transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1); }
-    .btn-tap:hover { transform: translateY(-1px); }
-    .btn-tap:active { transform: scale(0.92); }
-
-    .nav-btn { transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1); color: var(--text-muted); }
-    .nav-btn:active { transform: scale(0.88); }
-    .nav-btn.active-nav {
-      color: #DA291C;
-      background-color: rgba(218, 41, 28, 0.1);
-      font-weight: 800;
-      transform: translateY(-2px);
-    }
-    .nav-btn.active-nav .nav-icon { transform: scale(1.18); display: inline-block; }
-
-    .avatar-option { transition: all 0.18s cubic-bezier(0.34, 1.56, 0.64, 1); }
-    .avatar-option:active { transform: scale(0.9); }
-    .avatar-option.selected {
-      border-color: #DA291C;
-      background-color: rgba(218, 41, 28, 0.12);
-      transform: scale(1.1);
-      box-shadow: 0 4px 12px rgba(218, 41, 28, 0.22);
-    }
-
-    .float-slow { animation: floatSlow 3s ease-in-out infinite; }
-    @keyframes floatSlow {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-4px); }
-    }
-
-    .no-scrollbar::-webkit-scrollbar { display: none; }
-    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-  </style>
+  
+  <!-- Estilo Oficial Separado -->
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body class="min-h-screen pb-32">
 
@@ -206,7 +27,14 @@
   <div id="authModal" class="fixed inset-0 bg-slate-950/85 backdrop-blur-md z-50 flex items-center justify-center p-4 overflow-y-auto">
     <div class="pro-card rounded-[2.25rem] max-w-md w-full p-6 shadow-2xl border-2 border-[#FFC72C] my-auto">
       <div class="text-center mb-5">
-        <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl mc-gradient text-[#FFC72C] font-black text-4xl shadow-xl mb-2.5 border-2 border-[#FFC72C]/50 float-slow">M</div>
+        
+        <!-- Logo Oficial dos Arcos Dourados -->
+        <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl mc-gradient shadow-xl mb-2.5 border-2 border-[#FFC72C]/50 float-slow p-2.5">
+          <svg viewBox="0 0 100 85" fill="#FFC72C" class="w-full h-full drop-shadow">
+            <path d="M50 35.8c-3.8-13.6-11.5-23.7-20.9-23.7-12.8 0-23.1 18.7-23.1 52.8h9.8c0-26.6 6.8-43.2 13.3-43.2 6.5 0 12.8 17.8 13.3 43.2H50zm0 0c3.8-13.6 11.5-23.7 20.9-23.7 12.8 0 23.1 18.7 23.1 52.8h-9.8c0-26.6-6.8-43.2-13.3-43.2-6.5 0-12.8 17.8-13.3 43.2H50z"/>
+          </svg>
+        </div>
+
         <h1 class="text-2xl font-black tracking-tight">OLIMPÍADAS DO BÁSICO</h1>
         <p class="text-xs text-muted-pro font-semibold mt-0.5">Plataforma Oficial Venture • Versão 7.0 Pro 🏆</p>
       </div>
@@ -268,7 +96,7 @@
     </div>
   </div>
 
-  <!-- MODAL PARA TROCAR ÍCONE DE PERFIL -->
+  <!-- MODAL DE TROCAR AVATAR -->
   <div id="avatarPickerModal" class="hidden fixed inset-0 bg-slate-950/75 backdrop-blur-sm z-50 flex items-center justify-center p-4">
     <div class="pro-card rounded-3xl max-w-sm w-full p-5 shadow-2xl space-y-4">
       <div class="flex items-center justify-between">
@@ -280,7 +108,7 @@
     </div>
   </div>
 
-  <!-- CABEÇALHO DO COLABORADOR -->
+  <!-- CABEÇALHO COM ARCOS DOURADOS E DARK MODE -->
   <header class="mc-gradient text-white pt-4 pb-5 px-4 rounded-b-[2.5rem] shadow-2xl sticky top-0 z-30 border-b-4 border-[#FFC72C]">
     <div class="max-w-xl mx-auto">
       <div class="flex items-center justify-between gap-2 mb-3">
@@ -324,7 +152,7 @@
 
   <main class="max-w-xl mx-auto px-4 mt-5">
 
-    <!-- ABA 1: SIMULADO INTERATIVO + MINI DASHBOARD -->
+    <!-- ABA 1: SIMULADO INTERATIVO -->
     <section id="tab-quiz" class="space-y-4">
       <div class="grid grid-cols-3 gap-2.5">
         <div class="pro-card rounded-2xl p-3 text-center">
@@ -360,7 +188,7 @@
           <span class="text-[11px] text-muted-pro font-bold">Selecione A, B, C ou D</span>
         </div>
 
-        <!-- TELA DE BLOQUEIO DE 10 MINUTOS -->
+        <!-- RECARGA DE 10 MINUTOS -->
         <div id="quizCooldownBox" class="hidden p-6 rounded-3xl bg-red-500/10 border-2 border-red-500/30 text-center space-y-3 my-2">
           <div class="text-4xl float-slow">💔⏳</div>
           <h3 class="font-black text-red-500 text-base">Seus 5 Corações Acabaram!</h3>
@@ -375,7 +203,6 @@
           </p>
         </div>
 
-        <!-- ÁREA ATIVA DAS QUESTÕES -->
         <div id="quizActiveArea" class="space-y-4">
           <p id="quizQuestionText" class="font-extrabold text-base leading-snug subtle-box p-4 rounded-2xl"></p>
           <div id="quizOptions" class="space-y-2.5"></div>
@@ -386,7 +213,7 @@
         </div>
       </div>
 
-      <!-- FLASHCARD 3D FLIP -->
+      <!-- FLASHCARD COM GIRO 3D REAL -->
       <div class="pro-card rounded-3xl p-5 space-y-3">
         <div class="flex items-center justify-between">
           <div>
@@ -429,7 +256,7 @@
       <div id="bookQuestionsContainer" class="space-y-2.5"></div>
     </section>
 
-    <!-- ABA 3: RANKING DA LOJA COM PÓDIO 3D -->
+    <!-- ABA 3: RANKING COM PÓDIO 3D -->
     <section id="tab-prizes" class="hidden space-y-4">
       <div class="mc-gradient text-white rounded-3xl p-5 shadow-xl relative overflow-hidden border-2 border-[#FFC72C]">
         <div class="flex items-center gap-4">
@@ -453,7 +280,7 @@
           </button>
         </div>
 
-        <!-- Pódio Top 3 -->
+        <!-- Pódio Olímpico Top 3 -->
         <div id="podiumTop3Container" class="grid grid-cols-3 gap-2 items-end pt-4 pb-2"></div>
 
         <div id="leaderboardContainer" class="space-y-2.5"></div>
@@ -544,7 +371,7 @@
             <input id="admNewXp" type="number" placeholder="XP (ex: 1000)" class="px-3.5 py-2.5 rounded-xl subtle-box text-xs font-bold" />
             <input id="admNewHits" type="number" placeholder="Acertos" class="px-3.5 py-2.5 rounded-xl subtle-box text-xs font-bold" />
           </div>
-          <button onclick="adminSaveMember()" class="w-full text-white font-black py-3.5 rounded-2xl text-xs btn-anim-red btn-shine">
+          <button onclick="adminSaveMember()" class="w-full text-white font-black py-3.5 rounded-2xl btn-anim-red btn-shine">
             SALVAR E TRANSMITIR PARA TODOS OS CELULARES ✅
           </button>
         </div>
@@ -570,100 +397,14 @@
           <span class="bg-red-500/15 text-red-500 text-xs font-black px-3 py-1 rounded-full">v7.0 Pro</span>
         </div>
 
-        <!-- Versão 7.0 -->
         <div class="border-l-4 border-[#FFC72C] pl-3.5 space-y-1">
-          <span class="text-[11px] font-extrabold text-amber-500 uppercase">Versão 7.0 • Atualização Atual (Frontend Ultra Pro & Pódio 3D)</span>
-          <h4 class="font-black text-sm">Modo Escuro/Claro, Pódio Olímpico 3D e Flashcard Flip 3D 🎨✨</h4>
+          <span class="text-[11px] font-extrabold text-amber-500 uppercase">Versão 7.0 • Atualização Atual</span>
+          <h4 class="font-black text-sm">Design Pro, Pódio 3D & Favicon Oficial dos Arcos Dourados 🍟✨</h4>
           <ul class="text-xs text-muted-pro list-disc list-inside space-y-1 pt-1">
-            <li><strong>Modo Escuro (Dark Mode 🌙):</strong> Botão no topo para alternar entre tema claro e tema escuro gamer.</li>
-            <li><strong>Pódio Olímpico Visual (Top 3):</strong> Destaque especial em 3 colunas para o 1º, 2º e 3º colocados da loja.</li>
-            <li><strong>Flashcards com Giro 3D Real:</strong> Efeito de rotação 180° ao tocar no cartão e alerta flutuante de <code>+25 XP ⚡</code> nos acertos.</li>
-            <li><strong>Separação Modular:</strong> Código dividido em <code>index.html</code> e <code>script.js</code>.</li>
+            <li><strong>Novo Favicon e Logos Oficiais:</strong> Ícone clássico dos Arcos Dourados do McDonald's em vetor SVG de alta qualidade.</li>
+            <li><strong>Folha de Estilo Separada:</strong> Criação do arquivo <code>style.css</code> dedicado.</li>
+            <li><strong>Pódio Olímpico 3D & Flashcards 3D:</strong> Visual com colunas destacadas para o Top 3 e giro 3D nos cartões de estudo.</li>
           </ul>
-        </div>
-
-        <!-- Versão 6.7 -->
-        <div class="border-l-4 border-[#DA291C] pl-3.5 space-y-1">
-          <span class="text-[11px] font-extrabold text-red-500 uppercase">Versão 6.7</span>
-          <h4 class="font-black text-sm">Remoção de XP do Book/Flashcards + 7 Patentes Hardcore 💎👑</h4>
-          <p class="text-xs text-muted-pro pt-1">XP exclusivo para o Simulado e adição das patentes Diamante Best Burger e Lenda dos Arcos Dourados.</p>
-        </div>
-
-        <!-- Versão 6.6 -->
-        <div class="border-l-4 border-pink-600 pl-3.5 space-y-1">
-          <span class="text-[11px] font-extrabold text-pink-500 uppercase">Versão 6.6</span>
-          <h4 class="font-black text-sm">Bloqueio de 10 Minutos ao Perder os 5 Corações 💔⏳</h4>
-          <p class="text-xs text-muted-pro pt-1">Cronômetro regressivo ao vivo ao zerar vidas e botão de recarga imediata no ADM.</p>
-        </div>
-
-        <!-- Versão 6.5 -->
-        <div class="border-l-4 border-emerald-600 pl-3.5 space-y-1">
-          <span class="text-[11px] font-extrabold text-emerald-500 uppercase">Versão 6.5</span>
-          <h4 class="font-black text-sm">Proteção Anti-Queda para Múltiplos Acessos Simultâneos 🛡️⚡</h4>
-          <p class="text-xs text-muted-pro pt-1">Agrupador inteligente de tráfego (Write Coalescing) e trava Anti-Loop.</p>
-        </div>
-
-        <!-- Versão 6.4 -->
-        <div class="border-l-4 border-orange-500 pl-3.5 space-y-1">
-          <span class="text-[11px] font-extrabold text-orange-500 uppercase">Versão 6.4</span>
-          <h4 class="font-black text-sm">Otimização de Desempenho + Botões 3D Animados ⚡✨</h4>
-          <p class="text-xs text-muted-pro pt-1">Renderização em lote único e botões 3D com efeito mola e brilho.</p>
-        </div>
-
-        <!-- Versão 6.3 -->
-        <div class="border-l-4 border-cyan-600 pl-3.5 space-y-1">
-          <span class="text-[11px] font-extrabold text-cyan-500 uppercase">Versão 6.3</span>
-          <h4 class="font-black text-sm">Nuvem HTTPS Porta 443 ☁️📲</h4>
-          <p class="text-xs text-muted-pro pt-1">Sincronização garantida em redes 4G/Wi-Fi com histórico na nuvem.</p>
-        </div>
-
-        <!-- Versão 6.2 -->
-        <div class="border-l-4 border-amber-500 pl-3.5 space-y-1">
-          <span class="text-[11px] font-extrabold text-amber-500 uppercase">Versão 6.2</span>
-          <h4 class="font-black text-sm">Simulado Inteligente A, B, C e D 🧠🎯</h4>
-          <p class="text-xs text-muted-pro pt-1">Alternativas plausíveis com números e procedimentos próximos ao gabarito.</p>
-        </div>
-
-        <!-- Versão 6.1 -->
-        <div class="border-l-4 border-blue-600 pl-3.5 space-y-1">
-          <span class="text-[11px] font-extrabold text-blue-500 uppercase">Versão 6.1</span>
-          <h4 class="font-black text-sm">Resgate Automático de Cadastros Antigos 🔗</h4>
-          <p class="text-xs text-muted-pro pt-1">Migração automática de dados e compartilhamento no WhatsApp.</p>
-        </div>
-
-        <!-- Versão 6.0 -->
-        <div class="border-l-4 border-indigo-600 pl-3.5 space-y-1">
-          <span class="text-[11px] font-extrabold text-indigo-500 uppercase">Versão 6.0</span>
-          <h4 class="font-black text-sm">Avatares de Perfil e Cargos Oficiais 🎨👑</h4>
-          <p class="text-xs text-muted-pro pt-1">Seleção de funções (Atendente, Treinador, Supervisor, Coordenador e GUN).</p>
-        </div>
-
-        <!-- Versão 5.0 -->
-        <div class="border-l-4 border-purple-600 pl-3.5 space-y-1">
-          <span class="text-[11px] font-extrabold text-purple-500 uppercase">Versão 5.0</span>
-          <h4 class="font-black text-sm">Painel ADM com Senha ⚙️🔒</h4>
-          <p class="text-xs text-muted-pro pt-1">Aba restrita com senha 342005 para controle de XP e colaboradores.</p>
-        </div>
-
-        <!-- Versão 3.0 -->
-        <div class="border-l-4 border-red-500 pl-3.5 space-y-1">
-          <span class="text-[11px] font-extrabold text-red-500 uppercase">Versão 3.0</span>
-          <h4 class="font-black text-sm">Prêmio da Caneca e Níveis de XP ☕🏆</h4>
-          <p class="text-xs text-muted-pro pt-1">Prêmio oficial de 1º lugar e sistema de carreira por XP.</p>
-        </div>
-
-        <!-- Versão 2.0 -->
-        <div class="border-l-4 border-amber-400 pl-3.5 space-y-1">
-          <span class="text-[11px] font-extrabold text-amber-500 uppercase">Versão 2.0</span>
-          <h4 class="font-black text-sm">Book Oficial Venture 📖</h4>
-          <p class="text-xs text-muted-pro pt-1">Integração das 200 questões de Nível Básico, Intermediário e Avançado.</p>
-        </div>
-
-        <!-- Versão 1.0 -->
-        <div class="border-l-4 border-slate-400 pl-3.5 space-y-1">
-          <span class="text-[11px] font-extrabold text-muted-pro uppercase">Versão 1.0</span>
-          <h4 class="font-black text-sm">Lançamento Oficial 🚀</h4>
-          <p class="text-xs text-muted-pro pt-1">Primeiro quiz de treino após a classificação em 4º lugar para a 2ª fase.</p>
         </div>
       </div>
     </section>
@@ -698,7 +439,7 @@
     </nav>
   </div>
 
-  <!-- CONEXÃO COM O ARQUIVO JAVASCRIPT EXTERNO -->
+  <!-- CONEXÃO COM O JAVASCRIPT -->
   <script src="script.js"></script>
 </body>
 </html>
