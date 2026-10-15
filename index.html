@@ -7,21 +7,26 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="Olimpíadas Méqui" />
-  <title>Olimpíadas do Básico — Venture v7.1</title>
+  <title>Olimpíadas do Básico — Venture v7.4</title>
 
   <!-- Favicon Oficial: Arcos Dourados em Vetor SVG -->
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='24' fill='%23DA291C'/%3E%3Cpath fill='%23FFC72C' d='M50 46c-3.6-13.8-10.8-23.5-19.6-23.5-12 0-21.6 18.5-21.6 52.5h9.1c0-26.4 6.4-42.8 12.5-42.8 6 0 12 17.6 12.5 42.8H50zm0 0c3.6-13.8 10.8-23.5 19.6-23.5 12 0 23.1 18.5 21.6 52.5h-9.1c0-26.4-6.4-42.8-12.5-42.8-6 0-12 17.6-12.5 42.8H50z'/%3E%3C/svg%3E" />
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='24' fill='%23DA291C'/%3E%3Cpath fill='%23FFC72C' d='M50 46c-3.6-13.8-10.8-23.5-19.6-23.5-12 0-21.6 18.5-21.6 52.5h9.1c0-26.4 6.4-42.8 12.5-42.8 6 0 12 17.6 12.5 42.8H50zm0 0c3.6-13.8 10.8-23.5 19.6-23.5 12 0 21.6 18.5 21.6 52.5h-9.1c0-26.4-6.4-42.8-12.5-42.8-6 0-12 17.6-12.5 42.8H50z'/%3E%3C/svg%3E" />
 
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+  <!-- Biblioteca para Gerar Print Automático em Imagem PNG -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css" />
 </head>
 <body class="min-h-screen pb-32">
 
+  <!-- Input invisível que abre a Galeria de Fotos do Celular ou pastas do PC -->
+  <input type="file" id="hiddenGalleryInput" accept="image/*" class="hidden" onchange="handleGalleryFileSelected(event)" />
+
   <div id="xpToastContainer"></div>
 
-  <!-- POP-UP DE CONVITE AO VIVO DE DUELO 1v1 (RECEBIDO DE OUTRO CELULAR) -->
+  <!-- POP-UP DE CONVITE AO VIVO DE DUELO 1v1 -->
   <div id="duelInvitePopup" class="hidden fixed inset-0 bg-slate-950/85 backdrop-blur-md z-50 flex items-center justify-center p-4">
     <div class="pro-card rounded-[2rem] max-w-sm w-full p-6 text-center space-y-4 border-4 border-[#FFC72C] shadow-2xl">
       <div class="text-5xl float-slow">⚔️🔥</div>
@@ -49,11 +54,10 @@
         <button onclick="leaveActiveDuel()" class="text-xs font-extrabold text-red-500 bg-red-500/10 px-3 py-1 rounded-xl btn-tap">Sair ✕</button>
       </div>
 
-      <!-- Placar Ao Vivo dos 2 Jogadores -->
       <div class="grid grid-cols-3 items-center gap-2 subtle-box p-3 rounded-2xl text-center">
         <div>
-          <span id="duelP1Avatar" class="text-2xl block">🍔</span>
-          <p id="duelP1Name" class="font-black text-[11px] truncate">Jogador 1</p>
+          <div id="duelP1Avatar" class="text-2xl flex justify-center">🍔</div>
+          <p id="duelP1Name" class="font-black text-[11px] truncate mt-1">Jogador 1</p>
           <span id="duelP1Score" class="inline-block mt-1 px-3 py-0.5 rounded-full bg-red-600 text-white font-black text-sm">0</span>
         </div>
         <div class="font-black text-xs text-muted-pro">
@@ -61,13 +65,12 @@
           <span id="duelRoundBadge" class="text-[10px]">Rodada #1</span>
         </div>
         <div>
-          <span id="duelP2Avatar" class="text-2xl block">🍟</span>
-          <p id="duelP2Name" class="font-black text-[11px] truncate">Jogador 2</p>
+          <div id="duelP2Avatar" class="text-2xl flex justify-center">🍟</div>
+          <p id="duelP2Name" class="font-black text-[11px] truncate mt-1">Jogador 2</p>
           <span id="duelP2Score" class="inline-block mt-1 px-3 py-0.5 rounded-full bg-amber-500 text-slate-950 font-black text-sm">0</span>
         </div>
       </div>
 
-      <!-- Estado de Espera do Convite -->
       <div id="duelWaitingBox" class="hidden py-6 text-center space-y-3">
         <div class="text-4xl float-slow">📡⏳</div>
         <p id="duelWaitingText" class="font-extrabold text-sm">Aguardando o colega aceitar o convite no celular dele...</p>
@@ -77,14 +80,12 @@
         </button>
       </div>
 
-      <!-- Área da Pergunta Sincronizada -->
       <div id="duelQuestionArea" class="hidden space-y-3">
         <p id="duelQuestionText" class="font-extrabold text-sm leading-snug subtle-box p-3.5 rounded-2xl"></p>
         <div id="duelOptionsContainer" class="space-y-2"></div>
         <div id="duelStatusBanner" class="hidden p-3 rounded-2xl text-xs font-extrabold text-center"></div>
       </div>
 
-      <!-- Tela de Vencedor do Duelo -->
       <div id="duelWinnerBox" class="hidden py-6 text-center space-y-3">
         <div class="text-5xl float-slow">🏆👑</div>
         <h3 id="duelWinnerTitle" class="text-xl font-black text-amber-500">Fim do Duelo!</h3>
@@ -131,7 +132,7 @@
           </svg>
         </div>
         <h1 class="text-2xl font-black tracking-tight">OLIMPÍADAS DO BÁSICO</h1>
-        <p class="text-xs text-muted-pro font-semibold mt-0.5">Plataforma Oficial Venture • Versão 7.1 🏆</p>
+        <p class="text-xs text-muted-pro font-semibold mt-0.5">Plataforma Oficial Venture • Versão 7.4 🏆</p>
       </div>
 
       <div class="flex rounded-2xl subtle-box p-1.5 mb-5">
@@ -157,7 +158,7 @@
 
       <div id="registerForm" class="hidden space-y-3.5">
         <div>
-          <label class="text-xs font-bold block mb-1.5">1. Escolha seu Avatar</label>
+          <label class="text-xs font-bold block mb-1.5">1. Escolha Foto da Galeria ou Avatar</label>
           <div id="regAvatarGrid" class="grid grid-cols-6 gap-2"></div>
         </div>
         <div>
@@ -184,36 +185,12 @@
       </div>
     </div>
   </div>
-<!-- Input invisível que abre a Galeria do Celular ou pastas do PC -->
-<input 
-  type="file" 
-  id="inputGaleriaFoto" 
-  accept="image/*" 
-  class="hidden" 
-  onchange="carregarFotoDaGaleria(event)" 
-/>
 
-<!-- Botão bonito que o colaborador clica na tela -->
-  <div class="flex items-center gap-3">
-  <!-- Prévia da foto ou ícone atual -->
-  <div id="previaAvatar" class="w-14 h-14 rounded-2xl bg-amber-400 flex items-center justify-center text-2xl font-black overflow-hidden border-2 border-white shadow-md">
-    🍔
-  </div>
-
-  <!-- Botão que aciona a galeria -->
-  <button 
-    type="button" 
-    onclick="document.getElementById('inputGaleriaFoto').click()" 
-    class="px-4 py-3 rounded-2xl bg-red-600 hover:bg-red-700 text-white font-black text-xs shadow flex items-center gap-2"
-  >
-    <span>📸 Escolher Foto da Galeria</span>
-  </button>
-</div>
-  <!-- MODAL DE TROCAR AVATAR -->
+  <!-- MODAL DE TROCAR AVATAR OU ENVIAR FOTO DA GALERIA -->
   <div id="avatarPickerModal" class="hidden fixed inset-0 bg-slate-950/75 backdrop-blur-sm z-50 flex items-center justify-center p-4">
     <div class="pro-card rounded-3xl max-w-sm w-full p-5 shadow-2xl space-y-4">
       <div class="flex items-center justify-between">
-        <h3 class="font-black text-base">🎨 Alterar Ícone de Perfil</h3>
+        <h3 class="font-black text-base">📸 Foto de Perfil / Avatar</h3>
         <button onclick="closeAvatarModal()" class="text-muted-pro font-bold text-sm btn-tap">✕</button>
       </div>
       <div id="changeAvatarGrid" class="grid grid-cols-4 gap-2.5"></div>
@@ -226,9 +203,9 @@
     <div class="max-w-xl mx-auto">
       <div class="flex items-center justify-between gap-2 mb-3">
         <div class="flex items-center gap-3">
-          <button onclick="openAvatarModal()" title="Trocar Avatar" class="relative w-12 h-12 rounded-2xl gold-gradient text-slate-900 flex items-center justify-center text-2xl shadow-lg border-2 border-white btn-tap shrink-0">
-            <span id="userAvatarDisplay">🍔</span>
-            <span class="absolute -bottom-1 -right-1 bg-slate-900 text-[#FFC72C] text-[9px] font-black px-1.5 py-0.2 rounded-full border border-white">✏️</span>
+          <button onclick="openAvatarModal()" title="Trocar Foto/Avatar" class="relative w-12 h-12 rounded-2xl gold-gradient text-slate-900 flex items-center justify-center text-2xl shadow-lg border-2 border-white btn-tap shrink-0 overflow-hidden">
+            <span id="userAvatarDisplay" class="w-full h-full flex items-center justify-center">🍔</span>
+            <span class="absolute -bottom-0.5 -right-0.5 bg-slate-900 text-[#FFC72C] text-[9px] font-black px-1 rounded-tl-lg border-t border-l border-white">📷</span>
           </button>
           <div>
             <div class="flex items-center gap-1.5 flex-wrap">
@@ -327,7 +304,7 @@
         </div>
       </div>
 
-      <!-- NOVO: REVISAR MINHAS DÚVIDAS (CADERNO AUTOMÁTICO DE ERROS) -->
+      <!-- REVISAR MINHAS DÚVIDAS -->
       <div class="pro-card rounded-3xl p-5 border-2 border-purple-500/30 space-y-3">
         <div class="flex items-center justify-between gap-2">
           <div class="flex items-center gap-3">
@@ -346,7 +323,7 @@
         </div>
       </div>
 
-      <!-- NOVO: DUELO ONLINE 1 vs 1 POR CONVITE ENTRE CELULARES -->
+      <!-- DUELO ONLINE 1 vs 1 POR CONVITE ENTRE CELULARES -->
       <div class="pro-card rounded-3xl p-5 border-2 border-amber-500/40 space-y-3">
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-3">
@@ -412,7 +389,7 @@
       <div id="bookQuestionsContainer" class="space-y-2.5"></div>
     </section>
 
-    <!-- ABA 3: RANKING COM PÓDIO 3D -->
+    <!-- ABA 3: RANKING COM PÓDIO 3D + PRINT AUTOMÁTICO PARA WHATSAPP -->
     <section id="tab-prizes" class="hidden space-y-4">
       <div class="mc-gradient text-white rounded-3xl p-5 shadow-xl relative overflow-hidden border-2 border-[#FFC72C]">
         <div class="flex items-center gap-4">
@@ -425,22 +402,33 @@
         </div>
       </div>
 
-      <div class="pro-card rounded-3xl p-5 space-y-4">
+      <!-- ÁREA DO RANKING QUE SERÁ FOTOGRAFADA PELO BOTÃO DE PRINT -->
+      <div id="rankingPrintArea" class="pro-card rounded-3xl p-5 space-y-4">
         <div class="flex items-center justify-between flex-wrap gap-2">
           <div>
             <h3 class="font-black text-base">🏆 Pódio & Ranking da Loja</h3>
             <span id="syncStatusText" class="text-[11px] text-emerald-500 font-bold">● Servidor Multi-Usuários Estável</span>
           </div>
-          <button onclick="forceSyncNow()" class="bg-red-500/10 hover:bg-red-500/20 text-red-500 border border-red-500/25 font-extrabold text-xs px-3.5 py-2 rounded-xl btn-tap">
+          <button onclick="forceSyncNow()" data-html2canvas-ignore="true" class="bg-red-500/10 hover:bg-red-500/20 text-red-500 border border-red-500/25 font-extrabold text-xs px-3.5 py-2 rounded-xl btn-tap">
             🔄 Atualizar Agora
           </button>
         </div>
 
+        <!-- Pódio Olímpico 3D Top 3 -->
         <div id="podiumTop3Container" class="grid grid-cols-3 gap-2 items-end pt-4 pb-2"></div>
-        <div id="leaderboardContainer" class="space-y-2.5"></div>
 
-        <button onclick="shareMyScoreWhatsApp()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-black py-3.5 rounded-2xl text-xs flex items-center justify-center gap-2 shadow-md btn-tap">
-          <span>📲 Enviar Meu Placar e Sincronizar no WhatsApp</span>
+        <!-- Lista Geral do Ranking -->
+        <div id="leaderboardContainer" class="space-y-2.5"></div>
+      </div>
+
+      <!-- BOTÕES DE COMPARTILHAMENTO NO WHATSAPP (PRINT EM IMAGEM + TEXTO) -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+        <button id="btnPrintRanking" onclick="captureAndShareRankingImage()" class="w-full text-slate-950 font-black py-3.5 px-4 rounded-2xl text-xs flex items-center justify-center gap-2 btn-anim-yellow btn-shine">
+          <span>📸 Tirar Print do Ranking e Mandar no WhatsApp</span>
+        </button>
+
+        <button onclick="shareMyScoreWhatsApp()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-black py-3.5 px-4 rounded-2xl text-xs flex items-center justify-center gap-2 shadow-md btn-tap">
+          <span>📲 Enviar Meu Placar Individual no WhatsApp</span>
         </button>
       </div>
 
@@ -525,7 +513,7 @@
             <input id="admNewXp" type="number" placeholder="XP (ex: 1000)" class="px-3.5 py-2.5 rounded-xl subtle-box text-xs font-bold" />
             <input id="admNewHits" type="number" placeholder="Acertos" class="px-3.5 py-2.5 rounded-xl subtle-box text-xs font-bold" />
           </div>
-          <button onclick="adminSaveMember()" class="w-full text-white font-black py-3.5 rounded-2xl btn-anim-red btn-shine">
+          <button onclick="adminSaveMember()" class="w-full text-white font-black py-3.5 rounded-2xl text-xs btn-anim-red btn-shine">
             SALVAR E TRANSMITIR PARA TODOS OS CELULARES ✅
           </button>
         </div>
@@ -540,7 +528,7 @@
       </div>
     </section>
 
-    <!-- ABA 5: HISTÓRICO DE VERSÕES (v1.0 a v7.1) -->
+    <!-- ABA 5: HISTÓRICO DE VERSÕES (v1.0 a v7.4) -->
     <section id="tab-updates" class="hidden space-y-3">
       <div class="pro-card rounded-3xl p-5 space-y-5">
         <div class="flex items-center justify-between border-b border-slate-200/40 pb-3">
@@ -548,17 +536,24 @@
             <h2 class="font-black text-base">🚀 Histórico Completo de Versões</h2>
             <p class="text-[11px] text-muted-pro font-semibold">Todas as evoluções do aplicativo desde o lançamento</p>
           </div>
-          <span class="bg-red-500/15 text-red-500 text-xs font-black px-3 py-1 rounded-full">v7.1 Multiplayer</span>
+          <span class="bg-red-500/15 text-red-500 text-xs font-black px-3 py-1 rounded-full">v7.4 Oficial</span>
+        </div>
+
+        <!-- Versão 7.4 -->
+        <div class="border-l-4 border-emerald-500 pl-3.5 space-y-1">
+          <span class="text-[11px] font-extrabold text-emerald-500 uppercase">Versão 7.4 • Atualização Atual (Print do Ranking & Fotos da Galeria)</span>
+          <h4 class="font-black text-sm">Print Automático do Ranking p/ WhatsApp + Fotos da Galeria 📸📲</h4>
+          <ul class="text-xs text-muted-pro list-disc list-inside space-y-1 pt-1">
+            <li><strong>Print do Ranking com 1 Toque:</strong> Gera automaticamente a imagem PNG do Pódio 3D + Ranking Geral e compartilha direto no WhatsApp.</li>
+            <li><strong>Fotos de Perfil da Galeria / PC:</strong> Recorte quadrado e compressão inteligente para exibir a foto real do colaborador no Topo, Pódio e Duelo.</li>
+          </ul>
         </div>
 
         <!-- Versão 7.1 -->
         <div class="border-l-4 border-purple-500 pl-3.5 space-y-1">
-          <span class="text-[11px] font-extrabold text-purple-500 uppercase">Versão 7.1 • Atualização Atual (Duelo Online por Convite & Revisão)</span>
+          <span class="text-[11px] font-extrabold text-purple-500 uppercase">Versão 7.1 • Duelo Online & Revisão</span>
           <h4 class="font-black text-sm">Convite Ao Vivo entre Celulares (1 vs 1) + Revisar Minhas Dúvidas ⚔️🧠</h4>
-          <ul class="text-xs text-muted-pro list-disc list-inside space-y-1 pt-1">
-            <li><strong>Convite de Duelo 1 vs 1 em Tempo Real:</strong> Desafie qualquer colega cadastrado e ele recebe um pop-up ao vivo no celular dele para aceitar a partida.</li>
-            <li><strong>Caderno "Revisar Minhas Dúvidas":</strong> Grava automaticamente as perguntas que você errou no Simulado para você treinar até zerar!</li>
-          </ul>
+          <p class="text-xs text-muted-pro pt-1">Desafios em tempo real entre aparelhos e caderno automático de questões erradas.</p>
         </div>
 
         <!-- Versão 7.0 -->
