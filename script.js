@@ -1,13 +1,48 @@
 /* =========================================================================
-   OLIMPÍADAS DO BÁSICO — VENTURE (script.js v7.7 COMPLETO UNIFICADO)
-   Efeitos Sonoros Completos (Cliques, Abas, Erro, Giro 3D, Acerto e Jingle)
-   + Fotos da Galeria + Print WhatsApp + Bolinha Online + Duelo 1v1 + 200 Questões
+   OLIMPÍADAS DO BÁSICO — VENTURE (script.js v7.8 COMPACTO & COMPLETO)
+   Finalização 25/10 + Sistema de Cozinha (Monta-Lanche) + Sons + Print + 1v1
    ========================================================================= */
 
+const $ = id => document.getElementById(id);
 const AVATAR_LIST = ["🍔", "🍟", "🍦", "🔥", "👨‍🍳", "👑", "⚡", "🏆", "🚀", "🥤", "🥓", "🎯"];
 let selectedRegAvatar = "🍔";
 
-// BANCO OFICIAL DE QUESTÕES — BOOK VENTURE COM ALTERNATIVAS SEMELHANTES (w)
+// Data Oficial de Encerramento: 25/10/2026 às 23:59:59
+const EVENT_END_TIMESTAMP = new Date("2026-10-25T23:59:59-03:00").getTime();
+
+// RECEITAS OFICIAIS DO SISTEMA DE COZINHA (MONTA-LANCHE)
+const KITCHEN_RECIPES = [
+  {
+    id: "smokehouse1", name: "🥓 Brabo SmokeHouse (1 Carne)", xp: 30,
+    steps: ["Coroa Pão Brioche", "Molho Méquinese (1 oz)", "Cebola Crispy (10 g)", "Bacon em Tiras (3 fatias)", "Queijo Cheddar (1 fatia)", "Carne 4:1 (1 unidade)", "Queijo Cheddar (1 fatia)", "Bacon Triturado (10 g)", "Geleia Agridoce Defumada (2/3 oz)", "Base Pão Brioche"]
+  },
+  {
+    id: "smokehouse2", name: "🔥 Brabo SmokeHouse (2 Carnes)", xp: 30,
+    steps: ["Coroa Pão Brioche", "Molho Méquinese (1 oz)", "Cebola Crispy (10 g)", "Bacon em Tiras (3 fatias)", "Queijo Cheddar (1 fatia)", "Carne 4:1 (2 unidades)", "Queijo Cheddar (1 fatia)", "Bacon Triturado (10 g)", "Geleia Agridoce Defumada (2/3 oz)", "Base Pão Brioche"]
+  },
+  {
+    id: "bigmac", name: "🍔 Big Mac Oficial", xp: 30,
+    steps: ["Pão Big Mac (Base + Club + Coroa)", "Molho Big Mac (1/2 oz Base + 1/2 oz Club)", "Alface (12 g Base + 12 g Club = 24 g)", "Picles (2 fatias no Club)", "Queijo Cheddar (1 fatia na Base)", "2 Carnes 10:1 c/ Cebola (3,5 g)"]
+  },
+  {
+    id: "quarteirao", name: "🧀 Quarteirão com Queijo", xp: 30,
+    steps: ["Pão Quarteirão (Coroa e Base)", "Mostarda (1/40 oz)", "Ketchup (1/2 oz)", "Cebola Fresca (7 g)", "Picles (2 fatias)", "2 Queijos Cheddar em Estrela", "1 Carne 4:1"]
+  },
+  {
+    id: "cheeseburger", name: "🍔 Cheeseburger Padrão", xp: 30,
+    steps: ["Pão Regular (Coroa e Base)", "Mostarda (1/40 oz)", "Ketchup (1/3 oz)", "Picles (1 fatia)", "Queijo Cheddar (1 fatia)", "1 Carne 10:1 c/ 3,5 g Cebola"]
+  },
+  {
+    id: "mcnifico", name: "🥓 McNífico Bacon", xp: 30,
+    steps: ["Mostarda (1/40 oz) + Ketchup (1/2 oz)", "Cebola Fresca (7 g)", "Molho Maionese (2/3 oz)", "Alface (28 g) + 2 Tomates", "2 Fatias de Bacon + 1 Queijo Cheddar", "1 Carne 4:1"]
+  },
+  {
+    id: "bigtasty", name: "👑 Big Tasty", xp: 30,
+    steps: ["Molho Tasty (1 oz Coroa + 1 oz Base)", "Cebola Fresca (10 g)", "Alface (28 g) + 2 Tomates", "3 Queijos Ementhal", "Carne 4:1 (Destacando a TAG)"]
+  }
+];
+
+// BANCO OFICIAL DE 200 QUESTÕES — BOOK VENTURE
 const QUESTIONS_DB = [
   { id: 1, level: "Básico", q: "Quantas gramas de alface colocamos no BigMac?", a: "12 gr na base e 12 gr no clube, totalizando 24 gramas.", w: ["14 gr na base e 14 gr no clube, totalizando 28 gramas.", "10 gr na base e 10 gr no clube, totalizando 20 gramas.", "15 gr na base e 15 gr no clube, totalizando 30 gramas."] },
   { id: 2, level: "Básico", q: "Quantas gramas de alface colocamos no McChicken?", a: "28 gramas de alface.", w: ["24 gramas de alface.", "30 gramas de alface.", "14 gramas de alface."] },
@@ -214,265 +249,275 @@ const STORAGE_THEME_KEY = "mequi_olimpiadas_theme_v7";
 const STORAGE_DUEL_HISTORY = "mequi_olimpiadas_duel_history_v75";
 const ADMIN_SECRET_PASS = "342005";
 const HEARTS_COOLDOWN_MS = 10 * 60 * 1000;
-
 const SYNC_MQTT_TOPIC = "mequi/venture/olimpiadas2026/v65_cluster_state";
 const DUEL_MQTT_TOPIC = "mequi/venture/olimpiadas2026/v71_live_duels";
 const CLOUD_HTTP_URL = "https://ntfy.sh/mequi_venture_olimpiadas_2026_v63_store";
 
-let mqttClients = [];
-let users = {};
-let currentUserKey = localStorage.getItem(STORAGE_CURRENT_KEY) || null;
-let currentBookFilter = "ALL";
-let currentStreak = 0;
-let currentHearts = 5;
-let currentQuizQuestionId = null;
-let isAdminUnlocked = false;
-
-let searchDebounceTimer = null;
-let cloudSyncQueueTimer = null;
-let cooldownIntervalId = null;
-let heartbeatIntervalId = null;
-let lastLeaderboardHash = "";
-let lastAdminListHash = "";
-let lastHttpFetchTime = 0;
-
-let pendingDuelInvite = null;
-let activeDuel = null;
-let currentReviewItem = null;
-let photoUploadTarget = "register";
+let mqttClients = [], users = {}, currentUserKey = localStorage.getItem(STORAGE_CURRENT_KEY) || null;
+let currentBookFilter = "ALL", currentStreak = 0, currentHearts = 5, currentQuizQuestionId = null, isAdminUnlocked = false;
+let searchDebounceTimer = null, cloudSyncQueueTimer = null, cooldownIntervalId = null, heartbeatIntervalId = null;
+let lastLeaderboardHash = "", lastAdminListHash = "", lastHttpFetchTime = 0;
+let pendingDuelInvite = null, activeDuel = null, currentReviewItem = null, photoUploadTarget = "register";
 let duelHistoryList = JSON.parse(localStorage.getItem(STORAGE_DUEL_HISTORY) || "[]");
+let activeRecipe = KITCHEN_RECIPES[0], currentRecipeStep = 0;
 
 // =========================================================================
-// 🎵 MOTOR COMPLETO DE ÁUDIO (JINGLE + CLIQUES DE ABA + ERRO + GIRO 3D)
+// 🎵 MOTOR DE ÁUDIO COMPACTO (JINGLE + CLIQUES + ERRO + GIRO 3D)
 // =========================================================================
-
 let globalAudioCtx = null;
-
-function getUnlockedAudioCtx() {
-  const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-  if (!AudioContextClass) return null;
-  if (!globalAudioCtx) {
-    globalAudioCtx = new AudioContextClass();
-  }
-  if (globalAudioCtx.state === "suspended") {
-    globalAudioCtx.resume();
-  }
+function getAudio() {
+  const Ctx = window.AudioContext || window.webkitAudioContext;
+  if (!Ctx) return null;
+  if (!globalAudioCtx) globalAudioCtx = new Ctx();
+  if (globalAudioCtx.state === "suspended") globalAudioCtx.resume();
   return globalAudioCtx;
 }
+document.addEventListener("click", getAudio, { once: true });
+document.addEventListener("touchstart", getAudio, { once: true });
 
-// Desbloqueia o áudio automaticamente no primeiro toque ou clique em qualquer lugar da página
-document.addEventListener("click", () => { getUnlockedAudioCtx(); }, { once: true });
-document.addEventListener("touchstart", () => { getUnlockedAudioCtx(); }, { once: true });
+function playTone(notes, type = "triangle", vol = 0.4) {
+  try {
+    const ctx = getAudio();
+    if (!ctx) return;
+    const now = ctx.currentTime;
+    notes.forEach(n => {
+      const osc = ctx.createOscillator(), gain = ctx.createGain();
+      osc.type = type;
+      osc.frequency.setValueAtTime(n.f, now + (n.s || 0));
+      if (n.fEnd) osc.frequency.exponentialRampToValueAtTime(n.fEnd, now + (n.s || 0) + n.d);
+      gain.gain.setValueAtTime(vol, now + (n.s || 0));
+      gain.gain.exponentialRampToValueAtTime(0.001, now + (n.s || 0) + n.d);
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.start(now + (n.s || 0)); osc.stop(now + (n.s || 0) + n.d + 0.02);
+    });
+  } catch (e) {}
+}
 
-// Cria automaticamente o botão 🔊 no cabeçalho para testar o jingle quando quiser
-function ensureSoundTestButton() {
-  const themeBtn = document.getElementById("themeToggleBtn");
-  if (themeBtn && !document.getElementById("soundTestBtn")) {
-    const soundBtn = document.createElement("button");
-    soundBtn.id = "soundTestBtn";
-    soundBtn.title = "Testar Jingle do Méqui";
-    soundBtn.className = "bg-slate-950/30 hover:bg-slate-950/45 w-9 h-9 rounded-2xl flex items-center justify-center text-sm border border-white/15 btn-tap";
-    soundBtn.innerHTML = "🔊";
-    soundBtn.onclick = () => playMcDonaldsJingle();
-    themeBtn.parentNode.insertBefore(soundBtn, themeBtn);
+function playMcDonaldsJingle() {
+  const seq = [{ f: 523.25, s: 0, d: 0.16 }, { f: 587.33, s: 0.19, d: 0.16 }, { f: 659.25, s: 0.38, d: 0.2 }, { f: 880, s: 0.65, d: 0.26 }, { f: 783.99, s: 0.96, d: 0.65 }];
+  playTone(seq, "triangle", 0.7);
+  playTone(seq.map(x => ({ ...x, f: x.f * 2 })), "sine", 0.22);
+}
+function playHitSuccessSound() { playTone([{ f: 587.33, s: 0, d: 0.09 }, { f: 880, s: 0.08, d: 0.22 }], "sine", 0.45); }
+function playWrongAnswerSound() { playTone([{ f: 220, s: 0, d: 0.14 }, { f: 155, s: 0.16, d: 0.24 }], "sawtooth", 0.32); }
+function playTabClickSound() { playTone([{ f: 520, fEnd: 880, s: 0, d: 0.06 }], "triangle", 0.28); }
+function playCardFlipSound() { playTone([{ f: 260, fEnd: 620, s: 0, d: 0.12 }], "sine", 0.32); }
+
+// =========================================================================
+// ⏳ CRONÔMETRO DE FINALIZAÇÃO (25/10) + 🍔 SISTEMA DE COZINHA (AUTO-INJETADOS)
+// =========================================================================
+function injectCountdownAndKitchenUI() {
+  // 1. Botão de testar som no topo
+  const themeBtn = $("themeToggleBtn");
+  if (themeBtn && !$("soundTestBtn")) {
+    const sb = document.createElement("button");
+    sb.id = "soundTestBtn"; sb.title = "Tocar Jingle"; sb.innerHTML = "🔊";
+    sb.className = "bg-slate-950/30 hover:bg-slate-950/45 w-9 h-9 rounded-2xl flex items-center justify-center text-sm border border-white/15 btn-tap";
+    sb.onclick = playMcDonaldsJingle;
+    themeBtn.parentNode.insertBefore(sb, themeBtn);
+  }
+
+  // 2. Banner de Contagem Regressiva para 25/10 no topo do main e no Print do Ranking
+  const mainEl = document.querySelector("main");
+  if (mainEl && !$("countdownBannerTop")) {
+    const banner = document.createElement("div");
+    banner.id = "countdownBannerTop";
+    banner.className = "pro-card rounded-3xl p-3.5 mb-4 border-2 border-[#FFC72C] flex items-center justify-between gap-2 shadow-md";
+    banner.innerHTML = `
+      <div class="flex items-center gap-2.5">
+        <span class="text-2xl float-slow">🏁</span>
+        <div>
+          <span class="text-[10px] font-black uppercase text-red-500 tracking-wider block">Finalização Oficial • 25/10</span>
+          <p class="font-black text-xs">Reta Final da Caneca Oficial Méqui ☕</p>
+        </div>
+      </div>
+      <div id="countdownTimerText" class="gold-gradient text-slate-950 font-black text-xs px-3 py-1.5 rounded-xl shadow-sm shrink-0">--d --h --m</div>
+    `;
+    mainEl.insertBefore(banner, mainEl.firstChild);
+  }
+
+  const printArea = $("rankingPrintArea");
+  if (printArea && !$("rankingPrintCountdown")) {
+    const pb = document.createElement("div");
+    pb.id = "rankingPrintCountdown";
+    pb.className = "subtle-box rounded-2xl p-2.5 text-center text-xs font-black border border-amber-500/40";
+    pb.innerHTML = `⏳ Encerramento Oficial: <span class="text-red-500">25/10</span> • <span id="printCountdownSpan">--</span>`;
+    printArea.insertBefore(pb, printArea.children[1]);
+  }
+
+  // 3. Sistema de Cozinha ("Monta-Lanche") dentro da aba Simulado
+  const tabQuiz = $("tab-quiz");
+  if (tabQuiz && !$("kitchenSystemCard")) {
+    const kitchenCard = document.createElement("div");
+    kitchenCard.id = "kitchenSystemCard";
+    kitchenCard.className = "pro-card rounded-3xl p-5 border-2 border-red-500/40 space-y-3";
+    kitchenCard.innerHTML = `
+      <div class="flex items-center justify-between gap-2 border-b border-slate-500/20 pb-3">
+        <div class="flex items-center gap-2.5">
+          <div class="w-11 h-11 rounded-2xl mc-gradient text-[#FFC72C] flex items-center justify-center text-2xl font-black shrink-0 shadow">🍔</div>
+          <div>
+            <span class="text-[10px] font-black uppercase text-red-500 bg-red-500/10 px-2 py-0.5 rounded-full">Sistema de Cozinha • +30 XP</span>
+            <h3 class="font-black text-sm mt-0.5">Bancada Monta-Lanche (Linha 49°C a 57°C)</h3>
+          </div>
+        </div>
+      </div>
+      <div class="flex gap-2">
+        <select id="kitchenRecipeSelect" onchange="selectKitchenRecipe(this.value)" class="flex-1 px-3 py-2 rounded-xl subtle-box text-xs font-extrabold focus:outline-none">
+          ${KITCHEN_RECIPES.map(r => `<option value="${r.id}">${r.name}</option>`).join("")}
+        </select>
+        <button onclick="resetKitchenGame()" class="px-3 py-2 rounded-xl bg-red-500/10 text-red-500 font-black text-xs btn-tap">Reiniciar 🔄</button>
+      </div>
+      <div class="subtle-box p-3 rounded-2xl space-y-1.5">
+        <div class="flex justify-between text-[11px] font-black">
+          <span class="text-amber-500">📋 Montagem Atual (Ordem Oficial):</span>
+          <span id="kitchenProgressBadge" class="text-emerald-500">0/0</span>
+        </div>
+        <div id="kitchenTrayBuilt" class="flex flex-wrap gap-1.5 min-h-[34px] items-center text-[11px] font-bold text-muted-pro">
+          Toque no 1º ingrediente abaixo para iniciar a montagem!
+        </div>
+      </div>
+      <div id="kitchenChoicesGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-2"></div>
+      <div id="kitchenFeedback" class="hidden p-3 rounded-2xl text-xs font-extrabold text-center"></div>
+    `;
+    // Insere logo abaixo do card principal do Simulado
+    tabQuiz.insertBefore(kitchenCard, tabQuiz.children[2]);
+    initKitchenGame();
+  }
+
+  updateEventCountdown();
+  setInterval(updateEventCountdown, 1000);
+}
+
+function updateEventCountdown() {
+  const diff = EVENT_END_TIMESTAMP - Date.now();
+  const topEl = $("countdownTimerText"), printEl = $("printCountdownSpan");
+  if (diff <= 0) {
+    const list = Object.values(users).filter(u => u && u.name && !u._deleted).sort((a, b) => (b.xp || 0) - (a.xp || 0));
+    const champ = list[0] ? list[0].name : "1º Colocado";
+    if (topEl) topEl.textContent = `🏆 ENCERRADO! Campeão: ${champ}`;
+    if (printEl) printEl.textContent = `ENCERRADO EM 25/10 • 🏆 Campeão(ã): ${champ}`;
+    return;
+  }
+  const d = Math.floor(diff / 86400000);
+  const h = Math.floor((diff % 86400000) / 3600000);
+  const m = Math.floor((diff % 3600000) / 60000);
+  const s = Math.floor((diff % 60000) / 1000);
+  const str = `Faltam ${d}d ${String(h).padStart(2, "0")}h ${String(m).padStart(2, "0")}m ${String(s).padStart(2, "0")}s`;
+  if (topEl) topEl.textContent = `${d}d ${String(h).padStart(2, "0")}h ${String(m).padStart(2, "0")}m ${String(s).padStart(2, "0")}s`;
+  if (printEl) printEl.textContent = str;
+}
+
+// =========================================================================
+// 🍔 LÓGICA DO SISTEMA DE COZINHA ("MONTA-LANCHE")
+// =========================================================================
+function selectKitchenRecipe(id) {
+  playTabClickSound();
+  activeRecipe = KITCHEN_RECIPES.find(r => r.id === id) || KITCHEN_RECIPES[0];
+  resetKitchenGame();
+}
+
+function initKitchenGame() {
+  activeRecipe = KITCHEN_RECIPES[0];
+  resetKitchenGame();
+}
+
+function resetKitchenGame() {
+  currentRecipeStep = 0;
+  const fb = $("kitchenFeedback");
+  if (fb) fb.classList.add("hidden");
+  renderKitchenState();
+}
+
+function renderKitchenState() {
+  const tray = $("kitchenTrayBuilt"), badge = $("kitchenProgressBadge"), grid = $("kitchenChoicesGrid");
+  if (!tray || !grid) return;
+
+  const total = activeRecipe.steps.length;
+  badge.textContent = `${currentRecipeStep}/${total} etapas`;
+
+  if (currentRecipeStep === 0) {
+    tray.innerHTML = `<span class="text-xs text-muted-pro">Clique nos ingredientes abaixo na sequência oficial de montagem:</span>`;
+  } else {
+    tray.innerHTML = activeRecipe.steps.slice(0, currentRecipeStep).map((st, i) =>
+      `<span class="px-2.5 py-1 rounded-xl bg-emerald-500/15 text-emerald-500 border border-emerald-500/30 font-extrabold text-[10px]">${i + 1}. ${st} ✅</span>`
+    ).join("");
+  }
+
+  const remaining = activeRecipe.steps.slice(currentRecipeStep);
+  const shuffled = [...remaining].sort(() => 0.5 - Math.random());
+
+  grid.innerHTML = "";
+  shuffled.forEach(stepName => {
+    const btn = document.createElement("button");
+    btn.className = "option-btn p-3 rounded-2xl font-extrabold text-xs text-left flex items-center justify-between gap-2";
+    btn.innerHTML = `<span>🥗 ${stepName}</span><span class="text-[10px] text-amber-500 font-black">+</span>`;
+    btn.onclick = () => handleKitchenStepClick(btn, stepName);
+    grid.appendChild(btn);
+  });
+}
+
+function handleKitchenStepClick(btn, chosenStep) {
+  const expected = activeRecipe.steps[currentRecipeStep];
+  const fb = $("kitchenFeedback");
+
+  if (chosenStep === expected) {
+    currentRecipeStep++;
+    if (currentRecipeStep >= activeRecipe.steps.length) {
+      renderKitchenState();
+      addXp(activeRecipe.xp);
+      fb.classList.remove("hidden");
+      fb.className = "p-3.5 rounded-2xl text-xs font-extrabold text-center bg-emerald-500/20 text-emerald-500 border border-emerald-500/40";
+      fb.innerHTML = `🎉 <strong>Padrão Ouro Best Burger!</strong> Você montou o <strong>${activeRecipe.name}</strong> perfeitamente e ganhou <strong>+${activeRecipe.xp} XP</strong>!`;
+    } else {
+      playCardFlipSound();
+      renderKitchenState();
+    }
+  } else {
+    playWrongAnswerSound();
+    btn.className = "anim-shake-wrong p-3 rounded-2xl border-2 border-red-500 bg-red-500/20 font-extrabold text-xs text-left";
+    fb.classList.remove("hidden");
+    fb.className = "p-3 rounded-2xl text-xs font-extrabold text-center bg-red-500/15 text-red-500 border border-red-500/30";
+    fb.innerHTML = `❌ Ordem incorreta! O próximo item oficial é: <span class="underline">${expected}</span>`;
   }
 }
 
-// 1. Jingle Oficial do Comercial ("Pa-ra-pa-pa-pa" -> Subida de Nível / Vitória)
-function playMcDonaldsJingle() {
-  try {
-    const ctx = getUnlockedAudioCtx();
-    if (!ctx) return;
-
-    const now = ctx.currentTime;
-    const notes = [
-      { freq: 523.25, start: 0.00, dur: 0.16 }, // Pa (Dó)
-      { freq: 587.33, start: 0.19, dur: 0.16 }, // ra (Ré)
-      { freq: 659.25, start: 0.38, dur: 0.20 }, // pa (Mi)
-      { freq: 880.00, start: 0.65, dur: 0.26 }, // pa (Lá agudo)
-      { freq: 783.99, start: 0.96, dur: 0.65 }  // paaa! (Sol final)
-    ];
-
-    notes.forEach(n => {
-      [1, 2].forEach((mult, idx) => {
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-
-        osc.type = idx === 0 ? "triangle" : "sine";
-        osc.frequency.setValueAtTime(n.freq * mult, now + n.start);
-
-        const maxVol = idx === 0 ? 0.75 : 0.25;
-        gain.gain.setValueAtTime(0.001, now + n.start);
-        gain.gain.linearRampToValueAtTime(maxVol, now + n.start + 0.02);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + n.start + n.dur);
-
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-
-        osc.start(now + n.start);
-        osc.stop(now + n.start + n.dur + 0.02);
-      });
-    });
-  } catch (e) {}
-}
-
-// 2. Som de Acerto de Pergunta (+25 XP)
-function playHitSuccessSound() {
-  try {
-    const ctx = getUnlockedAudioCtx();
-    if (!ctx) return;
-    const now = ctx.currentTime;
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.type = "sine";
-    osc.frequency.setValueAtTime(587.33, now);
-    osc.frequency.setValueAtTime(880.00, now + 0.08);
-    gain.gain.setValueAtTime(0.45, now);
-    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-    osc.start(now);
-    osc.stop(now + 0.26);
-  } catch (e) {}
-}
-
-// 3. NOVO: Som de Erro de Pergunta ("Buzzer" grave duplo: Bóóó-bóóó)
-function playWrongAnswerSound() {
-  try {
-    const ctx = getUnlockedAudioCtx();
-    if (!ctx) return;
-    const now = ctx.currentTime;
-
-    const tones = [
-      { freq: 220, start: 0.00, dur: 0.14 },
-      { freq: 155, start: 0.16, dur: 0.24 }
-    ];
-
-    tones.forEach(t => {
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.type = "sawtooth";
-      osc.frequency.setValueAtTime(t.freq, now + t.start);
-
-      gain.gain.setValueAtTime(0.32, now + t.start);
-      gain.gain.exponentialRampToValueAtTime(0.001, now + t.start + t.dur);
-
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-
-      osc.start(now + t.start);
-      osc.stop(now + t.start + t.dur + 0.02);
-    });
-  } catch (e) {}
-}
-
-// 4. NOVO: Som de Clique de Troca de Aba / Botões ("Pop" curto e agradável)
-function playTabClickSound() {
-  try {
-    const ctx = getUnlockedAudioCtx();
-    if (!ctx) return;
-    const now = ctx.currentTime;
-
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.type = "triangle";
-    osc.frequency.setValueAtTime(520, now);
-    osc.frequency.exponentialRampToValueAtTime(880, now + 0.055);
-
-    gain.gain.setValueAtTime(0.28, now);
-    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
-
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-
-    osc.start(now);
-    osc.stop(now + 0.065);
-  } catch (e) {}
-}
-
-// 5. NOVO: Som de Virar o Flashcard 3D ("Whoosh / Flip" de carta)
-function playCardFlipSound() {
-  try {
-    const ctx = getUnlockedAudioCtx();
-    if (!ctx) return;
-    const now = ctx.currentTime;
-
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.type = "sine";
-    osc.frequency.setValueAtTime(240, now);
-    osc.frequency.exponentialRampToValueAtTime(620, now + 0.07);
-    osc.frequency.exponentialRampToValueAtTime(340, now + 0.14);
-
-    gain.gain.setValueAtTime(0.01, now);
-    gain.gain.linearRampToValueAtTime(0.35, now + 0.05);
-    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
-
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-
-    osc.start(now);
-    osc.stop(now + 0.16);
-  } catch (e) {}
-}
-
 // =========================================================================
-// FOTOS DE PERFIL DA GALERIA / PC
+// FOTOS DA GALERIA, PRINT DO RANKING E TEMA
 // =========================================================================
-
-function isPhotoAvatar(val) {
-  return typeof val === "string" && val.startsWith("data:image/");
-}
+function isPhotoAvatar(val) { return typeof val === "string" && val.startsWith("data:image/"); }
 
 function renderAvatarBadge(avatarVal, sizeClasses = "w-10 h-10", textClasses = "text-xl", extraClasses = "pro-card") {
   const val = avatarVal || "🍔";
-  if (isPhotoAvatar(val)) {
-    return `<img src="${val}" alt="Foto" class="${sizeClasses} rounded-2xl object-cover border-2 border-[#FFC72C] shadow-sm shrink-0" />`;
-  }
-  return `<div class="${sizeClasses} rounded-2xl ${extraClasses} flex items-center justify-center ${textClasses} shrink-0">${val}</div>`;
+  return isPhotoAvatar(val)
+    ? `<img src="${val}" alt="Foto" class="${sizeClasses} rounded-2xl object-cover border-2 border-[#FFC72C] shadow-sm shrink-0" />`
+    : `<div class="${sizeClasses} rounded-2xl ${extraClasses} flex items-center justify-center ${textClasses} shrink-0">${val}</div>`;
 }
 
 function triggerPhotoUpload(targetMode) {
   playTabClickSound();
   photoUploadTarget = targetMode;
-  const input = document.getElementById("hiddenGalleryInput");
-  if (input) {
-    input.value = "";
-    input.click();
-  }
+  const input = $("hiddenGalleryInput");
+  if (input) { input.value = ""; input.click(); }
 }
 
 function handleGalleryFileSelected(event) {
   const file = event.target.files && event.target.files[0];
   if (!file) return;
-
   const reader = new FileReader();
-  reader.onload = function(e) {
+  reader.onload = e => {
     const img = new Image();
-    img.onload = function() {
+    img.onload = () => {
       const canvas = document.createElement("canvas");
-      const size = 110;
-      canvas.width = size;
-      canvas.height = size;
-      const ctx = canvas.getContext("2d");
-
+      canvas.width = 110; canvas.height = 110;
       const minDim = Math.min(img.width, img.height);
-      const sx = (img.width - minDim) / 2;
-      const sy = (img.height - minDim) / 2;
-
-      ctx.drawImage(img, sx, sy, minDim, minDim, 0, 0, size, size);
-      const compressedDataUrl = canvas.toDataURL("image/jpeg", 0.74);
-
+      canvas.getContext("2d").drawImage(img, (img.width - minDim) / 2, (img.height - minDim) / 2, minDim, minDim, 0, 0, 110, 110);
+      const dataUrl = canvas.toDataURL("image/jpeg", 0.74);
       playHitSuccessSound();
-
       if (photoUploadTarget === "register") {
-        selectedRegAvatar = compressedDataUrl;
-        renderAvatarSelector();
-      } else if (photoUploadTarget === "profile" && currentUserKey && users[currentUserKey]) {
-        users[currentUserKey].avatar = compressedDataUrl;
-        users[currentUserKey].updatedAt = Date.now();
-        closeAvatarModal();
-        scheduleCloudSync(currentUserKey, true);
+        selectedRegAvatar = dataUrl; renderAvatarSelector();
+      } else if (currentUserKey && users[currentUserKey]) {
+        users[currentUserKey].avatar = dataUrl; users[currentUserKey].updatedAt = Date.now();
+        closeAvatarModal(); scheduleCloudSync(currentUserKey, true);
       }
     };
     img.src = e.target.result;
@@ -480,75 +525,34 @@ function handleGalleryFileSelected(event) {
   reader.readAsDataURL(file);
 }
 
-// =========================================================================
-// PRINT AUTOMÁTICO DO RANKING EM PNG P/ WHATSAPP
-// =========================================================================
-
 async function captureAndShareRankingImage() {
   playTabClickSound();
-  const printArea = document.getElementById("rankingPrintArea");
-  const btn = document.getElementById("btnPrintRanking");
-  if (!printArea || typeof html2canvas === "undefined") {
-    return shareMyScoreWhatsApp();
-  }
-
-  const originalText = btn.innerHTML;
-  btn.innerHTML = `<span>⏳ Gerando Print do Ranking...</span>`;
-  btn.disabled = true;
-
+  const printArea = $("rankingPrintArea"), btn = $("btnPrintRanking");
+  if (!printArea || typeof html2canvas === "undefined") return shareMyScoreWhatsApp();
+  const orig = btn.innerHTML;
+  btn.innerHTML = `<span>⏳ Gerando Print...</span>`; btn.disabled = true;
   try {
-    const isDark = document.body.classList.contains("dark-mode");
-    const canvas = await html2canvas(printArea, {
-      scale: 2,
-      useCORS: true,
-      backgroundColor: isDark ? "#131b2e" : "#ffffff"
-    });
-
-    canvas.toBlob(async (blob) => {
-      btn.innerHTML = originalText;
-      btn.disabled = false;
+    const canvas = await html2canvas(printArea, { scale: 2, useCORS: true, backgroundColor: document.body.classList.contains("dark-mode") ? "#131b2e" : "#ffffff" });
+    canvas.toBlob(async blob => {
+      btn.innerHTML = orig; btn.disabled = false;
       if (!blob) return;
-
-      const fileName = "Ranking_Olimpiadas_Mequi.png";
-      const file = new File([blob], fileName, { type: "image/png" });
-
+      const file = new File([blob], "Ranking_Olimpiadas_Mequi.png", { type: "image/png" });
       const list = Object.values(users).filter(u => u && u.name && !u._deleted).sort((a, b) => (b.xp || 0) - (a.xp || 0));
-      const topSummary = list.slice(0, 3).map((u, i) => `${i === 0 ? '🥇' : i === 1 ? '🥈' : '🥉'} ${u.name}: ${u.xp || 0} XP`).join("\n");
-      const shareCaption = `🏆 *RANKING OFICIAL — OLIMPÍADAS DO BÁSICO (VENTURE)*\n\n${topSummary}\n\n🔗 Participe no link: ${window.location.origin}${window.location.pathname}`;
-
+      const top3 = list.slice(0, 3).map((u, i) => `${i === 0 ? '🥇' : i === 1 ? '🥈' : '🥉'} ${u.name}: ${u.xp || 0} XP`).join("\n");
+      const caption = `🏆 *RANKING OFICIAL — OLIMPÍADAS DO BÁSICO (FINALIZA 25/10)*\n\n${top3}\n\n🔗 Link: ${window.location.origin}${window.location.pathname}`;
       if (navigator.canShare && navigator.canShare({ files: [file] })) {
-        try {
-          await navigator.share({ files: [file], title: "Ranking Olimpíadas do Básico", text: shareCaption });
-          return;
-        } catch (err) {}
+        try { await navigator.share({ files: [file], title: "Ranking Méqui", text: caption }); return; } catch (e) {}
       }
-
-      const link = document.createElement("a");
-      link.download = fileName;
-      link.href = URL.createObjectURL(blob);
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-
-      window.open(`https://wa.me/?text=${encodeURIComponent(shareCaption + "\n\n📸 *(Anexe a imagem do Ranking que acabou de baixar!)*")}`, "_blank");
+      const a = document.createElement("a"); a.download = "Ranking_Olimpiadas_Mequi.png"; a.href = URL.createObjectURL(blob); a.click();
+      window.open(`https://wa.me/?text=${encodeURIComponent(caption)}`, "_blank");
     }, "image/png");
-  } catch (e) {
-    btn.innerHTML = originalText;
-    btn.disabled = false;
-    shareMyScoreWhatsApp();
-  }
+  } catch (e) { btn.innerHTML = orig; btn.disabled = false; shareMyScoreWhatsApp(); }
 }
 
-// =========================================================================
-// TEMA ESCURO / CLARO E HEARTBEAT ONLINE (BOLINHA VERDE)
-// =========================================================================
-
 function initTheme() {
-  const savedTheme = localStorage.getItem(STORAGE_THEME_KEY);
-  if (savedTheme === "dark") {
+  if (localStorage.getItem(STORAGE_THEME_KEY) === "dark") {
     document.body.classList.add("dark-mode");
-    const btn = document.getElementById("themeToggleBtn");
-    if (btn) btn.textContent = "☀️";
+    if ($("themeToggleBtn")) $("themeToggleBtn").textContent = "☀️";
   }
 }
 
@@ -556,20 +560,21 @@ function toggleDarkMode() {
   playTabClickSound();
   const isDark = document.body.classList.toggle("dark-mode");
   localStorage.setItem(STORAGE_THEME_KEY, isDark ? "dark" : "light");
-  const btn = document.getElementById("themeToggleBtn");
-  if (btn) btn.textContent = isDark ? "☀️" : "🌙";
+  if ($("themeToggleBtn")) $("themeToggleBtn").textContent = isDark ? "☀️" : "🌙";
 }
 
 function showXpToast(amount) {
-  const container = document.getElementById("xpToastContainer");
-  if (!container) return;
-  const toast = document.createElement("div");
-  toast.className = "xp-toast gold-gradient text-slate-950 font-black text-xs px-4 py-2 rounded-2xl shadow-xl border-2 border-white";
-  toast.textContent = `+${amount} XP ⚡`;
-  container.appendChild(toast);
-  setTimeout(() => toast.remove(), 1250);
+  const c = $("xpToastContainer");
+  if (!c) return;
+  const t = document.createElement("div");
+  t.className = "xp-toast gold-gradient text-slate-950 font-black text-xs px-4 py-2 rounded-2xl shadow-xl border-2 border-white";
+  t.textContent = `+${amount} XP ⚡`;
+  c.appendChild(t); setTimeout(() => t.remove(), 1250);
 }
 
+// =========================================================================
+// SINCRONIZAÇÃO EM TEMPO REAL E RESGATE DE CONTAS
+// =========================================================================
 function startHeartbeat() {
   if (heartbeatIntervalId) clearInterval(heartbeatIntervalId);
   heartbeatIntervalId = setInterval(() => {
@@ -580,265 +585,134 @@ function startHeartbeat() {
   }, 10000);
 }
 
-// =========================================================================
-// SINCRONIZAÇÃO EM NUVEM E RESGATE DE CONTAS
-// =========================================================================
-
 function rescuePreviousLocalRegistrations() {
-  const keysToCheck = ["mequi_olimpiadas_users_v3", "mequi_olimpiadas_users_v4", "mequi_olimpiadas_users_v5", "mequi_olimpiadas_users_v6"];
-  keysToCheck.forEach(storageKey => {
+  ["mequi_olimpiadas_users_v3", "mequi_olimpiadas_users_v4", "mequi_olimpiadas_users_v5", "mequi_olimpiadas_users_v6"].forEach(k => {
     try {
-      const raw = localStorage.getItem(storageKey);
-      if (!raw) return;
-      const parsed = JSON.parse(raw);
+      const parsed = JSON.parse(localStorage.getItem(k) || "null");
       if (parsed && typeof parsed === "object") {
-        Object.keys(parsed).forEach(k => {
-          const u = parsed[k];
+        Object.keys(parsed).forEach(uk => {
+          const u = parsed[uk];
           if (!u || !u.name) return;
-          if (k === "daniel pessoa de oliveira" && u.xp === 250 && u.correctAnswers === 2) return;
-          users[k] = mergeSingleUser(users[k], {
-            ...u,
-            role: u.role || u.station || "Atendente",
-            avatar: u.avatar || "🍔",
-            hearts: u.hearts !== undefined ? u.hearts : 5,
-            heartsLockUntil: u.heartsLockUntil || 0,
-            mistakes: Array.isArray(u.mistakes) ? u.mistakes : [],
-            lastSeen: u.lastSeen || 0,
-            updatedAt: u.updatedAt || Date.now()
+          users[uk] = mergeSingleUser(users[uk], {
+            ...u, role: u.role || u.station || "Atendente", avatar: u.avatar || "🍔",
+            hearts: u.hearts !== undefined ? u.hearts : 5, heartsLockUntil: u.heartsLockUntil || 0,
+            mistakes: Array.isArray(u.mistakes) ? u.mistakes : [], lastSeen: u.lastSeen || 0, updatedAt: u.updatedAt || Date.now()
           });
         });
       }
     } catch (e) {}
   });
-
-  if (!currentUserKey) {
-    const oldActive = localStorage.getItem("mequi_olimpiadas_active_user_v5") || localStorage.getItem("mequi_olimpiadas_active_user_v3");
-    if (oldActive && users[oldActive] && !users[oldActive]._deleted) {
-      currentUserKey = oldActive;
-      localStorage.setItem(STORAGE_CURRENT_KEY, oldActive);
-    }
-  }
-
-  try {
-    const params = new URLSearchParams(window.location.search);
-    const syncParam = params.get("syncUser");
-    if (syncParam) {
-      const imported = JSON.parse(decodeURIComponent(atob(syncParam)));
-      if (imported && imported.name) {
-        const k = imported.name.toLowerCase();
-        users[k] = mergeSingleUser(users[k], imported);
-        window.history.replaceState({}, document.title, window.location.pathname);
-      }
-    }
-  } catch (e) {}
-
   localStorage.setItem(STORAGE_USERS_KEY, JSON.stringify(users));
 }
 
-function mergeSingleUser(existing, incoming) {
-  if (!existing) return incoming;
-  const existingAdminTime = existing.adminOverrideAt || 0;
-  const incomingAdminTime = incoming.adminOverrideAt || 0;
-
-  if (incomingAdminTime > existingAdminTime) return incoming;
-  if (existingAdminTime > incomingAdminTime) return existing;
-
-  if (incoming._deleted && (incoming.updatedAt || 0) >= (existing.updatedAt || 0)) {
-    return incoming;
-  }
-
-  const isIncomingNewer = (incoming.updatedAt || 0) >= (existing.updatedAt || 0);
-
+function mergeSingleUser(ex, inc) {
+  if (!ex) return inc;
+  if ((inc.adminOverrideAt || 0) > (ex.adminOverrideAt || 0)) return inc;
+  if ((ex.adminOverrideAt || 0) > (inc.adminOverrideAt || 0)) return ex;
+  if (inc._deleted && (inc.updatedAt || 0) >= (ex.updatedAt || 0)) return inc;
+  const newer = (inc.updatedAt || 0) >= (ex.updatedAt || 0);
   return {
-    ...existing,
-    ...incoming,
-    _deleted: false,
-    role: incoming.role || existing.role || incoming.station || "Atendente",
-    avatar: (isIncomingNewer && incoming.avatar) ? incoming.avatar : (existing.avatar || incoming.avatar || "🍔"),
-    xp: Math.max(existing.xp || 0, incoming.xp || 0),
-    correctAnswers: Math.max(existing.correctAnswers || 0, incoming.correctAnswers || 0),
-    hearts: isIncomingNewer && incoming.hearts !== undefined ? incoming.hearts : (existing.hearts !== undefined ? existing.hearts : 5),
-    heartsLockUntil: isIncomingNewer && incoming.heartsLockUntil !== undefined ? incoming.heartsLockUntil : (existing.heartsLockUntil || 0),
-    mistakes: isIncomingNewer && Array.isArray(incoming.mistakes) ? incoming.mistakes : (Array.isArray(existing.mistakes) ? existing.mistakes : []),
-    lastSeen: Math.max(existing.lastSeen || 0, incoming.lastSeen || 0),
-    updatedAt: Math.max(existing.updatedAt || 0, incoming.updatedAt || 0)
+    ...ex, ...inc, _deleted: false,
+    role: inc.role || ex.role || "Atendente",
+    avatar: (newer && inc.avatar) ? inc.avatar : (ex.avatar || inc.avatar || "🍔"),
+    xp: Math.max(ex.xp || 0, inc.xp || 0),
+    correctAnswers: Math.max(ex.correctAnswers || 0, inc.correctAnswers || 0),
+    hearts: newer && inc.hearts !== undefined ? inc.hearts : (ex.hearts !== undefined ? ex.hearts : 5),
+    heartsLockUntil: newer && inc.heartsLockUntil !== undefined ? inc.heartsLockUntil : (ex.heartsLockUntil || 0),
+    mistakes: newer && Array.isArray(inc.mistakes) ? inc.mistakes : (Array.isArray(ex.mistakes) ? ex.mistakes : []),
+    lastSeen: Math.max(ex.lastSeen || 0, inc.lastSeen || 0),
+    updatedAt: Math.max(ex.updatedAt || 0, inc.updatedAt || 0)
   };
 }
 
-function mergeUserDictionaries(localDict, remoteDict) {
-  const merged = { ...localDict };
-  if (!remoteDict || typeof remoteDict !== "object") return merged;
-
-  Object.keys(remoteDict).forEach(k => {
-    const rUser = remoteDict[k];
-    if (!rUser || !rUser.name) return;
-    if (k === "daniel pessoa de oliveira" && rUser.xp === 250 && rUser.correctAnswers === 2) return;
-    merged[k] = mergeSingleUser(merged[k], rUser);
-  });
-  return merged;
+function mergeUserDictionaries(loc, rem) {
+  const m = { ...loc };
+  if (rem && typeof rem === "object") {
+    Object.keys(rem).forEach(k => { if (rem[k] && rem[k].name) m[k] = mergeSingleUser(m[k], rem[k]); });
+  }
+  return m;
 }
 
 function refreshUIIfNeeded() {
-  updateHeaderUI();
-  syncActiveUserHeartsState();
-  updateMistakesBadge();
-  populateDuelOpponentList();
-  renderDuelHistory();
-
-  const sortedList = Object.values(users)
-    .filter(u => u && u.name && !u._deleted)
-    .sort((a, b) => (b.xp || 0) - (a.xp || 0));
-
-  const currentHash = JSON.stringify(sortedList.map(u => `${u.name}:${u.xp}:${u.correctAnswers}:${(u.avatar || "").slice(-20)}:${u.role}:${u.lastSeen || 0}`));
-  if (currentHash !== lastLeaderboardHash) {
-    lastLeaderboardHash = currentHash;
-    renderLeaderboard();
-  }
-
-  if (isAdminUnlocked && currentHash !== lastAdminListHash) {
-    lastAdminListHash = currentHash;
-    renderAdminUsersList();
-  }
+  updateHeaderUI(); syncActiveUserHeartsState(); updateMistakesBadge(); populateDuelOpponentList(); renderDuelHistory();
+  const sorted = Object.values(users).filter(u => u && u.name && !u._deleted).sort((a, b) => (b.xp || 0) - (a.xp || 0));
+  const hash = JSON.stringify(sorted.map(u => `${u.name}:${u.xp}:${u.correctAnswers}:${(u.avatar || "").slice(-15)}:${u.role}:${u.lastSeen || 0}`));
+  if (hash !== lastLeaderboardHash) { lastLeaderboardHash = hash; renderLeaderboard(); }
+  if (isAdminUnlocked && hash !== lastAdminListHash) { lastAdminListHash = hash; renderAdminUsersList(); }
 }
 
 function initClusterSync() {
-  const brokers = [
-    "wss://broker.emqx.io:8084/mqtt",
-    "wss://broker.hivemq.com:8884/mqtt"
-  ];
-
-  brokers.forEach((brokerUrl) => {
+  ["wss://broker.emqx.io:8084/mqtt", "wss://broker.hivemq.com:8884/mqtt"].forEach(url => {
     try {
-      const client = mqtt.connect(brokerUrl, {
-        clientId: "mq77_" + Math.random().toString(16).substring(2, 10),
-        clean: true,
-        connectTimeout: 5000,
-        reconnectPeriod: 6000
-      });
-
+      const client = mqtt.connect(url, { clientId: "mq78_" + Math.random().toString(16).slice(2, 10), clean: true, connectTimeout: 5000, reconnectPeriod: 6000 });
       client.on("connect", () => {
-        const statusEl = document.getElementById("syncStatusText");
-        if (statusEl) {
-          statusEl.textContent = "● Conectado em Tempo Real (Alta Capacidade)";
-          statusEl.className = "text-[11px] text-emerald-500 font-bold";
-        }
-        client.subscribe(SYNC_MQTT_TOPIC, { qos: 0 });
-        client.subscribe(DUEL_MQTT_TOPIC, { qos: 0 });
+        if ($("syncStatusText")) $("syncStatusText").textContent = "● Conectado em Tempo Real (Finaliza 25/10)";
+        client.subscribe(SYNC_MQTT_TOPIC); client.subscribe(DUEL_MQTT_TOPIC);
       });
-
-      client.on("message", (topic, message) => {
-        if (topic === SYNC_MQTT_TOPIC) {
-          try {
-            const remoteUsers = JSON.parse(message.toString());
-            users = mergeUserDictionaries(users, remoteUsers);
+      client.on("message", (topic, msg) => {
+        try {
+          const data = JSON.parse(msg.toString());
+          if (topic === SYNC_MQTT_TOPIC) {
+            users = mergeUserDictionaries(users, data);
             localStorage.setItem(STORAGE_USERS_KEY, JSON.stringify(users));
             refreshUIIfNeeded();
-          } catch (e) {}
-        } else if (topic === DUEL_MQTT_TOPIC) {
-          try {
-            const pkt = JSON.parse(message.toString());
-            handleIncomingDuelPacket(pkt);
-          } catch (e) {}
-        }
+          } else if (topic === DUEL_MQTT_TOPIC) handleIncomingDuelPacket(data);
+        } catch (e) {}
       });
-
       mqttClients.push(client);
-    } catch (err) {}
+    } catch (e) {}
   });
 }
 
 function publishDuelPacket(pkt) {
-  const payload = JSON.stringify(pkt);
-  mqttClients.forEach(client => {
-    if (client && client.connected) {
-      try { client.publish(DUEL_MQTT_TOPIC, payload, { qos: 0, retain: false }); } catch (e) {}
-    }
-  });
+  const p = JSON.stringify(pkt);
+  mqttClients.forEach(c => { if (c && c.connected) try { c.publish(DUEL_MQTT_TOPIC, p); } catch (e) {} });
 }
 
 function scheduleCloudSync(keyToPush, immediate = false) {
   localStorage.setItem(STORAGE_USERS_KEY, JSON.stringify(users));
   refreshUIIfNeeded();
-
   clearTimeout(cloudSyncQueueTimer);
-  const delay = immediate ? 150 : 3200;
-
   cloudSyncQueueTimer = setTimeout(() => {
-    const fullStatePayload = JSON.stringify(users);
-    mqttClients.forEach(client => {
-      if (client && client.connected) {
-        try { client.publish(SYNC_MQTT_TOPIC, fullStatePayload, { qos: 0, retain: true }); } catch (e) {}
-      }
-    });
-
+    const full = JSON.stringify(users);
+    mqttClients.forEach(c => { if (c && c.connected) try { c.publish(SYNC_MQTT_TOPIC, full, { retain: true }); } catch (e) {} });
     if (keyToPush && users[keyToPush]) {
-      const singlePayload = JSON.stringify({ type: "single", k: keyToPush, u: users[keyToPush] });
-      fetch(CLOUD_HTTP_URL, { method: "POST", body: singlePayload }).catch(() => {});
+      fetch(CLOUD_HTTP_URL, { method: "POST", body: JSON.stringify({ type: "single", k: keyToPush, u: users[keyToPush] }) }).catch(() => {});
     }
-  }, delay);
+  }, immediate ? 150 : 3000);
 }
 
 async function fetchCloudHistorySafe(force = false) {
-  const now = Date.now();
-  if (!force && now - lastHttpFetchTime < 20000) return;
-  lastHttpFetchTime = now;
-
-  const statusEl = document.getElementById("syncStatusText");
-  if (force && statusEl) statusEl.textContent = "🔄 Atualizando lista de colaboradores...";
-
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 5000);
-
+  if (!force && Date.now() - lastHttpFetchTime < 20000) return;
+  lastHttpFetchTime = Date.now();
   try {
-    const res = await fetch(`${CLOUD_HTTP_URL}/json?poll=1&since=all`, {
-      method: "GET",
-      signal: controller.signal
-    });
-    clearTimeout(timeoutId);
-
+    const res = await fetch(`${CLOUD_HTTP_URL}/json?poll=1&since=all`);
     if (res.ok) {
-      const text = await res.text();
-      const lines = text.trim().split("\n");
-      lines.forEach(line => {
-        if (!line) return;
+      const lines = (await res.text()).trim().split("\n");
+      lines.forEach(l => {
         try {
-          const pkt = JSON.parse(line);
+          const pkt = JSON.parse(l);
           if (pkt.event === "message" && pkt.message) {
-            const data = JSON.parse(pkt.message);
-            if (data.type === "single" && data.k && data.u) {
-              users[data.k] = mergeSingleUser(users[data.k], data.u);
-            } else if (data.type === "batch" && data.map) {
-              users = mergeUserDictionaries(users, data.map);
-            }
+            const d = JSON.parse(pkt.message);
+            if (d.type === "single" && d.k && d.u) users[d.k] = mergeSingleUser(users[d.k], d.u);
           }
-        } catch (err) {}
+        } catch (e) {}
       });
-
       localStorage.setItem(STORAGE_USERS_KEY, JSON.stringify(users));
       refreshUIIfNeeded();
     }
-  } catch (e) {
-    clearTimeout(timeoutId);
-  } finally {
-    if (statusEl) {
-      statusEl.textContent = "● Servidor Multi-Usuários Estável";
-      statusEl.className = "text-[11px] text-emerald-500 font-bold";
-    }
-  }
+  } catch (e) {}
 }
 
 function forceSyncNow() {
   playTabClickSound();
-  if (currentUserKey && users[currentUserKey]) {
-    scheduleCloudSync(currentUserKey, true);
-  }
+  if (currentUserKey && users[currentUserKey]) scheduleCloudSync(currentUserKey, true);
   fetchCloudHistorySafe(true);
 }
 
 // =========================================================================
-// PATENTES, SELETOR DE AVATAR E LOGIN
+// PATENTES, PERFIL E AUTENTICAÇÃO
 // =========================================================================
-
 function getLevelInfo(xp) {
   if (xp >= 25000) return { level: 7, title: "👑 Nível 7 — Lenda dos Arcos Dourados", min: 25000, max: 40000 };
   if (xp >= 15000) return { level: 6, title: "🔥 Nível 6 — Mestre das Olimpíadas", min: 15000, max: 25000 };
@@ -850,136 +724,67 @@ function getLevelInfo(xp) {
 }
 
 function renderAvatarSelector() {
-  const grid = document.getElementById("regAvatarGrid");
+  const grid = $("regAvatarGrid");
   if (!grid) return;
-
-  const isCustomPhoto = isPhotoAvatar(selectedRegAvatar);
-  const uploadBannerHtml = `
-    <div class="col-span-6 mb-1">
-      <button type="button" onclick="triggerPhotoUpload('register')" class="w-full py-2.5 px-3 rounded-2xl border-2 border-dashed ${isCustomPhoto ? 'border-emerald-500 bg-emerald-500/10' : 'border-red-500/50 bg-red-500/5'} flex items-center justify-center gap-2.5 text-xs font-extrabold btn-tap">
-        ${isCustomPhoto
-          ? `<img src="${selectedRegAvatar}" class="w-8 h-8 rounded-xl object-cover border border-emerald-500" /> <span class="text-emerald-500">✅ Foto da Galeria Selecionada (Toque p/ trocar)</span>`
-          : `<span class="text-base">📸</span> <span>Enviar Foto da Galeria / PC</span>`
-        }
-      </button>
-    </div>
-  `;
-
-  grid.innerHTML = uploadBannerHtml + AVATAR_LIST.map(icon => `
-    <button type="button" onclick="selectRegAvatar('${icon}')" class="avatar-option p-2 rounded-2xl border-2 subtle-box text-xl flex items-center justify-center ${icon === selectedRegAvatar ? 'selected' : ''}">
-      ${icon}
-    </button>
-  `).join("");
+  const custom = isPhotoAvatar(selectedRegAvatar);
+  grid.innerHTML = `<div class="col-span-6 mb-1">
+    <button type="button" onclick="triggerPhotoUpload('register')" class="w-full py-2.5 px-3 rounded-2xl border-2 border-dashed ${custom ? 'border-emerald-500 bg-emerald-500/10' : 'border-red-500/50 bg-red-500/5'} flex items-center justify-center gap-2 text-xs font-extrabold btn-tap">
+      ${custom ? `<img src="${selectedRegAvatar}" class="w-8 h-8 rounded-xl object-cover" /> <span class="text-emerald-500">✅ Foto Selecionada</span>` : `<span>📸 Enviar Foto da Galeria / PC</span>`}
+    </button></div>` + AVATAR_LIST.map(ic => `<button type="button" onclick="selectRegAvatar('${ic}')" class="avatar-option p-2 rounded-2xl border-2 subtle-box text-xl flex items-center justify-center ${ic === selectedRegAvatar ? 'selected' : ''}">${ic}</button>`).join("");
 }
 
-function selectRegAvatar(icon) {
-  playTabClickSound();
-  selectedRegAvatar = icon;
-  renderAvatarSelector();
-}
+function selectRegAvatar(ic) { playTabClickSound(); selectedRegAvatar = ic; renderAvatarSelector(); }
 
 function openAvatarModal() {
   playTabClickSound();
   if (!currentUserKey || !users[currentUserKey]) return;
-  const currentIcon = users[currentUserKey].avatar || "🍔";
-  const grid = document.getElementById("changeAvatarGrid");
-  if (!grid) return;
-
-  const isCustomPhoto = isPhotoAvatar(currentIcon);
-  const uploadBtnHtml = `
-    <div class="col-span-4 mb-1">
-      <button type="button" onclick="triggerPhotoUpload('profile')" class="w-full py-3 px-3 rounded-2xl text-slate-950 font-black text-xs btn-anim-yellow flex items-center justify-center gap-2 shadow">
-        <span class="text-base">📸</span>
-        <span>${isCustomPhoto ? 'Trocar Foto da Galeria / PC' : 'Escolher Foto da Galeria / PC'}</span>
-      </button>
-    </div>
-  `;
-
-  grid.innerHTML = uploadBtnHtml + AVATAR_LIST.map(icon => `
-    <button type="button" onclick="changeUserAvatar('${icon}')" class="p-3 rounded-2xl border-2 ${icon === currentIcon ? 'border-red-600 bg-red-500/15 scale-105' : 'subtle-box'} text-2xl flex items-center justify-center btn-tap">
-      ${icon}
-    </button>
-  `).join("");
-  document.getElementById("avatarPickerModal").classList.remove("hidden");
+  const cur = users[currentUserKey].avatar || "🍔";
+  $("changeAvatarGrid").innerHTML = `<div class="col-span-4 mb-1">
+    <button type="button" onclick="triggerPhotoUpload('profile')" class="w-full py-3 rounded-2xl text-slate-950 font-black text-xs btn-anim-yellow flex items-center justify-center gap-2">📸 Escolher Foto da Galeria / PC</button>
+  </div>` + AVATAR_LIST.map(ic => `<button type="button" onclick="changeUserAvatar('${ic}')" class="p-3 rounded-2xl border-2 ${ic === cur ? 'border-red-600 bg-red-500/15' : 'subtle-box'} text-2xl flex items-center justify-center btn-tap">${ic}</button>`).join("");
+  $("avatarPickerModal").classList.remove("hidden");
 }
 
-function closeAvatarModal() {
-  playTabClickSound();
-  document.getElementById("avatarPickerModal").classList.add("hidden");
-}
-
-function changeUserAvatar(icon) {
+function closeAvatarModal() { playTabClickSound(); $("avatarPickerModal").classList.add("hidden"); }
+function changeUserAvatar(ic) {
   playTabClickSound();
   if (!currentUserKey || !users[currentUserKey]) return;
-  users[currentUserKey].avatar = icon;
-  users[currentUserKey].updatedAt = Date.now();
-  closeAvatarModal();
-  scheduleCloudSync(currentUserKey, true);
+  users[currentUserKey].avatar = ic; users[currentUserKey].updatedAt = Date.now();
+  closeAvatarModal(); scheduleCloudSync(currentUserKey, true);
 }
 
 function switchAuthTab(mode) {
-  playTabClickSound();
-  document.getElementById("authError").classList.add("hidden");
-  if (mode === "login") {
-    document.getElementById("loginForm").classList.remove("hidden");
-    document.getElementById("registerForm").classList.add("hidden");
-    document.getElementById("tabLoginBtn").className = "flex-1 py-2.5 text-xs font-extrabold rounded-xl bg-[#DA291C] text-white shadow-sm btn-tap";
-    document.getElementById("tabRegisterBtn").className = "flex-1 py-2.5 text-xs font-extrabold rounded-xl text-muted-pro btn-tap";
-  } else {
-    document.getElementById("loginForm").classList.add("hidden");
-    document.getElementById("registerForm").classList.remove("hidden");
-    document.getElementById("tabRegisterBtn").className = "flex-1 py-2.5 text-xs font-extrabold rounded-xl bg-[#DA291C] text-white shadow-sm btn-tap";
-    document.getElementById("tabLoginBtn").className = "flex-1 py-2.5 text-xs font-extrabold rounded-xl text-muted-pro btn-tap";
-  }
+  playTabClickSound(); $("authError").classList.add("hidden");
+  $("loginForm").classList.toggle("hidden", mode !== "login");
+  $("registerForm").classList.toggle("hidden", mode === "login");
+  $("tabLoginBtn").className = mode === "login" ? "flex-1 py-2.5 text-xs font-extrabold rounded-xl bg-[#DA291C] text-white" : "flex-1 py-2.5 text-xs font-extrabold rounded-xl text-muted-pro";
+  $("tabRegisterBtn").className = mode !== "login" ? "flex-1 py-2.5 text-xs font-extrabold rounded-xl bg-[#DA291C] text-white" : "flex-1 py-2.5 text-xs font-extrabold rounded-xl text-muted-pro";
 }
 
-function showAuthError(msg) {
-  playWrongAnswerSound();
-  const err = document.getElementById("authError");
-  err.textContent = msg;
-  err.classList.remove("hidden");
-}
+function showAuthError(msg) { playWrongAnswerSound(); const e = $("authError"); e.textContent = msg; e.classList.remove("hidden"); }
 
 function handleRegister() {
-  const name = document.getElementById("regName").value.trim().toUpperCase();
-  const role = document.getElementById("regRole").value;
-  const pass = document.getElementById("regPass").value.trim();
-
-  if (name.length < 2) return showAuthError("Digite seu nome ou apelido válido.");
-  if (pass.length < 4) return showAuthError("Sua senha precisa ter pelo menos 4 dígitos.");
-
+  const name = $("regName").value.trim().toUpperCase(), role = $("regRole").value, pass = $("regPass").value.trim();
+  if (name.length < 2) return showAuthError("Digite seu nome válido.");
+  if (pass.length < 4) return showAuthError("A senha precisa ter pelo menos 4 dígitos.");
   const key = name.toLowerCase();
   users[key] = {
-    name: name,
-    role: role,
-    avatar: selectedRegAvatar,
-    password: pass,
-    _deleted: false,
+    name, role, avatar: selectedRegAvatar, password: pass, _deleted: false,
     xp: users[key] && !users[key]._deleted ? (users[key].xp || 0) : 0,
     correctAnswers: users[key] && !users[key]._deleted ? (users[key].correctAnswers || 0) : 0,
-    hearts: 5,
-    heartsLockUntil: 0,
-    mistakes: users[key] && Array.isArray(users[key].mistakes) ? users[key].mistakes : [],
-    lastSeen: Date.now(),
-    updatedAt: Date.now()
+    hearts: 5, heartsLockUntil: 0, mistakes: users[key]?.mistakes || [], lastSeen: Date.now(), updatedAt: Date.now()
   };
-
-  currentUserKey = key;
-  localStorage.setItem(STORAGE_CURRENT_KEY, key);
-  document.getElementById("authModal").classList.add("hidden");
-  playHitSuccessSound();
-  syncActiveUserHeartsState();
-  loadNextQuizQuestion();
-  scheduleCloudSync(key, true);
+  currentUserKey = key; localStorage.setItem(STORAGE_CURRENT_KEY, key);
+  $("authModal").classList.add("hidden"); playHitSuccessSound();
+  syncActiveUserHeartsState(); loadNextQuizQuestion(); scheduleCloudSync(key, true);
 }
-
 async function handleLogin() {
-  const rawName = document.getElementById("loginName").value.trim();
-  const pass = document.getElementById("loginPass").value.trim();
+  const rawName = $("loginName").value.trim();
+  const pass = $("loginPass").value.trim();
   if (!rawName) return showAuthError("Digite seu nome para entrar!");
   const key = rawName.toLowerCase();
 
-  const btn = document.getElementById("btnLoginSubmit");
+  const btn = $("btnLoginSubmit");
   btn.textContent = "ENTRANDO...";
   btn.disabled = true;
 
@@ -1009,7 +814,7 @@ async function handleLogin() {
     users[key]._deleted = false;
     currentUserKey = key;
     localStorage.setItem(STORAGE_CURRENT_KEY, key);
-    document.getElementById("authModal").classList.add("hidden");
+    $("authModal").classList.add("hidden");
     playHitSuccessSound();
     syncActiveUserHeartsState();
     loadNextQuizQuestion();
@@ -1026,7 +831,7 @@ async function handleLogin() {
 
   currentUserKey = key;
   localStorage.setItem(STORAGE_CURRENT_KEY, key);
-  document.getElementById("authModal").classList.add("hidden");
+  $("authModal").classList.add("hidden");
   playHitSuccessSound();
   syncActiveUserHeartsState();
   loadNextQuizQuestion();
@@ -1037,8 +842,8 @@ function logoutUser() {
   playTabClickSound();
   currentUserKey = null;
   localStorage.removeItem(STORAGE_CURRENT_KEY);
-  document.getElementById("loginPass").value = "";
-  document.getElementById("authModal").classList.remove("hidden");
+  $("loginPass").value = "";
+  $("authModal").classList.remove("hidden");
 }
 
 function addXp(amount) {
@@ -1070,7 +875,7 @@ function updateHeaderUI() {
   const u = users[currentUserKey];
   const info = getLevelInfo(u.xp || 0);
 
-  const avatarEl = document.getElementById("userAvatarDisplay");
+  const avatarEl = $("userAvatarDisplay");
   if (avatarEl) {
     if (isPhotoAvatar(u.avatar)) {
       avatarEl.innerHTML = `<img src="${u.avatar}" alt="Foto" class="w-full h-full object-cover" />`;
@@ -1079,20 +884,20 @@ function updateHeaderUI() {
     }
   }
 
-  document.getElementById("userNameDisplay").textContent = u.name;
-  document.getElementById("userRoleBadge").textContent = u.role || u.station || "Atendente";
-  document.getElementById("userXpDisplay").textContent = `${u.xp || 0} XP`;
-  document.getElementById("userRankTitle").textContent = info.title;
-  document.getElementById("currentLevelNum").textContent = `Nível ${info.level}`;
-  document.getElementById("statHitsDisplay").textContent = `${u.correctAnswers || 0} ✅`;
+  $("userNameDisplay").textContent = u.name;
+  $("userRoleBadge").textContent = u.role || u.station || "Atendente";
+  $("userXpDisplay").textContent = `${u.xp || 0} XP`;
+  $("userRankTitle").textContent = info.title;
+  $("currentLevelNum").textContent = `Nível ${info.level}`;
+  $("statHitsDisplay").textContent = `${u.correctAnswers || 0} ✅`;
 
   const progress = Math.min(100, Math.round((((u.xp || 0) - info.min) / (info.max - info.min)) * 100));
-  document.getElementById("xpProgressBar").style.width = `${Math.max(6, progress)}%`;
+  $("xpProgressBar").style.width = `${Math.max(6, progress)}%`;
 
   if (info.level < 7) {
-    document.getElementById("nextLevelTarget").textContent = `Faltam ${info.max - (u.xp || 0)} XP para o Nível ${info.level + 1}`;
+    $("nextLevelTarget").textContent = `Faltam ${info.max - (u.xp || 0)} XP para o Nível ${info.level + 1}`;
   } else {
-    document.getElementById("nextLevelTarget").textContent = `Patente Máxima Alcançada! 👑`;
+    $("nextLevelTarget").textContent = `Patente Máxima Alcançada! 👑`;
   }
 }
 
@@ -1133,7 +938,7 @@ function saveMistakesList(list) {
 }
 
 function updateMistakesBadge() {
-  const badge = document.getElementById("mistakesCountBadge");
+  const badge = $("mistakesCountBadge");
   if (!badge) return;
   const count = getActiveUserMistakes().length;
   badge.textContent = `${count} pendente${count === 1 ? "" : "s"}`;
@@ -1148,13 +953,13 @@ function openReviewModal() {
   if (mistakes.length === 0) {
     return alert("🎉 Parabéns! Você não tem nenhuma dúvida pendente. Quando errar alguma questão no Simulado, ela ficará salva aqui para revisão!");
   }
-  document.getElementById("reviewMistakesModal").classList.remove("hidden");
+  $("reviewMistakesModal").classList.remove("hidden");
   loadNextReviewQuestion();
 }
 
 function closeReviewModal() {
   playTabClickSound();
-  document.getElementById("reviewMistakesModal").classList.add("hidden");
+  $("reviewMistakesModal").classList.add("hidden");
 }
 
 function loadNextReviewQuestion() {
@@ -1171,15 +976,15 @@ function loadNextReviewQuestion() {
   const item = QUESTIONS_DB.find(q => q.id === randomId) || QUESTIONS_DB[0];
   currentReviewItem = item;
 
-  document.getElementById("reviewMetaBadge").textContent = `Questão #${item.id} • ${item.level}`;
-  document.getElementById("reviewRemainingBadge").textContent = `Faltam zerar: ${mistakes.length}`;
-  document.getElementById("reviewQuestionText").textContent = item.q;
-  document.getElementById("reviewFeedbackBox").classList.add("hidden");
-  document.getElementById("nextReviewBtn").classList.add("hidden");
+  $("reviewMetaBadge").textContent = `Questão #${item.id} • ${item.level}`;
+  $("reviewRemainingBadge").textContent = `Faltam zerar: ${mistakes.length}`;
+  $("reviewQuestionText").textContent = item.q;
+  $("reviewFeedbackBox").classList.add("hidden");
+  $("nextReviewBtn").classList.add("hidden");
 
   const shuffled = [...item.w, item.a].sort(() => 0.5 - Math.random());
   const letters = ["A", "B", "C", "D"];
-  const container = document.getElementById("reviewOptionsContainer");
+  const container = $("reviewOptionsContainer");
   container.innerHTML = "";
 
   shuffled.forEach((optText, idx) => {
@@ -1199,7 +1004,7 @@ function checkReviewAnswer(selectedBtn, chosen, correct, qId) {
   const allBtns = document.querySelectorAll("#reviewOptionsContainer button");
   allBtns.forEach(b => b.disabled = true);
 
-  const fb = document.getElementById("reviewFeedbackBox");
+  const fb = $("reviewFeedbackBox");
   fb.classList.remove("hidden");
 
   if (chosen === correct) {
@@ -1215,7 +1020,7 @@ function checkReviewAnswer(selectedBtn, chosen, correct, qId) {
     fb.innerHTML = `❌ O gabarito oficial é:<br><span class="underline mt-1 inline-block">${correct}</span>`;
   }
 
-  document.getElementById("nextReviewBtn").classList.remove("hidden");
+  $("nextReviewBtn").classList.remove("hidden");
 }
 
 // =========================================================================
@@ -1223,7 +1028,7 @@ function checkReviewAnswer(selectedBtn, chosen, correct, qId) {
 // =========================================================================
 
 function populateDuelOpponentList() {
-  const select = document.getElementById("duelOpponentSelect");
+  const select = $("duelOpponentSelect");
   if (!select) return;
   const currentVal = select.value;
 
@@ -1247,7 +1052,7 @@ function sendLiveDuelInvite() {
   if (!currentUserKey || !users[currentUserKey]) {
     return alert("Faça login na sua conta antes de desafiar alguém!");
   }
-  const targetKey = document.getElementById("duelOpponentSelect").value;
+  const targetKey = $("duelOpponentSelect").value;
   if (!targetKey || !users[targetKey]) {
     return alert("Selecione na lista qual colega da loja você quer convidar para o duelo!");
   }
@@ -1272,10 +1077,10 @@ function sendLiveDuelInvite() {
   };
 
   openDuelArenaUI();
-  document.getElementById("duelWaitingBox").classList.remove("hidden");
-  document.getElementById("duelQuestionArea").classList.add("hidden");
-  document.getElementById("duelWinnerBox").classList.add("hidden");
-  document.getElementById("duelWaitingText").textContent = `Convite enviado! Aguardando ${opp.name} aceitar no celular dele(a)...`;
+  $("duelWaitingBox").classList.remove("hidden");
+  $("duelQuestionArea").classList.add("hidden");
+  $("duelWinnerBox").classList.add("hidden");
+  $("duelWaitingText").textContent = `Convite enviado! Aguardando ${opp.name} aceitar no celular dele(a)...`;
 
   publishDuelPacket({
     type: "invite",
@@ -1304,8 +1109,8 @@ function handleIncomingDuelPacket(pkt) {
     if (activeDuel) return;
     pendingDuelInvite = pkt;
     playHitSuccessSound();
-    document.getElementById("inviteFromNameDisplay").textContent = pkt.hostName;
-    document.getElementById("duelInvitePopup").classList.remove("hidden");
+    $("inviteFromNameDisplay").textContent = pkt.hostName;
+    $("duelInvitePopup").classList.remove("hidden");
     return;
   }
 
@@ -1389,10 +1194,10 @@ function handleIncomingDuelPacket(pkt) {
     activeDuel.scoreGuest = pkt.scoreGuest;
     updateDuelScoreboardUI();
     playMcDonaldsJingle();
-    document.getElementById("duelQuestionArea").classList.add("hidden");
-    document.getElementById("duelWinnerBox").classList.remove("hidden");
-    document.getElementById("duelWinnerTitle").textContent = `🏆 ${pkt.winnerName} Venceu!`;
-    document.getElementById("duelWinnerSub").textContent = `Placar Final: ${activeDuel.hostName} (${pkt.scoreHost}) x (${pkt.scoreGuest}) ${activeDuel.guestName}`;
+    $("duelQuestionArea").classList.add("hidden");
+    $("duelWinnerBox").classList.remove("hidden");
+    $("duelWinnerTitle").textContent = `🏆 ${pkt.winnerName} Venceu!`;
+    $("duelWinnerSub").textContent = `Placar Final: ${activeDuel.hostName} (${pkt.scoreHost}) x (${pkt.scoreGuest}) ${activeDuel.guestName}`;
 
     saveDuelHistoryRecord({
       p1: activeDuel.hostName,
@@ -1419,7 +1224,7 @@ function saveDuelHistoryRecord(record) {
 }
 
 function renderDuelHistory() {
-  const container = document.getElementById("duelHistoryContainer");
+  const container = $("duelHistoryContainer");
   if (!container) return;
 
   if (duelHistoryList.length === 0) {
@@ -1444,7 +1249,7 @@ function renderDuelHistory() {
 function acceptDuelInvite() {
   playTabClickSound();
   if (!pendingDuelInvite) return;
-  document.getElementById("duelInvitePopup").classList.add("hidden");
+  $("duelInvitePopup").classList.add("hidden");
 
   activeDuel = {
     duelId: pendingDuelInvite.duelId,
@@ -1463,8 +1268,8 @@ function acceptDuelInvite() {
   pendingDuelInvite = null;
 
   openDuelArenaUI();
-  document.getElementById("duelWaitingBox").classList.remove("hidden");
-  document.getElementById("duelWaitingText").textContent = "Conectando e sorteando a 1ª pergunta...";
+  $("duelWaitingBox").classList.remove("hidden");
+  $("duelWaitingText").textContent = "Conectando e sorteando a 1ª pergunta...";
 
   publishDuelPacket({ type: "accept", duelId: activeDuel.duelId });
 }
@@ -1472,29 +1277,29 @@ function acceptDuelInvite() {
 function declineDuelInvite() {
   playTabClickSound();
   if (!pendingDuelInvite) return;
-  document.getElementById("duelInvitePopup").classList.add("hidden");
+  $("duelInvitePopup").classList.add("hidden");
   publishDuelPacket({ type: "decline", duelId: pendingDuelInvite.duelId });
   pendingDuelInvite = null;
 }
 
 function openDuelArenaUI() {
   if (!activeDuel) return;
-  document.getElementById("duelArenaModal").classList.remove("hidden");
+  $("duelArenaModal").classList.remove("hidden");
   updateDuelScoreboardUI();
 }
 
 function updateDuelScoreboardUI() {
   if (!activeDuel) return;
-  const p1Av = document.getElementById("duelP1Avatar");
-  const p2Av = document.getElementById("duelP2Avatar");
+  const p1Av = $("duelP1Avatar");
+  const p2Av = $("duelP2Avatar");
   if (p1Av) p1Av.innerHTML = isPhotoAvatar(activeDuel.hostAvatar) ? `<img src="${activeDuel.hostAvatar}" class="w-9 h-9 rounded-xl object-cover border border-[#FFC72C] mx-auto" />` : activeDuel.hostAvatar;
   if (p2Av) p2Av.innerHTML = isPhotoAvatar(activeDuel.guestAvatar) ? `<img src="${activeDuel.guestAvatar}" class="w-9 h-9 rounded-xl object-cover border border-[#FFC72C] mx-auto" />` : activeDuel.guestAvatar;
 
-  document.getElementById("duelP1Name").textContent = activeDuel.hostName;
-  document.getElementById("duelP1Score").textContent = activeDuel.scoreHost;
-  document.getElementById("duelP2Name").textContent = activeDuel.guestName;
-  document.getElementById("duelP2Score").textContent = activeDuel.scoreGuest;
-  document.getElementById("duelRoundBadge").textContent = `Rodada #${activeDuel.round || 1}`;
+  $("duelP1Name").textContent = activeDuel.hostName;
+  $("duelP1Score").textContent = activeDuel.scoreHost;
+  $("duelP2Name").textContent = activeDuel.guestName;
+  $("duelP2Score").textContent = activeDuel.scoreGuest;
+  $("duelRoundBadge").textContent = `Rodada #${activeDuel.round || 1}`;
 }
 
 function hostStartNextDuelRound() {
@@ -1515,18 +1320,18 @@ function hostStartNextDuelRound() {
 
 function renderDuelRoundUI() {
   if (!activeDuel || !activeDuel.currentQuestion) return;
-  document.getElementById("duelWaitingBox").classList.add("hidden");
-  document.getElementById("duelWinnerBox").classList.add("hidden");
-  document.getElementById("duelQuestionArea").classList.remove("hidden");
-  document.getElementById("duelStatusBanner").classList.add("hidden");
+  $("duelWaitingBox").classList.add("hidden");
+  $("duelWinnerBox").classList.add("hidden");
+  $("duelQuestionArea").classList.remove("hidden");
+  $("duelStatusBanner").classList.add("hidden");
 
   updateDuelScoreboardUI();
 
   const qObj = activeDuel.currentQuestion;
-  document.getElementById("duelQuestionText").textContent = `(#${qObj.id}) ${qObj.q}`;
+  $("duelQuestionText").textContent = `(#${qObj.id}) ${qObj.q}`;
 
   const letters = ["A", "B", "C", "D"];
-  const container = document.getElementById("duelOptionsContainer");
+  const container = $("duelOptionsContainer");
   container.innerHTML = "";
 
   qObj.options.forEach((optText, idx) => {
@@ -1565,7 +1370,7 @@ function submitDuelAnswer(selectedBtn, chosen, correct) {
 }
 
 function showDuelBanner(msg, color) {
-  const banner = document.getElementById("duelStatusBanner");
+  const banner = $("duelStatusBanner");
   banner.classList.remove("hidden");
   banner.className = color === "emerald"
     ? "p-3 rounded-2xl text-xs font-extrabold text-center bg-emerald-500/20 text-emerald-500 border border-emerald-500/40"
@@ -1581,7 +1386,7 @@ function leaveActiveDuel(notifyOther = true) {
     publishDuelPacket({ type: "leave", duelId: activeDuel.duelId, playerKey: currentUserKey });
   }
   activeDuel = null;
-  document.getElementById("duelArenaModal").classList.add("hidden");
+  $("duelArenaModal").classList.add("hidden");
 }
 
 // =========================================================================
@@ -1636,9 +1441,9 @@ function formatTimeRemaining(ms) {
 function checkAndRenderCooldownScreen() {
   const lockUntil = getActiveHeartsLockUntil();
   const now = Date.now();
-  const cooldownBox = document.getElementById("quizCooldownBox");
-  const activeArea = document.getElementById("quizActiveArea");
-  const timerDisplay = document.getElementById("cooldownTimerDisplay");
+  const cooldownBox = $("quizCooldownBox");
+  const activeArea = $("quizActiveArea");
+  const timerDisplay = $("cooldownTimerDisplay");
 
   if (lockUntil > now) {
     cooldownBox.classList.remove("hidden");
@@ -1682,7 +1487,7 @@ function changeQuizLevelFilter() {
 
 function updateHeartsDisplay() {
   const safeHearts = Math.max(0, Math.min(5, currentHearts));
-  const el = document.getElementById("quizHeartsInfo");
+  const el = $("quizHeartsInfo");
   if (el) el.textContent = "❤️".repeat(safeHearts) + "🖤".repeat(5 - safeHearts);
 }
 
@@ -1691,16 +1496,16 @@ function loadNextQuizQuestion() {
   syncActiveUserHeartsState();
   if (checkAndRenderCooldownScreen()) return;
 
-  const levelFilter = document.getElementById("quizLevelFilter").value;
+  const levelFilter = $("quizLevelFilter").value;
   const pool = levelFilter === "ALL" ? QUESTIONS_DB : QUESTIONS_DB.filter(item => item.level === levelFilter);
   const randomItem = pool[Math.floor(Math.random() * pool.length)];
   currentQuizQuestionId = randomItem.id;
 
-  document.getElementById("quizQuestionMeta").textContent = `Questão #${randomItem.id} • Nível ${randomItem.level}`;
-  document.getElementById("statStreakDisplay").textContent = `${currentStreak} 🔥`;
-  document.getElementById("quizQuestionText").textContent = randomItem.q;
-  document.getElementById("quizFeedback").classList.add("hidden");
-  document.getElementById("nextQuizBtn").classList.add("hidden");
+  $("quizQuestionMeta").textContent = `Questão #${randomItem.id} • Nível ${randomItem.level}`;
+  $("statStreakDisplay").textContent = `${currentStreak} 🔥`;
+  $("quizQuestionText").textContent = randomItem.q;
+  $("quizFeedback").classList.add("hidden");
+  $("nextQuizBtn").classList.add("hidden");
 
   const wrongChoices = (randomItem.w && randomItem.w.length === 3)
     ? [...randomItem.w]
@@ -1708,7 +1513,7 @@ function loadNextQuizQuestion() {
 
   const shuffledOptions = [...wrongChoices, randomItem.a].sort(() => 0.5 - Math.random());
   const letters = ["A", "B", "C", "D"];
-  const container = document.getElementById("quizOptions");
+  const container = $("quizOptions");
   container.innerHTML = "";
 
   shuffledOptions.forEach((optText, idx) => {
@@ -1734,7 +1539,7 @@ function checkQuizAnswer(selectedBtn, chosen, correct, letter) {
     }
   });
 
-  const fb = document.getElementById("quizFeedback");
+  const fb = $("quizFeedback");
   fb.classList.remove("hidden");
 
   if (chosen === correct) {
@@ -1746,8 +1551,8 @@ function checkQuizAnswer(selectedBtn, chosen, correct, letter) {
     addXp(25);
     fb.className = "p-3.5 rounded-2xl text-xs font-extrabold bg-emerald-500/15 text-emerald-500 border border-emerald-500/30";
     fb.textContent = `✅ Alternativa ${letter} Correta! Você ganhou +25 XP!`;
-    document.getElementById("nextQuizBtn").textContent = "PRÓXIMA PERGUNTA ➡️";
-    document.getElementById("nextQuizBtn").classList.remove("hidden");
+    $("nextQuizBtn").textContent = "PRÓXIMA PERGUNTA ➡️";
+    $("nextQuizBtn").classList.remove("hidden");
   } else {
     selectedBtn.className = "anim-shake-wrong w-full text-left p-3.5 rounded-2xl border-2 border-red-500 bg-red-500/20 font-extrabold text-xs flex items-center gap-3";
     currentStreak = 0;
@@ -1762,43 +1567,43 @@ function checkQuizAnswer(selectedBtn, chosen, correct, letter) {
       if (currentUserKey) scheduleCloudSync(currentUserKey, true);
 
       fb.className = "p-3.5 rounded-2xl text-xs font-extrabold bg-red-500/15 text-red-500 border border-red-500/30";
-      fb.innerHTML = `💔 <strong>Você perdeu todos os seus 5 corações!</strong><br>Gabarito: <span class="underline">${correct}</span>.<br><span class="mt-1 inline-block">⏳ Aguarde 10 minutos (ou revise suas dúvidas abaixo)!</span>`;
-      document.getElementById("nextQuizBtn").textContent = "VER CRONÔMETRO DE RECARGA (10 MIN) ⏳";
-      document.getElementById("nextQuizBtn").classList.remove("hidden");
+      fb.innerHTML = `💔 <strong>Você perdeu todos os seus 5 corações!</strong><br>Gabarito: <span class="underline">${correct}</span>.<br><span class="mt-1 inline-block">⏳ Aguarde 10 minutos (ou treine na Bancada Monta-Lanche abaixo)!</span>`;
+      $("nextQuizBtn").textContent = "VER CRONÔMETRO DE RECARGA (10 MIN) ⏳";
+      $("nextQuizBtn").classList.remove("hidden");
     } else {
       setActiveHeartsState(newHearts, 0);
       if (currentUserKey) scheduleCloudSync(currentUserKey, false);
 
       fb.className = "p-3.5 rounded-2xl text-xs font-extrabold bg-red-500/15 text-red-500 border border-red-500/30";
       fb.innerHTML = `❌ Quase! Você perdeu 1 coração (Restam ${newHearts} ❤️) e a questão foi salva em <strong>Minhas Dúvidas</strong>.<br>Gabarito: <span class="underline mt-1 inline-block">${correct}</span>`;
-      document.getElementById("nextQuizBtn").textContent = "PRÓXIMA PERGUNTA ➡️";
-      document.getElementById("nextQuizBtn").classList.remove("hidden");
+      $("nextQuizBtn").textContent = "PRÓXIMA PERGUNTA ➡️";
+      $("nextQuizBtn").classList.remove("hidden");
     }
   }
 
-  document.getElementById("statStreakDisplay").textContent = `${currentStreak} 🔥`;
+  $("statStreakDisplay").textContent = `${currentStreak} 🔥`;
 }
 
 // =========================================================================
-// FLASHCARDS 3D (COM SOM DE GIRO), BOOK E RANKING
+// FLASHCARDS 3D, BOOK E RANKING
 // =========================================================================
 
 function loadRandomFlashcard() {
   playCardFlipSound();
-  const inner = document.getElementById("fcFlipInner");
+  const inner = $("fcFlipInner");
   if (!inner) return;
   inner.classList.remove("is-flipped");
   setTimeout(() => {
     const item = QUESTIONS_DB[Math.floor(Math.random() * QUESTIONS_DB.length)];
-    document.getElementById("fcMeta").textContent = `Questão #${item.id} (${item.level}) • Toque para girar 3D 🔄`;
-    document.getElementById("fcQuestion").textContent = item.q;
-    document.getElementById("fcAnswer").textContent = item.a;
+    $("fcMeta").textContent = `Questão #${item.id} (${item.level}) • Toque para girar 3D 🔄`;
+    $("fcQuestion").textContent = item.q;
+    $("fcAnswer").textContent = item.a;
   }, 150);
 }
 
 function flipFlashcard() {
   playCardFlipSound();
-  const inner = document.getElementById("fcFlipInner");
+  const inner = $("fcFlipInner");
   if (inner) inner.classList.toggle("is-flipped");
 }
 
@@ -1811,7 +1616,7 @@ function setBookFilter(level) {
   playTabClickSound();
   currentBookFilter = level;
   ["ALL", "Básico", "Intermediário", "Avançado"].forEach(lvl => {
-    const btn = document.getElementById(`filter-${lvl}`);
+    const btn = $(`filter-${lvl}`);
     if (btn) {
       btn.className = lvl === level
         ? "px-3.5 py-1.5 rounded-xl text-xs font-extrabold bg-red-600 text-white shadow-sm shrink-0 btn-tap"
@@ -1822,8 +1627,8 @@ function setBookFilter(level) {
 }
 
 function renderBookList() {
-  const search = document.getElementById("searchBookInput").value.toLowerCase();
-  const container = document.getElementById("bookQuestionsContainer");
+  const search = $("searchBookInput").value.toLowerCase();
+  const container = $("bookQuestionsContainer");
 
   const filtered = QUESTIONS_DB.filter(item => {
     const matchesLevel = currentBookFilter === "ALL" || item.level === currentBookFilter;
@@ -1831,7 +1636,7 @@ function renderBookList() {
     return matchesLevel && matchesText;
   });
 
-  document.getElementById("bookCountBadge").textContent = `${filtered.length} questões`;
+  $("bookCountBadge").textContent = `${filtered.length} questões`;
 
   container.innerHTML = filtered.map(item => `
     <div class="pro-card rounded-2xl p-4">
@@ -1858,8 +1663,8 @@ function revealBookAnswer(btn) {
 }
 
 function renderLeaderboard() {
-  const podiumContainer = document.getElementById("podiumTop3Container");
-  const container = document.getElementById("leaderboardContainer");
+  const podiumContainer = $("podiumTop3Container");
+  const container = $("leaderboardContainer");
   const list = Object.values(users).filter(u => u && u.name && !u._deleted).sort((a, b) => (b.xp || 0) - (a.xp || 0));
 
   if (list.length === 0) {
@@ -1953,7 +1758,7 @@ function shareMyScoreWhatsApp() {
   const copyUser = { ...u, avatar: isPhotoAvatar(u.avatar) ? "🍔" : (u.avatar || "🍔") };
   const encodedUser = btoa(encodeURIComponent(JSON.stringify(copyUser)));
   const syncUrl = `${window.location.origin}${window.location.pathname}?syncUser=${encodeURIComponent(encodedUser)}`;
-  const text = `🏆 *OLIMPÍADAS DO BÁSICO — VENTURE*\n👤 Colaborador: *${u.name}*\n🎖️ Cargo: ${u.role || 'Atendente'}\n⚡ Pontuação: *${u.xp || 0} XP* (${info.title})\n✅ Acertos: ${u.correctAnswers || 0}\n\n🔗 *Link de Sincronia no Ranking:* ${syncUrl}`;
+  const text = `🏆 *OLIMPÍADAS DO BÁSICO — VENTURE (FINALIZA 25/10)*\n👤 Colaborador: *${u.name}*\n🎖️ Cargo: ${u.role || 'Atendente'}\n⚡ Pontuação: *${u.xp || 0} XP* (${info.title})\n✅ Acertos: ${u.correctAnswers || 0}\n\n🔗 *Link de Sincronia no Ranking:* ${syncUrl}`;
   window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
 }
 
@@ -1962,14 +1767,14 @@ function shareMyScoreWhatsApp() {
 // =========================================================================
 
 function unlockAdminPanel() {
-  const pass = document.getElementById("adminPassInput").value.trim();
-  const err = document.getElementById("adminAuthError");
+  const pass = $("adminPassInput").value.trim();
+  const err = $("adminAuthError");
   if (pass === ADMIN_SECRET_PASS) {
     isAdminUnlocked = true;
     playHitSuccessSound();
     err.classList.add("hidden");
-    document.getElementById("adminLockScreen").classList.add("hidden");
-    document.getElementById("adminDashboard").classList.remove("hidden");
+    $("adminLockScreen").classList.add("hidden");
+    $("adminDashboard").classList.remove("hidden");
     renderAdminUsersList();
     fetchCloudHistorySafe(true);
   } else {
@@ -1981,15 +1786,15 @@ function unlockAdminPanel() {
 function lockAdminPanel() {
   playTabClickSound();
   isAdminUnlocked = false;
-  document.getElementById("adminPassInput").value = "";
-  document.getElementById("adminDashboard").classList.add("hidden");
-  document.getElementById("adminLockScreen").classList.remove("hidden");
+  $("adminPassInput").value = "";
+  $("adminDashboard").classList.add("hidden");
+  $("adminLockScreen").classList.remove("hidden");
 }
 
 function renderAdminUsersList() {
-  const container = document.getElementById("adminUsersList");
+  const container = $("adminUsersList");
   const entries = Object.entries(users).filter(([k, u]) => u && u.name && !u._deleted).sort((a, b) => (b[1].xp || 0) - (a[1].xp || 0));
-  document.getElementById("adminStatsSummary").textContent = `Total: ${entries.length} colaborador(es) cadastrado(s)`;
+  $("adminStatsSummary").textContent = `Total: ${entries.length} colaborador(es) cadastrado(s)`;
 
   if (entries.length === 0) {
     container.innerHTML = `<p class="text-xs text-muted-pro text-center py-4 font-bold">Nenhum colaborador cadastrado.</p>`;
@@ -2119,11 +1924,11 @@ function adminDeleteUser(key) {
 }
 
 function adminSaveMember() {
-  const name = document.getElementById("admNewName").value.trim().toUpperCase();
-  const role = document.getElementById("admNewRole").value;
-  const pass = document.getElementById("admNewPass").value.trim() || "1234";
-  const xp = parseInt(document.getElementById("admNewXp").value || "0", 10);
-  const hits = parseInt(document.getElementById("admNewHits").value || "0", 10);
+  const name = $("admNewName").value.trim().toUpperCase();
+  const role = $("admNewRole").value;
+  const pass = $("admNewPass").value.trim() || "1234";
+  const xp = parseInt($("admNewXp").value || "0", 10);
+  const hits = parseInt($("admNewHits").value || "0", 10);
 
   if (!name) return alert("Digite o nome do colaborador!");
   const key = name.toLowerCase();
@@ -2147,29 +1952,29 @@ function adminSaveMember() {
   playHitSuccessSound();
   scheduleCloudSync(key, true);
 
-  document.getElementById("admNewName").value = "";
-  document.getElementById("admNewPass").value = "";
-  document.getElementById("admNewXp").value = "";
-  document.getElementById("admNewHits").value = "";
+  $("admNewName").value = "";
+  $("admNewPass").value = "";
+  $("admNewXp").value = "";
+  $("admNewHits").value = "";
   alert(`Colaborador ${name} (${role}) salvo com sucesso!`);
 }
 
 function switchMainTab(tab) {
   playTabClickSound();
   ["quiz", "book", "prizes", "admin", "updates"].forEach(t => {
-    document.getElementById(`tab-${t}`).classList.add("hidden");
-    const navEl = document.getElementById(`nav-${t}`);
+    $(`tab-${t}`).classList.add("hidden");
+    const navEl = $(`nav-${t}`);
     if (navEl) navEl.className = "nav-btn flex flex-col items-center py-1.5 rounded-2xl font-bold text-[10px]";
   });
-  document.getElementById(`tab-${tab}`).classList.remove("hidden");
-  const activeNav = document.getElementById(`nav-${tab}`);
+  $(`tab-${tab}`).classList.remove("hidden");
+  const activeNav = $(`nav-${tab}`);
   if (activeNav) activeNav.className = "nav-btn active-nav flex flex-col items-center py-1.5 rounded-2xl text-[10px]";
   if (tab === "prizes" || tab === "admin") fetchCloudHistorySafe(false);
 }
 
 window.onload = () => {
   initTheme();
-  ensureSoundTestButton();
+  injectCountdownAndKitchenUI();
   rescuePreviousLocalRegistrations();
   renderAvatarSelector();
   syncActiveUserHeartsState();
@@ -2179,7 +1984,7 @@ window.onload = () => {
   refreshUIIfNeeded();
 
   if (currentUserKey && users[currentUserKey] && !users[currentUserKey]._deleted) {
-    document.getElementById("authModal").classList.add("hidden");
+    $("authModal").classList.add("hidden");
     updateHeaderUI();
   }
 
@@ -2187,3 +1992,4 @@ window.onload = () => {
   startHeartbeat();
   fetchCloudHistorySafe(true);
 };
+
