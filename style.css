@@ -425,3 +425,57 @@ body.dark-mode .bottom-nav .nav-btn.active-nav {color:#fb938a;background:rgba(21
 @media(min-width:560px){.premium-stats-grid{grid-template-columns:repeat(4,minmax(0,1fr));}.premium-medals-grid{grid-template-columns:repeat(4,minmax(0,1fr));}.premium-cosmetics-grid{grid-template-columns:repeat(3,minmax(0,1fr));}}
 @media(max-width:360px){.premium-hero{padding:20px 15px 16px;}.premium-avatar-frame{width:80px;min-width:80px;height:80px;border-radius:23px;}.premium-avatar{border-radius:19px;font-size:38px;}.premium-identity{gap:11px;}.premium-identity-copy h2{font-size:18px;}.premium-title-pill{padding:5px 7px;}.premium-choice{padding:10px;}}
 @media(prefers-reduced-motion:reduce){.premium-level-fill{transition:none;}}
+
+
+/* =====================================================================
+   v8.2 — cartão público de jogador: leitura apenas, mobile-first
+   ===================================================================== */
+body.public-profile-open {overflow:hidden;}
+.public-profile-overlay {position:fixed;inset:0;z-index:90;background:rgba(5,9,19,.83);backdrop-filter:blur(9px);display:flex;justify-content:center;align-items:center;padding:10px;}
+.public-profile-overlay.hidden {display:none!important;}
+.public-profile-panel {background:var(--bg-card);color:var(--text-main);width:100%;max-width:510px;max-height:calc(100dvh - 20px);overflow:auto;overscroll-behavior:contain;border:1px solid var(--border-color);border-radius:24px;padding:16px;box-shadow:0 30px 70px rgba(0,0,0,.45);scrollbar-width:thin;}
+.public-profile-topline {display:flex;justify-content:space-between;align-items:center;gap:12px;padding:2px 0 15px;}
+.public-profile-topline p {font-size:10px;color:var(--text-muted);font-weight:650;line-height:1.5;margin-top:4px;}
+.public-profile-close {border:1px solid var(--border-color);border-radius:12px;width:38px;height:38px;flex-shrink:0;background:var(--bg-subtle);font-size:15px;font-weight:900;}
+.public-profile-hero {padding:18px 16px 16px;border-radius:20px;}
+.public-profile-hero .premium-identity {margin-top:9px;gap:12px;}
+.public-profile-hero .premium-avatar-frame {width:74px;min-width:74px;height:74px;border-radius:23px;}
+.public-profile-hero .premium-avatar {border-radius:18px;font-size:36px;}
+.public-profile-hero .premium-identity-copy h2 {font-size:clamp(17px,4.6vw,23px);}
+.public-profile-hero .premium-level-row {margin-top:13px;}
+.public-profile-hero .premium-featured {gap:6px;margin-top:11px;}
+.public-profile-hero .premium-featured-item {font-size:9px;min-height:40px;padding:6px 3px;flex-direction:column;gap:2px;line-height:1.25;}
+.public-profile-hero .premium-featured-item span {font-size:17px;}
+.public-profile-section {padding:18px 0 0;}
+.public-profile-section h3 {font-size:13px;font-weight:900;margin:0 0 10px;}
+.public-profile-stats {grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;}
+.public-profile-stats .premium-stat {padding:10px;border-radius:12px;}
+.public-profile-stats .premium-stat span {font-size:10px;}
+.public-profile-stats .premium-stat strong {font-size:19px;}
+.public-profile-medals-heading {display:flex;justify-content:space-between;align-items:center;}
+.public-profile-medals-heading span {font-size:10px;color:var(--text-muted);font-weight:900;}
+.public-profile-medals {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;}
+.public-medal {display:flex;align-items:center;text-align:center;flex-direction:column;justify-content:center;gap:3px;min-width:0;padding:11px 7px;border:1px solid var(--border-color);border-radius:12px;background:var(--bg-subtle);}
+.public-medal.is-earned {border-color:rgba(245,158,11,.35);background:rgba(245,158,11,.08);}
+.public-medal.is-locked {opacity:.55;}
+.public-medal>span {font-size:23px;}
+.public-medal strong {font-size:10px;font-weight:900;line-height:1.35;}
+.public-medal small {font-size:9px;color:var(--text-muted);line-height:1.4;}
+.public-profile-actions {display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:18px;}
+.public-profile-actions button {min-height:48px;border-radius:13px;padding:9px;font-size:11px;font-weight:900;line-height:1.25;}
+.public-profile-challenge {background:linear-gradient(135deg,#ffc72c,#f59e0b);color:#1e293b;box-shadow:0 3px 0 #b45309;}
+.public-profile-challenge:disabled {opacity:.55;cursor:not-allowed;box-shadow:none;}
+.public-profile-secondary {background:var(--bg-subtle);border:1px solid var(--border-color);color:var(--text-main);}
+.public-profile-hint {font-size:10px;color:var(--text-muted);text-align:center;line-height:1.45;margin:12px 0 0;}
+.rank-player-actions {text-align:right;flex-shrink:0;display:flex;flex-direction:column;align-items:flex-end;gap:1px;}
+.rank-profile-button {border:1px solid rgba(218,41,28,.23);background:rgba(218,41,28,.08);color:var(--mc-red);border-radius:9px;padding:6px 9px;font-size:10px;font-weight:900;margin-top:5px;white-space:nowrap;}
+body.dark-mode .rank-profile-button {color:#ff9084;border-color:rgba(255,144,132,.35);}
+.podium-profile-link {font-size:10px;font-weight:900;color:var(--mc-red);margin:5px 0 0;padding:5px 7px;border:1px solid rgba(218,41,28,.15);border-radius:8px;}
+body.dark-mode .podium-profile-link {color:#ff9084;border-color:rgba(255,144,132,.3);}
+.public-profile-close:focus-visible,.public-profile-actions button:focus-visible,.rank-profile-button:focus-visible,.podium-profile-link:focus-visible {outline:3px solid var(--mc-yellow);outline-offset:2px;}
+@media(max-width:360px){.public-profile-panel{padding:11px;border-radius:19px;}.public-profile-hero{padding:14px 12px;}.public-profile-hero .premium-avatar-frame{width:65px;min-width:65px;height:65px;border-radius:20px;}.public-profile-hero .premium-avatar{font-size:31px;border-radius:15px;}.rank-profile-button{padding:5px 7px;font-size:9px;}.public-profile-actions button{font-size:10px;}.public-profile-hero .premium-identity-copy h2{font-size:16px;}}
+@media(min-width:520px){.public-profile-medals{grid-template-columns:repeat(4,minmax(0,1fr));}.public-profile-stats{grid-template-columns:repeat(4,minmax(0,1fr));}.public-profile-panel{padding:20px;}}
+
+.rank-player-row > div:first-child {min-width:0;flex:1;}
+.rank-player-row > div:first-child > div:last-child {min-width:0;}
+.rank-player-row p {overflow-wrap:anywhere;}

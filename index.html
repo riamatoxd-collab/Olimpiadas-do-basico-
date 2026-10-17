@@ -7,7 +7,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="Olimpíadas Méqui" />
-  <title>Olimpíadas do Básico — Venture v8.1</title>
+  <title>Olimpíadas do Básico — Venture v8.2</title>
 
   <!-- Favicon Oficial: Arcos Dourados em Vetor SVG -->
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='24' fill='%23DA291C'/%3E%3Cpath fill='%23FFC72C' d='M50 46c-3.6-13.8-10.8-23.5-19.6-23.5-12 0-21.6 18.5-21.6 52.5h9.1c0-26.4 6.4-42.8 12.5-42.8 6 0 12 17.6 12.5 42.8H50zm0 0c3.6-13.8 10.8-23.5 19.6-23.5 12 0 21.6 18.5 21.6 52.5h-9.1c0-26.4-6.4-42.8-12.5-42.8-6 0-12 17.6-12.5 42.8H50z'/%3E%3C/svg%3E" />
@@ -96,6 +96,50 @@
     </div>
   </div>
 
+  <!-- V8.2: cartão público dos colegas, sem controles de edição -->
+  <div id="publicProfileModal" class="public-profile-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="publicProfileName" aria-describedby="publicProfileHelp" onclick="if(event.target===this)closePublicProfile()">
+    <div class="public-profile-panel" tabindex="-1" id="publicProfilePanel">
+      <div class="public-profile-topline">
+        <div><span class="page-eyebrow">PERFIL DE JOGADOR</span><p id="publicProfileHelp">Conquistas públicas do colaborador · somente leitura</p></div>
+        <button type="button" id="publicProfileClose" class="public-profile-close" onclick="closePublicProfile()" aria-label="Fechar perfil">✕</button>
+      </div>
+      <div class="premium-hero public-profile-hero">
+        <div class="premium-hero-spark" aria-hidden="true">✦ VENTURE PLAYER ✦</div>
+        <div class="premium-identity">
+          <div id="publicProfileFrame" class="premium-avatar-frame frame-classic"><div id="publicProfileAvatar" class="premium-avatar">🍔</div></div>
+          <div class="premium-identity-copy">
+            <span class="premium-overline">CARTÃO DE JOGADOR</span>
+            <h2 id="publicProfileName">Colaborador</h2>
+            <p id="publicProfileRole">Atendente</p>
+            <span id="publicProfileTitle" class="premium-title-pill">🌟 Em treinamento</span>
+          </div>
+        </div>
+        <div class="premium-level-row"><strong id="publicProfileLevel">Nível 1</strong><strong id="publicProfileXp">0 XP</strong></div>
+        <div class="premium-level-track"><div id="publicProfileXpBar" class="premium-level-fill" style="width:0%"></div></div>
+        <p id="publicProfileNextLevel" class="premium-next-level"></p>
+        <div id="publicProfileFeatured" class="premium-featured" aria-label="Medalhas em destaque"></div>
+      </div>
+      <div class="public-profile-section">
+        <h3>📊 Desempenho</h3>
+        <div class="premium-stats-grid public-profile-stats">
+          <div class="premium-stat"><span>⚡ XP</span><strong id="publicProfileStatXp">0</strong></div>
+          <div class="premium-stat"><span>✅ Acertos</span><strong id="publicProfileStatHits">0</strong></div>
+          <div class="premium-stat"><span>🍔 Receitas diferentes</span><strong id="publicProfileStatRecipes">0</strong></div>
+          <div class="premium-stat"><span>🎯 Missões cumpridas</span><strong id="publicProfileStatMissions">0</strong></div>
+        </div>
+      </div>
+      <div class="public-profile-section">
+        <div class="public-profile-medals-heading"><h3>🏅 Medalhas</h3><span id="publicProfileMedalCount">0/8</span></div>
+        <div id="publicProfileMedals" class="public-profile-medals"></div>
+      </div>
+      <div class="public-profile-actions">
+        <button type="button" class="public-profile-challenge" id="publicProfileChallenge" onclick="challengeFromPublicProfile()">⚔️ Desafiar para duelo</button>
+        <button type="button" class="public-profile-secondary" onclick="closePublicProfile()">Voltar ao Ranking</button>
+      </div>
+      <p id="publicProfileDuelHint" class="public-profile-hint">O colega precisa estar com o site aberto para receber o convite.</p>
+    </div>
+  </div>
+
   <!-- MODAL DE REVISÃO DE DÚVIDAS -->
   <div id="reviewMistakesModal" class="hidden fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 flex items-center justify-center p-4 overflow-y-auto">
     <div class="pro-card rounded-[2rem] max-w-md w-full p-5 border-2 border-purple-500 shadow-2xl space-y-4 my-auto">
@@ -131,7 +175,7 @@
           </svg>
         </div>
         <h1 class="text-2xl font-black tracking-tight">OLIMPÍADAS DO BÁSICO</h1>
-        <p class="text-xs text-muted-pro font-semibold mt-0.5">Plataforma Venture • Versão 8.0 🏆</p>
+        <p class="text-xs text-muted-pro font-semibold mt-0.5">Plataforma Venture • Versão 8.2 🏆</p>
       </div>
 
       <div class="flex rounded-2xl subtle-box p-1.5 mb-5">
@@ -530,7 +574,7 @@
 
     <!-- ABA 3: RANKING COM PÓDIO 3D + HISTÓRICO DE DUELOS + PRINT WHATSAPP -->
     <section id="tab-prizes" class="app-screen hidden space-y-5">
-      <div class="page-heading"><div><span class="page-eyebrow">COMPETIÇÃO DA LOJA</span><h1>Ranking geral 🏆</h1><p>Confira os destaques, as posições e o histórico de duelos.</p></div></div>
+      <div class="page-heading"><div><span class="page-eyebrow">COMPETIÇÃO DA LOJA</span><h1>Ranking geral 🏆</h1><p>Toque em Ver perfil para conhecer as medalhas e desafiar seus colegas.</p></div></div>
       <div class="mc-gradient text-white rounded-3xl p-5 shadow-xl relative overflow-hidden border-2 border-[#FFC72C]">
         <div class="flex items-center gap-4">
           <div class="text-5xl bg-white/15 p-3.5 rounded-2xl border border-white/25 shadow-inner float-slow">☕</div>
@@ -638,7 +682,7 @@
         <button type="button" onclick="switchMainTab('admin')" class="more-menu-item"><span class="more-menu-icon" aria-hidden="true">⚙️</span><span class="more-menu-copy"><strong>Painel ADM</strong><small>Gerenciamento de colaboradores e XP</small></span><span class="more-chevron" aria-hidden="true">›</span></button>
         <button type="button" onclick="switchMainTab('updates')" class="more-menu-item"><span class="more-menu-icon" aria-hidden="true">🔔</span><span class="more-menu-copy"><strong>Novidades e versões</strong><small>O que mudou no aplicativo</small></span><span class="more-chevron" aria-hidden="true">›</span></button>
       </div>
-      <div class="more-info"><strong>Olimpíadas do Básico · Venture</strong><span>Versão 8.1 · Perfil Premium</span></div>
+      <div class="more-info"><strong>Olimpíadas do Básico · Venture</strong><span>Versão 8.2 · Perfis dos colegas</span></div>
     </section>
 
     <!-- ABA 4: PAINEL ADM -->
@@ -710,10 +754,15 @@
             <h2 class="font-black text-base">🚀 Histórico Completo de Versões</h2>
             <p class="text-[11px] text-muted-pro font-semibold">Todas as evoluções do aplicativo desde o lançamento</p>
           </div>
-          <span class="bg-red-500/15 text-red-500 text-xs font-black px-3 py-1 rounded-full">v8.1 Perfil</span>
+          <span class="bg-red-500/15 text-red-500 text-xs font-black px-3 py-1 rounded-full">v8.2 Perfis</span>
         </div>
 
 
+        <div class="border-l-4 border-[#FFC72C] pl-3.5 space-y-1">
+          <span class="text-[11px] font-extrabold text-amber-500 uppercase">Versão 8.2 • Perfis Públicos</span>
+          <h4 class="font-black text-sm">👥 Conheça seus colegas no Ranking</h4>
+          <p class="text-xs text-muted-pro">Abra o cartão Premium de qualquer jogador e confira moldura, título, XP e medalhas. Desafie para duelo com um toque. Os perfis dos outros são somente leitura.</p>
+        </div>
         <div class="border-l-4 border-[#FFC72C] pl-3.5 space-y-1">
           <span class="text-[11px] font-extrabold text-amber-500 uppercase">Versão 8.1 • Perfil Premium</span>
           <h4 class="font-black text-sm">👑 Cartão de jogador personalizável</h4>

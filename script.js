@@ -2153,7 +2153,7 @@ function refreshUIIfNeeded() {
 
 
 
-updateHeaderUI(); syncActiveUserHeartsState(); updateMistakesBadge(); populateDuelOpponentList(); renderDuelHistory(); renderMissionHub(); renderPremiumProfile();
+updateHeaderUI(); syncActiveUserHeartsState(); updateMistakesBadge(); populateDuelOpponentList(); renderDuelHistory(); renderMissionHub(); renderPremiumProfile(); if (publicProfileSelectedKey) renderPublicProfile();
 
 
 
@@ -2161,7 +2161,7 @@ const sorted = Object.values(users).filter(u => u && u.name && !u._deleted).sort
 
 
 
-const hash = JSON.stringify(sorted.map(u => `${u.name}:${u.xp}:${u.correctAnswers}:${(u.avatar || "").slice(-15)}:${u.role}:${u.lastSeen || 0}`));
+const hash = JSON.stringify(sorted.map(u => `${u.name}:${u.xp}:${u.correctAnswers}:${(u.avatar || "").slice(-15)}:${u.role}:${u.lastSeen || 0}:${u.profilePremium?.updatedAt||0}:${Object.keys(u.missionProgress?.badges||{}).length}`));
 
 
 
@@ -3170,17 +3170,13 @@ function populateDuelOpponentList() {
 
 
 
-  select.innerHTML = `<option value="">Selecione quem você quer desafiar...</option>` +
-
-    list.map(([k, u]) => {
-
-      const isOnline = (now - (u.lastSeen || 0)) < 25000;
-
-      const indicator = isOnline ? "🟢 [Online]" : "⚪ [Offline]";
-
-      return `<option value="${k}">${indicator} ${u.name} (${u.role || 'Atendente'})</option>`;
-
-    }).join("");
+  // Evita interpretar como HTML os nomes/cargos recebidos de outros celulares.
+  select.replaceChildren(new Option("Selecione quem você quer desafiar...", ""));
+  list.forEach(([k, u]) => {
+    const isOnline = (now - (u.lastSeen || 0)) < 25000;
+    const indicator = isOnline ? "🟢 [Online]" : "⚪ [Offline]";
+    select.add(new Option(`${indicator} ${u.name} (${u.role || 'Atendente'})`, k));
+  });
 
 
 
@@ -4411,10 +4407,133 @@ function revealBookAnswer(btn) {
     btn.textContent = "Ver Resposta";
   }
 }
+// ============================================================================
+// 👥 V8.2 — PERFIS PÚBLICOS SOMENTE LEITURA
+// O modal lê os dados sincronizados que já existem em users. NÃO grava nos
+// perfis dos colegas e não mostra senha, identificadores internos ou dados de login.
+// ============================================================================
+let publicProfileSelectedKey = null;
+let publicProfileReturnFocus = null;
+
+function escapePublicHtml(value) {
+  return String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+}
+function safePublicAvatarValue(value) {
+  if (typeof value === 'string' && value.length < 160000 && /^data:image\/(?:jpeg|png|webp);base64,[a-z0-9+/=]+$/i.test(value)) return value;
+  return AVATAR_LIST.includes(value) ? value : '🍔';
+}
+function openPublicProfile(key) {
+  const user = Object.prototype.hasOwnProperty.call(users,key) ? users[key] : null;
+  if (!user || !user.name || user._deleted) return;
+  if (key === currentUserKey) {switchMainTab('profile');return;}
+  const modal = $('publicProfileModal');
+  if (!modal) return;
+  if (typeof playTabClickSound === 'function') playTabClickSound();
+  publicProfileReturnFocus = document.activeElement;
+  publicProfileSelectedKey = key;
+  renderPublicProfile();
+  modal.classList.remove('hidden');
+  document.body.classList.add('public-profile-open');
+  $('publicProfileClose').focus();
+}
+function closePublicProfile() {
+  const modal = $('publicProfileModal');
+  if (!modal || modal.classList.contains('hidden')) return;
+  modal.classList.add('hidden');
+  publicProfileSelectedKey = null;
+  document.body.classList.remove('public-profile-open');
+  if (publicProfileReturnFocus && publicProfileReturnFocus.isConnected) publicProfileReturnFocus.focus();
+  publicProfileReturnFocus = null;
+}
+function publicProfileSetText(id,value) { const el=$(id); if (el) el.textContent=String(value); }
+function renderPublicProfile() {
+  const key = publicProfileSelectedKey;
+  const user = key && Object.prototype.hasOwnProperty.call(users,key) ? users[key] : null;
+  if (!user || user._deleted) {closePublicProfile();return;}
+  const progress = ensureMissionProgress(user);
+  const saved = ensurePremiumProfile(user);
+  const xp = Math.max(0,Number(user.xp)||0);
+  const level = getLevelInfo(xp);
+  const frame = PREMIUM_FRAMES.find(f=>f.id===saved.frameId && xp>=f.minXp) || PREMIUM_FRAMES[0];
+  const title = PREMIUM_TITLES.find(t=>t.id===saved.titleId && t.available(user,progress)) || PREMIUM_TITLES[0];
+  const portrait = $('publicProfileAvatar');
+  portrait.replaceChildren();
+  const avatar = safePublicAvatarValue(user.avatar);
+  if (avatar.startsWith('data:image/')) {
+    const img=document.createElement('img'); img.src=avatar; img.alt='Foto do jogador'; portrait.appendChild(img);
+  } else portrait.textContent=avatar;
+  $('publicProfileFrame').className = `premium-avatar-frame frame-${frame.id}`;
+  publicProfileSetText('publicProfileName',user.name);
+  publicProfileSetText('publicProfileRole',user.role||user.station||'Atendente');
+  publicProfileSetText('publicProfileTitle',`${title.icon} ${title.label}`);
+  publicProfileSetText('publicProfileLevel',`Nível ${level.level}`);
+  publicProfileSetText('publicProfileXp',`${xp.toLocaleString('pt-BR')} XP`);
+  $('publicProfileXpBar').style.width = `${Math.max(0,Math.min(100,100*(xp-level.min)/(level.max-level.min)))}%`;
+  publicProfileSetText('publicProfileNextLevel',level.level<7?`Faltam ${(level.max-xp).toLocaleString('pt-BR')} XP para o nível ${level.level+1}`:'Patente máxima alcançada! 👑');
+  publicProfileSetText('publicProfileStatXp',xp.toLocaleString('pt-BR'));
+  publicProfileSetText('publicProfileStatHits',Math.max(0,Number(user.correctAnswers)||0).toLocaleString('pt-BR'));
+  publicProfileSetText('publicProfileStatRecipes',progress.lifetime.kitchenRecipes.length);
+  publicProfileSetText('publicProfileStatMissions',Object.keys(progress.claims).length);
+  const earned = MEDAL_DEFINITIONS.filter(m=>Boolean(progress.badges[m.id]));
+  const selected = saved.featuredBadges.filter(id=>progress.badges[id]);
+  const featured = selected.length?selected:earned.slice(0,3).map(m=>m.id);
+  const featuredBox=$('publicProfileFeatured'); featuredBox.replaceChildren();
+  for(let i=0;i<3;i++){
+    const medal=MEDAL_DEFINITIONS.find(m=>m.id===featured[i]);
+    const cell=document.createElement('div'); cell.className='premium-featured-item';
+    const ico=document.createElement('span'); ico.setAttribute('aria-hidden','true'); ico.textContent=medal?medal.icon:'🔒';
+    cell.append(ico,document.createTextNode(medal?medal.title:'Vazio'));featuredBox.appendChild(cell);
+  }
+  publicProfileSetText('publicProfileMedalCount',`${earned.length}/${MEDAL_DEFINITIONS.length}`);
+  const medalsBox=$('publicProfileMedals');medalsBox.replaceChildren();
+  MEDAL_DEFINITIONS.forEach(m=>{
+    const unlocked=Boolean(progress.badges[m.id]);
+    const item=document.createElement('div');item.className=`public-medal ${unlocked?'is-earned':'is-locked'}`;
+    const icon=document.createElement('span');icon.textContent=unlocked?m.icon:'🔒';icon.setAttribute('aria-hidden','true');
+    const name=document.createElement('strong');name.textContent=m.title;
+    const hint=document.createElement('small');hint.textContent=unlocked?`Conquistada · ${premiumDate(progress.badges[m.id])}`:m.detail;
+    item.append(icon,name,hint);medalsBox.appendChild(item);
+  });
+  const online=(Date.now()-(Number(user.lastSeen)||0)) < 25000;
+  publicProfileSetText('publicProfileDuelHint',online?'🟢 Jogador online: você pode enviar um desafio agora.':'⚪ Jogador offline: o convite só chega quando ambos estiverem com o site aberto.');
+  $('publicProfileChallenge').disabled=Boolean(activeDuel);
+  $('publicProfileChallenge').textContent=activeDuel?'⚔️ Termine seu duelo atual':'⚔️ Desafiar para duelo';
+}
+function challengeFromPublicProfile() {
+  const key=publicProfileSelectedKey;
+  if (!key || !users[key] || users[key]._deleted || key===currentUserKey) return;
+  if (activeDuel) return alert('Finalize o duelo atual antes de iniciar outro.');
+  if (!currentUserKey || !users[currentUserKey]) return alert('Entre em sua conta para desafiar um colega.');
+  const select=$('duelOpponentSelect');
+  if (!select) return;
+  populateDuelOpponentList();
+  select.value=key;
+  if (select.value!==key) return alert('Não foi possível selecionar o colega. Atualize o Ranking.');
+  closePublicProfile();
+  sendLiveDuelInvite(); // usa o motor do duelo existente, inclusive o convite no WhatsApp
+}
+document.addEventListener('click',event=>{
+  const button=event.target.closest('[data-open-profile]');
+  if (button) {event.preventDefault();openPublicProfile(button.dataset.profileKey);}
+});
+document.addEventListener('keydown',event=>{
+  const modal=$('publicProfileModal');
+  if (!modal || modal.classList.contains('hidden')) return;
+  if(event.key==='Escape'){event.preventDefault();closePublicProfile();return;}
+  if(event.key==='Tab'){
+    const focusable=[...modal.querySelectorAll('button:not(:disabled)')].filter(el=>el.offsetParent!==null);
+    if (!focusable.length) return;
+    const first=focusable[0],last=focusable[focusable.length-1];
+    if(event.shiftKey && document.activeElement===first){event.preventDefault();last.focus();}
+    else if(!event.shiftKey && document.activeElement===last){event.preventDefault();first.focus();}
+  }
+});
+
 function renderLeaderboard() {
   const podiumContainer = $("podiumTop3Container");
   const container = $("leaderboardContainer");
-  const list = Object.values(users).filter(u => u && u.name && !u._deleted).sort((a, b) => (b.xp || 0) - (a.xp || 0));
+  const rows = Object.entries(users).filter(([key,u]) => u && u.name && !u._deleted).sort((a, b) => (b[1].xp || 0) - (a[1].xp || 0));
+  const list = rows.map(([,u]) => u);
   if (list.length === 0) {
     if (podiumContainer) podiumContainer.innerHTML = "";
     if (container) container.innerHTML = `<div class="p-6 text-center text-xs font-bold text-muted-pro subtle-box rounded-2xl border-dashed">Nenhum colaborador cadastrado ainda. Crie sua conta para estrear o Pódio!</div>`;
@@ -4427,9 +4546,10 @@ function renderLeaderboard() {
     podiumContainer.innerHTML = `
       <div class="flex flex-col items-center">
         ${second ? `
-          <div class="mb-1">${renderAvatarBadge(second.avatar, "w-11 h-11", "text-xl", "subtle-box border-2 border-slate-300")}</div>
-          <p class="font-black text-[10px] text-center truncate w-full px-1">${second.name}</p>
+          <div class="mb-1">${renderAvatarBadge(safePublicAvatarValue(second.avatar), "w-11 h-11", "text-xl", "subtle-box border-2 border-slate-300")}</div>
+          <p class="font-black text-[10px] text-center truncate w-full px-1">${escapePublicHtml(second.name)}</p>
           <span class="text-[10px] font-extrabold text-red-500">${second.xp || 0} XP</span>
+          <button type="button" class="podium-profile-link" data-open-profile data-profile-key="${escapePublicHtml(rows[1][0])}" data-html2canvas-ignore="true">Ver perfil ↗</button>
           <div class="w-full h-16 mt-2 rounded-t-2xl bg-gradient-to-b from-slate-300 to-slate-400 text-slate-900 flex flex-col items-center justify-center font-black shadow-inner">
             <span class="text-lg">🥈</span>
             <span class="text-[10px]">2º Lugar</span>
@@ -4438,9 +4558,10 @@ function renderLeaderboard() {
       </div>
       <div class="flex flex-col items-center">
         <span class="text-lg mb-0.5 float-slow">👑 ☕</span>
-        <div class="mb-1">${renderAvatarBadge(first.avatar, "w-14 h-14", "text-2xl", "gold-gradient text-slate-950 border-2 border-white shadow-lg")}</div>
-        <p class="font-black text-xs text-center truncate w-full px-1">${first.name}</p>
+        <div class="mb-1">${renderAvatarBadge(safePublicAvatarValue(first.avatar), "w-14 h-14", "text-2xl", "gold-gradient text-slate-950 border-2 border-white shadow-lg")}</div>
+        <p class="font-black text-xs text-center truncate w-full px-1">${escapePublicHtml(first.name)}</p>
         <span class="text-[11px] font-black text-amber-500">${first.xp || 0} XP</span>
+          <button type="button" class="podium-profile-link" data-open-profile data-profile-key="${escapePublicHtml(rows[0][0])}" data-html2canvas-ignore="true">Ver perfil ↗</button>
         <div class="w-full h-24 mt-2 rounded-t-2xl gold-gradient text-slate-950 flex flex-col items-center justify-center font-black shadow-lg border-t-2 border-white">
           <span class="text-2xl">🥇</span>
           <span class="text-[11px] uppercase tracking-wider">1º Lugar</span>
@@ -4448,9 +4569,10 @@ function renderLeaderboard() {
       </div>
       <div class="flex flex-col items-center">
         ${third ? `
-          <div class="mb-1">${renderAvatarBadge(third.avatar, "w-11 h-11", "text-xl", "subtle-box border-2 border-amber-700/50")}</div>
-          <p class="font-black text-[10px] text-center truncate w-full px-1">${third.name}</p>
+          <div class="mb-1">${renderAvatarBadge(safePublicAvatarValue(third.avatar), "w-11 h-11", "text-xl", "subtle-box border-2 border-amber-700/50")}</div>
+          <p class="font-black text-[10px] text-center truncate w-full px-1">${escapePublicHtml(third.name)}</p>
           <span class="text-[10px] font-extrabold text-red-500">${third.xp || 0} XP</span>
+          <button type="button" class="podium-profile-link" data-open-profile data-profile-key="${escapePublicHtml(rows[2][0])}" data-html2canvas-ignore="true">Ver perfil ↗</button>
           <div class="w-full h-14 mt-2 rounded-t-2xl bg-gradient-to-b from-amber-600 to-amber-800 text-white flex flex-col items-center justify-center font-black shadow-inner">
             <span class="text-base">🥉</span>
             <span class="text-[10px]">3º Lugar</span>
@@ -4470,21 +4592,22 @@ function renderLeaderboard() {
         ? `<span class="w-2.5 h-2.5 bg-emerald-500 rounded-full inline-block ml-1 shadow-sm" title="Online agora"></span>`
         : `<span class="w-2.5 h-2.5 bg-slate-400/50 rounded-full inline-block ml-1" title="Offline"></span>`;
       return `
-        <div class="flex items-center justify-between p-3.5 rounded-2xl ${idx === 0 ? 'bg-amber-500/15 border-2 border-amber-500/50 shadow-sm' : 'subtle-box'}">
+        <div class="rank-player-row flex items-center justify-between p-3.5 rounded-2xl ${idx === 0 ? 'bg-amber-500/15 border-2 border-amber-500/50 shadow-sm' : 'subtle-box'}">
           <div class="flex items-center gap-3">
             <span class="font-black text-xs w-7 text-center">${medal}</span>
-            ${renderAvatarBadge(u.avatar, "w-10 h-10", "text-xl", "pro-card")}
+            ${renderAvatarBadge(safePublicAvatarValue(u.avatar), "w-10 h-10", "text-xl", "pro-card")}
             <div>
               <div class="flex items-center gap-1.5 flex-wrap">
-                <p class="font-black text-xs">${u.name} ${onlineDot}</p>
-                <span class="text-[9px] font-extrabold px-2 py-0.5 rounded-full bg-red-500/15 text-red-500 uppercase">${role}</span>
+                <p class="font-black text-xs">${escapePublicHtml(u.name)} ${onlineDot}</p>
+                <span class="text-[9px] font-extrabold px-2 py-0.5 rounded-full bg-red-500/15 text-red-500 uppercase">${escapePublicHtml(role)}</span>
               </div>
               <p class="text-[10px] text-muted-pro font-bold mt-0.5">${info.title}</p>
             </div>
           </div>
-          <div class="text-right shrink-0">
+          <div class="rank-player-actions">
             <span class="font-black text-xs text-red-500">${u.xp || 0} XP</span>
             <span class="block text-[10px] text-muted-pro font-semibold">${u.correctAnswers || 0} acertos</span>
+            <button type="button" class="rank-profile-button" data-open-profile data-profile-key="${escapePublicHtml(rows[idx][0])}" data-html2canvas-ignore="true" aria-label="Ver perfil de ${escapePublicHtml(u.name)}">👁 Ver perfil</button>
           </div>
         </div>
       `;
