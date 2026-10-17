@@ -1,5 +1,5 @@
 /* =========================================================================
-OLIMPÍADAS DO BÁSICO — VENTURE (script.js v8.6 — avaliação prática)
+OLIMPÍADAS DO BÁSICO — VENTURE (script.js v8.7 — baú diário e poções de vida)
 Finalização 25/10 + Sistema de Cozinha (Monta-Lanche) + Sons + Print + 1v1
 ========================================================================= */
 const $ = id => document.getElementById(id);
@@ -667,6 +667,122 @@ const MEDAL_DEFINITIONS = [
   { id:"missions5", icon:"🏅", title:"Caçador de Missões", detail:"Complete 5 missões", test:(u,p)=> Object.keys(p.claims).length>=5 },
   { id:"gold_level", icon:"👑", title:"Padrão Ouro", detail:"Alcance o nível 4 (6.000 XP)", test:(u,p)=> (u.xp||0)>=6000 }
 ];
+
+// ========================================================================
+// 🎁 BAÚ DIÁRIO v8.7: um sorteio por dia no fuso da campanha (São Paulo).
+// Prêmios do tipo poção viram itens consumíveis: não ultrapassam 5 vidas.
+// Histórico em dailyChest é mesclado; não modifica as chaves antigas.
+// OBS: a validação definitiva anti-fraude requer backend com autenticação.
+// ========================================================================
+const CHEST_POTIONS={bigmac:{icon:"🍔",label:"Big Mac",hearts:5},drink:{icon:"🥤",label:"Bebida",hearts:3},fries:{icon:"🍟",label:"Batata",hearts:2}};
+function ensureDailyChest(user){
+  if(!user)return null;
+  const data=user.dailyChest && typeof user.dailyChest==="object"?user.dailyChest:{};
+  data.claims=data.claims && typeof data.claims==="object" && !Array.isArray(data.claims)?data.claims:{};
+  data.used=data.used && typeof data.used==="object" && !Array.isArray(data.used)?data.used:{};
+  user.dailyChest=data;
+  return data;
+}
+function mergeDailyChest(a,b){
+  if(!a && !b)return undefined;
+  const claims={...(a?.claims||{})};
+  Object.entries(b?.claims||{}).forEach(([date,prize])=>{
+    const old=claims[date];
+    if(!old || (Number(prize?.at)||0)<(Number(old.at)||0))claims[date]=prize;
+  });
+  const used={...(a?.used||{})};
+  Object.entries(b?.used||{}).forEach(([date,at])=>{used[date]=Math.max(Number(used[date])||0,Number(at)||0);});
+  return {claims,used};
+}
+function chestRandomInt(max){
+  if(typeof crypto!=="undefined" && crypto.getRandomValues){
+    const out=new Uint32Array(1),range=0x100000000;
+    const limit=range-(range%max);
+    do{crypto.getRandomValues(out);}while(out[0]>=limit);
+    return out[0]%max;
+  }
+  return Math.floor(Math.random()*max);
+}
+function dailyChestDay(){return missionPeriodKeys().daily;}
+function chestPotionInventory(chest){
+  const output={bigmac:[],drink:[],fries:[]};
+  if(!chest)return output;
+  Object.entries(chest.claims).sort(([a],[b])=>a.localeCompare(b)).forEach(([day,prize])=>{
+    if(CHEST_POTIONS[prize?.kind] && !chest.used[day])output[prize.kind].push(day);
+  });
+  return output;
+}
+function refreshLocalChestUser(){
+  // Evita abrir de novo caso outra aba já tenha registrado o prêmio neste aparelho.
+  try{
+    const snapshot=JSON.parse(localStorage.getItem(STORAGE_USERS_KEY)||"{}");
+    if(currentUserKey && snapshot[currentUserKey])users[currentUserKey]=mergeSingleUser(users[currentUserKey],snapshot[currentUserKey]);
+  }catch(_){}
+}
+function openDailyChest(){
+  if(!currentUserKey || !users[currentUserKey] || users[currentUserKey]._deleted){
+    showMissionToast("🔒 Entre na sua conta para abrir o baú.");return;
+  }
+  refreshLocalChestUser();
+  const user=users[currentUserKey], chest=ensureDailyChest(user), today=dailyChestDay();
+  if(chest.claims[today]){renderDailyChest();return;}
+  const kind=["bigmac","drink","fries","xp"][chestRandomInt(4)];
+  const amount=kind==="xp" ? 20+chestRandomInt(181):CHEST_POTIONS[kind].hearts;
+  chest.claims[today]={kind,amount,at:Date.now()};
+  user.updatedAt=Date.now();
+  // Registrar antes do XP para impedir recompensa repetida no próximo clique.
+  localStorage.setItem(STORAGE_USERS_KEY,JSON.stringify(users));
+  if(kind==="xp"){
+    addXp(amount);
+    showMissionToast(`🎁 Seu baú revelou +${amount} XP!`);
+  }else{
+    playHitSuccessSound();
+    scheduleCloudSync(currentUserKey,true);
+    showMissionToast(`🎁 ${CHEST_POTIONS[kind].icon} Poção ${CHEST_POTIONS[kind].label}: +${amount} corações guardados!`);
+    const panel=$("dailyChestInventoryPanel");if(panel)panel.open=true;
+  }
+  renderDailyChest();
+}
+function useDailyPotion(kind){
+  if(!CHEST_POTIONS[kind] || !currentUserKey || !users[currentUserKey])return;
+  refreshLocalChestUser();
+  const user=users[currentUserKey],chest=ensureDailyChest(user),available=chestPotionInventory(chest)[kind];
+  if(!available.length){renderDailyChest();return;}
+  syncActiveUserHeartsState(); // Pode encerrar cooldown expirado.
+  if(currentHearts>=5){showMissionToast("❤️ Seus corações já estão completos. Guarde a poção!");renderDailyChest();return;}
+  const day=available[0];
+  chest.used[day]=Date.now(); // Consumo como evento evita reaparecer no merge.
+  user.updatedAt=Date.now();
+  localStorage.setItem(STORAGE_USERS_KEY,JSON.stringify(users));
+  const before=currentHearts;
+  const healed=Math.min(5,before+CHEST_POTIONS[kind].hearts);
+  setActiveHeartsState(healed,0); // Encerra a recarga de 10 min quando revive.
+  checkAndRenderCooldownScreen();
+  scheduleCloudSync(currentUserKey,true);
+  showMissionToast(`${CHEST_POTIONS[kind].icon} +${healed-before} corações restaurados!`);
+  renderDailyChest();
+}
+function renderDailyChest(){
+  const button=$("dailyChestOpen"), status=$("dailyChestStatus"),tag=$("dailyChestTag");
+  if(!button || !status)return;
+  const user=currentUserKey && users[currentUserKey] && !users[currentUserKey]._deleted ? users[currentUserKey]:null;
+  const chest=user?ensureDailyChest(user):null, today=dailyChestDay(), claimed=chest?.claims[today];
+  button.disabled=!user || !!claimed;
+  button.textContent=!user?"🔒 Entre para abrir":claimed?"✅ Baú de hoje aberto":"🎁 Abrir baú de hoje";
+  status.textContent=!user?"Entre na sua conta para receber a recompensa.":claimed?"Volte amanhã para um novo presente!":"Seu presente de hoje está disponível.";
+  if(tag)tag.textContent=claimed?"RECEBIDO":"DIÁRIO";
+  const result=$("dailyChestResult");
+  if(result)result.textContent=!claimed?"":claimed.kind==="xp"?`⚡ Você recebeu +${claimed.amount} XP hoje.`:CHEST_POTIONS[claimed.kind]?`${CHEST_POTIONS[claimed.kind].icon} Você ganhou ${CHEST_POTIONS[claimed.kind].label} (+${claimed.amount} corações).`:"✅ Recompensa resgatada.";
+  const inventory=chestPotionInventory(chest), count=Object.values(inventory).reduce((sum,days)=>sum+days.length,0);
+  const badge=$("dailyChestInventoryCount"),list=$("dailyChestInventory");
+  if(badge)badge.textContent=`${count} guardada${count===1?"":"s"}`;
+  if(list){
+    if(!user)list.innerHTML='<p class="daily-chest-note">Entre na sua conta para ver as poções.</p>';
+    else if(!count)list.innerHTML='<p class="daily-chest-note">Nenhuma poção guardada. Abra o baú de hoje!</p>';
+    else list.innerHTML=Object.entries(CHEST_POTIONS).filter(([kind])=>inventory[kind].length).map(([kind,p])=>`<div class="daily-chest-item"><span>${p.icon}</span><div><strong>${p.label} · +${p.hearts} ❤️</strong><small>${inventory[kind].length} disponível(is)</small></div><button type="button" class="daily-chest-use" onclick="useDailyPotion('${kind}')" ${currentHearts>=5?"disabled title='Corações completos'":""}>Usar</button></div>`).join("");
+  }
+}
+
 let missionViewCycle = "daily";
 function missionPeriodKeys(at = new Date()) {
   // Mesmo calendário da campanha em todos os aparelhos (horário de Brasília).
@@ -1298,9 +1414,9 @@ localStorage.setItem(STORAGE_USERS_KEY, JSON.stringify(users));
 function mergeSingleUser(ex, inc) {
 if (!ex) return inc;
 const streak = mergeQuizStreak(ex, inc);
-if ((inc.adminOverrideAt || 0) > (ex.adminOverrideAt || 0)) return { ...inc, ...streak, missionProgress:mergeMissionProgress(ex.missionProgress,inc.missionProgress), profilePremium:mergeProfilePremium(ex.profilePremium,inc.profilePremium), trainerChallenges:mergeTrainerChallenges(ex.trainerChallenges,inc.trainerChallenges), duelRewards:{...ex.duelRewards,...inc.duelRewards}, practicalAssessments:mergePracticalAssessments(ex.practicalAssessments,inc.practicalAssessments) };
-if ((ex.adminOverrideAt || 0) > (inc.adminOverrideAt || 0)) return { ...ex, ...streak, missionProgress:mergeMissionProgress(ex.missionProgress,inc.missionProgress), profilePremium:mergeProfilePremium(ex.profilePremium,inc.profilePremium), trainerChallenges:mergeTrainerChallenges(ex.trainerChallenges,inc.trainerChallenges), duelRewards:{...ex.duelRewards,...inc.duelRewards}, practicalAssessments:mergePracticalAssessments(ex.practicalAssessments,inc.practicalAssessments) };
-if (inc._deleted && (inc.updatedAt || 0) >= (ex.updatedAt || 0)) return { ...inc, ...streak, missionProgress:mergeMissionProgress(ex.missionProgress,inc.missionProgress), profilePremium:mergeProfilePremium(ex.profilePremium,inc.profilePremium), trainerChallenges:mergeTrainerChallenges(ex.trainerChallenges,inc.trainerChallenges), duelRewards:{...ex.duelRewards,...inc.duelRewards}, practicalAssessments:mergePracticalAssessments(ex.practicalAssessments,inc.practicalAssessments) };
+if ((inc.adminOverrideAt || 0) > (ex.adminOverrideAt || 0)) return { ...inc, ...streak, missionProgress:mergeMissionProgress(ex.missionProgress,inc.missionProgress), profilePremium:mergeProfilePremium(ex.profilePremium,inc.profilePremium), trainerChallenges:mergeTrainerChallenges(ex.trainerChallenges,inc.trainerChallenges), duelRewards:{...ex.duelRewards,...inc.duelRewards}, practicalAssessments:mergePracticalAssessments(ex.practicalAssessments,inc.practicalAssessments), dailyChest:mergeDailyChest(ex.dailyChest,inc.dailyChest) };
+if ((ex.adminOverrideAt || 0) > (inc.adminOverrideAt || 0)) return { ...ex, ...streak, missionProgress:mergeMissionProgress(ex.missionProgress,inc.missionProgress), profilePremium:mergeProfilePremium(ex.profilePremium,inc.profilePremium), trainerChallenges:mergeTrainerChallenges(ex.trainerChallenges,inc.trainerChallenges), duelRewards:{...ex.duelRewards,...inc.duelRewards}, practicalAssessments:mergePracticalAssessments(ex.practicalAssessments,inc.practicalAssessments), dailyChest:mergeDailyChest(ex.dailyChest,inc.dailyChest) };
+if (inc._deleted && (inc.updatedAt || 0) >= (ex.updatedAt || 0)) return { ...inc, ...streak, missionProgress:mergeMissionProgress(ex.missionProgress,inc.missionProgress), profilePremium:mergeProfilePremium(ex.profilePremium,inc.profilePremium), trainerChallenges:mergeTrainerChallenges(ex.trainerChallenges,inc.trainerChallenges), duelRewards:{...ex.duelRewards,...inc.duelRewards}, practicalAssessments:mergePracticalAssessments(ex.practicalAssessments,inc.practicalAssessments), dailyChest:mergeDailyChest(ex.dailyChest,inc.dailyChest) };
 const newer = (inc.updatedAt || 0) >= (ex.updatedAt || 0);
 return {
 ...ex, ...inc, ...streak, _deleted: false,
@@ -1314,7 +1430,7 @@ mistakes: newer && Array.isArray(inc.mistakes) ? inc.mistakes : (Array.isArray(e
 missionProgress: mergeMissionProgress(ex.missionProgress,inc.missionProgress),
 profilePremium: mergeProfilePremium(ex.profilePremium,inc.profilePremium),
 trainerChallenges:mergeTrainerChallenges(ex.trainerChallenges,inc.trainerChallenges),
-duelRewards:{...ex.duelRewards,...inc.duelRewards}, practicalAssessments:mergePracticalAssessments(ex.practicalAssessments,inc.practicalAssessments),
+duelRewards:{...ex.duelRewards,...inc.duelRewards}, practicalAssessments:mergePracticalAssessments(ex.practicalAssessments,inc.practicalAssessments), dailyChest:mergeDailyChest(ex.dailyChest,inc.dailyChest),
 lastSeen: Math.max(ex.lastSeen || 0, inc.lastSeen || 0),
 updatedAt: Math.max(ex.updatedAt || 0, inc.updatedAt || 0)
 };
@@ -1328,7 +1444,7 @@ return m;
 }
 function refreshUIIfNeeded() {
 restoreQuizStreak();
-updateHeaderUI(); syncActiveUserHeartsState(); updateMistakesBadge(); populateDuelOpponentList(); renderDuelHistory(); renderMissionHub(); renderTrainerPublicContent(); if(isTrainerUnlocked)renderPracticalTrainerRoster(); renderPremiumProfile(); if (publicProfileSelectedKey) renderPublicProfile();
+updateHeaderUI(); syncActiveUserHeartsState(); updateMistakesBadge(); populateDuelOpponentList(); renderDuelHistory(); renderMissionHub(); renderTrainerPublicContent(); if(isTrainerUnlocked)renderPracticalTrainerRoster(); renderPremiumProfile(); renderDailyChest(); if (publicProfileSelectedKey) renderPublicProfile();
 const sorted = Object.values(users).filter(u => u && u.name && !u._deleted).sort((a, b) => (b.xp || 0) - (a.xp || 0));
 const hash = JSON.stringify(sorted.map(u => `${u.name}:${u.xp}:${u.correctAnswers}:${(u.avatar || "").slice(-15)}:${u.role}:${u.lastSeen || 0}:${u.profilePremium?.updatedAt||0}:${Object.keys(u.missionProgress?.badges||{}).length}:${Object.keys(u.practicalAssessments?.records||{}).length}`));
 if (hash !== lastLeaderboardHash) { lastLeaderboardHash = hash; renderLeaderboard(); }
@@ -1457,7 +1573,7 @@ xp: users[key] && !users[key]._deleted ? (users[key].xp || 0) : 0,
 correctAnswers: users[key] && !users[key]._deleted ? (users[key].correctAnswers || 0) : 0,
 hearts: 5, heartsLockUntil: 0, mistakes: users[key]?.mistakes || [],
 quizStreak: users[key]?.quizStreak || 0, quizStreakUpdatedAt: users[key]?.quizStreakUpdatedAt || 0,
-missionProgress:users[key]?.missionProgress, profilePremium:users[key]?.profilePremium, trainerChallenges:users[key]?.trainerChallenges || {}, duelRewards:users[key]?.duelRewards || {}, practicalAssessments:users[key]?.practicalAssessments, lastSeen: Date.now(), updatedAt: Date.now()
+missionProgress:users[key]?.missionProgress, profilePremium:users[key]?.profilePremium, trainerChallenges:users[key]?.trainerChallenges || {}, duelRewards:users[key]?.duelRewards || {}, practicalAssessments:users[key]?.practicalAssessments, dailyChest:users[key]?.dailyChest, lastSeen: Date.now(), updatedAt: Date.now()
 };
 currentUserKey = key; localStorage.setItem(STORAGE_CURRENT_KEY, key);
 $("authModal").classList.add("hidden"); playHitSuccessSound();
@@ -2113,6 +2229,7 @@ function updateHeartsDisplay() {
   const safeHearts = Math.max(0, Math.min(5, currentHearts));
   const el = $("quizHeartsInfo");
   if (el) el.textContent = "❤️".repeat(safeHearts) + "🖤".repeat(5 - safeHearts);
+  renderDailyChest();
 }
 function loadNextQuizQuestion() {
   playTabClickSound();
@@ -2712,7 +2829,7 @@ function switchMainTab(tab) {
 // =========================================================================
 // V8.5 — ATUALIZAÇÃO DE VERSÃO NO GITHUB PAGES (SEM APAGAR DADOS)
 // =========================================================================
-const APP_VERSION = "8.6";
+const APP_VERSION = "8.7";
 const APP_UPDATE_INTERVAL_MS = 60000; // Github Pages é estático: checagem periódica, não push instantâneo.
 const APP_UPDATE_IDLE_MS = 45000;
 let availableAppUpdate = null;
