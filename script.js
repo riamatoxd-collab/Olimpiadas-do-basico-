@@ -1,5 +1,5 @@
 /* =========================================================================
-OLIMPÍADAS DO BÁSICO — VENTURE (script.js v8.5 — sequência persistente)
+OLIMPÍADAS DO BÁSICO — VENTURE (script.js v8.6 — avaliação prática)
 Finalização 25/10 + Sistema de Cozinha (Monta-Lanche) + Sons + Print + 1v1
 ========================================================================= */
 const $ = id => document.getElementById(id);
@@ -424,7 +424,7 @@ function unlockTrainerCenter() {
   isTrainerUnlocked=true;
   $('trainerPassInput').value=''; $('trainerAuthError').classList.add('hidden');
   $('trainerLockScreen').classList.add('hidden'); $('trainerDashboard').classList.remove('hidden');
-  renderTrainerCenter();fetchTrainerHistory(true);
+  renderPracticalChecklist();renderTrainerCenter();fetchTrainerHistory(true);
 }
 function lockTrainerCenter() {
   isTrainerUnlocked=false;
@@ -495,6 +495,7 @@ function renderTrainerCenter() {
     <div><span>${trainerSafeHtml(x.level)} · Extra</span><strong>${trainerSafeHtml(x.q)}</strong><small>✅ ${trainerSafeHtml(x.a)}</small></div>
     <div class="trainer-row-actions"><button type="button" data-trainer-edit="${x.id}">Editar</button><button type="button" data-trainer-delete="${x.id}">Excluir</button></div>
   </article>`).join(''):'<p class="trainer-help">Nenhuma pergunta extra publicada ainda.</p>';
+  renderPracticalTrainerRoster();
   const a=trainerState.announcement;
   if(a && !a.deleted) {$('trainerAnnouncementTitle').value=a.title||'';$('trainerAnnouncementBody').value=a.body||'';}
 }
@@ -504,6 +505,145 @@ document.addEventListener('click',ev=>{
   if(edit)editTrainerQuestion(edit.dataset.trainerEdit);
   if(del)removeTrainerQuestion(del.dataset.trainerDelete);
 });
+// ============================================================================
+// v8.6 — AVALIAÇÃO PRÁTICA POR ESTAÇÃO (registrada, sem XP)
+// Cadastro legado continua intacto; campo opcional por usuário.
+// AVISO: a autenticação e o armazenamento compartilhado atuais são client-side;
+// estes selos são registros internos, não assinaturas/certificações invioláveis.
+// ============================================================================
+const PRACTICAL_STATIONS = [
+  {id:'chapa',icon:'🔥',label:'Chapa',criteria:['Apresentou cuidados de higiene e segurança da estação','Preparou os recursos e manteve a área organizada','Demonstrou a sequência correta conforme orientação local','Concluiu a atividade com limpeza e conferência']},
+  {id:'linha',icon:'🍔',label:'Linha / Montagem',criteria:['Higienizou as mãos e organizou os ingredientes','Conferiu a composição e a sequência de montagem','Demonstrou cuidado com tempo e apresentação','Conferiu o pedido antes da entrega']},
+  {id:'fritura',icon:'🍗',label:'Produtos Fritos',criteria:['Utilizou EPIs e seguiu a segurança da estação','Identificou corretamente os produtos e utensílios','Executou os procedimentos conforme treinamento','Respeitou a organização e o descarte adequado']},
+  {id:'batatas',icon:'🍟',label:'McFritas',criteria:['Preparou a estação respeitando a segurança','Demonstrou o fluxo correto do preparo','Conferiu a apresentação e o padrão do produto','Manteve a estação limpa e organizada']},
+  {id:'balcao',icon:'🥤',label:'Balcão / Atendimento',criteria:['Recebeu e confirmou o pedido com atenção','Demonstrou comunicação e acolhimento','Conferiu itens e necessidades do pedido','Finalizou o atendimento de forma cuidadosa']},
+  {id:'drive',icon:'🚗',label:'Drive-Thru',criteria:['Demonstrou comunicação clara com o cliente','Confirmou o pedido e eventuais alterações','Conferiu os itens no fluxo de entrega','Aplicou orientações de agilidade com segurança']},
+  {id:'lope',icon:'🧽',label:'LOPE',criteria:['Demonstrou hábitos de higiene e segurança','Organizou e identificou os materiais corretamente','Executou tarefas conforme o treinamento local','Finalizou com conferência e organização']}
+];
+function validPracticalRecord(r) {
+  return Boolean(r && typeof r==='object' && /^P-[a-z0-9-]{6,55}$/.test(r.id||'') &&
+    PRACTICAL_STATIONS.some(s=>s.id===r.stationId) &&
+    typeof r.evaluator==='string' && r.evaluator.length>=2 && r.evaluator.length<=70 &&
+    typeof r.notes==='string' && r.notes.length<=350 &&
+    Number.isFinite(Number(r.createdAt)) && Number(r.createdAt)>1600000000000 &&
+    Array.isArray(r.checks) && r.checks.length===4 && r.checks.every(x=>typeof x==='boolean') &&
+    r.approved===r.checks.every(Boolean));
+}
+function practicalRecords(user) {
+  const recs=user?.practicalAssessments?.records;
+  return Object.values(recs && typeof recs==='object'&&!Array.isArray(recs)?recs:{})
+    .filter(validPracticalRecord).sort((a,b)=>b.createdAt-a.createdAt);
+}
+function mergePracticalAssessments(a,b) {
+  const records={};
+  for (const src of [a,b]) {
+    const dict=src && typeof src==='object'?src.records:null;
+    if (!dict || typeof dict!=='object') continue;
+    for (const [id,r] of Object.entries(dict)) {
+      if (id!==r?.id || !validPracticalRecord(r)) continue;
+      // Avaliações são imutáveis: mesclagem é aditiva, não apaga o histórico.
+      if (!records[id]) records[id]=r;
+    }
+  }
+  return {records};
+}
+function practicalApprovedStations(user) {
+  const map={};
+  for (const r of practicalRecords(user)) if(r.approved && !map[r.stationId]) map[r.stationId]=r;
+  return map;
+}
+function practicalBadgeMarkup(user,showLocked) {
+  const earned=practicalApprovedStations(user);
+  return PRACTICAL_STATIONS.filter(s=>showLocked || earned[s.id]).map(s=>{
+    const record=earned[s.id];
+    return `<div class="practical-badge ${record?'is-approved':'is-pending'}"><span aria-hidden="true">${record?s.icon:'🔒'}</span><strong>${trainerSafeHtml(s.label)}</strong><small>${record?'✅ Aprovado · '+premiumDate(record.createdAt):'Ainda não aprovado'}</small></div>`;
+  }).join('') || '<p class="practical-empty">Nenhum selo prático conquistado ainda.</p>';
+}
+function practicalHistoryMarkup(user,limit=10) {
+  const records=practicalRecords(user).slice(0,limit);
+  if(!records.length) return '<p class="trainer-help">Nenhuma avaliação registrada para este colaborador.</p>';
+  return records.map(r=>{
+    const station=PRACTICAL_STATIONS.find(s=>s.id===r.stationId);
+    return `<article class="practical-history-entry"><div class="practical-entry-top"><strong>${station.icon} ${trainerSafeHtml(station.label)}</strong><span class="${r.approved?'practical-pass':'practical-retry'}">${r.approved?'✅ Aprovado':'📚 Em desenvolvimento'}</span></div><small>${premiumDate(r.createdAt)} · Avaliador: ${trainerSafeHtml(r.evaluator)} · ${r.checks.filter(Boolean).length}/4 critérios</small>${r.notes?`<p>${trainerSafeHtml(r.notes)}</p>`:''}</article>`;
+  }).join('');
+}
+function renderPracticalInProfiles(user,publicView=false) {
+  if(!user)return;
+  const earned=practicalApprovedStations(user);
+  const count=Object.keys(earned).length;
+  if(publicView) {
+    const summary=$('publicPracticalSummary');if(summary)summary.textContent=`${count}/${PRACTICAL_STATIONS.length} estações`;
+    const badges=$('publicPracticalBadges');if(badges)badges.innerHTML=practicalBadgeMarkup(user,false);
+  } else {
+    const summary=$('premiumPracticalSummary');if(summary)summary.textContent=`${count} de ${PRACTICAL_STATIONS.length} estações aprovadas · selo concedido por avaliação presencial.`;
+    const badges=$('premiumPracticalBadges');if(badges)badges.innerHTML=practicalBadgeMarkup(user,true);
+    const history=$('premiumPracticalHistory');if(history)history.innerHTML=practicalHistoryMarkup(user,8);
+  }
+}
+function renderPracticalTrainerRoster() {
+  const sel=$('practicalStaffSelect');if(!isTrainerUnlocked || !sel)return;
+  const old=sel.value;
+  const list=Object.entries(users).filter(([,u])=>u&&u.name&&!u._deleted).sort((a,b)=>a[1].name.localeCompare(b[1].name,'pt-BR'));
+  sel.replaceChildren(new Option('Escolha um colaborador...',''));
+  for(const [id,u] of list) sel.add(new Option(`${u.name} · ${u.role||'Colaborador'}`,id));
+  if(list.some(([id])=>id===old))sel.value=old;
+  renderPracticalTrainerHistory();
+}
+function renderPracticalChecklist() {
+  const sel=$('practicalStationSelect');const holder=$('practicalChecklist');if(!sel||!holder)return;
+  if(!sel.options.length)PRACTICAL_STATIONS.forEach(s=>sel.add(new Option(`${s.icon} ${s.label}`,s.id)));
+  const station=PRACTICAL_STATIONS.find(s=>s.id===sel.value)||PRACTICAL_STATIONS[0];
+  holder.replaceChildren();
+  station.criteria.forEach((description,i)=>{
+    const label=document.createElement('label');label.className='practical-check-row';
+    const check=document.createElement('input');check.type='checkbox';check.name='practicalCriteria';check.value=String(i);check.addEventListener('change',renderPracticalResultPreview);
+    const text=document.createElement('span');text.textContent=description;
+    label.append(check,text);holder.appendChild(label);
+  });
+  renderPracticalResultPreview();
+}
+function renderPracticalResultPreview() {
+  const list=[...document.querySelectorAll('#practicalChecklist input[type="checkbox"]')];
+  const count=list.filter(x=>x.checked).length;
+  const box=$('practicalResultPreview');if(!box)return;
+  box.className='practical-result '+(count===4?'ready':'needs-work');
+  box.textContent=count===4?'✅ 4/4 itens: avaliação aprovada e selo desbloqueado.':`📋 ${count}/4 itens atendidos: resultado “Em desenvolvimento”.`;
+}
+function renderPracticalTrainerHistory() {
+  const box=$('trainerPracticalHistory');if(!box)return;
+  const key=$('practicalStaffSelect')?.value;
+  box.innerHTML=key&&users[key]?practicalHistoryMarkup(users[key],12):'<p class="trainer-help">Selecione um colaborador para consultar o histórico.</p>';
+}
+function savePracticalAssessment(event) {
+  event.preventDefault();
+  if(!isTrainerUnlocked)return;
+  const key=$('practicalStaffSelect').value,stationId=$('practicalStationSelect').value;
+  const checks=[...document.querySelectorAll('#practicalChecklist input[type="checkbox"]')].map(el=>el.checked);
+  const evaluator=$('practicalEvaluator').value.trim(),notes=$('practicalNotes').value.trim();
+  if(!Object.prototype.hasOwnProperty.call(users,key)||!users[key]||users[key]._deleted || !PRACTICAL_STATIONS.some(s=>s.id===stationId) || checks.length!==4 || evaluator.length<2 || evaluator.length>70 || notes.length>350) {
+    alert('Confira colaborador, estação, checklist e nome do avaliador.');return;
+  }
+  const approved=checks.every(Boolean);
+  const station=PRACTICAL_STATIONS.find(s=>s.id===stationId);
+  const status=approved?'APROVADO':'EM DESENVOLVIMENTO';
+  if(!confirm(`Registrar ${station.label} para ${users[key].name}? Resultado: ${status}. Nenhum XP será concedido.`))return;
+  const now=Date.now();
+  const id=`P-${now.toString(36)}-${Math.random().toString(36).slice(2,10)}`;
+  const record={id,stationId,checks,approved,evaluator,notes,createdAt:now};
+  if(!validPracticalRecord(record))return;
+  const user=users[key];
+  if(!user.practicalAssessments || typeof user.practicalAssessments!=='object')user.practicalAssessments={records:{}};
+  if(!user.practicalAssessments.records)user.practicalAssessments.records={};
+  user.practicalAssessments.records[id]=record;
+  user.updatedAt=now;
+  scheduleCloudSync(key,true);
+  const info=$('practicalSaveFeedback');info.textContent=approved?'✅ Aprovado! Selo da estação registrado no perfil.':'📚 Registrado como Em desenvolvimento. Pode ser reavaliado depois.';
+  info.classList.remove('hidden');
+  $('trainerPracticalForm').querySelectorAll('input[type="checkbox"]').forEach(x=>x.checked=false);
+  $('practicalNotes').value='';renderPracticalResultPreview();renderPracticalTrainerHistory();
+  if(currentUserKey===key)renderPremiumProfile();
+  if(publicProfileSelectedKey===key)renderPublicProfile();
+}
 // =========================================================================
 // 🎯 MISSÕES & CONQUISTAS v7.9 — SEM ALTERAR CHAVES DE ARMAZENAMENTO
 // Cada usuário recebe o campo opcional missionProgress. Cadastros antigos
@@ -838,6 +978,7 @@ function renderPremiumProfile() {
     }).filter(Boolean)
   ].sort((a,b)=>b.time-a.time).slice(0,7);
   $('premiumHistory').innerHTML = activity.length ? activity.map(item=>`<div class="premium-history-entry"><span aria-hidden="true">${item.icon}</span><div><strong>${item.label}</strong><small>${premiumDate(item.time)}</small></div></div>`).join('') : '<p class="premium-stats-foot">Suas próximas medalhas e missões aparecerão aqui.</p>';
+  renderPracticalInProfiles(user,false);
 }
 // 🎵 MOTOR DE ÁUDIO COMPACTO (JINGLE + CLIQUES + ERRO + GIRO 3D)
 // =========================================================================
@@ -1157,9 +1298,9 @@ localStorage.setItem(STORAGE_USERS_KEY, JSON.stringify(users));
 function mergeSingleUser(ex, inc) {
 if (!ex) return inc;
 const streak = mergeQuizStreak(ex, inc);
-if ((inc.adminOverrideAt || 0) > (ex.adminOverrideAt || 0)) return { ...inc, ...streak, missionProgress:mergeMissionProgress(ex.missionProgress,inc.missionProgress), profilePremium:mergeProfilePremium(ex.profilePremium,inc.profilePremium), trainerChallenges:mergeTrainerChallenges(ex.trainerChallenges,inc.trainerChallenges), duelRewards:{...ex.duelRewards,...inc.duelRewards} };
-if ((ex.adminOverrideAt || 0) > (inc.adminOverrideAt || 0)) return { ...ex, ...streak, missionProgress:mergeMissionProgress(ex.missionProgress,inc.missionProgress), profilePremium:mergeProfilePremium(ex.profilePremium,inc.profilePremium), trainerChallenges:mergeTrainerChallenges(ex.trainerChallenges,inc.trainerChallenges), duelRewards:{...ex.duelRewards,...inc.duelRewards} };
-if (inc._deleted && (inc.updatedAt || 0) >= (ex.updatedAt || 0)) return { ...inc, ...streak, missionProgress:mergeMissionProgress(ex.missionProgress,inc.missionProgress), profilePremium:mergeProfilePremium(ex.profilePremium,inc.profilePremium), trainerChallenges:mergeTrainerChallenges(ex.trainerChallenges,inc.trainerChallenges), duelRewards:{...ex.duelRewards,...inc.duelRewards} };
+if ((inc.adminOverrideAt || 0) > (ex.adminOverrideAt || 0)) return { ...inc, ...streak, missionProgress:mergeMissionProgress(ex.missionProgress,inc.missionProgress), profilePremium:mergeProfilePremium(ex.profilePremium,inc.profilePremium), trainerChallenges:mergeTrainerChallenges(ex.trainerChallenges,inc.trainerChallenges), duelRewards:{...ex.duelRewards,...inc.duelRewards}, practicalAssessments:mergePracticalAssessments(ex.practicalAssessments,inc.practicalAssessments) };
+if ((ex.adminOverrideAt || 0) > (inc.adminOverrideAt || 0)) return { ...ex, ...streak, missionProgress:mergeMissionProgress(ex.missionProgress,inc.missionProgress), profilePremium:mergeProfilePremium(ex.profilePremium,inc.profilePremium), trainerChallenges:mergeTrainerChallenges(ex.trainerChallenges,inc.trainerChallenges), duelRewards:{...ex.duelRewards,...inc.duelRewards}, practicalAssessments:mergePracticalAssessments(ex.practicalAssessments,inc.practicalAssessments) };
+if (inc._deleted && (inc.updatedAt || 0) >= (ex.updatedAt || 0)) return { ...inc, ...streak, missionProgress:mergeMissionProgress(ex.missionProgress,inc.missionProgress), profilePremium:mergeProfilePremium(ex.profilePremium,inc.profilePremium), trainerChallenges:mergeTrainerChallenges(ex.trainerChallenges,inc.trainerChallenges), duelRewards:{...ex.duelRewards,...inc.duelRewards}, practicalAssessments:mergePracticalAssessments(ex.practicalAssessments,inc.practicalAssessments) };
 const newer = (inc.updatedAt || 0) >= (ex.updatedAt || 0);
 return {
 ...ex, ...inc, ...streak, _deleted: false,
@@ -1173,7 +1314,7 @@ mistakes: newer && Array.isArray(inc.mistakes) ? inc.mistakes : (Array.isArray(e
 missionProgress: mergeMissionProgress(ex.missionProgress,inc.missionProgress),
 profilePremium: mergeProfilePremium(ex.profilePremium,inc.profilePremium),
 trainerChallenges:mergeTrainerChallenges(ex.trainerChallenges,inc.trainerChallenges),
-duelRewards:{...ex.duelRewards,...inc.duelRewards},
+duelRewards:{...ex.duelRewards,...inc.duelRewards}, practicalAssessments:mergePracticalAssessments(ex.practicalAssessments,inc.practicalAssessments),
 lastSeen: Math.max(ex.lastSeen || 0, inc.lastSeen || 0),
 updatedAt: Math.max(ex.updatedAt || 0, inc.updatedAt || 0)
 };
@@ -1187,9 +1328,9 @@ return m;
 }
 function refreshUIIfNeeded() {
 restoreQuizStreak();
-updateHeaderUI(); syncActiveUserHeartsState(); updateMistakesBadge(); populateDuelOpponentList(); renderDuelHistory(); renderMissionHub(); renderTrainerPublicContent(); renderPremiumProfile(); if (publicProfileSelectedKey) renderPublicProfile();
+updateHeaderUI(); syncActiveUserHeartsState(); updateMistakesBadge(); populateDuelOpponentList(); renderDuelHistory(); renderMissionHub(); renderTrainerPublicContent(); if(isTrainerUnlocked)renderPracticalTrainerRoster(); renderPremiumProfile(); if (publicProfileSelectedKey) renderPublicProfile();
 const sorted = Object.values(users).filter(u => u && u.name && !u._deleted).sort((a, b) => (b.xp || 0) - (a.xp || 0));
-const hash = JSON.stringify(sorted.map(u => `${u.name}:${u.xp}:${u.correctAnswers}:${(u.avatar || "").slice(-15)}:${u.role}:${u.lastSeen || 0}:${u.profilePremium?.updatedAt||0}:${Object.keys(u.missionProgress?.badges||{}).length}`));
+const hash = JSON.stringify(sorted.map(u => `${u.name}:${u.xp}:${u.correctAnswers}:${(u.avatar || "").slice(-15)}:${u.role}:${u.lastSeen || 0}:${u.profilePremium?.updatedAt||0}:${Object.keys(u.missionProgress?.badges||{}).length}:${Object.keys(u.practicalAssessments?.records||{}).length}`));
 if (hash !== lastLeaderboardHash) { lastLeaderboardHash = hash; renderLeaderboard(); }
 if (isAdminUnlocked && hash !== lastAdminListHash) { lastAdminListHash = hash; renderAdminUsersList(); }
 }
@@ -1316,7 +1457,7 @@ xp: users[key] && !users[key]._deleted ? (users[key].xp || 0) : 0,
 correctAnswers: users[key] && !users[key]._deleted ? (users[key].correctAnswers || 0) : 0,
 hearts: 5, heartsLockUntil: 0, mistakes: users[key]?.mistakes || [],
 quizStreak: users[key]?.quizStreak || 0, quizStreakUpdatedAt: users[key]?.quizStreakUpdatedAt || 0,
-missionProgress:users[key]?.missionProgress, profilePremium:users[key]?.profilePremium, trainerChallenges:users[key]?.trainerChallenges || {}, duelRewards:users[key]?.duelRewards || {}, lastSeen: Date.now(), updatedAt: Date.now()
+missionProgress:users[key]?.missionProgress, profilePremium:users[key]?.profilePremium, trainerChallenges:users[key]?.trainerChallenges || {}, duelRewards:users[key]?.duelRewards || {}, practicalAssessments:users[key]?.practicalAssessments, lastSeen: Date.now(), updatedAt: Date.now()
 };
 currentUserKey = key; localStorage.setItem(STORAGE_CURRENT_KEY, key);
 $("authModal").classList.add("hidden"); playHitSuccessSound();
@@ -2210,6 +2351,7 @@ function renderPublicProfile() {
     cell.append(ico,document.createTextNode(medal?medal.title:'Vazio'));featuredBox.appendChild(cell);
   }
   publicProfileSetText('publicProfileMedalCount',`${earned.length}/${MEDAL_DEFINITIONS.length}`);
+  renderPracticalInProfiles(user,true);
   const medalsBox=$('publicProfileMedals');medalsBox.replaceChildren();
   MEDAL_DEFINITIONS.forEach(m=>{
     const unlocked=Boolean(progress.badges[m.id]);
@@ -2519,6 +2661,7 @@ function adminSaveMember() {
     profilePremium:users[key]?.profilePremium,
     trainerChallenges:users[key]?.trainerChallenges,
     duelRewards:users[key]?.duelRewards,
+    practicalAssessments:users[key]?.practicalAssessments,
     lastSeen: Date.now(),
     updatedAt: Date.now(),
     adminOverrideAt: Date.now()
@@ -2562,14 +2705,14 @@ function switchMainTab(tab) {
   });
   if (tab === "profile") renderPremiumProfile();
   if (tab === "prizes" || tab === "admin") fetchCloudHistorySafe(false);
-  if (tab === "trainer") {renderTrainerCenter();fetchTrainerHistory(false);}
+  if (tab === "trainer") {renderPracticalChecklist();renderTrainerCenter();fetchTrainerHistory(false);}
   if (typeof window.scrollTo === "function") window.scrollTo({ top: 0, behavior: "instant" });
 }
 
 // =========================================================================
 // V8.5 — ATUALIZAÇÃO DE VERSÃO NO GITHUB PAGES (SEM APAGAR DADOS)
 // =========================================================================
-const APP_VERSION = "8.5";
+const APP_VERSION = "8.6";
 const APP_UPDATE_INTERVAL_MS = 60000; // Github Pages é estático: checagem periódica, não push instantâneo.
 const APP_UPDATE_IDLE_MS = 45000;
 let availableAppUpdate = null;
