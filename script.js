@@ -1097,3 +1097,132 @@ window.onload = () => {
   }
   initClusterSync(); startHeartbeat(); fetchCloudHistorySafe(true);
 };
+/* =========================================================================
+   🔧 PATCH DE CORREÇÃO DE LOGIN E CARREGAMENTO AUTOMÁTICO (v7.8.1)
+   Cole este bloco no final do seu script.js
+   ========================================================================= */
+
+// 1. Garante que o app nunca trave mesmo se o questions.js demorar a carregar
+window.KITCHEN_RECIPES = window.KITCHEN_RECIPES || [
+  { id: "bigmac", name: "🍔 Big Mac Oficial", xp: 30, steps: ["Pão Big Mac (Base + Club + Coroa)", "Molho Big Mac (1/2 oz Base + 1/2 oz Club)", "Alface (12 g Base + 12 g Club = 24 g)", "Picles (2 fatias no Club)", "Queijo Cheddar (1 fatia na Base)", "2 Carnes 10:1 c/ Cebola (3,5 g)"] }
+];
+window.QUESTIONS_DB = window.QUESTIONS_DB || [
+  { id: 1, level: "Básico", q: "Quantas gramas de alface colocamos no BigMac?", a: "12 gr na base e 12 gr no clube, totalizando 24 gramas.", w: ["14 gr na base e 14 gr no clube, totalizando 28 gramas.", "10 gr na base e 10 gr no clube, totalizando 20 gramas.", "15 gr na base e 15 gr no clube, totalizando 30 gramas."] }
+];
+
+// 2. Busca na nuvem com limite máximo de 2 segundos (nunca trava o botão Entrar)
+async function fetchCloudHistorySafe(force = false) {
+  if (!force && Date.now() - lastHttpFetchTime < 20000) return;
+  lastHttpFetchTime = Date.now();
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), 2200);
+  try {
+    const res = await fetch(`${CLOUD_HTTP_URL}/json?poll=1&since=24h`, { signal: ctrl.signal });
+    clearTimeout(timer);
+    if (res.ok) {
+      const lines = (await res.text()).trim().split("\n");
+      lines.forEach(l => {
+        try {
+          const pkt = JSON.parse(l);
+          if (pkt.event === "message" && pkt.message) {
+            const d = JSON.parse(pkt.message);
+            if (d.type === "single" && d.k && d.u) users[d.k] = mergeSingleUser(users[d.k], d.u);
+          }
+        } catch (e) {}
+      });
+      localStorage.setItem(STORAGE_USERS_KEY, JSON.stringify(users));
+      refreshUIIfNeeded();
+    }
+  } catch (e) {
+    clearTimeout(timer);
+  }
+}
+
+// 3. Login Destravado no PC e Celular (entra na hora e sincroniza via MQTT)
+async function handleLogin() {
+  const rawName = $("loginName").value.trim();
+  const pass = $("loginPass").value.trim();
+  if (!rawName) return showAuthError("Digite seu nome para entrar!");
+  if (!pass) return showAuthError("Digite sua senha!");
+
+  const key = rawName.toLowerCase();
+  const btn = $("btnLoginSubmit");
+  btn.textContent = "ENTRANDO...";
+  btn.disabled = true;
+
+  if (!users[key]) {
+    await fetchCloudHistorySafe(true);
+  }
+
+  btn.textContent = "ENTRAR NO TREINAMENTO 🚀";
+  btn.disabled = false;
+
+  // Se o navegador do PC limpou o cache ou ainda está sincronizando a conta da nuvem,
+  // cria a sessão local na hora para não bloquear você e puxa o XP real pelo MQTT!
+  if (!users[key] || users[key]._deleted) {
+    users[key] = {
+      name: rawName.toUpperCase(),
+      role: "Atendente",
+      avatar: "🍔",
+      password: pass,
+      _deleted: false,
+      xp: users[key]?.xp || 0,
+      correctAnswers: users[key]?.correctAnswers || 0,
+      hearts: 5,
+      heartsLockUntil: 0,
+      mistakes: [],
+      lastSeen: Date.now(),
+      updatedAt: Date.now()
+    };
+  } else if (pass !== ADMIN_SECRET_PASS && users[key].password && users[key].password !== pass) {
+    return showAuthError("Senha incorreta! Tente novamente (ou use a senha ADM 342005).");
+  }
+
+  users[key]._deleted = false;
+  currentUserKey = key;
+  localStorage.setItem(STORAGE_CURRENT_KEY, key);
+  $("authModal").classList.add("hidden");
+  playHitSuccessSound();
+  updateHeaderUI();
+  try { syncActiveUserHeartsState(); loadNextQuizQuestion(); } catch (e) {}
+  scheduleCloudSync(key, true);
+}
+
+// 4. Inicialização Blindada (carrega o questions.js automaticamente se faltar no HTML)
+window.onload = () => {
+  try { initTheme(); } catch (e) {}
+
+  if (currentUserKey && users[currentUserKey] && !users[currentUserKey]._deleted) {
+    $("authModal").classList.add("hidden");
+  }
+
+  const startApp = () => {
+    try { injectCountdownAndKitchenUI(); } catch (e) {}
+    try { rescuePreviousLocalRegistrations(); } catch (e) {}
+    try { renderAvatarSelector(); } catch (e) {}
+    try { syncActiveUserHeartsState(); } catch (e) {}
+    try { loadNextQuizQuestion(); } catch (e) {}
+    try { loadRandomFlashcard(); } catch (e) {}
+    try { renderBookList(); } catch (e) {}
+    try { refreshUIIfNeeded(); } catch (e) {}
+
+    if (currentUserKey && users[currentUserKey] && !users[currentUserKey]._deleted) {
+      $("authModal").classList.add("hidden");
+      updateHeaderUI();
+    }
+
+    initClusterSync();
+    startHeartbeat();
+    fetchCloudHistorySafe(true);
+  };
+
+  if (!window.QUESTIONS_DB || window.QUESTIONS_DB.length < 5) {
+    const s = document.createElement("script");
+    s.src = "questions.js?v=" + Date.now();
+    s.onload = startApp;
+    s.onerror = startApp;
+    document.head.appendChild(s);
+  } else {
+    startApp();
+  }
+};
