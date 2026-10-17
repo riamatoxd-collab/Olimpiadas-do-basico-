@@ -274,6 +274,10 @@ const SYNC_MQTT_TOPIC = "mequi/venture/olimpiadas2026/v65_cluster_state";
 
 
 const DUEL_MQTT_TOPIC = "mequi/venture/olimpiadas2026/v71_live_duels";
+const TRAINER_MQTT_TOPIC = "mequi/venture/olimpiadas2026/v83_trainer_content";
+const TRAINER_HTTP_URL = "https://ntfy.sh/mequi_venture_olimpiadas_2026_trainer_v83";
+const TRAINER_STORAGE_KEY = "mequi_venture_trainer_v83";
+const DUEL_WIN_XP = 100;
 
 
 
@@ -310,6 +314,220 @@ let duelHistoryList = JSON.parse(localStorage.getItem(STORAGE_DUEL_HISTORY) || "
 
 
 let activeRecipe = KITCHEN_RECIPES[0], currentRecipeStep = 0;
+
+// ========================================================================
+// 🎓 CENTRAL DO TREINADOR v8.3 — perguntas extras, aviso e desafio.
+// Salva separadamente: não altera os dados legados nem QUESTIONS_DB original.
+// ========================================================================
+function readTrainerState() {
+  try {
+    const item = JSON.parse(localStorage.getItem(TRAINER_STORAGE_KEY) || '{}');
+    return { questions:item.questions && typeof item.questions === 'object' ? item.questions : {},
+      announcement:item.announcement || null, challenge:item.challenge || null };
+  } catch (_) { return {questions:{},announcement:null,challenge:null}; }
+}
+let trainerState = readTrainerState();
+let isTrainerUnlocked = false;
+let trainerCloudFetchAt = 0;
+function trainerSafeHtml(value) {
+  return String(value ?? '').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function validateTrainerQuestion(q) {
+  return q && typeof q.id === 'string' && /^T-[a-z0-9-]{1,60}$/.test(q.id) &&
+    ['Básico','Intermediário','Avançado'].includes(q.level) &&
+    typeof q.q === 'string' && q.q.length > 5 && q.q.length <= 550 &&
+    typeof q.a === 'string' && q.a.length > 0 && q.a.length <= 220 &&
+    Array.isArray(q.w) && q.w.length === 3 && q.w.every(s=>typeof s === 'string' && s.length>0 && s.length<=220);
+}
+function getQuestionBank() {
+  const extras = Object.values(trainerState.questions).filter(q=>q && !q.deleted && validateTrainerQuestion(q));
+  return [...QUESTIONS_DB, ...extras];
+}
+function mergeTrainerState(incoming) {
+  if (!incoming || typeof incoming !== 'object') return false;
+  let changed = false;
+  const questions = incoming.questions && typeof incoming.questions === 'object' ? incoming.questions : {};
+  Object.entries(questions).forEach(([id, q]) => {
+    if (!/^T-[a-z0-9-]{1,60}$/.test(id) || !q || q.id !== id || (!q.deleted && !validateTrainerQuestion(q))) return;
+    const existing=trainerState.questions[id];
+    if (!existing || (Number(q.updatedAt)||0) > (Number(existing.updatedAt)||0)) {
+      trainerState.questions[id]=q; changed=true;
+    }
+  });
+  for (const key of ['announcement','challenge']) {
+    const old=trainerState[key], next=incoming[key];
+    if (!next || typeof next !== 'object' || !Number.isFinite(Number(next.updatedAt))) continue;
+    if (!old || Number(next.updatedAt)>Number(old.updatedAt)) {trainerState[key]=next; changed=true;}
+  }
+  if (changed) {
+    localStorage.setItem(TRAINER_STORAGE_KEY,JSON.stringify(trainerState));
+    renderTrainerPublicContent(); renderTrainerCenter();
+    if ($('bookQuestionsContainer')) renderBookList();
+  }
+  return changed;
+}
+function publishTrainerState(delta = null) {
+  localStorage.setItem(TRAINER_STORAGE_KEY,JSON.stringify(trainerState));
+  const data=JSON.stringify(trainerState);
+  mqttClients.forEach(c=>{ if(c && c.connected) try {c.publish(TRAINER_MQTT_TOPIC,data,{retain:true});}catch(_){}});
+  fetch(TRAINER_HTTP_URL,{method:'POST',body:JSON.stringify({type:'trainer',state:delta || trainerState})}).catch(()=>{});
+  renderTrainerPublicContent(); renderTrainerCenter(); renderBookList();
+}
+async function fetchTrainerHistory(force=false) {
+  if (!force && Date.now()-trainerCloudFetchAt<30000) return;
+  trainerCloudFetchAt=Date.now();
+  try {
+    const res=await fetch(`${TRAINER_HTTP_URL}/json?poll=1&since=all`);
+    if (!res.ok) return;
+    (await res.text()).trim().split('\n').forEach(line=>{
+      try {const msg=JSON.parse(line); if (msg.event==='message' && msg.message) {
+        const data=JSON.parse(msg.message); if(data.type==='trainer') mergeTrainerState(data.state);
+      }} catch (_) {}
+    });
+  }catch(_){}
+}
+function trainerChallengeActive() {
+  const c=trainerState.challenge;
+  return c && !c.deleted && typeof c.id==='string' && /^C-[a-z0-9-]+$/.test(c.id) &&
+    typeof c.title==='string' && Number.isInteger(c.target) && c.target>=1 && c.target<=100 &&
+    Number.isInteger(c.xp) && c.xp>=0 && c.xp<=100 ? c : null;
+}
+function mergeTrainerChallenges(a,b) {
+  const out={...(a && typeof a==='object'?a:{})};
+  Object.entries(b && typeof b==='object'?b:{}).forEach(([k,v])=>{
+    if (!v || typeof v!=='object') return;
+    const old=out[k]||{};
+    out[k]={count:Math.max(Number(old.count)||0, Number(v.count)||0),
+      claimedAt:Math.max(Number(old.claimedAt)||0, Number(v.claimedAt)||0)};
+  });
+  return out;
+}
+function recordTrainerChallengeCorrect() {
+  if (!currentUserKey || !users[currentUserKey]) return;
+  const challenge=trainerChallengeActive();
+  if (!challenge) return;
+  const u=users[currentUserKey];
+  if (!u.trainerChallenges) u.trainerChallenges={};
+  const progress=u.trainerChallenges[challenge.id] || {count:0,claimedAt:0};
+  if (progress.claimedAt) return;
+  progress.count=Math.min(challenge.target, Math.max(0,Number(progress.count)||0)+1);
+  u.trainerChallenges[challenge.id]=progress;
+  if (progress.count>=challenge.target) {
+    progress.claimedAt=Date.now(); // grava antes de dar o bônus
+    u.updatedAt=Date.now();
+    if(challenge.xp) addXp(challenge.xp);
+    else scheduleCloudSync(currentUserKey,false);
+    showMissionToast(`🎯 Desafio ${challenge.title} concluído! +${challenge.xp} XP`);
+  } else {u.updatedAt=Date.now();scheduleCloudSync(currentUserKey,false);}
+  renderTrainerPublicContent();
+}
+function renderTrainerPublicContent() {
+  const a=trainerState.announcement, notice=$('trainerPublicNotice');
+  if (notice) {
+    const shown=a && !a.deleted && typeof a.title==='string' && typeof a.body==='string';
+    notice.classList.toggle('hidden',!shown);
+    if (shown) {$('trainerNoticeTitle').textContent=a.title;$('trainerNoticeBody').textContent=a.body;}
+  }
+  const card=$('trainerSpecialChallenge'); if(!card) return;
+  const c=trainerChallengeActive(), user=currentUserKey && users[currentUserKey];
+  card.classList.toggle('hidden',!c);
+  if (!c) return;
+  const progress=user?.trainerChallenges?.[c.id]||{};
+  const count=Math.min(c.target,Math.max(0,Number(progress.count)||0));
+  const claimed=Boolean(progress.claimedAt);
+  const pct=Math.round(100*count/c.target);
+  card.innerHTML=`<div class="trainer-challenge-head"><span>✨ DESAFIO ESPECIAL DO TREINADOR</span><strong>${claimed?'✅ Concluído':`+${c.xp} XP`}</strong></div>
+    <h3>${trainerSafeHtml(c.title)}</h3><p>${trainerSafeHtml(c.description||'Acerte perguntas no simulado para completar.')}</p>
+    <div class="trainer-challenge-track"><span style="width:${pct}%"></span></div>
+    <div class="trainer-challenge-bottom"><small>${user?`${count} de ${c.target} acertos`:'Faça login para participar'}</small><button type="button" onclick="switchMainTab('quiz')">Ir ao Simulado →</button></div>`;
+}
+function unlockTrainerCenter() {
+  if ($('trainerPassInput').value !== ADMIN_SECRET_PASS) {
+    const e=$('trainerAuthError');e.textContent='Senha incorreta. Use a credencial do administrador.';e.classList.remove('hidden'); return;
+  }
+  isTrainerUnlocked=true;
+  $('trainerPassInput').value=''; $('trainerAuthError').classList.add('hidden');
+  $('trainerLockScreen').classList.add('hidden'); $('trainerDashboard').classList.remove('hidden');
+  renderTrainerCenter();fetchTrainerHistory(true);
+}
+function lockTrainerCenter() {
+  isTrainerUnlocked=false;
+  $('trainerDashboard').classList.add('hidden'); $('trainerLockScreen').classList.remove('hidden');
+}
+function clearTrainerQuestionForm() {
+  $('trainerQuestionForm').reset();$('trainerEditQuestionId').value='';
+  $('trainerSaveQuestionBtn').textContent='Publicar pergunta';
+}
+function saveTrainerQuestion(event) {
+  event.preventDefault();if(!isTrainerUnlocked)return;
+  const options='ABCD'.split('').map(x=>$('trainerAnswer'+x).value.trim());
+  const correct='ABCD'.indexOf($('trainerCorrectAnswer').value);
+  const q=$('trainerQuestionText').value.trim();
+  if(q.length<6 || options.some(x=>!x) || new Set(options.map(x=>x.toLocaleLowerCase('pt-BR'))).size!==4) {
+    alert('Preencha uma pergunta válida e quatro alternativas diferentes.');return;
+  }
+  const oldId=$('trainerEditQuestionId').value;
+  const id=oldId || `T-${Date.now().toString(36)}-${Math.random().toString(36).slice(2,7)}`;
+  trainerState.questions[id]={id,level:$('trainerQuestionLevel').value,q,a:options[correct],w:options.filter((_,i)=>i!==correct),options,correctKey:'ABCD'[correct],updatedAt:Date.now(),deleted:false};
+  clearTrainerQuestionForm();publishTrainerState({questions:{[id]:trainerState.questions[id]}});
+}
+function editTrainerQuestion(id) {
+  if(!isTrainerUnlocked)return;
+  const item=trainerState.questions[id];if(!item || item.deleted)return;
+  $('trainerEditQuestionId').value=id;$('trainerQuestionText').value=item.q;$('trainerQuestionLevel').value=item.level;
+  (item.options?.length===4?item.options:[item.a,...item.w]).forEach((x,i)=>{$('trainerAnswer'+'ABCD'[i]).value=x;});
+  $('trainerCorrectAnswer').value=item.correctKey||'A';$('trainerSaveQuestionBtn').textContent='Salvar alterações';
+  $('trainerQuestionForm').scrollIntoView({behavior:'smooth',block:'center'});
+}
+function removeTrainerQuestion(id) {
+  if(!isTrainerUnlocked || !trainerState.questions[id] || !confirm('Excluir esta pergunta extra?')) return;
+  trainerState.questions[id]={...trainerState.questions[id],deleted:true,updatedAt:Date.now()};
+  if($('trainerEditQuestionId').value===id)clearTrainerQuestionForm();
+  publishTrainerState({questions:{[id]:trainerState.questions[id]}});
+}
+function saveTrainerAnnouncement(event) {
+  event.preventDefault();if(!isTrainerUnlocked)return;
+  const title=$('trainerAnnouncementTitle').value.trim(), body=$('trainerAnnouncementBody').value.trim();
+  if(!title || !body)return;
+  trainerState.announcement={title,body,updatedAt:Date.now(),deleted:false};publishTrainerState({announcement:trainerState.announcement});
+}
+function removeTrainerAnnouncement() {
+  if(!isTrainerUnlocked || !confirm('Retirar o comunicado atual?'))return;
+  trainerState.announcement={deleted:true,updatedAt:Date.now()};
+  $('trainerAnnouncementTitle').value='';$('trainerAnnouncementBody').value='';publishTrainerState({announcement:trainerState.announcement});
+}
+function saveTrainerChallenge(event) {
+  event.preventDefault();if(!isTrainerUnlocked)return;
+  const target=Number($('trainerChallengeTarget').value),xp=Number($('trainerChallengeXp').value);
+  const title=$('trainerChallengeTitle').value.trim(),description=$('trainerChallengeDescription').value.trim();
+  if(!Number.isInteger(target)||target<1||target>100||!Number.isInteger(xp)||xp<0||xp>100||!title)return alert('Meta de 1 a 100 acertos, bônus de 0 a 100 XP.');
+  if(trainerChallengeActive() && !confirm('Publicar um novo desafio encerra o anterior. Continuar?'))return;
+  trainerState.challenge={id:`C-${Date.now().toString(36)}-${Math.random().toString(36).slice(2,8)}`,title,description,target,xp,updatedAt:Date.now(),deleted:false};
+  publishTrainerState({challenge:trainerState.challenge});
+}
+function removeTrainerChallenge() {
+  if(!isTrainerUnlocked || !confirm('Encerrar o desafio atual?'))return;
+  trainerState.challenge={deleted:true,updatedAt:Date.now()};publishTrainerState({challenge:trainerState.challenge});
+}
+function renderTrainerCenter() {
+  if(!isTrainerUnlocked || !$('trainerQuestionList'))return;
+  const items=Object.values(trainerState.questions).filter(x=>x&&!x.deleted&&validateTrainerQuestion(x)).sort((a,b)=>b.updatedAt-a.updatedAt);
+  $('trainerQuestionCount').textContent=String(items.length);
+  $('trainerAnnouncementStatus').textContent=trainerState.announcement&&!trainerState.announcement.deleted?'Ativo':'Inativo';
+  $('trainerChallengeStatus').textContent=trainerChallengeActive()?'Ativo':'Inativo';
+  $('trainerQuestionList').innerHTML=items.length?items.map(x=>`<article class="trainer-question-row">
+    <div><span>${trainerSafeHtml(x.level)} · Extra</span><strong>${trainerSafeHtml(x.q)}</strong><small>✅ ${trainerSafeHtml(x.a)}</small></div>
+    <div class="trainer-row-actions"><button type="button" data-trainer-edit="${x.id}">Editar</button><button type="button" data-trainer-delete="${x.id}">Excluir</button></div>
+  </article>`).join(''):'<p class="trainer-help">Nenhuma pergunta extra publicada ainda.</p>';
+  const a=trainerState.announcement;
+  if(a && !a.deleted) {$('trainerAnnouncementTitle').value=a.title||'';$('trainerAnnouncementBody').value=a.body||'';}
+}
+document.addEventListener('click',ev=>{
+  const edit=ev.target.closest('[data-trainer-edit]');
+  const del=ev.target.closest('[data-trainer-delete]');
+  if(edit)editTrainerQuestion(edit.dataset.trainerEdit);
+  if(del)removeTrainerQuestion(del.dataset.trainerDelete);
+});
 
 // =========================================================================
 // 🎯 MISSÕES & CONQUISTAS v7.9 — SEM ALTERAR CHAVES DE ARMAZENAMENTO
@@ -2042,15 +2260,15 @@ if (!ex) return inc;
 
 
 
-if ((inc.adminOverrideAt || 0) > (ex.adminOverrideAt || 0)) return { ...inc, missionProgress:mergeMissionProgress(ex.missionProgress,inc.missionProgress), profilePremium:mergeProfilePremium(ex.profilePremium,inc.profilePremium) };
+if ((inc.adminOverrideAt || 0) > (ex.adminOverrideAt || 0)) return { ...inc, missionProgress:mergeMissionProgress(ex.missionProgress,inc.missionProgress), profilePremium:mergeProfilePremium(ex.profilePremium,inc.profilePremium), trainerChallenges:mergeTrainerChallenges(ex.trainerChallenges,inc.trainerChallenges), duelRewards:{...ex.duelRewards,...inc.duelRewards} };
 
 
 
-if ((ex.adminOverrideAt || 0) > (inc.adminOverrideAt || 0)) return { ...ex, missionProgress:mergeMissionProgress(ex.missionProgress,inc.missionProgress), profilePremium:mergeProfilePremium(ex.profilePremium,inc.profilePremium) };
+if ((ex.adminOverrideAt || 0) > (inc.adminOverrideAt || 0)) return { ...ex, missionProgress:mergeMissionProgress(ex.missionProgress,inc.missionProgress), profilePremium:mergeProfilePremium(ex.profilePremium,inc.profilePremium), trainerChallenges:mergeTrainerChallenges(ex.trainerChallenges,inc.trainerChallenges), duelRewards:{...ex.duelRewards,...inc.duelRewards} };
 
 
 
-if (inc._deleted && (inc.updatedAt || 0) >= (ex.updatedAt || 0)) return { ...inc, missionProgress:mergeMissionProgress(ex.missionProgress,inc.missionProgress), profilePremium:mergeProfilePremium(ex.profilePremium,inc.profilePremium) };
+if (inc._deleted && (inc.updatedAt || 0) >= (ex.updatedAt || 0)) return { ...inc, missionProgress:mergeMissionProgress(ex.missionProgress,inc.missionProgress), profilePremium:mergeProfilePremium(ex.profilePremium,inc.profilePremium), trainerChallenges:mergeTrainerChallenges(ex.trainerChallenges,inc.trainerChallenges), duelRewards:{...ex.duelRewards,...inc.duelRewards} };
 
 
 
@@ -2094,6 +2312,8 @@ mistakes: newer && Array.isArray(inc.mistakes) ? inc.mistakes : (Array.isArray(e
 
 missionProgress: mergeMissionProgress(ex.missionProgress,inc.missionProgress),
 profilePremium: mergeProfilePremium(ex.profilePremium,inc.profilePremium),
+trainerChallenges:mergeTrainerChallenges(ex.trainerChallenges,inc.trainerChallenges),
+duelRewards:{...ex.duelRewards,...inc.duelRewards},
 
 
 
@@ -2153,7 +2373,7 @@ function refreshUIIfNeeded() {
 
 
 
-updateHeaderUI(); syncActiveUserHeartsState(); updateMistakesBadge(); populateDuelOpponentList(); renderDuelHistory(); renderMissionHub(); renderPremiumProfile(); if (publicProfileSelectedKey) renderPublicProfile();
+updateHeaderUI(); syncActiveUserHeartsState(); updateMistakesBadge(); populateDuelOpponentList(); renderDuelHistory(); renderMissionHub(); renderTrainerPublicContent(); renderPremiumProfile(); if (publicProfileSelectedKey) renderPublicProfile();
 
 
 
@@ -2205,7 +2425,7 @@ if ($("syncStatusText")) $("syncStatusText").textContent = "● Conectado em Tem
 
 
 
-client.subscribe(SYNC_MQTT_TOPIC); client.subscribe(DUEL_MQTT_TOPIC);
+client.subscribe(SYNC_MQTT_TOPIC); client.subscribe(DUEL_MQTT_TOPIC); client.subscribe(TRAINER_MQTT_TOPIC);
 
 
 
@@ -2242,6 +2462,7 @@ refreshUIIfNeeded();
 
 
 } else if (topic === DUEL_MQTT_TOPIC) handleIncomingDuelPacket(data);
+else if (topic === TRAINER_MQTT_TOPIC) mergeTrainerState(data);
 
 
 
@@ -2278,9 +2499,7 @@ function publishDuelPacket(pkt) {
 
 
 const p = JSON.stringify(pkt);
-
-
-
+if (['question','answer','finish'].includes(pkt.type)) handleIncomingDuelPacket(pkt);
 mqttClients.forEach(c => { if (c && c.connected) try { c.publish(DUEL_MQTT_TOPIC, p); } catch (e) {} });
 
 
@@ -2638,7 +2857,7 @@ xp: users[key] && !users[key]._deleted ? (users[key].xp || 0) : 0,
 correctAnswers: users[key] && !users[key]._deleted ? (users[key].correctAnswers || 0) : 0,
 
 hearts: 5, heartsLockUntil: 0, mistakes: users[key]?.mistakes || [],
-missionProgress:users[key]?.missionProgress, profilePremium:users[key]?.profilePremium, lastSeen: Date.now(), updatedAt: Date.now()
+missionProgress:users[key]?.missionProgress, profilePremium:users[key]?.profilePremium, trainerChallenges:users[key]?.trainerChallenges || {}, duelRewards:users[key]?.duelRewards || {}, lastSeen: Date.now(), updatedAt: Date.now()
 
 };
 
@@ -2775,6 +2994,7 @@ function logoutUser() {
   playTabClickSound();
 
   currentUserKey = null;
+  if (isTrainerUnlocked) lockTrainerCenter();
 
   localStorage.removeItem(STORAGE_CURRENT_KEY);
 
@@ -2974,7 +3194,8 @@ function updateMistakesBadge() {
 
   if (!badge) return;
 
-  const count = getActiveUserMistakes().length;
+  const existingIds = new Set(getQuestionBank().map(q=>q.id));
+  const count = getActiveUserMistakes().filter(id=>existingIds.has(id)).length;
 
   badge.textContent = `${count} pendente${count === 1 ? "" : "s"}`;
 
@@ -2992,7 +3213,8 @@ function openReviewModal() {
 
   playTabClickSound();
 
-  const mistakes = getActiveUserMistakes();
+  const existingIds = new Set(getQuestionBank().map(q=>q.id));
+  const mistakes = getActiveUserMistakes().filter(id=>existingIds.has(id));
 
   if (mistakes.length === 0) {
 
@@ -3022,7 +3244,8 @@ function loadNextReviewQuestion() {
 
   playTabClickSound();
 
-  const mistakes = getActiveUserMistakes();
+  const existingIds = new Set(getQuestionBank().map(q=>q.id));
+  const mistakes = getActiveUserMistakes().filter(id=>existingIds.has(id));
 
   if (mistakes.length === 0) {
 
@@ -3040,7 +3263,7 @@ function loadNextReviewQuestion() {
 
   const randomId = mistakes[Math.floor(Math.random() * mistakes.length)];
 
-  const item = QUESTIONS_DB.find(q => q.id === randomId) || QUESTIONS_DB[0];
+  const item = getQuestionBank().find(q => q.id === randomId) || getQuestionBank()[0];
 
   currentReviewItem = item;
 
@@ -3080,7 +3303,7 @@ function loadNextReviewQuestion() {
 
       <span class="w-7 h-7 rounded-xl subtle-box font-black text-xs flex items-center justify-center shrink-0">${letter}</span>
 
-      <span class="flex-1 leading-snug">${optText}</span>
+      <span class="flex-1 leading-snug">${trainerSafeHtml(optText)}</span>
 
     `;
 
@@ -3321,6 +3544,7 @@ function handleIncomingDuelPacket(pkt) {
 
 
   if (!activeDuel || pkt.duelId !== activeDuel.duelId) return;
+  if (activeDuel.status === "finished") return;
 
 
 
@@ -3351,6 +3575,7 @@ function handleIncomingDuelPacket(pkt) {
 
 
   if (pkt.type === "question") {
+    if (Number(pkt.round) <= Number(activeDuel.round || 0)) return;
 
     activeDuel.status = "playing";
 
@@ -3376,7 +3601,8 @@ function handleIncomingDuelPacket(pkt) {
 
 
 
-  if (pkt.type === "answer" && activeDuel.status === "playing" && !activeDuel.roundResolved) {
+  if (pkt.type === "answer" && activeDuel.status === "playing" && !activeDuel.roundResolved && pkt.round === activeDuel.round && [activeDuel.hostKey,activeDuel.guestKey].includes(pkt.playerKey)) {
+    if (activeDuel.lockedPlayers?.[pkt.playerKey]) return;
 
     if (pkt.isCorrect) {
 
@@ -3405,6 +3631,7 @@ function handleIncomingDuelPacket(pkt) {
           if (activeDuel.scoreHost >= 5 || activeDuel.scoreGuest >= 5) {
 
             const winnerName = activeDuel.scoreHost >= 5 ? activeDuel.hostName : activeDuel.guestName;
+            const winnerKey = activeDuel.scoreHost >= 5 ? activeDuel.hostKey : activeDuel.guestKey;
 
             publishDuelPacket({
 
@@ -3413,7 +3640,7 @@ function handleIncomingDuelPacket(pkt) {
               duelId: activeDuel.duelId,
 
               winnerName: winnerName,
-
+              winnerKey: winnerKey,
               scoreHost: activeDuel.scoreHost,
 
               scoreGuest: activeDuel.scoreGuest
@@ -3471,7 +3698,22 @@ function handleIncomingDuelPacket(pkt) {
 
 
   if (pkt.type === "finish") {
-
+    // A partida só encerra ao alcançar 5 pontos. Legado sem winnerKey não pontua.
+    const winnerKey = pkt.scoreHost >= 5 && pkt.scoreHost > pkt.scoreGuest ? activeDuel.hostKey
+      : pkt.scoreGuest >= 5 && pkt.scoreGuest > pkt.scoreHost ? activeDuel.guestKey : null;
+    if (!winnerKey || pkt.winnerKey !== winnerKey || activeDuel.status === 'finished') return;
+    activeDuel.status = 'finished';
+    const eligibleWinner = winnerKey === currentUserKey && users[currentUserKey] && !users[currentUserKey]._deleted;
+    let xpAwarded=false;
+    if (eligibleWinner) {
+      const user=users[currentUserKey];
+      user.duelRewards=user.duelRewards && typeof user.duelRewards==='object'?user.duelRewards:{};
+      if(!user.duelRewards[activeDuel.duelId]) {
+        user.duelRewards[activeDuel.duelId]=Date.now();
+        user.updatedAt=Date.now();
+        addXp(DUEL_WIN_XP); xpAwarded=true;
+      }
+    }
     activeDuel.scoreHost = pkt.scoreHost;
 
     activeDuel.scoreGuest = pkt.scoreGuest;
@@ -3486,7 +3728,7 @@ function handleIncomingDuelPacket(pkt) {
 
     $("duelWinnerTitle").textContent = `🏆 ${pkt.winnerName} Venceu!`;
 
-    $("duelWinnerSub").textContent = `Placar Final: ${activeDuel.hostName} (${pkt.scoreHost}) x (${pkt.scoreGuest}) ${activeDuel.guestName}`;
+    $("duelWinnerSub").textContent = `Placar final: ${activeDuel.hostName} (${pkt.scoreHost}) x (${pkt.scoreGuest}) ${activeDuel.guestName}. ${eligibleWinner?(xpAwarded?'🏆 Você ganhou +100 XP!':'Recompensa já registrada.'):'O vencedor ganha +100 XP.'}`;
 
 
 
@@ -3501,6 +3743,7 @@ function handleIncomingDuelPacket(pkt) {
       score2: pkt.scoreGuest,
 
       winner: pkt.winnerName,
+      duelId:activeDuel.duelId, rewardXp:DUEL_WIN_XP,
 
       date: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
 
@@ -3525,7 +3768,7 @@ function handleIncomingDuelPacket(pkt) {
 
 
 function saveDuelHistoryRecord(record) {
-
+  if(record.duelId && duelHistoryList.some(h=>h.duelId===record.duelId))return;
   duelHistoryList.unshift(record);
 
   if (duelHistoryList.length > 5) duelHistoryList.pop();
@@ -3702,7 +3945,8 @@ function hostStartNextDuelRound() {
 
   const nextRound = (activeDuel.round || 0) + 1;
 
-  const randomItem = QUESTIONS_DB[Math.floor(Math.random() * QUESTIONS_DB.length)];
+  const bank=getQuestionBank();
+  const randomItem=bank[Math.floor(Math.random()*bank.length)];
 
   const shuffledOptions = [...randomItem.w, randomItem.a].sort(() => 0.5 - Math.random());
 
@@ -3772,7 +4016,7 @@ function renderDuelRoundUI() {
 
       <span class="w-7 h-7 rounded-xl subtle-box font-black text-xs flex items-center justify-center shrink-0">${letter}</span>
 
-      <span class="flex-1 leading-snug">${optText}</span>
+      <span class="flex-1 leading-snug">${trainerSafeHtml(optText)}</span>
 
     `;
 
@@ -3822,7 +4066,8 @@ function submitDuelAnswer(selectedBtn, chosen, correct) {
 
     playerName: myName,
 
-    isCorrect: isCorrect
+    isCorrect: isCorrect,
+    round: activeDuel.round
 
   });
 
@@ -4086,7 +4331,7 @@ function loadNextQuizQuestion() {
 
   const levelFilter = $("quizLevelFilter").value;
 
-  const pool = levelFilter === "ALL" ? QUESTIONS_DB : QUESTIONS_DB.filter(item => item.level === levelFilter);
+  const pool = levelFilter === "ALL" ? getQuestionBank() : getQuestionBank().filter(item => item.level === levelFilter);
 
   const randomItem = pool[Math.floor(Math.random() * pool.length)];
 
@@ -4110,7 +4355,7 @@ function loadNextQuizQuestion() {
 
     ? [...randomItem.w]
 
-    : QUESTIONS_DB.filter(item => item.id !== randomItem.id).sort(() => 0.5 - Math.random()).slice(0, 3).map(item => item.a);
+    : getQuestionBank().filter(item => item.id !== randomItem.id).sort(() => 0.5 - Math.random()).slice(0, 3).map(item => item.a);
 
 
 
@@ -4138,7 +4383,7 @@ function loadNextQuizQuestion() {
 
       <span class="w-7 h-7 rounded-xl subtle-box font-black text-xs flex items-center justify-center shrink-0">${letter}</span>
 
-      <span class="flex-1 leading-snug">${optText}</span>
+      <span class="flex-1 leading-snug">${trainerSafeHtml(optText)}</span>
 
     `;
 
@@ -4191,6 +4436,7 @@ function checkQuizAnswer(selectedBtn, chosen, correct, letter) {
     addXp(25);
 
     recordMissionActivity("quiz_correct");
+    recordTrainerChallengeCorrect();
 
     fb.className = "p-3.5 rounded-2xl text-xs font-extrabold bg-emerald-500/15 text-emerald-500 border border-emerald-500/30";
 
@@ -4282,7 +4528,8 @@ function loadRandomFlashcard() {
 
   setTimeout(() => {
 
-    const item = QUESTIONS_DB[Math.floor(Math.random() * QUESTIONS_DB.length)];
+    const bank=getQuestionBank();
+    const item=bank[Math.floor(Math.random()*bank.length)];
 
     $("fcMeta").textContent = `Questão #${item.id} (${item.level}) • Toque para girar 3D 🔄`;
 
@@ -4357,7 +4604,7 @@ function renderBookList() {
 
 
 
-  const filtered = QUESTIONS_DB.filter(item => {
+  const filtered = getQuestionBank().filter(item => {
 
     const matchesLevel = currentBookFilter === "ALL" || item.level === currentBookFilter;
 
@@ -4385,9 +4632,9 @@ function renderBookList() {
 
       </div>
 
-      <p class="font-extrabold text-xs leading-relaxed">${item.q}</p>
+      <p class="font-extrabold text-xs leading-relaxed">${trainerSafeHtml(item.q)}</p>
 
-      <p class="hidden mt-2.5 pt-2.5 border-t border-slate-500/20 text-xs font-bold text-emerald-500">✅ ${item.a}</p>
+      <p class="hidden mt-2.5 pt-2.5 border-t border-slate-500/20 text-xs font-bold text-emerald-500">✅ ${trainerSafeHtml(item.a)}</p>
     </div>
   `).join("") + (filtered.length > bookVisibleCount ?
     `<button class="book-load-more" type="button" onclick="loadMoreBookQuestions()">Mostrar mais questões (${Math.min(20, filtered.length-bookVisibleCount)} de ${filtered.length-bookVisibleCount} restantes) ↓</button>` : "");
@@ -4820,6 +5067,8 @@ function adminSaveMember() {
     mistakes: users[key]?.mistakes || [],
     missionProgress:users[key]?.missionProgress,
     profilePremium:users[key]?.profilePremium,
+    trainerChallenges:users[key]?.trainerChallenges,
+    duelRewards:users[key]?.duelRewards,
     lastSeen: Date.now(),
     updatedAt: Date.now(),
     adminOverrideAt: Date.now()
@@ -4846,14 +5095,14 @@ function switchTrainingMode(mode) {
   });
 }
 function switchMainTab(tab) {
-  const screens = ["quiz", "training", "missions", "prizes", "more", "profile", "book", "admin", "updates"];
+  const screens = ["quiz", "training", "missions", "prizes", "more", "profile", "book", "trainer", "admin", "updates"];
   if (!screens.includes(tab)) return;
   playTabClickSound();
   screens.forEach(name => {
     const screen = $(`tab-${name}`);
     if (screen) screen.classList.toggle("hidden", name !== tab);
   });
-  const currentNav = ["profile", "book", "admin", "updates"].includes(tab) ? "more" : tab;
+  const currentNav = ["profile", "book", "trainer", "admin", "updates"].includes(tab) ? "more" : tab;
   ["quiz", "training", "missions", "prizes", "more"].forEach(name => {
     const button = $(`nav-${name}`);
     if (!button) return;
@@ -4863,6 +5112,7 @@ function switchMainTab(tab) {
   });
   if (tab === "profile") renderPremiumProfile();
   if (tab === "prizes" || tab === "admin") fetchCloudHistorySafe(false);
+  if (tab === "trainer") {renderTrainerCenter();fetchTrainerHistory(false);}
   if (typeof window.scrollTo === "function") window.scrollTo({ top: 0, behavior: "instant" });
 }
 window.onload = () => {
@@ -4883,4 +5133,6 @@ window.onload = () => {
   initClusterSync();
   startHeartbeat();
   fetchCloudHistorySafe(true);
+  fetchTrainerHistory(true);
+  renderTrainerPublicContent();
 };

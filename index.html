@@ -7,7 +7,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="Olimpíadas Méqui" />
-  <title>Olimpíadas do Básico — Venture v8.2</title>
+  <title>Olimpíadas do Básico — Venture v8.3</title>
 
   <!-- Favicon Oficial: Arcos Dourados em Vetor SVG -->
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='24' fill='%23DA291C'/%3E%3Cpath fill='%23FFC72C' d='M50 46c-3.6-13.8-10.8-23.5-19.6-23.5-12 0-21.6 18.5-21.6 52.5h9.1c0-26.4 6.4-42.8 12.5-42.8 6 0 12 17.6 12.5 42.8H50zm0 0c3.6-13.8 10.8-23.5 19.6-23.5 12 0 21.6 18.5 21.6 52.5h-9.1c0-26.4-6.4-42.8-12.5-42.8-6 0-12 17.6-12.5 42.8H50z'/%3E%3C/svg%3E" />
@@ -17,7 +17,7 @@
   <!-- Biblioteca para Print Automático em PNG -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css?v=83" />
 </head>
 <body class="min-h-screen pb-36">
 
@@ -33,7 +33,7 @@
       <span class="bg-red-500/15 text-red-500 text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-wider">Convite de Duelo Ao Vivo</span>
       <h3 class="text-lg font-black"><span id="inviteFromNameDisplay">Colega</span> te desafiou!</h3>
       <p class="text-xs text-muted-pro font-semibold leading-relaxed">
-        Disputa 1 vs 1 (Melhor de 5 pontos). Quem responder certo primeiro no próprio celular marca o ponto!
+        Primeiro a fazer 5 pontos vence o duelo e ganha +100 XP! O perdedor não recebe XP. Só vale quando o duelo termina normalmente.
       </p>
       <div class="grid grid-cols-2 gap-2.5 pt-2">
         <button onclick="declineDuelInvite()" class="py-3 rounded-2xl subtle-box font-extrabold text-xs btn-tap">
@@ -50,7 +50,7 @@
   <div id="duelArenaModal" class="hidden fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 flex items-center justify-center p-4 overflow-y-auto">
     <div class="pro-card rounded-[2rem] max-w-md w-full p-5 border-2 border-[#FFC72C] shadow-2xl space-y-4 my-auto">
       <div class="flex items-center justify-between border-b border-slate-500/20 pb-3">
-        <span class="text-xs font-black text-amber-500 uppercase tracking-wider">⚔️ Arena 1 vs 1 (Meta: 5 pts)</span>
+        <span class="text-xs font-black text-amber-500 uppercase tracking-wider">⚔️ Arena 1 vs 1 · Vitória +100 XP</span>
         <button onclick="leaveActiveDuel()" class="text-xs font-extrabold text-red-500 bg-red-500/10 px-3 py-1 rounded-xl btn-tap">Sair ✕</button>
       </div>
 
@@ -175,7 +175,7 @@
           </svg>
         </div>
         <h1 class="text-2xl font-black tracking-tight">OLIMPÍADAS DO BÁSICO</h1>
-        <p class="text-xs text-muted-pro font-semibold mt-0.5">Plataforma Venture • Versão 8.2 🏆</p>
+        <p class="text-xs text-muted-pro font-semibold mt-0.5">Plataforma Venture • Versão 8.3 🏆</p>
       </div>
 
       <div class="flex rounded-2xl subtle-box p-1.5 mb-5">
@@ -290,6 +290,10 @@
     <!-- ABA 1: SIMULADO INTERATIVO + DUELO + REVISÃO -->
     <!-- TELA PRINCIPAL: APENAS O SIMULADO E INDICADORES -->
     <section id="tab-quiz" class="app-screen space-y-5" aria-label="Simulado">
+      <details id="trainerPublicNotice" class="trainer-notice hidden" aria-label="Comunicado do treinador">
+        <summary><span aria-hidden="true">📢</span> <strong id="trainerNoticeTitle">Aviso da equipe</strong><span aria-hidden="true">⌄</span></summary>
+        <p id="trainerNoticeBody"></p>
+      </details>
       <div class="page-heading">
         <div>
           <span class="page-eyebrow">SUA ÁREA DE TREINAMENTO</span>
@@ -408,7 +412,7 @@
             <div>
               <span class="text-[10px] font-black uppercase text-amber-500">Multiplayer em Tempo Real</span>
               <h3 class="font-black text-sm">Duelo 1 vs 1 (Convidar Colega)</h3>
-              <p class="text-[11px] text-muted-pro font-medium">Desafie quem estiver com a bolinha verde online na loja!</p>
+              <p class="text-[11px] text-muted-pro font-medium">Primeiro a marcar 5 pontos ganha +100 XP. Saída ou recusa não pontua.</p>
             </div>
           </div>
         </div>
@@ -476,7 +480,8 @@
           <button id="missionViewDaily" type="button" onclick="setMissionView('daily')" class="mission-switch-btn is-active" aria-pressed="true">☀️ Hoje</button>
           <button id="missionViewWeekly" type="button" onclick="setMissionView('weekly')" class="mission-switch-btn" aria-pressed="false">📅 Semana</button>
         </div>
-        <div id="missionList" class="space-y-2.5" aria-live="polite">
+        <div id="trainerSpecialChallenge" class="trainer-special-challenge hidden" aria-live="polite"></div>
+      <div id="missionList" class="space-y-2.5" aria-live="polite">
           <p class="text-xs text-muted-pro">Carregando missões...</p>
         </div>
         <p class="text-[11px] font-semibold text-muted-pro">✨ Bônus de XP liberados automaticamente ao concluir. Missões reiniciam no período seguinte.</p>
@@ -558,7 +563,7 @@
       <button class="back-link" type="button" onclick="switchMainTab('more')">← Voltar ao menu</button>
       <div class="pro-card rounded-3xl p-4 book-search-card space-y-3">
         <div class="flex items-center justify-between">
-          <span class="text-xs font-black">📖 Apostila Oficial Venture (200 Questões)</span>
+          <span class="text-xs font-black">📖 Apostila Venture (200 questões + extras do treinador)</span>
           <span id="bookCountBadge" class="text-[11px] font-extrabold text-red-500 bg-red-500/10 px-2.5 py-0.5 rounded-full">Carregando...</span>
         </div>
         <input id="searchBookInput" oninput="debouncedBookSearch()" type="text" placeholder="🔍 Pesquisar pergunta, tempo ou temperatura..." class="w-full px-4 py-2.5 rounded-2xl subtle-box text-xs font-semibold focus:outline-none focus:border-red-600 transition" />
@@ -679,10 +684,74 @@
       <div class="more-menu" role="group" aria-label="Menu de recursos">
         <button type="button" onclick="switchMainTab('profile')" class="more-menu-item"><span class="more-menu-icon" aria-hidden="true">👑</span><span class="more-menu-copy"><strong>Meu perfil premium</strong><small>Molduras, títulos, medalhas e evolução</small></span><span class="more-chevron" aria-hidden="true">›</span></button>
         <button type="button" onclick="switchMainTab('book')" class="more-menu-item"><span class="more-menu-icon" aria-hidden="true">📖</span><span class="more-menu-copy"><strong>Book oficial</strong><small>Consulte as 200 questões e respostas</small></span><span class="more-chevron" aria-hidden="true">›</span></button>
+        <button type="button" onclick="switchMainTab('trainer')" class="more-menu-item"><span class="more-menu-icon" aria-hidden="true">🎓</span><span class="more-menu-copy"><strong>Central do Treinador</strong><small>Perguntas, comunicados e desafios especiais</small></span><span class="more-chevron" aria-hidden="true">›</span></button>
         <button type="button" onclick="switchMainTab('admin')" class="more-menu-item"><span class="more-menu-icon" aria-hidden="true">⚙️</span><span class="more-menu-copy"><strong>Painel ADM</strong><small>Gerenciamento de colaboradores e XP</small></span><span class="more-chevron" aria-hidden="true">›</span></button>
         <button type="button" onclick="switchMainTab('updates')" class="more-menu-item"><span class="more-menu-icon" aria-hidden="true">🔔</span><span class="more-menu-copy"><strong>Novidades e versões</strong><small>O que mudou no aplicativo</small></span><span class="more-chevron" aria-hidden="true">›</span></button>
       </div>
-      <div class="more-info"><strong>Olimpíadas do Básico · Venture</strong><span>Versão 8.2 · Perfis dos colegas</span></div>
+      <div class="more-info"><strong>Olimpíadas do Básico · Venture</strong><span>Versão 8.3 · Central do Treinador + 100 XP no 1v1</span></div>
+    </section>
+
+    <!-- V8.3: CENTRAL DO TREINADOR (restrição de interface; sem autorização de servidor) -->
+    <section id="tab-trainer" class="app-screen hidden space-y-4" aria-label="Central do Treinador">
+      <div class="page-heading"><div><span class="page-eyebrow">GESTÃO DO TREINAMENTO</span><h1>Central do Treinador 🎓</h1><p>Publique conteúdos e acompanhe as atividades da equipe.</p></div></div>
+      <button class="back-link" type="button" onclick="switchMainTab('more')">← Voltar ao menu</button>
+      <div id="trainerLockScreen" class="pro-card rounded-3xl p-5 space-y-3 text-center">
+        <span class="trainer-lock-icon" aria-hidden="true">🔒</span>
+        <h2 class="font-black text-base">Acesso administrativo</h2>
+        <p class="text-xs text-muted-pro">Use a senha do painel ADM. O cargo “Treinador” não dá acesso automaticamente.</p>
+        <label for="trainerPassInput" class="sr-only">Senha administrativa</label>
+        <input id="trainerPassInput" type="password" autocomplete="off" placeholder="Senha do administrador" class="trainer-field text-center" />
+        <p id="trainerAuthError" class="trainer-feedback hidden" role="alert"></p>
+        <button type="button" onclick="unlockTrainerCenter()" class="trainer-primary">Entrar na Central 🎓</button>
+      </div>
+      <div id="trainerDashboard" class="hidden space-y-4">
+        <div class="trainer-topbar"><div><span>PAINEL DE CONTEÚDOS</span><strong>Treinamento da equipe</strong></div><button type="button" onclick="lockTrainerCenter()">Bloquear 🔒</button></div>
+        <div class="trainer-metrics" aria-label="Resumo de conteúdos"><div><span>Perguntas extras</span><strong id="trainerQuestionCount">0</strong></div><div><span>Comunicado</span><strong id="trainerAnnouncementStatus">Inativo</strong></div><div><span>Desafio especial</span><strong id="trainerChallengeStatus">Inativo</strong></div></div>
+        <details class="trainer-disclosure" open>
+          <summary><span>🧠 Banco de perguntas extras</span><span aria-hidden="true">⌄</span></summary>
+          <div class="trainer-disclosure-content">
+            <p class="trainer-help">Adicione perguntas ao simulado, Book, flashcards e duelos. As 200 questões originais não serão alteradas.</p>
+            <form id="trainerQuestionForm" class="trainer-form" onsubmit="saveTrainerQuestion(event)">
+              <input type="hidden" id="trainerEditQuestionId" />
+              <label>Enunciado da pergunta<textarea id="trainerQuestionText" class="trainer-field" rows="3" maxlength="550" required placeholder="Ex.: Qual o primeiro passo na lavagem das mãos?"></textarea></label>
+              <label>Nível<select id="trainerQuestionLevel" class="trainer-field"><option>Básico</option><option>Intermediário</option><option>Avançado</option></select></label>
+              <div class="trainer-two-col">
+                <label>Alternativa A<input id="trainerAnswerA" class="trainer-field" maxlength="220" required /></label>
+                <label>Alternativa B<input id="trainerAnswerB" class="trainer-field" maxlength="220" required /></label>
+                <label>Alternativa C<input id="trainerAnswerC" class="trainer-field" maxlength="220" required /></label>
+                <label>Alternativa D<input id="trainerAnswerD" class="trainer-field" maxlength="220" required /></label>
+              </div>
+              <label>Alternativa correta<select id="trainerCorrectAnswer" class="trainer-field"><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option></select></label>
+              <div class="trainer-actions"><button type="submit" class="trainer-primary" id="trainerSaveQuestionBtn">Publicar pergunta</button><button type="button" class="trainer-secondary" onclick="clearTrainerQuestionForm()">Limpar</button></div>
+            </form>
+            <div id="trainerQuestionList" class="trainer-list" aria-live="polite"></div>
+          </div>
+        </details>
+        <details class="trainer-disclosure">
+          <summary><span>📢 Comunicado da equipe</span><span aria-hidden="true">⌄</span></summary>
+          <div class="trainer-disclosure-content">
+            <p class="trainer-help">O aviso ativo aparece em uma faixa discreta na tela do Simulado.</p>
+            <form class="trainer-form" onsubmit="saveTrainerAnnouncement(event)">
+              <label>Título<input id="trainerAnnouncementTitle" class="trainer-field" maxlength="90" placeholder="Ex.: Treino especial desta semana" required /></label>
+              <label>Mensagem<textarea id="trainerAnnouncementBody" class="trainer-field" maxlength="650" rows="3" placeholder="Escreva a orientação para a equipe..." required></textarea></label>
+              <div class="trainer-actions"><button class="trainer-primary" type="submit">Publicar aviso</button><button class="trainer-secondary" type="button" onclick="removeTrainerAnnouncement()">Remover aviso</button></div>
+            </form>
+          </div>
+        </details>
+        <details class="trainer-disclosure">
+          <summary><span>🎯 Desafio especial da equipe</span><span aria-hidden="true">⌄</span></summary>
+          <div class="trainer-disclosure-content">
+            <p class="trainer-help">Defina uma meta de acertos no Simulado. Quem concluir ganha o bônus configurado uma vez. Um novo desafio começa com progresso zerado.</p>
+            <form class="trainer-form" onsubmit="saveTrainerChallenge(event)">
+              <label>Nome do desafio<input id="trainerChallengeTitle" class="trainer-field" maxlength="90" required placeholder="Ex.: Desafio dos 15 acertos" /></label>
+              <label>Orientação<input id="trainerChallengeDescription" class="trainer-field" maxlength="220" placeholder="Ex.: Revise o Book antes de começar" /></label>
+              <div class="trainer-two-col"><label>Acertos necessários<input id="trainerChallengeTarget" class="trainer-field" type="number" min="1" max="100" value="10" required /></label><label>Bônus em XP<input id="trainerChallengeXp" class="trainer-field" type="number" min="0" max="100" value="50" required /></label></div>
+              <div class="trainer-actions"><button class="trainer-primary" type="submit">Publicar novo desafio</button><button class="trainer-secondary" type="button" onclick="removeTrainerChallenge()">Encerrar desafio</button></div>
+            </form>
+          </div>
+        </details>
+        <p class="trainer-security-note">⚠️ Esta Central reutiliza a senha do ADM e a sincronização pública atuais. Isso não é uma proteção segura contra alterações externas. Para premiações reais, será necessário um servidor com autenticação e validação do XP.</p>
+      </div>
     </section>
 
     <!-- ABA 4: PAINEL ADM -->
@@ -754,10 +823,11 @@
             <h2 class="font-black text-base">🚀 Histórico Completo de Versões</h2>
             <p class="text-[11px] text-muted-pro font-semibold">Todas as evoluções do aplicativo desde o lançamento</p>
           </div>
-          <span class="bg-red-500/15 text-red-500 text-xs font-black px-3 py-1 rounded-full">v8.2 Perfis</span>
+          <span class="bg-red-500/15 text-red-500 text-xs font-black px-3 py-1 rounded-full">v8.3 Treinador</span>
         </div>
 
 
+        <div class="border-l-4 border-[#FFC72C] pl-3.5 space-y-1"><span class="text-[11px] font-extrabold text-amber-500 uppercase">Versão 8.3 • Central do Treinador</span><h4 class="font-black text-sm">🎓 Perguntas, avisos, desafio especial e 100 XP ao vencer o 1v1</h4><p class="text-xs text-muted-pro">Banco extra de perguntas, comunicado da equipe, desafio com progresso individual e recompensa única por vitória no duelo.</p></div>
         <div class="border-l-4 border-[#FFC72C] pl-3.5 space-y-1">
           <span class="text-[11px] font-extrabold text-amber-500 uppercase">Versão 8.2 • Perfis Públicos</span>
           <h4 class="font-black text-sm">👥 Conheça seus colegas no Ranking</h4>
@@ -782,7 +852,7 @@
         </div>
         <!-- Versão 7.6 -->
         <div class="border-l-4 border-[#FFC72C] pl-3.5 space-y-1">
-          <span class="text-[11px] font-extrabold text-amber-500 uppercase">Versão 7.6 • Atualização Atual (Jingle de Nível Superior)</span>
+          <span class="text-[11px] font-extrabold text-amber-500 uppercase">Versão 7.6 • Jingle de Nível Superior</span>
           <h4 class="font-black text-sm">Música "Pa-ra-pa-pa-pa" do Méqui ao Subir de Nível 🎵🍟</h4>
           <ul class="text-xs text-muted-pro list-disc list-inside space-y-1 pt-1">
             <li><strong>Efeito Sonoro Oficial:</strong> Ao atingir uma nova patente de XP, o aplicativo reproduz automaticamente a melodia clássica do comercial do McDonald's!</li>
@@ -804,6 +874,6 @@
     </nav>
   </div>
 <script src="questions.js"></script>
-  <script src="script.js"></script>
+  <script src="script.js?v=83"></script>
 </body>
 </html>

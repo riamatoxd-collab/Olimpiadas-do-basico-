@@ -479,3 +479,73 @@ body.dark-mode .podium-profile-link {color:#ff9084;border-color:rgba(255,144,132
 .rank-player-row > div:first-child {min-width:0;flex:1;}
 .rank-player-row > div:first-child > div:last-child {min-width:0;}
 .rank-player-row p {overflow-wrap:anywhere;}
+
+/* ==========================================================================
+   V8.3 — CENTRAL DO TREINADOR (compacta, mobile first)
+   ========================================================================== */
+.trainer-lock-icon {display:block;font-size:2.8rem;line-height:1.2}
+.trainer-field {display:block;box-sizing:border-box;width:100%;max-width:100%;min-width:0;border:1.5px solid var(--border-color);background:var(--bg-subtle);color:var(--text-main);border-radius:14px;padding:12px 13px;font:600 13px/1.5 'Plus Jakarta Sans',sans-serif;outline:0;transition:border-color .15s,box-shadow .15s}
+.trainer-field:focus-visible {border-color:var(--mc-red);box-shadow:0 0 0 3px rgba(218,41,28,.13)}
+textarea.trainer-field {resize:vertical;min-height:76px}
+.trainer-primary,.trainer-secondary {display:inline-flex;align-items:center;justify-content:center;min-height:43px;padding:11px 16px;border-radius:14px;font-weight:800;font-size:12px;transition:transform .12s ease;cursor:pointer}
+.trainer-primary {background:var(--mc-red);color:white;flex:1}
+.trainer-secondary {background:var(--bg-subtle);color:var(--text-main);border:1px solid var(--border-color)}
+.trainer-primary:active,.trainer-secondary:active {transform:scale(.98)}
+.trainer-feedback {background:rgba(218,41,28,.12);color:#ef4444;border-radius:12px;padding:10px;font-size:12px;font-weight:700}
+.trainer-topbar {background:linear-gradient(115deg,#172339,#29374d);border-radius:22px;color:white;padding:18px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.trainer-topbar div {display:grid;gap:5px;min-width:0}
+.trainer-topbar span {font-size:9px;font-weight:900;letter-spacing:.13em;color:#ffc72c}
+.trainer-topbar strong {font-size:16px;font-weight:900;line-height:1.25}
+.trainer-topbar button {background:rgba(255,255,255,.13);color:white;padding:10px 12px;border-radius:12px;font-size:11px;font-weight:800;white-space:nowrap}
+.trainer-metrics {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+.trainer-metrics>div {background:var(--bg-card);border:1px solid var(--border-color);border-radius:17px;padding:14px 10px;display:grid;gap:6px;min-width:0}
+.trainer-metrics span {font-size:10px;color:var(--text-muted);font-weight:700;line-height:1.3}
+.trainer-metrics strong {font-size:17px;font-weight:900;line-height:1.2;overflow-wrap:anywhere}
+.trainer-disclosure {background:var(--bg-card);border:1px solid var(--border-color);border-radius:19px;overflow:hidden}
+.trainer-disclosure[open] {box-shadow:0 9px 24px rgba(15,23,42,.045)}
+.trainer-disclosure>summary {cursor:pointer;list-style:none;padding:17px;display:flex;align-items:center;justify-content:space-between;gap:15px;font-weight:900;font-size:13px;color:var(--text-main)}
+.trainer-disclosure>summary::-webkit-details-marker {display:none}
+.trainer-disclosure>summary span:last-child {color:var(--text-muted);transition:transform .2s}
+.trainer-disclosure[open]>summary span:last-child {transform:rotate(180deg)}
+.trainer-disclosure-content {padding:0 17px 18px;border-top:1px solid var(--border-color)}
+.trainer-help {font-size:11px;color:var(--text-muted);line-height:1.65;margin:14px 0}
+.trainer-form {display:grid;gap:12px;padding-top:14px}
+.trainer-form label {display:grid;gap:6px;font-size:11px;color:var(--text-main);font-weight:800;min-width:0}
+.trainer-two-col {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.trainer-actions {display:flex;flex-wrap:wrap;gap:8px}
+.trainer-list {border-top:1px solid var(--border-color);margin-top:20px;padding-top:6px;display:grid;gap:8px;max-height:340px;overflow-y:auto}
+.trainer-question-row {display:flex;justify-content:space-between;align-items:flex-start;gap:9px;border:1px solid var(--border-color);border-radius:13px;background:var(--bg-subtle);padding:12px;min-width:0}
+.trainer-question-row>div:first-child {min-width:0;display:grid;gap:6px;overflow-wrap:anywhere}
+.trainer-question-row span {font-size:9px;color:var(--text-muted);font-weight:900}
+.trainer-question-row strong {font-size:12px;font-weight:800;line-height:1.5}
+.trainer-question-row small {color:#16a34a;font-size:10px;font-weight:800}
+.trainer-row-actions {display:flex;flex-direction:column;gap:6px;flex-shrink:0}
+.trainer-row-actions button {border-radius:9px;padding:7px 9px;font-weight:800;font-size:10px;background:rgba(218,41,28,.1);color:var(--mc-red)}
+.trainer-row-actions button:last-child {background:var(--bg-card);color:var(--text-muted);border:1px solid var(--border-color)}
+.trainer-notice {background:var(--bg-card);border:1px solid var(--mc-yellow);border-left:4px solid var(--mc-yellow);border-radius:15px;overflow:hidden}
+.trainer-notice summary {list-style:none;cursor:pointer;display:flex;align-items:center;gap:9px;padding:13px 15px;font-size:12px}
+.trainer-notice summary::-webkit-details-marker {display:none}
+.trainer-notice summary strong {flex:1;min-width:0;font-size:12px;font-weight:900;overflow-wrap:anywhere}
+.trainer-notice summary>span:last-child {color:var(--text-muted)}
+.trainer-notice p {padding:0 15px 14px 39px;margin:0;font-size:12px;line-height:1.65;overflow-wrap:anywhere;white-space:pre-wrap;color:var(--text-muted)}
+.trainer-special-challenge {background:linear-gradient(120deg,rgba(245,158,11,.13),rgba(218,41,28,.06));border:1px solid rgba(245,158,11,.36);border-radius:20px;padding:17px;display:grid;gap:11px}
+.trainer-challenge-head {display:flex;align-items:start;gap:10px;justify-content:space-between}
+.trainer-challenge-head span {font-size:9px;font-weight:900;letter-spacing:.08em;color:#b45309}
+.trainer-challenge-head strong {font-size:11px;background:var(--bg-card);padding:6px 9px;border-radius:10px;white-space:nowrap;color:var(--text-main)}
+.trainer-special-challenge h3 {font-size:15px;font-weight:900;margin:0;overflow-wrap:anywhere}
+.trainer-special-challenge p {font-size:11px;color:var(--text-muted);line-height:1.55;margin:0;overflow-wrap:anywhere}
+.trainer-challenge-track {background:rgba(148,163,184,.27);border-radius:99px;height:9px;overflow:hidden}
+.trainer-challenge-track span {display:block;height:100%;background:linear-gradient(90deg,#f59e0b,#da291c);border-radius:99px;transition:width .25s}
+.trainer-challenge-bottom {display:flex;align-items:center;justify-content:space-between;gap:10px}
+.trainer-challenge-bottom small {font-size:10px;font-weight:800;color:var(--text-muted)}
+.trainer-challenge-bottom button {background:var(--bg-card);color:var(--mc-red);font-size:11px;font-weight:900;padding:9px 11px;border-radius:11px}
+.trainer-security-note {border:1px solid var(--border-color);border-radius:15px;background:var(--bg-subtle);padding:13px 15px;color:var(--text-muted);font-size:10px;line-height:1.7}
+@media(max-width:380px) {
+ .trainer-two-col {grid-template-columns:1fr}
+ .trainer-disclosure>summary {padding:14px}
+ .trainer-disclosure-content {padding:0 13px 15px}
+ .trainer-metrics {gap:5px}
+ .trainer-metrics>div {padding:11px 7px}
+ .trainer-metrics strong {font-size:14px}
+ .trainer-topbar {padding:14px}
+}
