@@ -526,6 +526,140 @@ function renderMissionHub() {
 
 
 
+
+// ============================================================================
+// 👑 PERFIL PREMIUM V8.1 — preferências cosméticas opcionais por usuário
+// Não modifica as chaves de localStorage nem as regras de XP existentes.
+// ============================================================================
+const PREMIUM_FRAMES = [
+  {id:"classic", icon:"◻️", label:"Clássica", minXp:0},
+  {id:"bronze", icon:"🥉", label:"Bronze", minXp:1000},
+  {id:"silver", icon:"🥈", label:"Prata", minXp:3000},
+  {id:"gold", icon:"🥇", label:"Ouro", minXp:6000},
+  {id:"diamond", icon:"💎", label:"Diamante", minXp:10000},
+  {id:"legend", icon:"👑", label:"Lendária", minXp:25000}
+];
+const PREMIUM_TITLES = [
+  {id:"trainee", icon:"🌟", label:"Em treinamento", available:()=>true, requirement:"Disponível para todos"},
+  {id:"first", icon:"🎯", label:"Mira Certa", available:(u,p)=>Boolean(p.badges.quiz10), requirement:"Medalha Mira Certa"},
+  {id:"chef", icon:"🍔", label:"Chef da Loja", available:(u,p)=>Boolean(p.badges.first_recipe), requirement:"Medalha Primeiro Lanche"},
+  {id:"master", icon:"🧠", label:"Mestre do Básico", available:(u,p)=>Boolean(p.badges.quiz50), requirement:"Medalha Mestre do Básico"},
+  {id:"gold", icon:"🏅", label:"Padrão Ouro", available:(u,p)=>Boolean(p.badges.gold_level), requirement:"Medalha Padrão Ouro"},
+  {id:"legend", icon:"👑", label:"Lenda da Venture", available:u=>(u.xp||0)>=25000, requirement:"Alcance 25.000 XP"}
+];
+function mergeProfilePremium(a,b) {
+  if (!a) return b;
+  if (!b) return a;
+  const newest = (Number(b.updatedAt)||0) >= (Number(a.updatedAt)||0) ? b : a;
+  return {
+    frameId:typeof newest.frameId === 'string'?newest.frameId:'classic',
+    titleId:typeof newest.titleId === 'string'?newest.titleId:'trainee',
+    featuredBadges:Array.isArray(newest.featuredBadges)?newest.featuredBadges.slice(0,3):[],
+    updatedAt:Math.max(Number(a.updatedAt)||0, Number(b.updatedAt)||0)
+  };
+}
+function ensurePremiumProfile(user) {
+  const saved = user && user.profilePremium && typeof user.profilePremium === 'object' ? user.profilePremium : {};
+  return {
+    frameId:typeof saved.frameId === 'string' ? saved.frameId : 'classic',
+    titleId:typeof saved.titleId === 'string' ? saved.titleId : 'trainee',
+    featuredBadges:Array.isArray(saved.featuredBadges)?[...new Set(saved.featuredBadges.filter(id=>MEDAL_DEFINITIONS.some(m=>m.id===id)))].slice(0,3):[],
+    updatedAt:Number(saved.updatedAt)||0
+  };
+}
+function premiumDate(value) {
+  const stamp = Number(value);
+  if (!Number.isFinite(stamp) || stamp < 946684800000 || stamp > Date.now()+86400000) return 'Conquistada';
+  return new Intl.DateTimeFormat('pt-BR',{timeZone:'America/Sao_Paulo',day:'2-digit',month:'2-digit',year:'numeric'}).format(new Date(stamp));
+}
+function updatePremiumSetting(field,value) {
+  const user = currentUserKey && users[currentUserKey];
+  if (!user || user._deleted) return;
+  const progress = ensureMissionProgress(user);
+  unlockEarnedMedals(user,progress);
+  const selected = ensurePremiumProfile(user);
+  if (field === 'frameId') {
+    if (!PREMIUM_FRAMES.some(f=>f.id===value && (user.xp||0)>=f.minXp)) return;
+    selected.frameId = value;
+  } else if (field === 'titleId') {
+    if (!PREMIUM_TITLES.some(t=>t.id===value && t.available(user,progress))) return;
+    selected.titleId = value;
+  } else if (field === 'featuredBadges') {
+    if (!MEDAL_DEFINITIONS.some(m=>m.id===value) || !progress.badges[value]) return;
+    if (selected.featuredBadges.includes(value)) selected.featuredBadges=selected.featuredBadges.filter(id=>id!==value);
+    else if (selected.featuredBadges.length < 3) selected.featuredBadges.push(value);
+    else {showMissionToast('🏅 Você pode destacar até 3 medalhas. Remova uma antes de adicionar outra.');return;}
+  } else return;
+  selected.updatedAt = Date.now();
+  user.profilePremium = selected;
+  user.updatedAt = selected.updatedAt;
+  scheduleCloudSync(currentUserKey,false);
+  renderPremiumProfile();
+}
+function renderPremiumProfile() {
+  const hero = $('premiumHero');
+  if (!hero || $('tab-profile').classList.contains('hidden')) return;
+  const user = currentUserKey && users[currentUserKey] && !users[currentUserKey]._deleted ? users[currentUserKey] : null;
+  if (!user) {switchMainTab('more');return;}
+  const progress = ensureMissionProgress(user);
+  unlockEarnedMedals(user,progress);
+  const saved = ensurePremiumProfile(user);
+  const xp = Math.max(0,Number(user.xp)||0);
+  const frame = PREMIUM_FRAMES.find(f=>f.id===saved.frameId && xp>=f.minXp) || PREMIUM_FRAMES[0];
+  const title = PREMIUM_TITLES.find(t=>t.id===saved.titleId && t.available(user,progress)) || PREMIUM_TITLES[0];
+  const level = getLevelInfo(xp);
+  const portrait = $('premiumAvatar');
+  portrait.replaceChildren();
+  if (isPhotoAvatar(user.avatar)) {
+    const img = document.createElement('img'); img.src = user.avatar; img.alt='Foto do colaborador'; portrait.appendChild(img);
+  } else portrait.textContent = user.avatar || '🍔';
+  $('premiumAvatarFrame').className = `premium-avatar-frame frame-${frame.id}`;
+  $('premiumName').textContent = user.name || 'Colaborador';
+  $('premiumRole').textContent = user.role || user.station || 'Atendente';
+  $('premiumEquippedTitle').textContent = `${title.icon} ${title.label}`;
+  $('premiumLevel').textContent = `Nível ${level.level}`;
+  $('premiumXp').textContent = `${xp.toLocaleString('pt-BR')} XP`;
+  const ratio = Math.min(100,Math.max(0,100*(xp-level.min)/(level.max-level.min)));
+  $('premiumXpBar').style.width = `${ratio}%`;
+  $('premiumNextLevel').textContent = level.level < 7 ? `Faltam ${(level.max-xp).toLocaleString('pt-BR')} XP para o nível ${level.level+1}` : 'Você alcançou a patente máxima! 👑';
+  $('premiumStatXp').textContent = xp.toLocaleString('pt-BR');
+  $('premiumStatHits').textContent = (Number(user.correctAnswers)||0).toLocaleString('pt-BR');
+  $('premiumStatRecipes').textContent = String(progress.lifetime.kitchenRecipes.length);
+  $('premiumStatMissions').textContent = String(Object.keys(progress.claims).length);
+  $('premiumStatsFoot').textContent = `${(Array.isArray(user.mistakes)?user.mistakes.length:0)} dúvida(s) para revisar · ${progress.lifetime.reviewsCorrect} revisão(ões) concluída(s) desde a versão 7.9.`;
+  $('premiumFrameSummary').textContent = frame.label;
+  $('premiumTitleSummary').textContent = title.label;
+  $('premiumFrameChoices').innerHTML = PREMIUM_FRAMES.map(f=>{
+    const available = xp >= f.minXp, current=frame.id===f.id;
+    return `<button type="button" class="premium-choice ${current?'is-selected':''} ${available?'':'is-locked'}" ${available?`onclick="updatePremiumSetting('frameId','${f.id}')"`:'disabled'} aria-pressed="${current}"><span class="choice-icon">${f.icon}</span><strong>${f.label} ${current?'✓':''}</strong><small>${available?'Desbloqueada':`${f.minXp.toLocaleString('pt-BR')} XP para liberar`}</small></button>`;
+  }).join('');
+  $('premiumTitleChoices').innerHTML = PREMIUM_TITLES.map(t=>{
+    const available=t.available(user,progress), current=title.id===t.id;
+    return `<button type="button" class="premium-choice ${current?'is-selected':''} ${available?'':'is-locked'}" ${available?`onclick="updatePremiumSetting('titleId','${t.id}')"`:'disabled'} aria-pressed="${current}"><span class="choice-icon">${t.icon}</span><strong>${t.label} ${current?'✓':''}</strong><small>${available?'Desbloqueado':t.requirement}</small></button>`;
+  }).join('');
+  const earned=MEDAL_DEFINITIONS.filter(m=>progress.badges[m.id]);
+  $('premiumMedalSummary').textContent = `${earned.length} de ${MEDAL_DEFINITIONS.length} conquistadas`;
+  const featuredIds=saved.featuredBadges.filter(id=>progress.badges[id]);
+  // Em contas antigas, já mostramos até 3 medalhas conquistadas, sem mudar as preferências.
+  const featured = featuredIds.length ? featuredIds : earned.slice(0,3).map(m=>m.id);
+  $('premiumFeatured').innerHTML = [0,1,2].map(i=>{
+    const item=MEDAL_DEFINITIONS.find(m=>m.id===featured[i]);
+    return `<div class="premium-featured-item">${item?`<span aria-hidden="true">${item.icon}</span>${item.title}`:'<span aria-hidden="true">🔒</span>Vazio'}</div>`;
+  }).join('');
+  $('premiumMedalGrid').innerHTML = MEDAL_DEFINITIONS.map(m=>{
+    const available=Boolean(progress.badges[m.id]), pinned=featuredIds.includes(m.id);
+    return `<article class="premium-medal ${available?'is-earned':'is-locked'}"><span class="medal-emoji" aria-hidden="true">${available?m.icon:'🔒'}</span><strong>${m.title}</strong><small>${available?premiumDate(progress.badges[m.id]):m.detail}</small>${available?`<button type="button" class="${pinned?'is-featured':''}" onclick="updatePremiumSetting('featuredBadges','${m.id}')">${pinned?'★ Em destaque':'☆ Destacar'}</button>`:''}</article>`;
+  }).join('');
+  const activity = [
+    ...MEDAL_DEFINITIONS.filter(m=>progress.badges[m.id]).map(m=>({time:Number(progress.badges[m.id])||0,icon:m.icon,label:`Medalha: ${m.title}`})),
+    ...Object.entries(progress.claims).map(([key,time])=>{
+      const parts=key.split(':');const mission=MISSION_DEFINITIONS.find(m=>m.id===parts[2]&&m.cycle===parts[0]);
+      return mission?{time:Number(time)||0,icon:'🎯',label:`Missão: ${mission.title}`} : null;
+    }).filter(Boolean)
+  ].sort((a,b)=>b.time-a.time).slice(0,7);
+  $('premiumHistory').innerHTML = activity.length ? activity.map(item=>`<div class="premium-history-entry"><span aria-hidden="true">${item.icon}</span><div><strong>${item.label}</strong><small>${premiumDate(item.time)}</small></div></div>`).join('') : '<p class="premium-stats-foot">Suas próximas medalhas e missões aparecerão aqui.</p>';
+}
+
 // 🎵 MOTOR DE ÁUDIO COMPACTO (JINGLE + CLIQUES + ERRO + GIRO 3D)
 
 
@@ -1908,15 +2042,15 @@ if (!ex) return inc;
 
 
 
-if ((inc.adminOverrideAt || 0) > (ex.adminOverrideAt || 0)) return { ...inc, missionProgress:mergeMissionProgress(ex.missionProgress,inc.missionProgress) };
+if ((inc.adminOverrideAt || 0) > (ex.adminOverrideAt || 0)) return { ...inc, missionProgress:mergeMissionProgress(ex.missionProgress,inc.missionProgress), profilePremium:mergeProfilePremium(ex.profilePremium,inc.profilePremium) };
 
 
 
-if ((ex.adminOverrideAt || 0) > (inc.adminOverrideAt || 0)) return { ...ex, missionProgress:mergeMissionProgress(ex.missionProgress,inc.missionProgress) };
+if ((ex.adminOverrideAt || 0) > (inc.adminOverrideAt || 0)) return { ...ex, missionProgress:mergeMissionProgress(ex.missionProgress,inc.missionProgress), profilePremium:mergeProfilePremium(ex.profilePremium,inc.profilePremium) };
 
 
 
-if (inc._deleted && (inc.updatedAt || 0) >= (ex.updatedAt || 0)) return { ...inc, missionProgress:mergeMissionProgress(ex.missionProgress,inc.missionProgress) };
+if (inc._deleted && (inc.updatedAt || 0) >= (ex.updatedAt || 0)) return { ...inc, missionProgress:mergeMissionProgress(ex.missionProgress,inc.missionProgress), profilePremium:mergeProfilePremium(ex.profilePremium,inc.profilePremium) };
 
 
 
@@ -1959,6 +2093,7 @@ heartsLockUntil: newer && inc.heartsLockUntil !== undefined ? inc.heartsLockUnti
 mistakes: newer && Array.isArray(inc.mistakes) ? inc.mistakes : (Array.isArray(ex.mistakes) ? ex.mistakes : []),
 
 missionProgress: mergeMissionProgress(ex.missionProgress,inc.missionProgress),
+profilePremium: mergeProfilePremium(ex.profilePremium,inc.profilePremium),
 
 
 
@@ -2018,7 +2153,7 @@ function refreshUIIfNeeded() {
 
 
 
-updateHeaderUI(); syncActiveUserHeartsState(); updateMistakesBadge(); populateDuelOpponentList(); renderDuelHistory(); renderMissionHub();
+updateHeaderUI(); syncActiveUserHeartsState(); updateMistakesBadge(); populateDuelOpponentList(); renderDuelHistory(); renderMissionHub(); renderPremiumProfile();
 
 
 
@@ -2503,7 +2638,7 @@ xp: users[key] && !users[key]._deleted ? (users[key].xp || 0) : 0,
 correctAnswers: users[key] && !users[key]._deleted ? (users[key].correctAnswers || 0) : 0,
 
 hearts: 5, heartsLockUntil: 0, mistakes: users[key]?.mistakes || [],
-missionProgress:users[key]?.missionProgress, lastSeen: Date.now(), updatedAt: Date.now()
+missionProgress:users[key]?.missionProgress, profilePremium:users[key]?.profilePremium, lastSeen: Date.now(), updatedAt: Date.now()
 
 };
 
@@ -4561,6 +4696,7 @@ function adminSaveMember() {
     heartsLockUntil: 0,
     mistakes: users[key]?.mistakes || [],
     missionProgress:users[key]?.missionProgress,
+    profilePremium:users[key]?.profilePremium,
     lastSeen: Date.now(),
     updatedAt: Date.now(),
     adminOverrideAt: Date.now()
@@ -4587,14 +4723,14 @@ function switchTrainingMode(mode) {
   });
 }
 function switchMainTab(tab) {
-  const screens = ["quiz", "training", "missions", "prizes", "more", "book", "admin", "updates"];
+  const screens = ["quiz", "training", "missions", "prizes", "more", "profile", "book", "admin", "updates"];
   if (!screens.includes(tab)) return;
   playTabClickSound();
   screens.forEach(name => {
     const screen = $(`tab-${name}`);
     if (screen) screen.classList.toggle("hidden", name !== tab);
   });
-  const currentNav = ["book", "admin", "updates"].includes(tab) ? "more" : tab;
+  const currentNav = ["profile", "book", "admin", "updates"].includes(tab) ? "more" : tab;
   ["quiz", "training", "missions", "prizes", "more"].forEach(name => {
     const button = $(`nav-${name}`);
     if (!button) return;
@@ -4602,6 +4738,7 @@ function switchMainTab(tab) {
     if (name === currentNav) button.setAttribute("aria-current", "page");
     else button.removeAttribute("aria-current");
   });
+  if (tab === "profile") renderPremiumProfile();
   if (tab === "prizes" || tab === "admin") fetchCloudHistorySafe(false);
   if (typeof window.scrollTo === "function") window.scrollTo({ top: 0, behavior: "instant" });
 }

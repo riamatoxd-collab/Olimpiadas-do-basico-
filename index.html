@@ -7,7 +7,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="Olimpíadas Méqui" />
-  <title>Olimpíadas do Básico — Venture v8.0</title>
+  <title>Olimpíadas do Básico — Venture v8.1</title>
 
   <!-- Favicon Oficial: Arcos Dourados em Vetor SVG -->
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='24' fill='%23DA291C'/%3E%3Cpath fill='%23FFC72C' d='M50 46c-3.6-13.8-10.8-23.5-19.6-23.5-12 0-21.6 18.5-21.6 52.5h9.1c0-26.4 6.4-42.8 12.5-42.8 6 0 12 17.6 12.5 42.8H50zm0 0c3.6-13.8 10.8-23.5 19.6-23.5 12 0 21.6 18.5 21.6 52.5h-9.1c0-26.4-6.4-42.8-12.5-42.8-6 0-12 17.6-12.5 42.8H50z'/%3E%3C/svg%3E" />
@@ -203,7 +203,7 @@
       <div class="flex items-center justify-between gap-2 mb-3">
         <div class="flex items-center gap-3">
           <div class="relative">
-            <button onclick="openAvatarModal()" title="Trocar Foto/Avatar" class="relative w-12 h-12 rounded-2xl gold-gradient text-slate-900 flex items-center justify-center text-2xl shadow-lg border-2 border-white btn-tap shrink-0 overflow-hidden">
+            <button onclick="switchMainTab('profile')" title="Ver meu perfil premium" aria-label="Abrir meu perfil de jogador" class="relative w-12 h-12 rounded-2xl gold-gradient text-slate-900 flex items-center justify-center text-2xl shadow-lg border-2 border-white btn-tap shrink-0 overflow-hidden">
               <span id="userAvatarDisplay" class="w-full h-full flex items-center justify-center">🍔</span>
             </button>
             <span class="absolute -top-1 -right-1 w-3.5 h-3.5 bg-emerald-500 rounded-full border-2 border-white shadow animate-pulse"></span>
@@ -444,6 +444,70 @@
       <div class="shortcut-row"><button type="button" onclick="switchMainTab('quiz')" class="shortcut-link">🎯 Voltar ao simulado <span aria-hidden="true">↗</span></button></div>
     </section>
 
+
+    <!-- PERFIL PREMIUM: acesso pelo avatar e pela aba Mais; sem aumentar o menu inferior -->
+    <section id="tab-profile" class="app-screen hidden space-y-5" aria-label="Meu perfil de jogador">
+      <div class="page-heading">
+        <div>
+          <span class="page-eyebrow">SUA JORNADA NA VENTURE</span>
+          <h1>Meu perfil <span aria-hidden="true">👑</span></h1>
+          <p>Seu cartão de jogador, títulos, molduras e conquistas.</p>
+        </div>
+      </div>
+      <button type="button" class="back-link" onclick="switchMainTab('more')">← Voltar ao menu</button>
+      <div class="premium-hero" id="premiumHero">
+        <div class="premium-hero-spark" aria-hidden="true">✦ VENTURE PLAYER ✦</div>
+        <div class="premium-identity">
+          <div id="premiumAvatarFrame" class="premium-avatar-frame frame-classic"><div id="premiumAvatar" class="premium-avatar">🍔</div></div>
+          <div class="premium-identity-copy">
+            <span class="premium-overline">CARTÃO DE JOGADOR</span>
+            <h2 id="premiumName">Seu nome</h2>
+            <p id="premiumRole">Colaborador</p>
+            <span id="premiumEquippedTitle" class="premium-title-pill">🌟 Em treinamento</span>
+          </div>
+        </div>
+        <div class="premium-level-row"><strong id="premiumLevel">Nível 1</strong><strong id="premiumXp">0 XP</strong></div>
+        <div class="premium-level-track"><div id="premiumXpBar" class="premium-level-fill" style="width:0%"></div></div>
+        <p id="premiumNextLevel" class="premium-next-level">Sua evolução começa aqui!</p>
+        <div class="premium-featured" id="premiumFeatured" aria-label="Medalhas em destaque"></div>
+        <button type="button" class="premium-edit-avatar" onclick="openAvatarModal()">📸 Trocar foto ou avatar</button>
+      </div>
+
+      <section class="premium-section" aria-label="Minhas estatísticas">
+        <div class="premium-section-head"><h2>📊 Seu desempenho</h2><p>Dados já registrados nos treinamentos</p></div>
+        <div class="premium-stats-grid">
+          <div class="premium-stat"><span>⚡ XP acumulado</span><strong id="premiumStatXp">0</strong></div>
+          <div class="premium-stat"><span>✅ Acertos</span><strong id="premiumStatHits">0</strong></div>
+          <div class="premium-stat"><span>🍔 Receitas únicas</span><strong id="premiumStatRecipes">0</strong></div>
+          <div class="premium-stat"><span>🎯 Missões cumpridas</span><strong id="premiumStatMissions">0</strong></div>
+        </div>
+        <p class="premium-stats-foot" id="premiumStatsFoot">Seus registros aparecem aqui conforme você pratica.</p>
+      </section>
+
+      <section class="premium-section" aria-label="Personalização do perfil">
+        <div class="premium-section-head"><h2>✨ Personalize seu cartão</h2><p>Desbloqueie visuais conforme evoluir.</p></div>
+        <details class="premium-disclosure" id="premiumFramesDetails">
+          <summary>🖼️ Molduras do avatar <span id="premiumFrameSummary">Clássica</span></summary>
+          <div id="premiumFrameChoices" class="premium-cosmetics-grid"></div>
+        </details>
+        <details class="premium-disclosure" id="premiumTitlesDetails">
+          <summary>👑 Títulos especiais <span id="premiumTitleSummary">Em treinamento</span></summary>
+          <div id="premiumTitleChoices" class="premium-cosmetics-grid"></div>
+        </details>
+      </section>
+
+      <section class="premium-section" aria-label="Medalhas conquistadas">
+        <div class="premium-section-head"><h2>🏅 Coleção de medalhas</h2><p id="premiumMedalSummary">Conquistas disponíveis</p></div>
+        <div id="premiumMedalGrid" class="premium-medals-grid"></div>
+        <p class="premium-stats-foot">Você pode destacar até 3 medalhas no cartão de jogador.</p>
+      </section>
+
+      <details class="premium-disclosure premium-history" id="premiumHistoryDetails">
+        <summary>📜 Histórico de conquistas <span>Últimas conquistas</span></summary>
+        <div id="premiumHistory" class="premium-history-list"></div>
+      </details>
+    </section>
+
     <!-- ABA 2: BOOK OFICIAL -->
     <section id="tab-book" class="app-screen hidden space-y-4">
       <div class="page-heading"><div><span class="page-eyebrow">CONSULTA E ESTUDO</span><h1>Book oficial 📖</h1><p>Pesquise os padrões e as perguntas do treinamento.</p></div></div>
@@ -569,11 +633,12 @@
     <section id="tab-more" class="app-screen hidden space-y-5" aria-label="Mais opções">
       <div class="page-heading"><div><span class="page-eyebrow">TUDO ORGANIZADO</span><h1>Mais opções <span aria-hidden="true">✨</span></h1><p>Materiais de consulta e recursos de gerenciamento.</p></div></div>
       <div class="more-menu" role="group" aria-label="Menu de recursos">
+        <button type="button" onclick="switchMainTab('profile')" class="more-menu-item"><span class="more-menu-icon" aria-hidden="true">👑</span><span class="more-menu-copy"><strong>Meu perfil premium</strong><small>Molduras, títulos, medalhas e evolução</small></span><span class="more-chevron" aria-hidden="true">›</span></button>
         <button type="button" onclick="switchMainTab('book')" class="more-menu-item"><span class="more-menu-icon" aria-hidden="true">📖</span><span class="more-menu-copy"><strong>Book oficial</strong><small>Consulte as 200 questões e respostas</small></span><span class="more-chevron" aria-hidden="true">›</span></button>
         <button type="button" onclick="switchMainTab('admin')" class="more-menu-item"><span class="more-menu-icon" aria-hidden="true">⚙️</span><span class="more-menu-copy"><strong>Painel ADM</strong><small>Gerenciamento de colaboradores e XP</small></span><span class="more-chevron" aria-hidden="true">›</span></button>
         <button type="button" onclick="switchMainTab('updates')" class="more-menu-item"><span class="more-menu-icon" aria-hidden="true">🔔</span><span class="more-menu-copy"><strong>Novidades e versões</strong><small>O que mudou no aplicativo</small></span><span class="more-chevron" aria-hidden="true">›</span></button>
       </div>
-      <div class="more-info"><strong>Olimpíadas do Básico · Venture</strong><span>Versão 8.0 · Interface reorganizada</span></div>
+      <div class="more-info"><strong>Olimpíadas do Básico · Venture</strong><span>Versão 8.1 · Perfil Premium</span></div>
     </section>
 
     <!-- ABA 4: PAINEL ADM -->
@@ -645,9 +710,15 @@
             <h2 class="font-black text-base">🚀 Histórico Completo de Versões</h2>
             <p class="text-[11px] text-muted-pro font-semibold">Todas as evoluções do aplicativo desde o lançamento</p>
           </div>
-          <span class="bg-red-500/15 text-red-500 text-xs font-black px-3 py-1 rounded-full">v7.9 Missões</span>
+          <span class="bg-red-500/15 text-red-500 text-xs font-black px-3 py-1 rounded-full">v8.1 Perfil</span>
         </div>
 
+
+        <div class="border-l-4 border-[#FFC72C] pl-3.5 space-y-1">
+          <span class="text-[11px] font-extrabold text-amber-500 uppercase">Versão 8.1 • Perfil Premium</span>
+          <h4 class="font-black text-sm">👑 Cartão de jogador personalizável</h4>
+          <p class="text-xs text-muted-pro">Molduras por nível, títulos por conquista, três medalhas em destaque, estatísticas pessoais e histórico. Sem alterar o menu principal ou o XP existente.</p>
+        </div>
         <!-- Versão 7.9 -->
         <div class="border-l-4 border-amber-500 pl-3.5 space-y-1">
           <span class="text-[11px] font-extrabold text-amber-500 uppercase">Versão 7.9 • Missões e Conquistas</span>
