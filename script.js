@@ -17,35 +17,14 @@ let selectedRegAvatar = "🍔";
 const EVENT_END_TIMESTAMP = new Date("2026-10-25T23:59:59-03:00").getTime();
 
 // RECEITAS OFICIAIS DO SISTEMA DE COZINHA (MONTA-LANCHE)
-
 const KITCHEN_RECIPES = [
-
 {
-
-
-
 id: "smokehouse1", name: "🥓 Brabo SmokeHouse (1 Carne)", xp: 5,
-
 steps: ["Coroa Pão Brioche", "Molho Méquinese (1 oz)", "Cebola Crispy (10 g)", "Bacon em Tiras (3 fatias)", "Queijo Cheddar (1 fatia)", "Carne 4:1 (1 unidade)", "Queijo Cheddar (1 fatia)", "Bacon Triturado (10 g)", "Geleia Agridoce Defumada (2/3 oz)", "Base Pão Brioche"]
-
-
-
 },
-
-
-
 {
-
-
-
 id: "smokehouse2", name: "🔥 Brabo SmokeHouse (2 Carnes)", xp: 5,
-
-
-
 steps: ["Coroa Pão Brioche", "Molho Méquinese (1 oz)", "Cebola Crispy (10 g)", "Bacon em Tiras (3 fatias)", "Queijo Cheddar (1 fatia)", "Carne 4:1 (2 unidades)", "Queijo Cheddar (1 fatia)", "Bacon Triturado (10 g)", "Geleia Agridoce Defumada (2/3 oz)", "Base Pão Brioche"]
-
-
-
 },
 
 
@@ -221,161 +200,44 @@ const QUESTIONS_DB = [
 
 
 { id: 31, level: "Básico", q: "Qual o tempo de vida do molho cheddar na pistola?", a: "2 horas de ambientação e 6 horas de tempo de vida, totalizando 8 horas.", w: ["4 horas de ambientação e 4 horas de uso, totalizando 8 horas.", "2 horas de ambientação e 4 horas de uso, totalizando 6 horas.", "1 hora de ambientação e 5 horas de uso, totalizando 6 horas."] },
-
-
-
 { id: 32, level: "Básico", q: "Quais quantidades de Molho Maionese colocamos nos sanduíches McChicken, McChicken Bacon, Chicken Jr e McNífico Bacon?", a: "2/3 oz de molho maionese.", w: ["1/2 oz de molho maionese.", "1 oz de molho maionese.", "1/3 oz de molho maionese."] },
-
-
-
 { id: 33, level: "Básico", q: "Qual quantidade de Molho colocamos no Big Mac?", a: "1 tiro de 1/2 oz de molho na base e 1 no club, totalizando 1 oz de molho Big Mac.", w: ["1 tiro de 1 oz na base e 1 no club, totalizando 2 oz.", "1 tiro de 1/3 oz na base e 1 no club, totalizando 2/3 oz.", "2 tiros de 1/2 oz apenas na base, totalizando 1 oz."] },
-
-
-
 { id: 34, level: "Básico", q: "Quais cores de pegadores temos na linha e qual a sua finalidade?", a: "Pegador vermelho para carnes vermelhas com cebola, azul para carnes vermelhas sem cebola, verde para carnes brancas.", w: ["Pegador azul para carnes com cebola, vermelho para sem cebola, verde para carnes brancas.", "Pegador vermelho para todas as carnes vermelhas, amarelo para frango e verde para saladas.", "Pegador preto para carnes com cebola, azul para sem cebola e bege para carnes brancas."] },
-
-
-
 { id: 35, level: "Básico", q: "Qual procedimento devemos seguir logo após ativar as carnes na chapa?", a: "Sanitizar as mãos.", w: ["Trocar o avental da estação.", "Raspar o platen imediatamente.", "Limpar a borda da UHC."] },
-
-
-
 { id: 36, level: "Básico", q: "Qual ferramenta define os níveis de carnes que devemos ter nas gavetas?", a: "PLS.", w: ["KVS.", "R2P.", "DFS."] },
-
-
-
 { id: 37, level: "Básico", q: "Qual o ângulo de raspagem da chapa?", a: "15°.", w: ["30°.", "45°.", "20°."] },
-
-
-
 { id: 38, level: "Básico", q: "Qual a forma correta de ativar, salgar e remover as carnes?", a: "Da direita para a esquerda, da frente para o fundo.", w: ["Da esquerda para a direita, do fundo para a frente.", "Da direita para a esquerda, do fundo para a frente.", "Da esquerda para a direita, da frente para o fundo."] },
-
-
-
 { id: 39, level: "Básico", q: "Qual o empilhamento máximo de carnes de 10:1 na gaveta?", a: "3 carnes.", w: ["4 carnes.", "2 carnes.", "6 carnes."] },
-
-
-
 { id: 40, level: "Básico", q: "Qual o empilhamento máximo de carnes de 4:1 na gaveta?", a: "1 carne, não podemos empilhar carnes de 4:1.", w: ["2 carnes por fileira na gaveta.", "3 carnes, igual à carne 10:1.", "Até 4 carnes empilhadas."] },
-
-
-
 { id: 41, level: "Básico", q: "Quantas carnes de 10:1 podemos ativar no máximo em cada platen?", a: "6 carnes.", w: ["8 carnes.", "4 carnes.", "9 carnes."] },
-
-
-
 { id: 42, level: "Básico", q: "Quantas carnes de 4:1 podemos ativar no máximo em cada platen?", a: "4 carnes.", w: ["6 carnes.", "2 carnes.", "8 carnes."] },
-
-
-
 { id: 43, level: "Básico", q: "Quantas carnes de 4:1 podemos colocar no máximo em cada gaveta?", a: "4 carnes.", w: ["6 carnes.", "8 carnes.", "12 carnes."] },
-
-
-
 { id: 44, level: "Básico", q: "Quantas carnes de 10:1 podemos colocar no máximo em cada gaveta?", a: "12 carnes.", w: ["9 carnes.", "15 carnes.", "18 carnes."] },
-
-
-
 { id: 45, level: "Básico", q: "Quantas fatias de bacon podemos ativar por vez em cada platen?", a: "6 fatias.", w: ["4 fatias.", "8 fatias.", "10 fatias."] },
-
-
-
 { id: 46, level: "Básico", q: "Qual pegador devemos usar para ativar as carnes brancas?", a: "Pegador preto.", w: ["Pegador verde.", "Pegador bege sem dentes.", "Pegador azul."] },
-
-
-
 { id: 47, level: "Básico", q: "Para que serve o pegador bege sem dentes nos produtos fritos?", a: "Para auxiliar a remoção das carnes dos cestos.", w: ["Para ativar os empanados congelados no óleo.", "Para montar os sanduíches de frango na linha.", "Para retirar as tortas da estufa."] },
-
-
-
 { id: 48, level: "Básico", q: "Quais as rodadas máximas para ativar carnes brancas e tortas?", a: "McChicken e Chicken Jr 6 carnes, Crispy 4 carnes, Nuggets 24 bolinhas e Tortas 16 unidades.", w: ["McChicken e Chicken Jr 8 carnes, Crispy 6 carnes, Nuggets 20 bolinhas e Tortas 12 unidades.", "McChicken e Chicken Jr 4 carnes, Crispy 4 carnes, Nuggets 30 bolinhas e Tortas 16 unidades.", "McChicken e Chicken Jr 6 carnes, Crispy 6 carnes, Nuggets 16 bolinhas e Tortas 8 unidades."] },
-
-
-
 { id: 49, level: "Básico", q: "Qual o tempo de resfriamento das tortas?", a: "20 minutos.", w: ["15 minutos.", "10 minutos.", "30 minutos."] },
-
-
-
 { id: 50, level: "Básico", q: "Qual o tempo de fritura das tortas?", a: "6 minutos.", w: ["3 minutos e 15 segundos.", "5 minutos.", "8 minutos."] },
-
-
-
 { id: 51, level: "Básico", q: "Qual o tempo de vida das tortas prontas?", a: "2 horas.", w: ["4 horas.", "1 hora.", "90 minutos."] },
-
-
-
 { id: 52, level: "Básico", q: "Quais os dois sistemas de ativada que podemos usar nos produtos fritos?", a: "Manutenção e Recuperação.", w: ["Ativação Contínua e Lote Máximo.", "Produção Direta e Garagem.", "Preventiva e Corretiva."] },
-
-
-
 { id: 53, level: "Básico", q: "Por quanto tempo as carnes devem escorrer sobre o óleo antes de ir para a gaveta?", a: "5 a 10 segundos.", w: ["10 a 15 segundos.", "3 a 5 segundos.", "15 a 20 segundos."] },
-
-
-
 { id: 54, level: "Básico", q: "Quais EPIs a pessoa do LOPE deve usar para acessar as câmaras?", a: "Casaco, Calça, Bota, Touca (balaclava) e luvas.", w: ["Avental térmico, mangote, bota e redinha.", "Casaco térmico, óculos, avental e luva de borracha.", "Jaqueta térmica, luva de malha de aço e sapato comum."] },
-
-
-
 { id: 55, level: "Básico", q: "Qual a temperatura da câmara de resfriados, Walk-in?", a: "De 1 a 4°C.", w: ["De 1 a 7°C.", "De 0 a 5°C.", "De 2 a 8°C."] },
-
-
-
 { id: 56, level: "Básico", q: "Qual a temperatura da câmara de congelados, Chicago?", a: "De -18 a -23°C.", w: ["De -10 a -15°C.", "De -15 a -20°C.", "De -22 a -28°C."] },
-
-
-
 { id: 57, level: "Básico", q: "Por quanto tempo o queijo deve ambientar antes de ser estocado na mesa de condimentação?", a: "2 horas.", w: ["1 hora.", "3 horas.", "4 horas."] },
-
-
-
 { id: 58, level: "Básico", q: "Qual a temperatura do queijo após a ambientação de 2 horas?", a: "De 15° a 18°C, ideal 17,5°C.", w: ["De 10° a 14°C, ideal 12,5°C.", "De 18° a 22°C, ideal 20°C.", "De 12° a 16°C, ideal 15°C."] },
-
-
-
 { id: 59, level: "Básico", q: "Como sabemos quantos queijos devemos ambientar para cada hora?", a: "Usando a tabela chart, para saber quantos queijos vamos usar de acordo com as GCs por hora.", w: ["Contando a quantidade restante nas cubas a cada 30 min.", "Retirando sempre 2 blocos fixos por hora.", "Olhando apenas a tela do monitor KVS da linha."] },
-
-
-
 { id: 60, level: "Básico", q: "O que é o CARD LOPE?", a: "É a ficha de tarefas da estação LOPE.", w: ["É a tabela de temperaturas das câmaras frias.", "É o cartão de ponto de partida das carnes na chapa.", "É o guia de montagem dos sacos do Delivery."] },
-
-
-
 { id: 61, level: "Básico", q: "Qual o tempo de vida da cebola reidratada?", a: "24 horas, incluindo 1 hora de hidratação.", w: ["12 horas, incluindo 1 hora de hidratação.", "48 horas, incluindo 2 horas de hidratação.", "24 horas na mesa e 48 horas na câmara."] },
-
-
-
 { id: 62, level: "Básico", q: "Qual o tempo de vida do suco, após aberto?", a: "7 dias sob refrigeração.", w: ["5 dias sob refrigeração.", "3 dias sob refrigeração.", "10 dias sob refrigeração."] },
-
-
-
 { id: 63, level: "Básico", q: "Qual o tempo de vida do mix, após aberto?", a: "7 dias sob refrigeração.", w: ["3 dias sob refrigeração.", "5 dias sob refrigeração.", "24 horas sob refrigeração."] },
-
-
-
 { id: 64, level: "Básico", q: "Qual o tempo dos queijos cheddar e ementhal após abertos?", a: "24 horas sob refrigeração.", w: ["48 horas sob refrigeração.", "12 horas sob refrigeração.", "7 dias sob refrigeração."] },
-
-
-
 { id: 65, level: "Básico", q: "Qual o tempo de vida da alface e da cebola nas cubas?", a: "2 horas.", w: ["4 horas.", "1 hora.", "3 horas."] },
-
-
-
 { id: 66, level: "Básico", q: "Quando usamos cubas médias para alface na mesa de condimentação?", a: "Nas horas pico.", w: ["Durante a abertura e o fechamento da loja.", "Apenas no turno da madrugada.", "Em horários de baixo movimento."] },
-
-
-
 { id: 67, level: "Básico", q: "Qual a temperatura do óleo para carnes brancas e tortas?", a: "180°C.", w: ["168°C.", "175°C.", "185°C."] },
-
-
-
 { id: 68, level: "Básico", q: "Qual a temperatura do óleo para McFritas?", a: "168°C.", w: ["180°C.", "172°C.", "160°C."] },
-
-
-
-{ id: 69, level: "Básico", q: "Qual o tempo de fritura para carnes brancas?", a: "McChicken, Chicken Jr e Nuggets 3min e 15s; Crispy e Tortas 6 minutos.", w: ["McChicken, Chicken Jr e Nuggets 3min e 10s; Crispy e Tortas 5 minutos.", "McChicken, Chicken Jr e Nuggets 4 minutos; Crispy e Tortas 6 minutos.", "McChicken e Nuggets 2min e 45s; Crispy e Tortas 5min e 30s."] },
-
-
-
+{ id: 69, level: "Básico", q: "Qual o tempo de fritura para carnes brancas?", a: "McChicken, Chicken Jr e Nuggets 3min e 15s; Crispy e Tortas 6 minutos.", w: ["McChicken, Chicken Jr e Nuggets 3min e 10s; Crispy e Tortas 5 minutos.", "McChicken, Chicken Jr e Nuggets 4 minutos; Crispy e Tortas 6 minutos.", "McChicken e Nuggets 2min e 45s; Crispy e Tortas 5min e 30s."] }
 { id: 70, level: "Básico", q: "Qual o tempo de fritura para McFritas?", a: "3 min e 10 segundos.", w: ["3 min e 15 segundos.", "2 min e 50 segundos.", "3 min e 30 segundos."] },
 
 
@@ -4703,246 +4565,114 @@ function renderBookList() {
       <p class="font-extrabold text-xs leading-relaxed">${item.q}</p>
 
       <p class="hidden mt-2.5 pt-2.5 border-t border-slate-500/20 text-xs font-bold text-emerald-500">✅ ${item.a}</p>
-
     </div>
-
   `).join("");
-
 }
-
-
-
 function revealBookAnswer(btn) {
-
   playCardFlipSound();
-
   const answerEl = btn.parentElement.nextElementSibling.nextElementSibling;
-
   if (answerEl.classList.contains("hidden")) {
-
     answerEl.classList.remove("hidden");
-
     btn.textContent = "Ocultar";
-
   } else {
-
     answerEl.classList.add("hidden");
-
     btn.textContent = "Ver Resposta";
-
   }
-
 }
-
-
-
 function renderLeaderboard() {
-
   const podiumContainer = $("podiumTop3Container");
-
   const container = $("leaderboardContainer");
-
   const list = Object.values(users).filter(u => u && u.name && !u._deleted).sort((a, b) => (b.xp || 0) - (a.xp || 0));
-
-
-
   if (list.length === 0) {
-
     if (podiumContainer) podiumContainer.innerHTML = "";
-
     if (container) container.innerHTML = `<div class="p-6 text-center text-xs font-bold text-muted-pro subtle-box rounded-2xl border-dashed">Nenhum colaborador cadastrado ainda. Crie sua conta para estrear o Pódio!</div>`;
-
     return;
-
   }
-
-
-
   const first = list[0];
-
   const second = list[1] || null;
-
   const third = list[2] || null;
-
-
-
   if (podiumContainer) {
-
     podiumContainer.innerHTML = `
-
       <div class="flex flex-col items-center">
-
         ${second ? `
-
           <div class="mb-1">${renderAvatarBadge(second.avatar, "w-11 h-11", "text-xl", "subtle-box border-2 border-slate-300")}</div>
-
           <p class="font-black text-[10px] text-center truncate w-full px-1">${second.name}</p>
-
           <span class="text-[10px] font-extrabold text-red-500">${second.xp || 0} XP</span>
-
           <div class="w-full h-16 mt-2 rounded-t-2xl bg-gradient-to-b from-slate-300 to-slate-400 text-slate-900 flex flex-col items-center justify-center font-black shadow-inner">
-
             <span class="text-lg">🥈</span>
-
             <span class="text-[10px]">2º Lugar</span>
-
           </div>
-
         ` : `<div class="w-full h-16 mt-10 rounded-t-2xl subtle-box opacity-40 flex items-center justify-center text-xs font-bold">2º</div>`}
-
       </div>
-
-
-
       <div class="flex flex-col items-center">
-
         <span class="text-lg mb-0.5 float-slow">👑 ☕</span>
-
         <div class="mb-1">${renderAvatarBadge(first.avatar, "w-14 h-14", "text-2xl", "gold-gradient text-slate-950 border-2 border-white shadow-lg")}</div>
-
         <p class="font-black text-xs text-center truncate w-full px-1">${first.name}</p>
-
         <span class="text-[11px] font-black text-amber-500">${first.xp || 0} XP</span>
-
         <div class="w-full h-24 mt-2 rounded-t-2xl gold-gradient text-slate-950 flex flex-col items-center justify-center font-black shadow-lg border-t-2 border-white">
-
           <span class="text-2xl">🥇</span>
-
           <span class="text-[11px] uppercase tracking-wider">1º Lugar</span>
-
         </div>
-
       </div>
-
-
-
       <div class="flex flex-col items-center">
-
         ${third ? `
-
           <div class="mb-1">${renderAvatarBadge(third.avatar, "w-11 h-11", "text-xl", "subtle-box border-2 border-amber-700/50")}</div>
-
           <p class="font-black text-[10px] text-center truncate w-full px-1">${third.name}</p>
-
           <span class="text-[10px] font-extrabold text-red-500">${third.xp || 0} XP</span>
-
           <div class="w-full h-14 mt-2 rounded-t-2xl bg-gradient-to-b from-amber-600 to-amber-800 text-white flex flex-col items-center justify-center font-black shadow-inner">
-
             <span class="text-base">🥉</span>
-
             <span class="text-[10px]">3º Lugar</span>
-
           </div>
-
         ` : `<div class="w-full h-14 mt-12 rounded-t-2xl subtle-box opacity-40 flex items-center justify-center text-xs font-bold">3º</div>`}
-
       </div>
-
     `;
-
   }
-
-
-
   if (container) {
-
     const now = Date.now();
-
     container.innerHTML = list.map((u, idx) => {
-
       const medal = idx === 0 ? "🥇 ☕" : idx === 1 ? "🥈" : idx === 2 ? "🥉" : `${idx + 1}º`;
-
       const info = getLevelInfo(u.xp || 0);
-
       const role = u.role || u.station || "Atendente";
-
       const isOnline = (now - (u.lastSeen || 0)) < 25000;
-
       const onlineDot = isOnline
-
         ? `<span class="w-2.5 h-2.5 bg-emerald-500 rounded-full inline-block ml-1 shadow-sm" title="Online agora"></span>`
-
         : `<span class="w-2.5 h-2.5 bg-slate-400/50 rounded-full inline-block ml-1" title="Offline"></span>`;
-
-
-
       return `
-
         <div class="flex items-center justify-between p-3.5 rounded-2xl ${idx === 0 ? 'bg-amber-500/15 border-2 border-amber-500/50 shadow-sm' : 'subtle-box'}">
-
           <div class="flex items-center gap-3">
-
             <span class="font-black text-xs w-7 text-center">${medal}</span>
-
             ${renderAvatarBadge(u.avatar, "w-10 h-10", "text-xl", "pro-card")}
-
             <div>
-
               <div class="flex items-center gap-1.5 flex-wrap">
-
                 <p class="font-black text-xs">${u.name} ${onlineDot}</p>
-
                 <span class="text-[9px] font-extrabold px-2 py-0.5 rounded-full bg-red-500/15 text-red-500 uppercase">${role}</span>
-
               </div>
-
               <p class="text-[10px] text-muted-pro font-bold mt-0.5">${info.title}</p>
-
             </div>
-
           </div>
-
           <div class="text-right shrink-0">
-
             <span class="font-black text-xs text-red-500">${u.xp || 0} XP</span>
-
             <span class="block text-[10px] text-muted-pro font-semibold">${u.correctAnswers || 0} acertos</span>
-
           </div>
-
         </div>
-
       `;
-
     }).join("");
-
   }
-
 }
-
-
-
 function shareMyScoreWhatsApp() {
-
   playTabClickSound();
-
   if (!currentUserKey || !users[currentUserKey]) return;
-
   const u = users[currentUserKey];
-
   const info = getLevelInfo(u.xp || 0);
-
   const copyUser = { ...u, avatar: isPhotoAvatar(u.avatar) ? "🍔" : (u.avatar || "🍔") };
-
   const encodedUser = btoa(encodeURIComponent(JSON.stringify(copyUser)));
-
   const syncUrl = `${window.location.origin}${window.location.pathname}?syncUser=${encodeURIComponent(encodedUser)}`;
-
   const text = `🏆 *OLIMPÍADAS DO BÁSICO — VENTURE (FINALIZA 25/10)*\n👤 Colaborador: *${u.name}*\n🎖️ Cargo: ${u.role || 'Atendente'}\n⚡ Pontuação: *${u.xp || 0} XP* (${info.title})\n✅ Acertos: ${u.correctAnswers || 0}\n\n🔗 *Link de Sincronia no Ranking:* ${syncUrl}`;
-
   window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
-
 }
-
-
-
 // =========================================================================
-
 // PAINEL ADM (SENHA: 342005)
-
 // =========================================================================
-
-
 
 function unlockAdminPanel() {
 
@@ -5001,397 +4731,177 @@ function renderAdminUsersList() {
   const entries = Object.entries(users).filter(([k, u]) => u && u.name && !u._deleted).sort((a, b) => (b[1].xp || 0) - (a[1].xp || 0));
 
   $("adminStatsSummary").textContent = `Total: ${entries.length} colaborador(es) cadastrado(s)`;
-
-
-
   if (entries.length === 0) {
-
     container.innerHTML = `<p class="text-xs text-muted-pro text-center py-4 font-bold">Nenhum colaborador cadastrado.</p>`;
-
     return;
-
   }
-
-
-
   const now = Date.now();
-
   container.innerHTML = entries.map(([key, u], index) => {
-
     const lvl = getLevelInfo(u.xp || 0).level;
-
     const role = u.role || u.station || "Atendente";
-
     const isLocked = (u.heartsLockUntil || 0) > now;
-
     const heartsBadge = isLocked
-
       ? `<span class="text-[10px] font-bold text-red-500">⏳ Bloqueado (${formatTimeRemaining(u.heartsLockUntil - now)})</span>`
-
       : `<span class="text-[10px] font-bold text-emerald-500">${u.hearts !== undefined ? u.hearts : 5} ❤️ disponíveis</span>`;
-
-
-
     return `
-
       <div class="p-4 rounded-2xl subtle-box space-y-3">
-
         <div class="flex items-center justify-between">
-
           <div class="flex items-center gap-2.5">
-
             ${renderAvatarBadge(u.avatar, "w-11 h-11", "text-2xl", "pro-card")}
-
             <div>
-
               <span class="text-[10px] font-black px-2 py-0.5 rounded-full bg-slate-900 text-[#FFC72C]">#${index + 1} • Nível ${lvl} • ${role}</span>
-
               <h4 class="font-black text-xs mt-1">${u.name}</h4>
-
               <p class="text-[11px] text-muted-pro font-semibold">🔑 Senha: <span class="font-extrabold">${u.password || '1234'}</span> • ${heartsBadge}</p>
-
             </div>
-
           </div>
-
           <div class="text-right">
-
             <span class="text-sm font-black text-red-500">${u.xp || 0} XP</span>
-
             <span class="block text-[10px] text-muted-pro font-bold">${u.correctAnswers || 0} acertos</span>
-
           </div>
-
         </div>
-
-
-
         <div class="flex flex-wrap items-center gap-1.5 pt-2 border-t border-slate-500/20">
-
           <button onclick="adminAdjustXp('${key}', 100)" class="px-2.5 py-1.5 rounded-xl bg-emerald-600 text-white font-black text-[10px] btn-tap">+100 XP</button>
-
           <button onclick="adminAdjustXp('${key}', 500)" class="px-2.5 py-1.5 rounded-xl bg-emerald-800 text-white font-black text-[10px] btn-tap">+500 XP</button>
-
           <button onclick="adminAdjustXp('${key}', -100)" class="px-2.5 py-1.5 rounded-xl bg-amber-600 text-white font-black text-[10px] btn-tap">-100 XP</button>
-
           <button onclick="adminSetCustomXp('${key}')" class="px-2.5 py-1.5 rounded-xl bg-blue-600 text-white font-black text-[10px] btn-tap">✏️ Definir XP</button>
-
           <button onclick="adminRestoreHearts('${key}')" class="px-2.5 py-1.5 rounded-xl bg-pink-600 text-white font-black text-[10px] btn-tap">❤️ Restaurar Vidas</button>
-
           <button onclick="adminResetUser('${key}')" class="px-2.5 py-1.5 rounded-xl bg-slate-500/20 font-bold text-[10px] btn-tap">Zerar</button>
-
           <button onclick="adminDeleteUser('${key}')" class="px-2.5 py-1.5 rounded-xl bg-red-500/20 text-red-500 font-bold text-[10px] ml-auto btn-tap">🗑️ Excluir</button>
-
         </div>
-
       </div>
-
     `;
-
   }).join("");
-
 }
-
-
-
 function adminRestoreHearts(key) {
-
   playHitSuccessSound();
-
   if (!users[key]) return;
-
   users[key].hearts = 5;
-
   users[key].heartsLockUntil = 0;
-
   users[key].updatedAt = Date.now();
-
   users[key].adminOverrideAt = Date.now();
-
   if (key === currentUserKey) {
-
     setActiveHeartsState(5, 0);
-
     checkAndRenderCooldownScreen();
-
     loadNextQuizQuestion();
-
   }
-
   scheduleCloudSync(key, true);
-
   renderAdminUsersList();
-
 }
-
-
-
 function adminAdjustXp(key, delta) {
-
   if (!users[key]) return;
-
   const oldLevel = getLevelInfo(users[key].xp || 0).level;
-
   users[key].xp = Math.max(0, (users[key].xp || 0) + delta);
-
   const newLevel = getLevelInfo(users[key].xp || 0).level;
-
-
-
   users[key].updatedAt = Date.now();
-
   users[key].adminOverrideAt = Date.now();
-
-
-
   if (newLevel > oldLevel) {
-
     playMcDonaldsJingle();
-
   } else if (delta > 0) {
-
     playHitSuccessSound();
-
   } else {
-
     playTabClickSound();
-
   }
-
-
-
   scheduleCloudSync(key, true);
-
 }
-
-
-
 function adminSetCustomXp(key) {
-
   playTabClickSound();
-
   if (!users[key]) return;
-
   const val = prompt(`Digite o novo valor exato de XP para ${users[key].name}:`, users[key].xp || 0);
-
   if (val === null) return;
-
   const parsed = parseInt(val, 10);
-
   if (!isNaN(parsed)) {
-
     const oldLevel = getLevelInfo(users[key].xp || 0).level;
-
     users[key].xp = Math.max(0, parsed);
-
     const newLevel = getLevelInfo(users[key].xp || 0).level;
-
-
-
     users[key].updatedAt = Date.now();
-
     users[key].adminOverrideAt = Date.now();
-
-
-
     if (newLevel > oldLevel) {
-
       playMcDonaldsJingle();
-
     } else {
-
       playHitSuccessSound();
-
     }
-
     scheduleCloudSync(key, true);
-
   }
-
 }
-
-
-
 function adminResetUser(key) {
-
   playTabClickSound();
-
   if (!users[key]) return;
-
   if (!confirm(`Zerar o XP e os acertos de ${users[key].name}?`)) return;
-
   users[key].xp = 0;
-
   users[key].correctAnswers = 0;
-
   users[key].hearts = 5;
-
   users[key].heartsLockUntil = 0;
-
   users[key].updatedAt = Date.now();
-
   users[key].adminOverrideAt = Date.now();
-
   scheduleCloudSync(key, true);
-
 }
-
-
-
 function adminDeleteUser(key) {
-
   playTabClickSound();
-
   if (!users[key]) return;
-
   if (!confirm(`Excluir permanentemente ${users[key].name} do Ranking?`)) return;
-
   users[key]._deleted = true;
-
   users[key].updatedAt = Date.now();
-
   users[key].adminOverrideAt = Date.now();
-
   scheduleCloudSync(key, true);
-
 }
-
-
-
 function adminSaveMember() {
-
   const name = $("admNewName").value.trim().toUpperCase();
-
   const role = $("admNewRole").value;
-
   const pass = $("admNewPass").value.trim() || "1234";
-
   const xp = parseInt($("admNewXp").value || "0", 10);
-
   const hits = parseInt($("admNewHits").value || "0", 10);
-
-
-
   if (!name) return alert("Digite o nome do colaborador!");
-
   const key = name.toLowerCase();
-
-
-
   users[key] = {
-
     name: name,
-
     role: role,
-
     _deleted: false,
-
     avatar: users[key]?.avatar || "🍔",
-
     password: pass,
-
     xp: Math.max(0, xp),
-
     correctAnswers: Math.max(0, hits),
-
     hearts: 5,
-
     heartsLockUntil: 0,
-
     mistakes: users[key]?.mistakes || [],
-
     lastSeen: Date.now(),
-
     updatedAt: Date.now(),
-
     adminOverrideAt: Date.now()
-
   };
-
-
-
   playHitSuccessSound();
-
   scheduleCloudSync(key, true);
-
-
-
   $("admNewName").value = "";
-
   $("admNewPass").value = "";
-
   $("admNewXp").value = "";
-
   $("admNewHits").value = "";
-
   alert(`Colaborador ${name} (${role}) salvo com sucesso!`);
-
 }
-
-
-
 function switchMainTab(tab) {
-
   playTabClickSound();
-
   ["quiz", "book", "prizes", "admin", "updates"].forEach(t => {
-
     $(`tab-${t}`).classList.add("hidden");
-
     const navEl = $(`nav-${t}`);
-
     if (navEl) navEl.className = "nav-btn flex flex-col items-center py-1.5 rounded-2xl font-bold text-[10px]";
-
   });
-
   $(`tab-${tab}`).classList.remove("hidden");
-
   const activeNav = $(`nav-${tab}`);
-
   if (activeNav) activeNav.className = "nav-btn active-nav flex flex-col items-center py-1.5 rounded-2xl text-[10px]";
-
   if (tab === "prizes" || tab === "admin") fetchCloudHistorySafe(false);
-
 }
-
-
-
 window.onload = () => {
-
   initTheme();
-
   injectCountdownAndKitchenUI();
-
   rescuePreviousLocalRegistrations();
-
   renderAvatarSelector();
-
   syncActiveUserHeartsState();
-
   loadNextQuizQuestion();
-
   loadRandomFlashcard();
-
   renderBookList();
-
   refreshUIIfNeeded();
-
-
-
   if (currentUserKey && users[currentUserKey] && !users[currentUserKey]._deleted) {
-
     $("authModal").classList.add("hidden");
-
     updateHeaderUI();
-
   }
-
-
-
   initClusterSync();
-
   startHeartbeat();
-
   fetchCloudHistorySafe(true);
-
 };
