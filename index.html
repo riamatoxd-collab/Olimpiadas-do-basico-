@@ -7,25 +7,20 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="Olimpíadas Méqui" />
-  <title>Olimpíadas do Básico — Venture v8.3</title>
-
+  <title>Olimpíadas do Básico — Venture v8.4</title>
   <!-- Favicon Oficial: Arcos Dourados em Vetor SVG -->
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='24' fill='%23DA291C'/%3E%3Cpath fill='%23FFC72C' d='M50 46c-3.6-13.8-10.8-23.5-19.6-23.5-12 0-21.6 18.5-21.6 52.5h9.1c0-26.4 6.4-42.8 12.5-42.8 6 0 12 17.6 12.5 42.8H50zm0 0c3.6-13.8 10.8-23.5 19.6-23.5 12 0 21.6 18.5 21.6 52.5h-9.1c0-26.4-6.4-42.8-12.5-42.8-6 0-12 17.6-12.5 42.8H50z'/%3E%3C/svg%3E" />
-
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
   <!-- Biblioteca para Print Automático em PNG -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=83" />
+  <link rel="stylesheet" href="style.css?v=84" />
 </head>
 <body class="min-h-screen pb-36">
-
   <!-- Input invisível para galeria / PC -->
   <input type="file" id="hiddenGalleryInput" accept="image/*" class="hidden" onchange="handleGalleryFileSelected(event)" />
-
   <div id="xpToastContainer"></div>
-
   <!-- POP-UP DE CONVITE DE DUELO 1v1 -->
   <div id="duelInvitePopup" class="hidden fixed inset-0 bg-slate-950/85 backdrop-blur-md z-50 flex items-center justify-center p-4">
     <div class="pro-card rounded-[2rem] max-w-sm w-full p-6 text-center space-y-4 border-4 border-[#FFC72C] shadow-2xl">
@@ -45,7 +40,6 @@
       </div>
     </div>
   </div>
-
   <!-- MODAL DA ARENA DE DUELO 1 vs 1 -->
   <div id="duelArenaModal" class="hidden fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 flex items-center justify-center p-4 overflow-y-auto">
     <div class="pro-card rounded-[2rem] max-w-md w-full p-5 border-2 border-[#FFC72C] shadow-2xl space-y-4 my-auto">
@@ -53,7 +47,6 @@
         <span class="text-xs font-black text-amber-500 uppercase tracking-wider">⚔️ Arena 1 vs 1 · Vitória +100 XP</span>
         <button onclick="leaveActiveDuel()" class="text-xs font-extrabold text-red-500 bg-red-500/10 px-3 py-1 rounded-xl btn-tap">Sair ✕</button>
       </div>
-
       <div class="grid grid-cols-3 items-center gap-2 subtle-box p-3 rounded-2xl text-center">
         <div>
           <div id="duelP1Avatar" class="text-2xl flex justify-center">🍔</div>
@@ -70,7 +63,6 @@
           <span id="duelP2Score" class="inline-block mt-1 px-3 py-0.5 rounded-full bg-amber-500 text-slate-950 font-black text-sm">0</span>
         </div>
       </div>
-
       <div id="duelWaitingBox" class="hidden py-6 text-center space-y-3">
         <div class="text-4xl float-slow">📡⏳</div>
         <p id="duelWaitingText" class="font-extrabold text-sm">Aguardando o colega aceitar o convite no celular dele...</p>
@@ -78,13 +70,11 @@
           📲 Chamar Oponente pelo WhatsApp
         </button>
       </div>
-
       <div id="duelQuestionArea" class="hidden space-y-3">
         <p id="duelQuestionText" class="font-extrabold text-sm leading-snug subtle-box p-3.5 rounded-2xl"></p>
         <div id="duelOptionsContainer" class="space-y-2"></div>
         <div id="duelStatusBanner" class="hidden p-3 rounded-2xl text-xs font-extrabold text-center"></div>
       </div>
-
       <div id="duelWinnerBox" class="hidden py-6 text-center space-y-3">
         <div class="text-5xl float-slow">🏆👑</div>
         <h3 id="duelWinnerTitle" class="text-xl font-black text-amber-500">Fim do Duelo!</h3>
@@ -95,7 +85,6 @@
       </div>
     </div>
   </div>
-
   <!-- V8.2: cartão público dos colegas, sem controles de edição -->
   <div id="publicProfileModal" class="public-profile-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="publicProfileName" aria-describedby="publicProfileHelp" onclick="if(event.target===this)closePublicProfile()">
     <div class="public-profile-panel" tabindex="-1" id="publicProfilePanel">
@@ -139,7 +128,6 @@
       <p id="publicProfileDuelHint" class="public-profile-hint">O colega precisa estar com o site aberto para receber o convite.</p>
     </div>
   </div>
-
   <!-- MODAL DE REVISÃO DE DÚVIDAS -->
   <div id="reviewMistakesModal" class="hidden fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 flex items-center justify-center p-4 overflow-y-auto">
     <div class="pro-card rounded-[2rem] max-w-md w-full p-5 border-2 border-purple-500 shadow-2xl space-y-4 my-auto">
@@ -150,12 +138,10 @@
         </div>
         <button onclick="closeReviewModal()" class="text-xs font-extrabold text-muted-pro subtle-box px-3 py-1 rounded-xl btn-tap">Fechar ✕</button>
       </div>
-
       <div class="flex items-center justify-between text-xs font-bold">
         <span id="reviewMetaBadge" class="bg-purple-500/15 text-purple-400 px-3 py-1 rounded-full">Questão</span>
         <span id="reviewRemainingBadge" class="text-emerald-500">Restam: 0</span>
       </div>
-
       <p id="reviewQuestionText" class="font-extrabold text-sm leading-snug subtle-box p-4 rounded-2xl"></p>
       <div id="reviewOptionsContainer" class="space-y-2"></div>
       <div id="reviewFeedbackBox" class="hidden p-3 rounded-2xl text-xs font-extrabold"></div>
@@ -164,7 +150,6 @@
       </button>
     </div>
   </div>
-
   <!-- MODAL DE LOGIN E CADASTRO -->
   <div id="authModal" class="fixed inset-0 bg-slate-950/85 backdrop-blur-md z-50 flex items-center justify-center p-4 overflow-y-auto">
     <div class="pro-card rounded-[2.25rem] max-w-md w-full p-6 shadow-2xl border-2 border-[#FFC72C] my-auto">
@@ -175,16 +160,13 @@
           </svg>
         </div>
         <h1 class="text-2xl font-black tracking-tight">OLIMPÍADAS DO BÁSICO</h1>
-        <p class="text-xs text-muted-pro font-semibold mt-0.5">Plataforma Venture • Versão 8.3 🏆</p>
+        <p class="text-xs text-muted-pro font-semibold mt-0.5">Plataforma Venture • Versão 8.4 🏆</p>
       </div>
-
       <div class="flex rounded-2xl subtle-box p-1.5 mb-5">
         <button id="tabLoginBtn" onclick="switchAuthTab('login')" class="flex-1 py-2.5 text-xs font-extrabold rounded-xl bg-[#DA291C] text-white shadow-sm btn-tap">ENTRAR</button>
         <button id="tabRegisterBtn" onclick="switchAuthTab('register')" class="flex-1 py-2.5 text-xs font-extrabold rounded-xl text-muted-pro btn-tap">CRIAR CONTA</button>
       </div>
-
       <div id="authError" class="hidden mb-4 p-3 rounded-2xl bg-red-500/10 border border-red-500/30 text-red-500 text-xs font-bold text-center"></div>
-
       <div id="loginForm" class="space-y-4">
         <div>
           <label class="text-xs font-bold block mb-1">Seu Nome ou Apelido</label>
@@ -198,7 +180,6 @@
           ENTRAR NO TREINAMENTO 🚀
         </button>
       </div>
-
       <div id="registerForm" class="hidden space-y-3.5">
         <div>
           <label class="text-xs font-bold block mb-1.5">1. Escolha Foto da Galeria ou Avatar</label>
@@ -228,7 +209,6 @@
       </div>
     </div>
   </div>
-
   <!-- MODAL DE TROCAR FOTO/AVATAR -->
   <div id="avatarPickerModal" class="hidden fixed inset-0 bg-slate-950/75 backdrop-blur-sm z-50 flex items-center justify-center p-4">
     <div class="pro-card rounded-3xl max-w-sm w-full p-5 shadow-2xl space-y-4">
@@ -240,7 +220,6 @@
       <button onclick="closeAvatarModal()" class="w-full py-2.5 rounded-xl subtle-box font-bold text-xs btn-tap">Fechar</button>
     </div>
   </div>
-
   <!-- CABEÇALHO DO COLABORADOR COM BOLINHA VERDE ONLINE -->
   <header class="app-header mc-gradient text-white">
     <div class="max-w-2xl mx-auto">
@@ -260,7 +239,6 @@
             <p id="userRankTitle" class="text-xs text-[#FFC72C] font-extrabold mt-0.5">🔰 Nível 1 — Iniciante</p>
           </div>
         </div>
-
         <div class="flex items-center gap-1.5">
           <button onclick="toggleDarkMode()" id="themeToggleBtn" title="Alternar Tema" class="bg-slate-950/30 hover:bg-slate-950/45 w-9 h-9 rounded-2xl flex items-center justify-center text-sm border border-white/15 btn-tap">
             🌙
@@ -274,7 +252,6 @@
           </button>
         </div>
       </div>
-
       <div class="bg-slate-950/40 rounded-full h-3.5 w-full overflow-hidden p-0.5 border border-white/15">
         <div id="xpProgressBar" class="gold-gradient h-full rounded-full transition-all duration-500 shadow-sm" style="width: 8%"></div>
       </div>
@@ -284,9 +261,7 @@
       </div>
     </div>
   </header>
-
   <main class="app-main max-w-2xl mx-auto px-4 mt-6">
-
     <!-- ABA 1: SIMULADO INTERATIVO + DUELO + REVISÃO -->
     <!-- TELA PRINCIPAL: APENAS O SIMULADO E INDICADORES -->
     <section id="tab-quiz" class="app-screen space-y-5" aria-label="Simulado">
@@ -315,7 +290,6 @@
           <span id="quizHeartsInfo" class="font-black text-xs text-red-500 mt-1 block tracking-tighter">❤️❤️❤️❤️❤️</span>
         </div>
       </div>
-
       <!-- SIMULADO -->
       <div class="pro-card rounded-3xl p-5">
         <div class="flex flex-wrap items-center justify-between gap-2 mb-4 pb-3 border-b border-slate-200/50">
@@ -330,12 +304,10 @@
             <option value="Avançado">Nível Avançado</option>
           </select>
         </div>
-
         <div class="flex items-center justify-between text-xs font-extrabold mb-3">
           <span id="quizQuestionMeta" class="bg-amber-500/15 text-amber-500 border border-amber-500/30 px-3 py-1 rounded-full">Questão #1</span>
           <span class="text-[11px] text-muted-pro font-bold">Selecione A, B, C ou D</span>
         </div>
-
         <!-- RECARGA DE 10 MINUTOS -->
         <div id="quizCooldownBox" class="hidden p-6 rounded-3xl bg-red-500/10 border-2 border-red-500/30 text-center space-y-3 my-2">
           <div class="text-4xl float-slow">💔⏳</div>
@@ -350,7 +322,6 @@
             💡 Enquanto recarrega, revise em <strong>Revisar Minhas Dúvidas</strong>, no <strong>Duelo 1 vs 1</strong> ou no <span class="text-red-500 underline cursor-pointer" onclick="switchMainTab('book')">Book Oficial</span>!
           </p>
         </div>
-
         <div id="quizActiveArea" class="space-y-4">
           <p id="quizQuestionText" class="font-extrabold text-base leading-snug subtle-box p-4 rounded-2xl"></p>
           <div id="quizOptions" class="space-y-2.5"></div>
@@ -360,13 +331,11 @@
           </button>
         </div>
       </div>
-
       <div class="shortcut-row" aria-label="Acesso rápido">
         <button type="button" onclick="switchMainTab('training')" class="shortcut-link">🍔 Outros treinos <span aria-hidden="true">↗</span></button>
         <button type="button" onclick="switchMainTab('missions')" class="shortcut-link">🏅 Minhas missões <span aria-hidden="true">↗</span></button>
       </div>
     </section>
-
     <!-- TELA DE ATIVIDADES: MOSTRA UMA POR VEZ -->
     <section id="tab-training" class="app-screen hidden space-y-5" aria-label="Treinos">
       <div class="page-heading">
@@ -416,7 +385,6 @@
             </div>
           </div>
         </div>
-
         <div class="flex gap-2 pt-1">
           <select id="duelOpponentSelect" class="flex-1 px-3.5 py-2.5 rounded-2xl subtle-box text-xs font-extrabold focus:outline-none focus:border-amber-500">
             <option value="">Selecione quem você quer desafiar...</option>
@@ -437,7 +405,6 @@
           </div>
           <button onclick="loadRandomFlashcard()" class="text-xs font-extrabold text-red-500 bg-red-500/10 hover:bg-red-500/20 px-3 py-1.5 rounded-xl btn-tap">Sortear 🔄</button>
         </div>
-
         <div onclick="flipFlashcard()" class="flip-container cursor-pointer">
           <div id="fcFlipInner" class="flip-inner">
             <div class="flip-front bg-gradient-to-br from-amber-500/15 to-orange-500/10 border-2 border-amber-500/40 text-center space-y-2">
@@ -453,7 +420,6 @@
       </div>
       </div>
     </section>
-
     <!-- MISSÕES: UM LOCAL DEDICADO PARA PROGRESSO E MEDALHAS -->
     <section id="tab-missions" class="app-screen hidden space-y-5" aria-label="Missões e conquistas">
       <div class="page-heading">
@@ -492,8 +458,6 @@
       </section>
       <div class="shortcut-row"><button type="button" onclick="switchMainTab('quiz')" class="shortcut-link">🎯 Voltar ao simulado <span aria-hidden="true">↗</span></button></div>
     </section>
-
-
     <!-- PERFIL PREMIUM: acesso pelo avatar e pela aba Mais; sem aumentar o menu inferior -->
     <section id="tab-profile" class="app-screen hidden space-y-5" aria-label="Meu perfil de jogador">
       <div class="page-heading">
@@ -521,7 +485,6 @@
         <div class="premium-featured" id="premiumFeatured" aria-label="Medalhas em destaque"></div>
         <button type="button" class="premium-edit-avatar" onclick="openAvatarModal()">📸 Trocar foto ou avatar</button>
       </div>
-
       <section class="premium-section" aria-label="Minhas estatísticas">
         <div class="premium-section-head"><h2>📊 Seu desempenho</h2><p>Dados já registrados nos treinamentos</p></div>
         <div class="premium-stats-grid">
@@ -532,7 +495,6 @@
         </div>
         <p class="premium-stats-foot" id="premiumStatsFoot">Seus registros aparecem aqui conforme você pratica.</p>
       </section>
-
       <section class="premium-section" aria-label="Personalização do perfil">
         <div class="premium-section-head"><h2>✨ Personalize seu cartão</h2><p>Desbloqueie visuais conforme evoluir.</p></div>
         <details class="premium-disclosure" id="premiumFramesDetails">
@@ -544,19 +506,16 @@
           <div id="premiumTitleChoices" class="premium-cosmetics-grid"></div>
         </details>
       </section>
-
       <section class="premium-section" aria-label="Medalhas conquistadas">
         <div class="premium-section-head"><h2>🏅 Coleção de medalhas</h2><p id="premiumMedalSummary">Conquistas disponíveis</p></div>
         <div id="premiumMedalGrid" class="premium-medals-grid"></div>
         <p class="premium-stats-foot">Você pode destacar até 3 medalhas no cartão de jogador.</p>
       </section>
-
       <details class="premium-disclosure premium-history" id="premiumHistoryDetails">
         <summary>📜 Histórico de conquistas <span>Últimas conquistas</span></summary>
         <div id="premiumHistory" class="premium-history-list"></div>
       </details>
     </section>
-
     <!-- ABA 2: BOOK OFICIAL -->
     <section id="tab-book" class="app-screen hidden space-y-4">
       <div class="page-heading"><div><span class="page-eyebrow">CONSULTA E ESTUDO</span><h1>Book oficial 📖</h1><p>Pesquise os padrões e as perguntas do treinamento.</p></div></div>
@@ -576,7 +535,6 @@
       </div>
       <div id="bookQuestionsContainer" class="space-y-2.5"></div>
     </section>
-
     <!-- ABA 3: RANKING COM PÓDIO 3D + HISTÓRICO DE DUELOS + PRINT WHATSAPP -->
     <section id="tab-prizes" class="app-screen hidden space-y-5">
       <div class="page-heading"><div><span class="page-eyebrow">COMPETIÇÃO DA LOJA</span><h1>Ranking geral 🏆</h1><p>Toque em Ver perfil para conhecer as medalhas e desafiar seus colegas.</p></div></div>
@@ -590,7 +548,6 @@
           </div>
         </div>
       </div>
-
       <!-- ÁREA DE PRINT DO RANKING -->
       <div id="rankingPrintArea" class="pro-card rounded-3xl p-5 space-y-4">
         <div class="flex items-center justify-between flex-wrap gap-2">
@@ -602,14 +559,11 @@
             🔄 Atualizar Agora
           </button>
         </div>
-
         <!-- Pódio Top 3 -->
         <div id="podiumTop3Container" class="grid grid-cols-3 gap-2 items-end pt-4 pb-2"></div>
-
         <!-- Lista Geral -->
         <div id="leaderboardContainer" class="space-y-2.5"></div>
       </div>
-
       <details class="rank-disclosure">
         <summary>⚔️ Histórico de duelos<span aria-hidden="true">⌄</span></summary>
       <!-- HISTÓRICO DE DUELOS 1 vs 1 -->
@@ -623,18 +577,15 @@
         </div>
       </div>
       </details>
-
       <!-- BOTÕES WHATSAPP -->
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
         <button id="btnPrintRanking" onclick="captureAndShareRankingImage()" class="w-full text-slate-950 font-black py-3.5 px-4 rounded-2xl text-xs flex items-center justify-center gap-2 btn-anim-yellow btn-shine">
           <span>📸 Tirar Print do Ranking e Mandar no WhatsApp</span>
         </button>
-
         <button onclick="shareMyScoreWhatsApp()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-black py-3.5 px-4 rounded-2xl text-xs flex items-center justify-center gap-2 shadow-md btn-tap">
           <span>📲 Enviar Meu Placar Individual no WhatsApp</span>
         </button>
       </div>
-
       <details class="rank-disclosure">
         <summary>📈 Conhecer as 7 patentes de XP<span aria-hidden="true">⌄</span></summary>
       <!-- Tabela das 7 Patentes -->
@@ -675,9 +626,7 @@
         </div>
       </div>
       </details>
-
     </section>
-
     <!-- MENU: ACESSO A FUNÇÕES MENOS USADAS -->
     <section id="tab-more" class="app-screen hidden space-y-5" aria-label="Mais opções">
       <div class="page-heading"><div><span class="page-eyebrow">TUDO ORGANIZADO</span><h1>Mais opções <span aria-hidden="true">✨</span></h1><p>Materiais de consulta e recursos de gerenciamento.</p></div></div>
@@ -688,9 +637,8 @@
         <button type="button" onclick="switchMainTab('admin')" class="more-menu-item"><span class="more-menu-icon" aria-hidden="true">⚙️</span><span class="more-menu-copy"><strong>Painel ADM</strong><small>Gerenciamento de colaboradores e XP</small></span><span class="more-chevron" aria-hidden="true">›</span></button>
         <button type="button" onclick="switchMainTab('updates')" class="more-menu-item"><span class="more-menu-icon" aria-hidden="true">🔔</span><span class="more-menu-copy"><strong>Novidades e versões</strong><small>O que mudou no aplicativo</small></span><span class="more-chevron" aria-hidden="true">›</span></button>
       </div>
-      <div class="more-info"><strong>Olimpíadas do Básico · Venture</strong><span>Versão 8.3 · Central do Treinador + 100 XP no 1v1</span></div>
+      <div class="more-info"><strong>Olimpíadas do Básico · Venture</strong><span>Versão 8.4 · Sequência salva automaticamente</span></div>
     </section>
-
     <!-- V8.3: CENTRAL DO TREINADOR (restrição de interface; sem autorização de servidor) -->
     <section id="tab-trainer" class="app-screen hidden space-y-4" aria-label="Central do Treinador">
       <div class="page-heading"><div><span class="page-eyebrow">GESTÃO DO TREINAMENTO</span><h1>Central do Treinador 🎓</h1><p>Publique conteúdos e acompanhe as atividades da equipe.</p></div></div>
@@ -753,7 +701,6 @@
         <p class="trainer-security-note">⚠️ Esta Central reutiliza a senha do ADM e a sincronização pública atuais. Isso não é uma proteção segura contra alterações externas. Para premiações reais, será necessário um servidor com autenticação e validação do XP.</p>
       </div>
     </section>
-
     <!-- ABA 4: PAINEL ADM -->
     <section id="tab-admin" class="app-screen hidden space-y-4">
       <div class="page-heading"><div><span class="page-eyebrow">ACESSO RESTRITO</span><h1>Administração ⚙️</h1><p>Gerencie os dados da equipe.</p></div></div>
@@ -770,7 +717,6 @@
           DESBLOQUEAR PAINEL ADM 🔓
         </button>
       </div>
-
       <div id="adminDashboard" class="hidden space-y-4">
         <div class="dark-gradient text-white rounded-3xl p-5 shadow-xl flex items-center justify-between">
           <div>
@@ -780,7 +726,6 @@
           </div>
           <button onclick="lockAdminPanel()" class="bg-white/10 hover:bg-white/20 text-xs font-bold px-3.5 py-2 rounded-xl border border-white/15 btn-tap">Bloquear 🔒</button>
         </div>
-
         <div class="pro-card rounded-3xl p-5 space-y-3">
           <h3 class="font-black text-sm">➕ Cadastrar / Atualizar Colaborador</h3>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
@@ -802,7 +747,6 @@
             SALVAR E TRANSMITIR PARA TODOS OS CELULARES ✅
           </button>
         </div>
-
         <div class="pro-card rounded-3xl p-5 space-y-3">
           <div class="flex items-center justify-between">
             <h3 class="font-black text-sm">👥 Equipe Cadastrada</h3>
@@ -812,7 +756,6 @@
         </div>
       </div>
     </section>
-
     <!-- ABA 5: VERSÕES -->
     <section id="tab-updates" class="app-screen hidden space-y-4">
       <div class="page-heading"><div><span class="page-eyebrow">NOVIDADES</span><h1>Versões 🔔</h1><p>Conheça as melhorias do aplicativo.</p></div></div>
@@ -823,10 +766,9 @@
             <h2 class="font-black text-base">🚀 Histórico Completo de Versões</h2>
             <p class="text-[11px] text-muted-pro font-semibold">Todas as evoluções do aplicativo desde o lançamento</p>
           </div>
-          <span class="bg-red-500/15 text-red-500 text-xs font-black px-3 py-1 rounded-full">v8.3 Treinador</span>
+          <span class="bg-red-500/15 text-red-500 text-xs font-black px-3 py-1 rounded-full">v8.4 Sequência salva</span>
         </div>
-
-
+        <div class="border-l-4 border-[#FFC72C] pl-3.5 space-y-1"><span class="text-[11px] font-extrabold text-amber-500 uppercase">Versão 8.4 • Sequência Persistente</span><h4 class="font-black text-sm">🔥 Sua sequência de acertos não some ao sair</h4><p class="text-xs text-muted-pro">A sequência fica no cadastro e é restaurada ao reabrir o site ou fazer login. Apenas uma resposta errada (ou zerar pelo ADM) reinicia a sequência. Código organizado e sem linhas vazias em excesso.</p></div>
         <div class="border-l-4 border-[#FFC72C] pl-3.5 space-y-1"><span class="text-[11px] font-extrabold text-amber-500 uppercase">Versão 8.3 • Central do Treinador</span><h4 class="font-black text-sm">🎓 Perguntas, avisos, desafio especial e 100 XP ao vencer o 1v1</h4><p class="text-xs text-muted-pro">Banco extra de perguntas, comunicado da equipe, desafio com progresso individual e recompensa única por vitória no duelo.</p></div>
         <div class="border-l-4 border-[#FFC72C] pl-3.5 space-y-1">
           <span class="text-[11px] font-extrabold text-amber-500 uppercase">Versão 8.2 • Perfis Públicos</span>
@@ -844,7 +786,6 @@
           <h4 class="font-black text-sm">🎯 Metas diárias, semanais e medalhas</h4>
           <p class="text-xs text-muted-pro font-semibold">Bônus de XP por desafios concluídos, coleção de 8 medalhas e progresso por colaborador. Compatível com o histórico de XP e com as contas anteriores.</p>
         </div>
-
         <div class="border-l-4 border-[#DA291C] pl-3.5 space-y-1">
           <span class="text-[11px] font-extrabold text-red-500 uppercase">Versão 8.0 • Interface organizada</span>
           <h4 class="font-black text-sm">Navegação em áreas de estudo</h4>
@@ -860,9 +801,7 @@
         </div>
       </div>
     </section>
-
   </main>
-
   <!-- NAVEGAÇÃO INFERIOR: CINCO ÁREAS CLARAS E OBJETIVAS -->
   <div class="bottom-nav-shell">
     <nav class="bottom-nav" aria-label="Navegação principal">
@@ -874,6 +813,6 @@
     </nav>
   </div>
 <script src="questions.js"></script>
-  <script src="script.js?v=83"></script>
+  <script src="script.js?v=84"></script>
 </body>
 </html>

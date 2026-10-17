@@ -1,7 +1,6 @@
 /* =========================================================================
-   OLIMPÍADAS DO BÁSICO — VENTURE (FOLHA DE ESTILO OFICIAL: style.css v7.6)
+   OLIMPÍADAS DO BÁSICO — VENTURE (FOLHA DE ESTILO OFICIAL: style.css v8.4)
    ========================================================================= */
-
 :root {
   --mc-red: #DA291C;
   --mc-red-dark: #88130b;
@@ -14,7 +13,6 @@
   --text-muted: #64748b;
   --border-color: #e2e8f0;
 }
-
 body.dark-mode {
   --bg-main: #090d16;
   --bg-card: #131b2e;
@@ -23,7 +21,6 @@ body.dark-mode {
   --text-muted: #94a3b8;
   --border-color: #26334d;
 }
-
 body {
   font-family: 'Plus Jakarta Sans', sans-serif;
   background-color: var(--bg-main);
@@ -32,17 +29,15 @@ body {
   overflow-x: hidden;
   transition: background-color 0.25s ease, color 0.25s ease;
 }
-
-.mc-gradient { 
-  background: linear-gradient(135deg, var(--mc-red) 0%, var(--mc-red-dark) 100%); 
+.mc-gradient {
+  background: linear-gradient(135deg, var(--mc-red) 0%, var(--mc-red-dark) 100%);
 }
-.gold-gradient { 
-  background: linear-gradient(135deg, #FFE066 0%, var(--mc-yellow) 50%, var(--mc-gold) 100%); 
+.gold-gradient {
+  background: linear-gradient(135deg, #FFE066 0%, var(--mc-yellow) 50%, var(--mc-gold) 100%);
 }
-.dark-gradient { 
-  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); 
+.dark-gradient {
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
 }
-
 .pro-card {
   background-color: var(--bg-card);
   border: 1px solid var(--border-color);
@@ -50,17 +45,14 @@ body {
   transform: translateZ(0);
   transition: background-color 0.25s ease, border-color 0.25s ease;
 }
-
 .subtle-box {
   background-color: var(--bg-subtle);
   border: 1px solid var(--border-color);
   color: var(--text-main);
 }
-
-.text-muted-pro { 
-  color: var(--text-muted); 
+.text-muted-pro {
+  color: var(--text-muted);
 }
-
 .btn-anim-red {
   position: relative;
   overflow: hidden;
@@ -68,15 +60,14 @@ body {
   box-shadow: 0 5px 0 #991b1b, 0 8px 16px rgba(218, 41, 28, 0.3);
   transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.18s ease;
 }
-.btn-anim-red:hover { 
-  transform: translateY(-2px); 
-  box-shadow: 0 7px 0 #991b1b, 0 12px 20px rgba(218, 41, 28, 0.38); 
+.btn-anim-red:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 7px 0 #991b1b, 0 12px 20px rgba(218, 41, 28, 0.38);
 }
-.btn-anim-red:active { 
-  transform: translateY(4px) scale(0.98); 
-  box-shadow: 0 1px 0 #991b1b; 
+.btn-anim-red:active {
+  transform: translateY(4px) scale(0.98);
+  box-shadow: 0 1px 0 #991b1b;
 }
-
 .btn-anim-yellow {
   position: relative;
   overflow: hidden;
@@ -84,15 +75,14 @@ body {
   box-shadow: 0 5px 0 #b45309, 0 8px 16px rgba(255, 199, 44, 0.32);
   transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.18s ease;
 }
-.btn-anim-yellow:hover { 
-  transform: translateY(-2px); 
-  box-shadow: 0 7px 0 #b45309, 0 12px 20px rgba(255, 199, 44, 0.4); 
+.btn-anim-yellow:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 7px 0 #b45309, 0 12px 20px rgba(255, 199, 44, 0.4);
 }
-.btn-anim-yellow:active { 
-  transform: translateY(4px) scale(0.98); 
-  box-shadow: 0 1px 0 #b45309; 
+.btn-anim-yellow:active {
+  transform: translateY(4px) scale(0.98);
+  box-shadow: 0 1px 0 #b45309;
 }
-
 .btn-shine::after {
   content: "";
   position: absolute;
@@ -107,7 +97,6 @@ body {
   35% { left: 140%; }
   100% { left: 140%; }
 }
-
 .option-btn {
   background-color: var(--bg-card);
   border: 2px solid var(--border-color);
@@ -125,30 +114,26 @@ body {
   transform: translateY(2px) scale(0.98);
   box-shadow: 0 1px 0 var(--border-color);
 }
-
 @keyframes slideUpFade {
   from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: translateY(0); }
 }
-
-.anim-pop-correct { 
-  animation: popSuccess 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; 
+.anim-pop-correct {
+  animation: popSuccess 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
 }
 @keyframes popSuccess {
   0% { transform: scale(1); }
   50% { transform: scale(1.03); }
   100% { transform: scale(1); }
 }
-
-.anim-shake-wrong { 
-  animation: shakeError 0.38s ease-in-out forwards; 
+.anim-shake-wrong {
+  animation: shakeError 0.38s ease-in-out forwards;
 }
 @keyframes shakeError {
   0%, 100% { transform: translateX(0); }
   20%, 60% { transform: translateX(-5px); }
   40%, 80% { transform: translateX(5px); }
 }
-
 .flip-container { perspective: 1000px; }
 .flip-inner {
   position: relative;
@@ -171,7 +156,6 @@ body {
   border-radius: 1.25rem;
 }
 .flip-back { transform: rotateY(180deg); }
-
 .xp-toast {
   position: fixed;
   top: 90px;
@@ -186,16 +170,14 @@ body {
   80% { opacity: 1; transform: translateY(-20px) scale(1); }
   100% { opacity: 0; transform: translateY(-35px) scale(0.9); }
 }
-
-.btn-tap { 
-  transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1); 
+.btn-tap {
+  transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 .btn-tap:hover { transform: translateY(-1px); }
 .btn-tap:active { transform: scale(0.92); }
-
-.nav-btn { 
-  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1); 
-  color: var(--text-muted); 
+.nav-btn {
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  color: var(--text-muted);
 }
 .nav-btn:active { transform: scale(0.88); }
 .nav-btn.active-nav {
@@ -204,13 +186,12 @@ body {
   font-weight: 800;
   transform: translateY(-2px);
 }
-.nav-btn.active-nav .nav-icon { 
-  transform: scale(1.18); 
-  display: inline-block; 
+.nav-btn.active-nav .nav-icon {
+  transform: scale(1.18);
+  display: inline-block;
 }
-
-.avatar-option { 
-  transition: all 0.18s cubic-bezier(0.34, 1.56, 0.64, 1); 
+.avatar-option {
+  transition: all 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 .avatar-option:active { transform: scale(0.9); }
 .avatar-option.selected {
@@ -219,19 +200,15 @@ body {
   transform: scale(1.1);
   box-shadow: 0 4px 12px rgba(218, 41, 28, 0.22);
 }
-
-.float-slow { 
-  animation: floatSlow 3s ease-in-out infinite; 
+.float-slow {
+  animation: floatSlow 3s ease-in-out infinite;
 }
 @keyframes floatSlow {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-4px); }
 }
-
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-
-
 /* =========================================================================
    MISSÕES E CONQUISTAS — V7.9 (cores acompanham o tema claro/escuro)
    ========================================================================= */
@@ -262,8 +239,6 @@ body.dark-mode .mission-reward { color:#fbbf24; }
 .mission-toast { position:fixed; right:12px; top:125px; z-index:65; max-width:min(320px,calc(100vw - 24px)); background:var(--bg-card); color:var(--text-main); border:2px solid #f59e0b; border-radius:16px; padding:11px 14px; font-size:12px; font-weight:800; box-shadow:0 10px 30px rgba(0,0,0,.18); animation:missionArrive .25s ease-out; pointer-events:none; }
 @keyframes missionArrive { from { opacity:0; transform:translateY(-12px) } to { opacity:1; transform:translateY(0) } }
 @media (max-width:360px) { .mission-hub { padding:12px; } .mission-hub-icon { width:2.5rem; height:2.5rem; } .mission-counter { padding:6px 8px; } }
-
-
 /* ============================================================================
    V8.0 — INTERFACE MOBILE-FIRST, MENOS ELEMENTOS POR TELA
    As classes de lógica/XP permanecem as mesmas.
@@ -342,7 +317,6 @@ body.dark-mode .bottom-nav .nav-btn.active-nav {color:#fb938a;background:rgba(21
 @media (prefers-reduced-motion: reduce) {
  .app-screen,.training-panel:not(.hidden) {animation:none;}
 }
-
 .rank-disclosure {background:var(--bg-card);border:1px solid var(--border-color);border-radius:18px;overflow:hidden;}
 .rank-disclosure > summary {list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:12px;font-weight:850;font-size:13px;color:var(--text-main);padding:18px 16px;}
 .rank-disclosure > summary::-webkit-details-marker {display:none;}
@@ -351,8 +325,6 @@ body.dark-mode .bottom-nav .nav-btn.active-nav {color:#fb938a;background:rgba(21
 .rank-disclosure > div {border:none;box-shadow:none;border-radius:0!important;}
 .book-load-more {width:100%;min-height:54px;border:1px solid var(--border-color);background:var(--bg-card);color:var(--mc-red);font-weight:850;font-size:12px;border-radius:16px;padding:12px;}
 .book-load-more:hover {border-color:var(--mc-red);}
-
-
 /* =====================================================================
    V8.1 — PERFIL PREMIUM / mobile-first, tema claro e escuro
    ===================================================================== */
@@ -425,8 +397,6 @@ body.dark-mode .bottom-nav .nav-btn.active-nav {color:#fb938a;background:rgba(21
 @media(min-width:560px){.premium-stats-grid{grid-template-columns:repeat(4,minmax(0,1fr));}.premium-medals-grid{grid-template-columns:repeat(4,minmax(0,1fr));}.premium-cosmetics-grid{grid-template-columns:repeat(3,minmax(0,1fr));}}
 @media(max-width:360px){.premium-hero{padding:20px 15px 16px;}.premium-avatar-frame{width:80px;min-width:80px;height:80px;border-radius:23px;}.premium-avatar{border-radius:19px;font-size:38px;}.premium-identity{gap:11px;}.premium-identity-copy h2{font-size:18px;}.premium-title-pill{padding:5px 7px;}.premium-choice{padding:10px;}}
 @media(prefers-reduced-motion:reduce){.premium-level-fill{transition:none;}}
-
-
 /* =====================================================================
    v8.2 — cartão público de jogador: leitura apenas, mobile-first
    ===================================================================== */
@@ -475,11 +445,9 @@ body.dark-mode .podium-profile-link {color:#ff9084;border-color:rgba(255,144,132
 .public-profile-close:focus-visible,.public-profile-actions button:focus-visible,.rank-profile-button:focus-visible,.podium-profile-link:focus-visible {outline:3px solid var(--mc-yellow);outline-offset:2px;}
 @media(max-width:360px){.public-profile-panel{padding:11px;border-radius:19px;}.public-profile-hero{padding:14px 12px;}.public-profile-hero .premium-avatar-frame{width:65px;min-width:65px;height:65px;border-radius:20px;}.public-profile-hero .premium-avatar{font-size:31px;border-radius:15px;}.rank-profile-button{padding:5px 7px;font-size:9px;}.public-profile-actions button{font-size:10px;}.public-profile-hero .premium-identity-copy h2{font-size:16px;}}
 @media(min-width:520px){.public-profile-medals{grid-template-columns:repeat(4,minmax(0,1fr));}.public-profile-stats{grid-template-columns:repeat(4,minmax(0,1fr));}.public-profile-panel{padding:20px;}}
-
 .rank-player-row > div:first-child {min-width:0;flex:1;}
 .rank-player-row > div:first-child > div:last-child {min-width:0;}
 .rank-player-row p {overflow-wrap:anywhere;}
-
 /* ==========================================================================
    V8.3 — CENTRAL DO TREINADOR (compacta, mobile first)
    ========================================================================== */

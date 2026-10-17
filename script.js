@@ -1,5 +1,5 @@
 /* =========================================================================
-OLIMPÍADAS DO BÁSICO — VENTURE (script.js v7.9 COM MISSÕES & CONQUISTAS)
+OLIMPÍADAS DO BÁSICO — VENTURE (script.js v8.4 — sequência persistente)
 Finalização 25/10 + Sistema de Cozinha (Monta-Lanche) + Sons + Print + 1v1
 ========================================================================= */
 const $ = id => document.getElementById(id);
@@ -238,83 +238,59 @@ const QUESTIONS_DB = [
   { id: 199, level: "Avançado", q: "Qual o rendimento da batata?", a: "9,11 batatas pequenas por kg.", w: ["7,50 batatas pequenas por kg.", "12,40 batatas pequenas por kg.", "6,80 batatas pequenas por kg."] },
   { id: 200, level: "Avançado", q: "Qual a descrição do padrão ouro de qualidade do suco?", a: "Frio, cor brilhante e sabor doce.", w: ["Com espuma, cor escura e sabor cítrico ácido.", "Em temperatura ambiente, translúcido e sem açúcar.", "Congelado com cristais de gelo e altamente concentrado."] }
 ];
-
-
-
-
-
-
-
 const STORAGE_USERS_KEY = "mequi_olimpiadas_users_v6";
-
-
-
 const STORAGE_CURRENT_KEY = "mequi_olimpiadas_active_user_v6";
-
-
-
 const STORAGE_THEME_KEY = "mequi_olimpiadas_theme_v7";
-
-
-
 const STORAGE_DUEL_HISTORY = "mequi_olimpiadas_duel_history_v75";
-
-
-
 const ADMIN_SECRET_PASS = "342005";
-
-
-
 const HEARTS_COOLDOWN_MS = 10 * 60 * 1000;
-
-
-
 const SYNC_MQTT_TOPIC = "mequi/venture/olimpiadas2026/v65_cluster_state";
-
-
-
 const DUEL_MQTT_TOPIC = "mequi/venture/olimpiadas2026/v71_live_duels";
 const TRAINER_MQTT_TOPIC = "mequi/venture/olimpiadas2026/v83_trainer_content";
 const TRAINER_HTTP_URL = "https://ntfy.sh/mequi_venture_olimpiadas_2026_trainer_v83";
 const TRAINER_STORAGE_KEY = "mequi_venture_trainer_v83";
 const DUEL_WIN_XP = 100;
-
-
-
 const CLOUD_HTTP_URL = "https://ntfy.sh/mequi_venture_olimpiadas_2026_v63_store";
-
-
-
-
-
-
-
 let mqttClients = [], users = {}, currentUserKey = localStorage.getItem(STORAGE_CURRENT_KEY) || null;
-
-
-
 let currentBookFilter = "ALL", currentStreak = 0, currentHearts = 5, currentQuizQuestionId = null, isAdminUnlocked = false;
-
-
-
+// A sequência é uma propriedade do colaborador (não é apenas memória da aba).
+// O horário da última resposta permite sincronizar inclusive quando a sequência volta a zero.
+function streakStateOf(user) {
+  if (!user || !Object.prototype.hasOwnProperty.call(user, "quizStreak")) return null;
+  const count = Number(user.quizStreak);
+  const at = Number(user.quizStreakUpdatedAt);
+  return { quizStreak: Number.isFinite(count) ? Math.max(0, Math.floor(count)) : 0,
+    quizStreakUpdatedAt: Number.isFinite(at) ? Math.max(0, at) : 0 };
+}
+function mergeQuizStreak(a, b) {
+  const left = streakStateOf(a), right = streakStateOf(b);
+  if (!left && !right) return {};
+  if (!left) return right;
+  if (!right) return left;
+  if (right.quizStreakUpdatedAt > left.quizStreakUpdatedAt) return right;
+  if (left.quizStreakUpdatedAt > right.quizStreakUpdatedAt) return left;
+  return (Number(b.updatedAt) || 0) > (Number(a.updatedAt) || 0) ? right : left;
+}
+function restoreQuizStreak() {
+  const user = currentUserKey && users[currentUserKey];
+  currentStreak = streakStateOf(user)?.quizStreak || 0;
+  const display = $("statStreakDisplay");
+  if (display) display.textContent = `${currentStreak} 🔥`;
+}
+function saveQuizStreak() {
+  const user = currentUserKey && users[currentUserKey];
+  if (!user) return;
+  user.quizStreak = Math.max(0, Math.floor(currentStreak));
+  user.quizStreakUpdatedAt = Date.now();
+  user.updatedAt = Math.max(Number(user.updatedAt) || 0, user.quizStreakUpdatedAt);
+  // Persistir imediatamente evita perder a última resposta se fechar o navegador.
+  localStorage.setItem(STORAGE_USERS_KEY, JSON.stringify(users));
+}
 let searchDebounceTimer = null, cloudSyncQueueTimer = null, cooldownIntervalId = null, heartbeatIntervalId = null;
-
-
-
 let lastLeaderboardHash = "", lastAdminListHash = "", lastHttpFetchTime = 0;
-
-
-
 let pendingDuelInvite = null, activeDuel = null, currentReviewItem = null, photoUploadTarget = "register";
-
-
-
 let duelHistoryList = JSON.parse(localStorage.getItem(STORAGE_DUEL_HISTORY) || "[]");
-
-
-
 let activeRecipe = KITCHEN_RECIPES[0], currentRecipeStep = 0;
-
 // ========================================================================
 // 🎓 CENTRAL DO TREINADOR v8.3 — perguntas extras, aviso e desafio.
 // Salva separadamente: não altera os dados legados nem QUESTIONS_DB original.
@@ -528,7 +504,6 @@ document.addEventListener('click',ev=>{
   if(edit)editTrainerQuestion(edit.dataset.trainerEdit);
   if(del)removeTrainerQuestion(del.dataset.trainerDelete);
 });
-
 // =========================================================================
 // 🎯 MISSÕES & CONQUISTAS v7.9 — SEM ALTERAR CHAVES DE ARMAZENAMENTO
 // Cada usuário recebe o campo opcional missionProgress. Cadastros antigos
@@ -553,7 +528,6 @@ const MEDAL_DEFINITIONS = [
   { id:"gold_level", icon:"👑", title:"Padrão Ouro", detail:"Alcance o nível 4 (6.000 XP)", test:(u,p)=> (u.xp||0)>=6000 }
 ];
 let missionViewCycle = "daily";
-
 function missionPeriodKeys(at = new Date()) {
   // Mesmo calendário da campanha em todos os aparelhos (horário de Brasília).
   const parts = new Intl.DateTimeFormat("en-US", { timeZone:"America/Sao_Paulo", year:"numeric", month:"2-digit", day:"2-digit" }).formatToParts(at);
@@ -732,19 +706,7 @@ function renderMissionHub() {
     </div>`;
   }).join("");
 }
-
-
-
-
-
-
-
-
 // =========================================================================
-
-
-
-
 // ============================================================================
 // 👑 PERFIL PREMIUM V8.1 — preferências cosméticas opcionais por usuário
 // Não modifica as chaves de localStorage nem as regras de XP existentes.
@@ -877,2522 +839,720 @@ function renderPremiumProfile() {
   ].sort((a,b)=>b.time-a.time).slice(0,7);
   $('premiumHistory').innerHTML = activity.length ? activity.map(item=>`<div class="premium-history-entry"><span aria-hidden="true">${item.icon}</span><div><strong>${item.label}</strong><small>${premiumDate(item.time)}</small></div></div>`).join('') : '<p class="premium-stats-foot">Suas próximas medalhas e missões aparecerão aqui.</p>';
 }
-
 // 🎵 MOTOR DE ÁUDIO COMPACTO (JINGLE + CLIQUES + ERRO + GIRO 3D)
-
-
-
 // =========================================================================
-
-
-
 let globalAudioCtx = null;
-
-
-
 function getAudio() {
-
-
-
 const Ctx = window.AudioContext || window.webkitAudioContext;
-
-
-
 if (!Ctx) return null;
-
-
-
 if (!globalAudioCtx) globalAudioCtx = new Ctx();
-
-
-
 if (globalAudioCtx.state === "suspended") globalAudioCtx.resume();
-
-
-
 return globalAudioCtx;
-
-
-
 }
-
-
-
 document.addEventListener("click", getAudio, { once: true });
-
-
-
 document.addEventListener("touchstart", getAudio, { once: true });
-
-
-
-
-
-
-
 function playTone(notes, type = "triangle", vol = 0.4) {
-
-
-
 try {
-
-
-
 const ctx = getAudio();
-
-
-
 if (!ctx) return;
-
-
-
 const now = ctx.currentTime;
-
-
-
 notes.forEach(n => {
-
-
-
 const osc = ctx.createOscillator(), gain = ctx.createGain();
-
-
-
 osc.type = type;
-
-
-
 osc.frequency.setValueAtTime(n.f, now + (n.s || 0));
-
-
-
 if (n.fEnd) osc.frequency.exponentialRampToValueAtTime(n.fEnd, now + (n.s || 0) + n.d);
-
-
-
 gain.gain.setValueAtTime(vol, now + (n.s || 0));
-
-
-
 gain.gain.exponentialRampToValueAtTime(0.001, now + (n.s || 0) + n.d);
-
-
-
 osc.connect(gain); gain.connect(ctx.destination);
-
-
-
 osc.start(now + (n.s || 0)); osc.stop(now + (n.s || 0) + n.d + 0.02);
-
-
-
 });
-
-
-
 } catch (e) {}
-
-
-
 }
-
-
-
-
-
-
-
 function playMcDonaldsJingle() {
-
-
-
 const seq = [{ f: 523.25, s: 0, d: 0.16 }, { f: 587.33, s: 0.19, d: 0.16 }, { f: 659.25, s: 0.38, d: 0.2 }, { f: 880, s: 0.65, d: 0.26 }, { f: 783.99, s: 0.96, d: 0.65 }];
-
-
-
 playTone(seq, "triangle", 0.7);
-
-
-
 playTone(seq.map(x => ({ ...x, f: x.f * 2 })), "sine", 0.22);
-
-
-
 }
-
-
-
 function playHitSuccessSound() { playTone([{ f: 587.33, s: 0, d: 0.09 }, { f: 880, s: 0.08, d: 0.22 }], "sine", 0.45); }
-
-
-
 function playWrongAnswerSound() { playTone([{ f: 220, s: 0, d: 0.14 }, { f: 155, s: 0.16, d: 0.24 }], "sawtooth", 0.32); }
-
-
-
 function playTabClickSound() { playTone([{ f: 520, fEnd: 880, s: 0, d: 0.06 }], "triangle", 0.28); }
-
-
-
 function playCardFlipSound() { playTone([{ f: 260, fEnd: 620, s: 0, d: 0.12 }], "sine", 0.32); }
-
-
-
-
-
-
-
 // =========================================================================
-
-
-
 // ⏳ CRONÔMETRO DE FINALIZAÇÃO (25/10) + 🍔 SISTEMA DE COZINHA (AUTO-INJETADOS)
-
-
-
 // =========================================================================
-
-
-
 function injectCountdownAndKitchenUI() {
-
-
-
 // 1. Botão de testar som no topo
-
-
-
 const themeBtn = $("tab-more");
-
-
-
 if (themeBtn && !$("soundTestBtn")) {
-
-
-
 const sb = document.createElement("button");
-
-
-
 sb.id = "soundTestBtn"; sb.title = "Tocar Jingle"; sb.innerHTML = "🔊";
-
-
-
 sb.className = "sound-test-button"; sb.textContent = "🔊 Testar som do aplicativo";
-
-
-
 sb.onclick = playMcDonaldsJingle;
-
-
-
 themeBtn.appendChild(sb);
-
-
-
 }
-
-
-
-
-
-
-
 // 2. Banner de Contagem Regressiva para 25/10 no topo do main e no Print do Ranking
-
-
-
 const mainEl = $("tab-prizes");
-
-
-
 if (mainEl && !$("countdownBannerTop")) {
-
-
-
 const banner = document.createElement("div");
-
-
-
 banner.id = "countdownBannerTop";
-
-
-
 banner.className = "pro-card rounded-3xl p-3.5 mb-4 border-2 border-[#FFC72C] flex items-center justify-between gap-2 shadow-md";
-
-
-
 banner.innerHTML = `
-
-
-
 <div class="flex items-center gap-2.5">
-
-
-
 <span class="text-2xl float-slow">🏁</span>
-
-
-
 <div>
-
-
-
 <span class="text-[10px] font-black uppercase text-red-500 tracking-wider block">Finalização Oficial • 25/10</span>
-
-
-
 <p class="font-black text-xs">Reta Final da Caneca Oficial Méqui ☕</p>
-
-
-
 </div>
-
-
-
 </div>
-
-
-
 <div id="countdownTimerText" class="gold-gradient text-slate-950 font-black text-xs px-3 py-1.5 rounded-xl shadow-sm shrink-0">--d --h --m</div>
-
-
-
 `;
-
-
-
 mainEl.insertBefore(banner, mainEl.firstChild);
-
-
-
 }
-
-
-
-
-
-
-
 const printArea = $("rankingPrintArea");
-
-
-
 if (printArea && !$("rankingPrintCountdown")) {
-
-
-
 const pb = document.createElement("div");
-
-
-
 pb.id = "rankingPrintCountdown";
-
-
-
 pb.className = "subtle-box rounded-2xl p-2.5 text-center text-xs font-black border border-amber-500/40";
-
-
-
 pb.innerHTML = `⏳ Encerramento Oficial: <span class="text-red-500">25/10</span> • <span id="printCountdownSpan">--</span>`;
-
-
-
 printArea.insertBefore(pb, printArea.children[1]);
-
-
-
 }
-
-
-
-
-
-
-
 // 3. Sistema de Cozinha ("Monta-Lanche") dentro da aba Simulado
-
-
-
 const kitchenMount = $("training-mode-kitchen");
-
-
-
 if (kitchenMount && !$("kitchenSystemCard")) {
-
-
-
 const kitchenCard = document.createElement("div");
-
-
-
 kitchenCard.id = "kitchenSystemCard";
-
-
-
 kitchenCard.className = "pro-card rounded-3xl p-5 border-2 border-red-500/40 space-y-3";
-
-
-
 kitchenCard.innerHTML = `
-
-
-
 <div class="flex items-center justify-between gap-2 border-b border-slate-500/20 pb-3">
-
-
-
 <div class="flex items-center gap-2.5">
-
-
-
 <div class="w-11 h-11 rounded-2xl mc-gradient text-[#FFC72C] flex items-center justify-center text-2xl font-black shrink-0 shadow">🍔</div>
-
-
-
 <div>
-
-
-
 <span class="text-[10px] font-black uppercase text-red-500 bg-red-500/10 px-2 py-0.5 rounded-full">Sistema de Cozinha • +5 XP</span>
-
-
-
 <h3 class="font-black text-sm mt-0.5">Bancada Monta-Lanche (Linha 49°C a 57°C)</h3>
-
-
-
 </div>
-
-
-
 </div>
-
-
-
 </div>
-
-
-
 <div class="flex gap-2">
-
-
-
 <select id="kitchenRecipeSelect" onchange="selectKitchenRecipe(this.value)" class="flex-1 px-3 py-2 rounded-xl subtle-box text-xs font-extrabold focus:outline-none">
-
-
-
 ${KITCHEN_RECIPES.map(r => `<option value="${r.id}">${r.name}</option>`).join("")}
-
-
-
 </select>
-
-
-
 <button onclick="resetKitchenGame()" class="px-3 py-2 rounded-xl bg-red-500/10 text-red-500 font-black text-xs btn-tap">Reiniciar 🔄</button>
-
-
-
 </div>
-
-
-
 <div class="subtle-box p-3 rounded-2xl space-y-1.5">
-
-
-
 <div class="flex justify-between text-[11px] font-black">
-
-
-
 <span class="text-amber-500">📋 Montagem Atual (Ordem Oficial):</span>
-
-
-
 <span id="kitchenProgressBadge" class="text-emerald-500">0/0</span>
-
-
-
 </div>
-
-
-
 <div id="kitchenTrayBuilt" class="flex flex-wrap gap-1.5 min-h-[34px] items-center text-[11px] font-bold text-muted-pro">
-
-
-
 Toque no 1º ingrediente abaixo para iniciar a montagem!
-
-
-
 </div>
-
-
-
 </div>
-
-
-
 <div id="kitchenChoicesGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-2"></div>
-
-
-
 <div id="kitchenFeedback" class="hidden p-3 rounded-2xl text-xs font-extrabold text-center"></div>
-
-
-
 `;
-
-
-
 // Insere logo abaixo do card principal do Simulado
-
-
-
 kitchenMount.appendChild(kitchenCard);
-
-
-
 initKitchenGame();
-
-
-
 }
-
-
-
-
-
-
-
 updateEventCountdown();
-
-
-
 setInterval(updateEventCountdown, 1000);
-
-
-
 }
-
-
-
-
-
-
-
 function updateEventCountdown() {
-
-
-
 const diff = EVENT_END_TIMESTAMP - Date.now();
-
-
-
 const topEl = $("countdownTimerText"), printEl = $("printCountdownSpan");
-
-
-
 if (diff <= 0) {
-
-
-
 const list = Object.values(users).filter(u => u && u.name && !u._deleted).sort((a, b) => (b.xp || 0) - (a.xp || 0));
-
-
-
 const champ = list[0] ? list[0].name : "1º Colocado";
-
-
-
 if (topEl) topEl.textContent = `🏆 ENCERRADO! Campeão: ${champ}`;
-
-
-
 if (printEl) printEl.textContent = `ENCERRADO EM 25/10 • 🏆 Campeão(ã): ${champ}`;
-
-
-
 return;
-
-
-
 }
-
-
-
 const d = Math.floor(diff / 86400000);
-
-
-
 const h = Math.floor((diff % 86400000) / 3600000);
-
-
-
 const m = Math.floor((diff % 3600000) / 60000);
-
-
-
 const s = Math.floor((diff % 60000) / 1000);
-
-
-
 const str = `Faltam ${d}d ${String(h).padStart(2, "0")}h ${String(m).padStart(2, "0")}m ${String(s).padStart(2, "0")}s`;
-
-
-
 if (topEl) topEl.textContent = `${d}d ${String(h).padStart(2, "0")}h ${String(m).padStart(2, "0")}m ${String(s).padStart(2, "0")}s`;
-
-
-
 if (printEl) printEl.textContent = str;
-
-
-
 }
-
-
-
-
-
-
-
 // =========================================================================
-
-
-
 // 🍔 LÓGICA DO SISTEMA DE COZINHA ("MONTA-LANCHE")
-
-
-
 // =========================================================================
-
-
-
 function selectKitchenRecipe(id) {
-
-
-
 playTabClickSound();
-
-
-
 activeRecipe = KITCHEN_RECIPES.find(r => r.id === id) || KITCHEN_RECIPES[0];
-
-
-
 resetKitchenGame();
-
-
-
 }
-
-
-
-
-
-
-
 function initKitchenGame() {
-
-
-
 activeRecipe = KITCHEN_RECIPES[0];
-
-
-
 resetKitchenGame();
-
-
-
 }
-
-
-
-
-
-
-
 function resetKitchenGame() {
-
-
-
 currentRecipeStep = 0;
-
-
-
 const fb = $("kitchenFeedback");
-
-
-
 if (fb) fb.classList.add("hidden");
-
-
-
 renderKitchenState();
-
-
-
 }
-
-
-
-
-
-
-
 function renderKitchenState() {
-
-
-
 const tray = $("kitchenTrayBuilt"), badge = $("kitchenProgressBadge"), grid = $("kitchenChoicesGrid");
-
-
-
 if (!tray || !grid) return;
-
-
-
-
-
-
-
 const total = activeRecipe.steps.length;
-
-
-
 badge.textContent = `${currentRecipeStep}/${total} etapas`;
-
-
-
-
-
-
-
 if (currentRecipeStep === 0) {
-
-
-
 tray.innerHTML = `<span class="text-xs text-muted-pro">Clique nos ingredientes abaixo na sequência oficial de montagem:</span>`;
-
-
-
 } else {
-
-
-
 tray.innerHTML = activeRecipe.steps.slice(0, currentRecipeStep).map((st, i) =>
-
-
-
 `<span class="px-2.5 py-1 rounded-xl bg-emerald-500/15 text-emerald-500 border border-emerald-500/30 font-extrabold text-[10px]">${i + 1}. ${st} ✅</span>`
-
-
-
 ).join("");
-
-
-
 }
-
-
-
-
-
-
-
 const remaining = activeRecipe.steps.slice(currentRecipeStep);
-
-
-
 const shuffled = [...remaining].sort(() => 0.5 - Math.random());
-
-
-
-
-
-
-
 grid.innerHTML = "";
-
-
-
 shuffled.forEach(stepName => {
-
-
-
 const btn = document.createElement("button");
-
-
-
 btn.className = "option-btn p-3 rounded-2xl font-extrabold text-xs text-left flex items-center justify-between gap-2";
-
-
-
 btn.innerHTML = `<span>🥗 ${stepName}</span><span class="text-[10px] text-amber-500 font-black">+</span>`;
-
-
-
 btn.onclick = () => handleKitchenStepClick(btn, stepName);
-
-
-
 grid.appendChild(btn);
-
-
-
 });
-
-
-
 }
-
-
-
-
-
-
-
 function handleKitchenStepClick(btn, chosenStep) {
-
-
-
 const expected = activeRecipe.steps[currentRecipeStep];
-
-
-
 const fb = $("kitchenFeedback");
-
-
-
-
-
-
-
 if (chosenStep === expected) {
-
-
-
 currentRecipeStep++;
-
-
-
 if (currentRecipeStep >= activeRecipe.steps.length) {
-
-
-
 renderKitchenState();
-
-
-
 addXp(activeRecipe.xp);
-
 recordMissionActivity("kitchen_complete",activeRecipe.id);
-
-
-
 fb.classList.remove("hidden");
-
-
-
 fb.className = "p-3.5 rounded-2xl text-xs font-extrabold text-center bg-emerald-500/20 text-emerald-500 border border-emerald-500/40";
-
-
-
 fb.innerHTML = `🎉 <strong>Padrão Ouro Best Burger!</strong> Você montou o <strong>${activeRecipe.name}</strong> perfeitamente e ganhou <strong>+${activeRecipe.xp} XP</strong>!`;
-
-
-
 } else {
-
-
-
 playCardFlipSound();
-
-
-
 renderKitchenState();
-
-
-
 }
-
-
-
 } else {
-
-
-
 playWrongAnswerSound();
-
-
-
 btn.className = "anim-shake-wrong p-3 rounded-2xl border-2 border-red-500 bg-red-500/20 font-extrabold text-xs text-left";
-
-
-
 fb.classList.remove("hidden");
-
-
-
 fb.className = "p-3 rounded-2xl text-xs font-extrabold text-center bg-red-500/15 text-red-500 border border-red-500/30";
-
-
-
 fb.innerHTML = `❌ Ordem incorreta! O próximo item oficial é: <span class="underline">${expected}</span>`;
-
-
-
 }
-
-
-
 }
-
-
-
-
-
-
-
 // =========================================================================
-
-
-
 // FOTOS DA GALERIA, PRINT DO RANKING E TEMA
-
-
-
 // =========================================================================
-
-
-
 function isPhotoAvatar(val) { return typeof val === "string" && val.startsWith("data:image/"); }
-
-
-
-
-
-
-
 function renderAvatarBadge(avatarVal, sizeClasses = "w-10 h-10", textClasses = "text-xl", extraClasses = "pro-card") {
-
-
-
 const val = avatarVal || "🍔";
-
-
-
 return isPhotoAvatar(val)
-
-
-
 ? `<img src="${val}" alt="Foto" class="${sizeClasses} rounded-2xl object-cover border-2 border-[#FFC72C] shadow-sm shrink-0" />`
-
-
-
 : `<div class="${sizeClasses} rounded-2xl ${extraClasses} flex items-center justify-center ${textClasses} shrink-0">${val}</div>`;
-
-
-
 }
-
-
-
-
-
-
-
 function triggerPhotoUpload(targetMode) {
-
-
-
 playTabClickSound();
-
-
-
 photoUploadTarget = targetMode;
-
-
-
 const input = $("hiddenGalleryInput");
-
-
-
 if (input) { input.value = ""; input.click(); }
-
-
-
 }
-
-
-
-
-
-
-
 function handleGalleryFileSelected(event) {
-
-
-
 const file = event.target.files && event.target.files[0];
-
-
-
 if (!file) return;
-
-
-
 const reader = new FileReader();
-
-
-
 reader.onload = e => {
-
-
-
 const img = new Image();
-
-
-
 img.onload = () => {
-
-
-
 const canvas = document.createElement("canvas");
-
-
-
 canvas.width = 110; canvas.height = 110;
-
-
-
 const minDim = Math.min(img.width, img.height);
-
-
-
 canvas.getContext("2d").drawImage(img, (img.width - minDim) / 2, (img.height - minDim) / 2, minDim, minDim, 0, 0, 110, 110);
-
-
-
 const dataUrl = canvas.toDataURL("image/jpeg", 0.74);
-
-
-
 playHitSuccessSound();
-
-
-
 if (photoUploadTarget === "register") {
-
-
-
 selectedRegAvatar = dataUrl; renderAvatarSelector();
-
-
-
 } else if (currentUserKey && users[currentUserKey]) {
-
-
-
 users[currentUserKey].avatar = dataUrl; users[currentUserKey].updatedAt = Date.now();
-
-
-
 closeAvatarModal(); scheduleCloudSync(currentUserKey, true);
-
-
-
 }
-
-
-
 };
-
-
-
 img.src = e.target.result;
-
-
-
 };
-
-
-
 reader.readAsDataURL(file);
-
-
-
 }
-
-
-
-
-
-
-
 async function captureAndShareRankingImage() {
-
-
-
 playTabClickSound();
-
-
-
 const printArea = $("rankingPrintArea"), btn = $("btnPrintRanking");
-
-
-
 if (!printArea || typeof html2canvas === "undefined") return shareMyScoreWhatsApp();
-
-
-
 const orig = btn.innerHTML;
-
-
-
 btn.innerHTML = `<span>⏳ Gerando Print...</span>`; btn.disabled = true;
-
-
-
 try {
-
-
-
 const canvas = await html2canvas(printArea, { scale: 2, useCORS: true, backgroundColor: document.body.classList.contains("dark-mode") ? "#131b2e" : "#ffffff" });
-
-
-
 canvas.toBlob(async blob => {
-
-
-
 btn.innerHTML = orig; btn.disabled = false;
-
-
-
 if (!blob) return;
-
-
-
 const file = new File([blob], "Ranking_Olimpiadas_Mequi.png", { type: "image/png" });
-
-
-
 const list = Object.values(users).filter(u => u && u.name && !u._deleted).sort((a, b) => (b.xp || 0) - (a.xp || 0));
-
-
-
 const top3 = list.slice(0, 3).map((u, i) => `${i === 0 ? '🥇' : i === 1 ? '🥈' : '🥉'} ${u.name}: ${u.xp || 0} XP`).join("\n");
-
-
-
 const caption = `🏆 *RANKING OFICIAL — OLIMPÍADAS DO BÁSICO (FINALIZA 25/10)*\n\n${top3}\n\n🔗 Link: ${window.location.origin}${window.location.pathname}`;
-
-
-
 if (navigator.canShare && navigator.canShare({ files: [file] })) {
-
-
-
 try { await navigator.share({ files: [file], title: "Ranking Méqui", text: caption }); return; } catch (e) {}
-
-
-
 }
-
-
-
 const a = document.createElement("a"); a.download = "Ranking_Olimpiadas_Mequi.png"; a.href = URL.createObjectURL(blob); a.click();
-
-
-
 window.open(`https://wa.me/?text=${encodeURIComponent(caption)}`, "_blank");
-
-
-
 }, "image/png");
-
-
-
 } catch (e) { btn.innerHTML = orig; btn.disabled = false; shareMyScoreWhatsApp(); }
-
-
-
 }
-
-
-
-
-
-
-
 function initTheme() {
-
-
-
 if (localStorage.getItem(STORAGE_THEME_KEY) === "dark") {
-
-
-
 document.body.classList.add("dark-mode");
-
-
-
 if ($("themeToggleBtn")) $("themeToggleBtn").textContent = "☀️";
-
-
-
 }
-
-
-
 }
-
-
-
-
-
-
-
 function toggleDarkMode() {
-
-
-
 playTabClickSound();
-
-
-
 const isDark = document.body.classList.toggle("dark-mode");
-
-
-
 localStorage.setItem(STORAGE_THEME_KEY, isDark ? "dark" : "light");
-
-
-
 if ($("themeToggleBtn")) $("themeToggleBtn").textContent = isDark ? "☀️" : "🌙";
-
-
-
 }
-
-
-
-
-
-
-
 function showXpToast(amount) {
-
-
-
 const c = $("xpToastContainer");
-
-
-
 if (!c) return;
-
-
-
 const t = document.createElement("div");
-
-
-
 t.className = "xp-toast gold-gradient text-slate-950 font-black text-xs px-4 py-2 rounded-2xl shadow-xl border-2 border-white";
-
-
-
 t.textContent = `+${amount} XP ⚡`;
-
-
-
 c.appendChild(t); setTimeout(() => t.remove(), 1250);
-
-
-
 }
-
-
-
-
-
-
-
 // =========================================================================
-
-
-
 // SINCRONIZAÇÃO EM TEMPO REAL E RESGATE DE CONTAS
-
-
-
 // =========================================================================
-
-
-
 function startHeartbeat() {
-
-
-
 if (heartbeatIntervalId) clearInterval(heartbeatIntervalId);
-
-
-
 heartbeatIntervalId = setInterval(() => {
-
-
-
 if (currentUserKey && users[currentUserKey] && !users[currentUserKey]._deleted) {
-
-
-
 users[currentUserKey].lastSeen = Date.now();
-
-
-
 scheduleCloudSync(currentUserKey, false);
-
-
-
 }
-
-
-
 }, 10000);
-
-
-
 }
-
-
-
-
-
-
-
 function rescuePreviousLocalRegistrations() {
-
-
-
 ["mequi_olimpiadas_users_v3", "mequi_olimpiadas_users_v4", "mequi_olimpiadas_users_v5", "mequi_olimpiadas_users_v6"].forEach(k => {
-
-
-
 try {
-
-
-
 const parsed = JSON.parse(localStorage.getItem(k) || "null");
-
-
-
 if (parsed && typeof parsed === "object") {
-
-
-
 Object.keys(parsed).forEach(uk => {
-
-
-
 const u = parsed[uk];
-
-
-
 if (!u || !u.name) return;
-
-
-
 users[uk] = mergeSingleUser(users[uk], {
-
-
-
 ...u, role: u.role || u.station || "Atendente", avatar: u.avatar || "🍔",
-
-
-
 hearts: u.hearts !== undefined ? u.hearts : 5, heartsLockUntil: u.heartsLockUntil || 0,
-
-
-
 mistakes: Array.isArray(u.mistakes) ? u.mistakes : [], lastSeen: u.lastSeen || 0, updatedAt: u.updatedAt || Date.now()
-
-
-
 });
-
-
-
 });
-
-
-
 }
-
-
-
 } catch (e) {}
-
-
-
 });
-
-
-
 localStorage.setItem(STORAGE_USERS_KEY, JSON.stringify(users));
-
-
-
 }
-
-
-
-
-
-
-
 function mergeSingleUser(ex, inc) {
-
-
-
 if (!ex) return inc;
-
-
-
-if ((inc.adminOverrideAt || 0) > (ex.adminOverrideAt || 0)) return { ...inc, missionProgress:mergeMissionProgress(ex.missionProgress,inc.missionProgress), profilePremium:mergeProfilePremium(ex.profilePremium,inc.profilePremium), trainerChallenges:mergeTrainerChallenges(ex.trainerChallenges,inc.trainerChallenges), duelRewards:{...ex.duelRewards,...inc.duelRewards} };
-
-
-
-if ((ex.adminOverrideAt || 0) > (inc.adminOverrideAt || 0)) return { ...ex, missionProgress:mergeMissionProgress(ex.missionProgress,inc.missionProgress), profilePremium:mergeProfilePremium(ex.profilePremium,inc.profilePremium), trainerChallenges:mergeTrainerChallenges(ex.trainerChallenges,inc.trainerChallenges), duelRewards:{...ex.duelRewards,...inc.duelRewards} };
-
-
-
-if (inc._deleted && (inc.updatedAt || 0) >= (ex.updatedAt || 0)) return { ...inc, missionProgress:mergeMissionProgress(ex.missionProgress,inc.missionProgress), profilePremium:mergeProfilePremium(ex.profilePremium,inc.profilePremium), trainerChallenges:mergeTrainerChallenges(ex.trainerChallenges,inc.trainerChallenges), duelRewards:{...ex.duelRewards,...inc.duelRewards} };
-
-
-
+const streak = mergeQuizStreak(ex, inc);
+if ((inc.adminOverrideAt || 0) > (ex.adminOverrideAt || 0)) return { ...inc, ...streak, missionProgress:mergeMissionProgress(ex.missionProgress,inc.missionProgress), profilePremium:mergeProfilePremium(ex.profilePremium,inc.profilePremium), trainerChallenges:mergeTrainerChallenges(ex.trainerChallenges,inc.trainerChallenges), duelRewards:{...ex.duelRewards,...inc.duelRewards} };
+if ((ex.adminOverrideAt || 0) > (inc.adminOverrideAt || 0)) return { ...ex, ...streak, missionProgress:mergeMissionProgress(ex.missionProgress,inc.missionProgress), profilePremium:mergeProfilePremium(ex.profilePremium,inc.profilePremium), trainerChallenges:mergeTrainerChallenges(ex.trainerChallenges,inc.trainerChallenges), duelRewards:{...ex.duelRewards,...inc.duelRewards} };
+if (inc._deleted && (inc.updatedAt || 0) >= (ex.updatedAt || 0)) return { ...inc, ...streak, missionProgress:mergeMissionProgress(ex.missionProgress,inc.missionProgress), profilePremium:mergeProfilePremium(ex.profilePremium,inc.profilePremium), trainerChallenges:mergeTrainerChallenges(ex.trainerChallenges,inc.trainerChallenges), duelRewards:{...ex.duelRewards,...inc.duelRewards} };
 const newer = (inc.updatedAt || 0) >= (ex.updatedAt || 0);
-
-
-
 return {
-
-
-
-...ex, ...inc, _deleted: false,
-
-
-
+...ex, ...inc, ...streak, _deleted: false,
 role: inc.role || ex.role || "Atendente",
-
-
-
 avatar: (newer && inc.avatar) ? inc.avatar : (ex.avatar || inc.avatar || "🍔"),
-
-
-
 xp: Math.max(ex.xp || 0, inc.xp || 0),
-
-
-
 correctAnswers: Math.max(ex.correctAnswers || 0, inc.correctAnswers || 0),
-
-
-
 hearts: newer && inc.hearts !== undefined ? inc.hearts : (ex.hearts !== undefined ? ex.hearts : 5),
-
-
-
 heartsLockUntil: newer && inc.heartsLockUntil !== undefined ? inc.heartsLockUntil : (ex.heartsLockUntil || 0),
-
-
-
 mistakes: newer && Array.isArray(inc.mistakes) ? inc.mistakes : (Array.isArray(ex.mistakes) ? ex.mistakes : []),
-
 missionProgress: mergeMissionProgress(ex.missionProgress,inc.missionProgress),
 profilePremium: mergeProfilePremium(ex.profilePremium,inc.profilePremium),
 trainerChallenges:mergeTrainerChallenges(ex.trainerChallenges,inc.trainerChallenges),
 duelRewards:{...ex.duelRewards,...inc.duelRewards},
-
-
-
 lastSeen: Math.max(ex.lastSeen || 0, inc.lastSeen || 0),
-
-
-
 updatedAt: Math.max(ex.updatedAt || 0, inc.updatedAt || 0)
-
-
-
 };
-
-
-
 }
-
-
-
-
-
-
-
 function mergeUserDictionaries(loc, rem) {
-
-
-
 const m = { ...loc };
-
-
-
 if (rem && typeof rem === "object") {
-
-
-
 Object.keys(rem).forEach(k => { if (rem[k] && rem[k].name) m[k] = mergeSingleUser(m[k], rem[k]); });
-
-
-
 }
-
-
-
 return m;
-
-
-
 }
-
-
-
-
-
-
-
 function refreshUIIfNeeded() {
-
-
-
+restoreQuizStreak();
 updateHeaderUI(); syncActiveUserHeartsState(); updateMistakesBadge(); populateDuelOpponentList(); renderDuelHistory(); renderMissionHub(); renderTrainerPublicContent(); renderPremiumProfile(); if (publicProfileSelectedKey) renderPublicProfile();
-
-
-
 const sorted = Object.values(users).filter(u => u && u.name && !u._deleted).sort((a, b) => (b.xp || 0) - (a.xp || 0));
-
-
-
 const hash = JSON.stringify(sorted.map(u => `${u.name}:${u.xp}:${u.correctAnswers}:${(u.avatar || "").slice(-15)}:${u.role}:${u.lastSeen || 0}:${u.profilePremium?.updatedAt||0}:${Object.keys(u.missionProgress?.badges||{}).length}`));
-
-
-
 if (hash !== lastLeaderboardHash) { lastLeaderboardHash = hash; renderLeaderboard(); }
-
-
-
 if (isAdminUnlocked && hash !== lastAdminListHash) { lastAdminListHash = hash; renderAdminUsersList(); }
-
-
-
 }
-
-
-
-
-
-
-
 function initClusterSync() {
-
-
-
 ["wss://broker.emqx.io:8084/mqtt", "wss://broker.hivemq.com:8884/mqtt"].forEach(url => {
-
-
-
 try {
-
-
-
 const client = mqtt.connect(url, { clientId: "mq78_" + Math.random().toString(16).slice(2, 10), clean: true, connectTimeout: 5000, reconnectPeriod: 6000 });
-
-
-
 client.on("connect", () => {
-
-
-
 if ($("syncStatusText")) $("syncStatusText").textContent = "● Conectado em Tempo Real (Finaliza 25/10)";
-
-
-
 client.subscribe(SYNC_MQTT_TOPIC); client.subscribe(DUEL_MQTT_TOPIC); client.subscribe(TRAINER_MQTT_TOPIC);
-
-
-
 });
-
-
-
 client.on("message", (topic, msg) => {
-
-
-
 try {
-
-
-
 const data = JSON.parse(msg.toString());
-
-
-
 if (topic === SYNC_MQTT_TOPIC) {
-
-
-
 users = mergeUserDictionaries(users, data);
-
-
-
 localStorage.setItem(STORAGE_USERS_KEY, JSON.stringify(users));
-
-
-
 refreshUIIfNeeded();
-
-
-
 } else if (topic === DUEL_MQTT_TOPIC) handleIncomingDuelPacket(data);
 else if (topic === TRAINER_MQTT_TOPIC) mergeTrainerState(data);
-
-
-
 } catch (e) {}
-
-
-
 });
-
-
-
 mqttClients.push(client);
-
-
-
 } catch (e) {}
-
-
-
 });
-
-
-
 }
-
-
-
-
-
-
-
 function publishDuelPacket(pkt) {
-
-
-
 const p = JSON.stringify(pkt);
 if (['question','answer','finish'].includes(pkt.type)) handleIncomingDuelPacket(pkt);
 mqttClients.forEach(c => { if (c && c.connected) try { c.publish(DUEL_MQTT_TOPIC, p); } catch (e) {} });
-
-
-
 }
-
-
-
-
-
-
-
 function scheduleCloudSync(keyToPush, immediate = false) {
-
-
-
 localStorage.setItem(STORAGE_USERS_KEY, JSON.stringify(users));
-
-
-
 refreshUIIfNeeded();
-
-
-
 clearTimeout(cloudSyncQueueTimer);
-
-
-
 cloudSyncQueueTimer = setTimeout(() => {
-
-
-
 const full = JSON.stringify(users);
-
-
-
 mqttClients.forEach(c => { if (c && c.connected) try { c.publish(SYNC_MQTT_TOPIC, full, { retain: true }); } catch (e) {} });
-
-
-
 if (keyToPush && users[keyToPush]) {
-
-
-
 fetch(CLOUD_HTTP_URL, { method: "POST", body: JSON.stringify({ type: "single", k: keyToPush, u: users[keyToPush] }) }).catch(() => {});
-
-
-
 }
-
-
-
 }, immediate ? 150 : 3000);
-
-
-
 }
-
-
-
-
-
-
-
 async function fetchCloudHistorySafe(force = false) {
-
-
-
 if (!force && Date.now() - lastHttpFetchTime < 20000) return;
-
-
-
 lastHttpFetchTime = Date.now();
-
-
-
 try {
-
-
-
 const res = await fetch(`${CLOUD_HTTP_URL}/json?poll=1&since=all`);
-
-
-
 if (res.ok) {
-
-
-
 const lines = (await res.text()).trim().split("\n");
-
-
-
 lines.forEach(l => {
-
-
-
 try {
-
-
-
 const pkt = JSON.parse(l);
-
-
-
 if (pkt.event === "message" && pkt.message) {
-
-
-
 const d = JSON.parse(pkt.message);
-
-
-
 if (d.type === "single" && d.k && d.u) users[d.k] = mergeSingleUser(users[d.k], d.u);
-
-
-
 }
-
-
-
 } catch (e) {}
-
-
-
 });
-
-
-
 localStorage.setItem(STORAGE_USERS_KEY, JSON.stringify(users));
-
-
-
 refreshUIIfNeeded();
-
-
-
 }
-
-
-
 } catch (e) {}
-
-
-
 }
-
-
-
-
-
-
-
 function forceSyncNow() {
-
-
-
 playTabClickSound();
-
-
-
 if (currentUserKey && users[currentUserKey]) scheduleCloudSync(currentUserKey, true);
-
-
-
 fetchCloudHistorySafe(true);
-
-
-
 }
-
-
-
-
-
-
-
 // =========================================================================
-
-
-
 // PATENTES, PERFIL E AUTENTICAÇÃO
-
-
-
 // =========================================================================
-
-
-
 function getLevelInfo(xp) {
-
-
-
 if (xp >= 25000) return { level: 7, title: "👑 Nível 7 — Lenda dos Arcos Dourados", min: 25000, max: 40000 };
-
-
-
 if (xp >= 15000) return { level: 6, title: "🔥 Nível 6 — Mestre das Olimpíadas", min: 15000, max: 25000 };
-
-
-
 if (xp >= 10000) return { level: 5, title: "💎 Nível 5 — Diamante Best Burger", min: 10000, max: 15000 };
-
-
-
 if (xp >= 6000) return { level: 4, title: "🥇 Nível 4 — Padrão Ouro Venture", min: 6000, max: 10000 };
-
-
-
 if (xp >= 3000) return { level: 3, title: "🥈 Nível 3 — Especialista de Prata", min: 3000, max: 6000 };
-
-
-
 if (xp >= 1000) return { level: 2, title: "🥉 Nível 2 — Chapa de Bronze", min: 1000, max: 3000 };
-
-
-
 return { level: 1, title: "🔰 Nível 1 — Iniciante", min: 0, max: 1000 };
-
-
-
 }
-
-
-
-
-
-
-
 function renderAvatarSelector() {
-
-
-
 const grid = $("regAvatarGrid");
-
-
-
 if (!grid) return;
-
-
-
 const custom = isPhotoAvatar(selectedRegAvatar);
-
-
-
 grid.innerHTML = `<div class="col-span-6 mb-1">
-
-
-
 <button type="button" onclick="triggerPhotoUpload('register')" class="w-full py-2.5 px-3 rounded-2xl border-2 border-dashed ${custom ? 'border-emerald-500 bg-emerald-500/10' : 'border-red-500/50 bg-red-500/5'} flex items-center justify-center gap-2 text-xs font-extrabold btn-tap">
-
-
-
 ${custom ? `<img src="${selectedRegAvatar}" class="w-8 h-8 rounded-xl object-cover" /> <span class="text-emerald-500">✅ Foto Selecionada</span>` : `<span>📸 Enviar Foto da Galeria / PC</span>`}
-
-
-
 </button></div>` + AVATAR_LIST.map(ic => `<button type="button" onclick="selectRegAvatar('${ic}')" class="avatar-option p-2 rounded-2xl border-2 subtle-box text-xl flex items-center justify-center ${ic === selectedRegAvatar ? 'selected' : ''}">${ic}</button>`).join("");
-
-
-
 }
-
-
-
-
-
-
-
 function selectRegAvatar(ic) { playTabClickSound(); selectedRegAvatar = ic; renderAvatarSelector(); }
-
-
-
-
-
-
-
 function openAvatarModal() {
-
-
-
 playTabClickSound();
-
-
-
 if (!currentUserKey || !users[currentUserKey]) return;
-
-
-
 const cur = users[currentUserKey].avatar || "🍔";
-
-
-
 $("changeAvatarGrid").innerHTML = `<div class="col-span-4 mb-1">
-
-
-
 <button type="button" onclick="triggerPhotoUpload('profile')" class="w-full py-3 rounded-2xl text-slate-950 font-black text-xs btn-anim-yellow flex items-center justify-center gap-2">📸 Escolher Foto da Galeria / PC</button>
-
-
-
 </div>` + AVATAR_LIST.map(ic => `<button type="button" onclick="changeUserAvatar('${ic}')" class="p-3 rounded-2xl border-2 ${ic === cur ? 'border-red-600 bg-red-500/15' : 'subtle-box'} text-2xl flex items-center justify-center btn-tap">${ic}</button>`).join("");
-
-
-
 $("avatarPickerModal").classList.remove("hidden");
-
 }
-
 function closeAvatarModal() { playTabClickSound(); $("avatarPickerModal").classList.add("hidden"); }
-
 function changeUserAvatar(ic) {
-
 playTabClickSound();
-
 if (!currentUserKey || !users[currentUserKey]) return;
-
 users[currentUserKey].avatar = ic; users[currentUserKey].updatedAt = Date.now();
-
 closeAvatarModal(); scheduleCloudSync(currentUserKey, true);
-
 }
-
 function switchAuthTab(mode) {
-
 playTabClickSound(); $("authError").classList.add("hidden");
-
 $("loginForm").classList.toggle("hidden", mode !== "login");
-
 $("registerForm").classList.toggle("hidden", mode === "login");
-
 $("tabLoginBtn").className = mode === "login" ? "flex-1 py-2.5 text-xs font-extrabold rounded-xl bg-[#DA291C] text-white" : "flex-1 py-2.5 text-xs font-extrabold rounded-xl text-muted-pro";
-
 $("tabRegisterBtn").className = mode !== "login" ? "flex-1 py-2.5 text-xs font-extrabold rounded-xl bg-[#DA291C] text-white" : "flex-1 py-2.5 text-xs font-extrabold rounded-xl text-muted-pro";
-
 }
-
 function showAuthError(msg) { playWrongAnswerSound(); const e = $("authError"); e.textContent = msg; e.classList.remove("hidden"); }
-
 function handleRegister() {
-
 const name = $("regName").value.trim().toUpperCase(), role = $("regRole").value, pass = $("regPass").value.trim();
-
 if (name.length < 2) return showAuthError("Digite seu nome válido.");
-
 if (pass.length < 4) return showAuthError("A senha precisa ter pelo menos 4 dígitos.");
-
 const key = name.toLowerCase();
-
 users[key] = {
-
 name, role, avatar: selectedRegAvatar, password: pass, _deleted: false,
-
 xp: users[key] && !users[key]._deleted ? (users[key].xp || 0) : 0,
-
 correctAnswers: users[key] && !users[key]._deleted ? (users[key].correctAnswers || 0) : 0,
-
 hearts: 5, heartsLockUntil: 0, mistakes: users[key]?.mistakes || [],
+quizStreak: users[key]?.quizStreak || 0, quizStreakUpdatedAt: users[key]?.quizStreakUpdatedAt || 0,
 missionProgress:users[key]?.missionProgress, profilePremium:users[key]?.profilePremium, trainerChallenges:users[key]?.trainerChallenges || {}, duelRewards:users[key]?.duelRewards || {}, lastSeen: Date.now(), updatedAt: Date.now()
-
 };
-
 currentUserKey = key; localStorage.setItem(STORAGE_CURRENT_KEY, key);
-
 $("authModal").classList.add("hidden"); playHitSuccessSound();
-
-syncActiveUserHeartsState(); loadNextQuizQuestion(); scheduleCloudSync(key, true);
-
+restoreQuizStreak(); syncActiveUserHeartsState(); loadNextQuizQuestion(); scheduleCloudSync(key, true);
 }
-
 async function handleLogin() {
-
   const rawName = $("loginName").value.trim();
-
   const pass = $("loginPass").value.trim();
-
   if (!rawName) return showAuthError("Digite seu nome para entrar!");
-
   const key = rawName.toLowerCase();
-
-
-
   const btn = $("btnLoginSubmit");
-
   btn.textContent = "ENTRANDO...";
-
   btn.disabled = true;
-
-
-
   if (!users[key]) {
-
     await fetchCloudHistorySafe(true);
-
   }
-
-
-
   btn.textContent = "ENTRAR NO TREINAMENTO 🚀";
-
   btn.disabled = false;
-
-
-
   if (pass === ADMIN_SECRET_PASS) {
-
     if (!users[key]) {
-
       users[key] = {
-
         name: rawName.toUpperCase(),
-
         role: "Treinador",
-
         avatar: "👑",
-
         password: pass,
-
         xp: 0,
-
         correctAnswers: 0,
-
         hearts: 5,
-
         heartsLockUntil: 0,
-
         mistakes: [],
-
         lastSeen: Date.now(),
-
         updatedAt: Date.now()
-
       };
-
     }
-
     users[key]._deleted = false;
-
     currentUserKey = key;
-
     localStorage.setItem(STORAGE_CURRENT_KEY, key);
-
     $("authModal").classList.add("hidden");
-
     playHitSuccessSound();
-
+    restoreQuizStreak();
     syncActiveUserHeartsState();
-
     loadNextQuizQuestion();
-
     scheduleCloudSync(key, true);
-
     return;
-
   }
-
-
-
   if (!users[key] || users[key]._deleted) {
-
     return showAuthError("Conta não encontrada neste aparelho! Clique em 'CRIAR CONTA' acima (ou use a senha ADM).");
-
   }
-
   if (users[key].password && users[key].password !== pass) {
-
     return showAuthError("Senha incorreta! Tente novamente.");
-
   }
-
-
-
   currentUserKey = key;
-
   localStorage.setItem(STORAGE_CURRENT_KEY, key);
-
   $("authModal").classList.add("hidden");
-
   playHitSuccessSound();
-
+  restoreQuizStreak();
   syncActiveUserHeartsState();
-
   loadNextQuizQuestion();
-
   scheduleCloudSync(key, true);
-
 }
-
-
-
 function logoutUser() {
-
   playTabClickSound();
-
   currentUserKey = null;
+  currentStreak = 0;
+  const streakDisplay = $("statStreakDisplay");
+  if (streakDisplay) streakDisplay.textContent = "0 🔥";
   if (isTrainerUnlocked) lockTrainerCenter();
-
   localStorage.removeItem(STORAGE_CURRENT_KEY);
-
   $("loginPass").value = "";
-
   $("authModal").classList.remove("hidden");
-
 }
-
-
-
 function addXp(amount) {
-
   if (!currentUserKey || !users[currentUserKey]) {
-
     playHitSuccessSound();
-
     return;
-
   }
-
   const oldXp = users[currentUserKey].xp || 0;
-
   const newXp = Math.max(0, oldXp + amount);
-
-
-
   users[currentUserKey].xp = newXp;
-
   users[currentUserKey].updatedAt = Date.now();
-
   showXpToast(amount);
-
-
-
   const oldLevel = getLevelInfo(oldXp).level;
-
   const newLevel = getLevelInfo(newXp).level;
-
-
-
   if (newLevel > oldLevel) {
-
     playMcDonaldsJingle();
-
   } else {
-
     playHitSuccessSound();
-
   }
-
-
-
   scheduleCloudSync(currentUserKey, false);
-
 }
-
-
-
 function updateHeaderUI() {
-
   if (!currentUserKey || !users[currentUserKey]) return;
-
   const u = users[currentUserKey];
-
   const info = getLevelInfo(u.xp || 0);
-
-
-
   const avatarEl = $("userAvatarDisplay");
-
   if (avatarEl) {
-
     if (isPhotoAvatar(u.avatar)) {
-
       avatarEl.innerHTML = `<img src="${u.avatar}" alt="Foto" class="w-full h-full object-cover" />`;
-
     } else {
-
       avatarEl.textContent = u.avatar || "🍔";
-
     }
-
   }
-
-
-
   $("userNameDisplay").textContent = u.name;
-
   $("userRoleBadge").textContent = u.role || u.station || "Atendente";
-
   $("userXpDisplay").textContent = `${u.xp || 0} XP`;
-
   $("userRankTitle").textContent = info.title;
-
   $("currentLevelNum").textContent = `Nível ${info.level}`;
-
   $("statHitsDisplay").textContent = `${u.correctAnswers || 0} ✅`;
-
-
-
   const progress = Math.min(100, Math.round((((u.xp || 0) - info.min) / (info.max - info.min)) * 100));
-
   $("xpProgressBar").style.width = `${Math.max(6, progress)}%`;
-
-
-
   if (info.level < 7) {
-
     $("nextLevelTarget").textContent = `Faltam ${info.max - (u.xp || 0)} XP para o Nível ${info.level + 1}`;
-
   } else {
-
     $("nextLevelTarget").textContent = `Patente Máxima Alcançada! 👑`;
-
   }
-
 }
-
-
-
 // =========================================================================
-
 // CADERNO "REVISAR MINHAS DÚVIDAS"
-
 // =========================================================================
-
-
-
 function getActiveUserMistakes() {
-
   if (currentUserKey && users[currentUserKey]) {
-
     if (!Array.isArray(users[currentUserKey].mistakes)) users[currentUserKey].mistakes = [];
-
     return users[currentUserKey].mistakes;
-
   }
-
   return JSON.parse(localStorage.getItem("mequi_guest_mistakes") || "[]");
-
 }
-
-
-
 function recordMistakeQuestion(qId) {
-
   const list = getActiveUserMistakes();
-
   if (!list.includes(qId)) {
-
     list.push(qId);
-
     saveMistakesList(list);
-
   }
-
 }
-
-
-
 function removeMistakeQuestion(qId) {
-
   const list = getActiveUserMistakes().filter(id => id !== qId);
-
   saveMistakesList(list);
-
 }
-
-
-
 function saveMistakesList(list) {
-
   if (currentUserKey && users[currentUserKey]) {
-
     users[currentUserKey].mistakes = list;
-
     users[currentUserKey].updatedAt = Date.now();
-
     localStorage.setItem(STORAGE_USERS_KEY, JSON.stringify(users));
-
   } else {
-
     localStorage.setItem("mequi_guest_mistakes", JSON.stringify(list));
-
   }
-
   updateMistakesBadge();
-
 }
-
-
-
 function updateMistakesBadge() {
-
   const badge = $("mistakesCountBadge");
-
   if (!badge) return;
-
   const existingIds = new Set(getQuestionBank().map(q=>q.id));
   const count = getActiveUserMistakes().filter(id=>existingIds.has(id)).length;
-
   badge.textContent = `${count} pendente${count === 1 ? "" : "s"}`;
-
   badge.className = count > 0
-
     ? "text-[10px] font-black px-2 py-0.5 rounded-full bg-purple-600 text-white"
-
     : "text-[10px] font-black px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-500";
-
 }
-
-
-
 function openReviewModal() {
-
   playTabClickSound();
-
   const existingIds = new Set(getQuestionBank().map(q=>q.id));
   const mistakes = getActiveUserMistakes().filter(id=>existingIds.has(id));
-
   if (mistakes.length === 0) {
-
     return alert("🎉 Parabéns! Você não tem nenhuma dúvida pendente. Quando errar alguma questão no Simulado, ela ficará salva aqui para revisão!");
-
   }
-
   $("reviewMistakesModal").classList.remove("hidden");
-
   loadNextReviewQuestion();
-
 }
-
-
-
 function closeReviewModal() {
-
   playTabClickSound();
-
   $("reviewMistakesModal").classList.add("hidden");
-
 }
-
-
-
 function loadNextReviewQuestion() {
-
   playTabClickSound();
-
   const existingIds = new Set(getQuestionBank().map(q=>q.id));
   const mistakes = getActiveUserMistakes().filter(id=>existingIds.has(id));
-
   if (mistakes.length === 0) {
-
     playMcDonaldsJingle();
-
     alert("✅ Sensacional! Você revisou e zerou todas as suas dúvidas pendentes!");
-
     closeReviewModal();
-
     return;
-
   }
-
-
-
   const randomId = mistakes[Math.floor(Math.random() * mistakes.length)];
-
   const item = getQuestionBank().find(q => q.id === randomId) || getQuestionBank()[0];
-
   currentReviewItem = item;
-
-
-
   $("reviewMetaBadge").textContent = `Questão #${item.id} • ${item.level}`;
-
   $("reviewRemainingBadge").textContent = `Faltam zerar: ${mistakes.length}`;
-
   $("reviewQuestionText").textContent = item.q;
-
   $("reviewFeedbackBox").classList.add("hidden");
-
   $("nextReviewBtn").classList.add("hidden");
-
-
-
   const shuffled = [...item.w, item.a].sort(() => 0.5 - Math.random());
-
   const letters = ["A", "B", "C", "D"];
-
   const container = $("reviewOptionsContainer");
-
   container.innerHTML = "";
-
-
-
   shuffled.forEach((optText, idx) => {
-
     const letter = letters[idx];
-
     const btn = document.createElement("button");
-
     btn.className = "option-btn w-full text-left p-3.5 rounded-2xl font-bold text-xs flex items-center gap-3";
-
     btn.innerHTML = `
-
       <span class="w-7 h-7 rounded-xl subtle-box font-black text-xs flex items-center justify-center shrink-0">${letter}</span>
-
       <span class="flex-1 leading-snug">${trainerSafeHtml(optText)}</span>
-
     `;
-
     btn.onclick = () => checkReviewAnswer(btn, optText, item.a, item.id);
-
     container.appendChild(btn);
-
   });
-
 }
-
-
-
 function checkReviewAnswer(selectedBtn, chosen, correct, qId) {
-
   const allBtns = document.querySelectorAll("#reviewOptionsContainer button");
-
   allBtns.forEach(b => b.disabled = true);
-
-
-
   const fb = $("reviewFeedbackBox");
-
   fb.classList.remove("hidden");
-
-
-
   if (chosen === correct) {
-
     selectedBtn.className = "anim-pop-correct w-full text-left p-3.5 rounded-2xl border-2 border-emerald-500 bg-emerald-500/20 font-extrabold text-xs flex items-center gap-3";
-
     removeMistakeQuestion(qId);
-
     recordMissionActivity("review_correct");
-
     playHitSuccessSound();
-
     fb.className = "p-3 rounded-2xl text-xs font-extrabold bg-emerald-500/15 text-emerald-500 border border-emerald-500/30";
-
     fb.textContent = "✅ Aprendido! Essa questão saiu da sua lista de dúvidas!";
-
   } else {
-
     selectedBtn.className = "anim-shake-wrong w-full text-left p-3.5 rounded-2xl border-2 border-red-500 bg-red-500/20 font-extrabold text-xs flex items-center gap-3";
-
     playWrongAnswerSound();
-
     fb.className = "p-3 rounded-2xl text-xs font-extrabold bg-red-500/15 text-red-500 border border-red-500/30";
-
     fb.innerHTML = `❌ O gabarito oficial é:<br><span class="underline mt-1 inline-block">${correct}</span>`;
-
   }
-
-
-
   $("nextReviewBtn").classList.remove("hidden");
-
 }
-
-
-
 // =========================================================================
-
 // DUELO ONLINE 1 vs 1 COM STATUS ONLINE E HISTÓRICO DE VENCEDORES
-
 // =========================================================================
-
-
-
 function populateDuelOpponentList() {
-
   const select = $("duelOpponentSelect");
-
   if (!select) return;
-
   const currentVal = select.value;
-
-
-
   const now = Date.now();
-
   const list = Object.entries(users)
-
     .filter(([k, u]) => u && u.name && !u._deleted && k !== currentUserKey)
-
     .sort((a, b) => a[1].name.localeCompare(b[1].name));
-
-
-
   // Evita interpretar como HTML os nomes/cargos recebidos de outros celulares.
   select.replaceChildren(new Option("Selecione quem você quer desafiar...", ""));
   list.forEach(([k, u]) => {
@@ -3400,303 +1560,139 @@ function populateDuelOpponentList() {
     const indicator = isOnline ? "🟢 [Online]" : "⚪ [Offline]";
     select.add(new Option(`${indicator} ${u.name} (${u.role || 'Atendente'})`, k));
   });
-
-
-
   if (currentVal && users[currentVal]) select.value = currentVal;
-
 }
-
-
-
 function sendLiveDuelInvite() {
-
   playTabClickSound();
-
   if (!currentUserKey || !users[currentUserKey]) {
-
     return alert("Faça login na sua conta antes de desafiar alguém!");
-
   }
-
   const targetKey = $("duelOpponentSelect").value;
-
   if (!targetKey || !users[targetKey]) {
-
     return alert("Selecione na lista qual colega da loja você quer convidar para o duelo!");
-
   }
-
-
-
   const me = users[currentUserKey];
-
   const opp = users[targetKey];
-
   const duelId = "duel_" + Date.now() + "_" + Math.random().toString(16).substring(2, 6);
-
-
-
   activeDuel = {
-
     duelId: duelId,
-
     isHost: true,
-
     hostKey: currentUserKey,
-
     hostName: me.name,
-
     hostAvatar: me.avatar || "🍔",
-
     guestKey: targetKey,
-
     guestName: opp.name,
-
     guestAvatar: opp.avatar || "🍟",
-
     scoreHost: 0,
-
     scoreGuest: 0,
-
     round: 0,
-
     status: "waiting"
-
   };
-
-
-
   openDuelArenaUI();
-
   $("duelWaitingBox").classList.remove("hidden");
-
   $("duelQuestionArea").classList.add("hidden");
-
   $("duelWinnerBox").classList.add("hidden");
-
   $("duelWaitingText").textContent = `Convite enviado! Aguardando ${opp.name} aceitar no celular dele(a)...`;
-
-
-
   publishDuelPacket({
-
     type: "invite",
-
     duelId: duelId,
-
     hostKey: currentUserKey,
-
     hostName: me.name,
-
     hostAvatar: me.avatar || "🍔",
-
     guestKey: targetKey,
-
     guestName: opp.name,
-
     guestAvatar: opp.avatar || "🍟"
-
   });
-
 }
-
-
-
 function sendDuelInviteWhatsApp() {
-
   playTabClickSound();
-
   if (!activeDuel) return;
-
   const link = `${window.location.origin}${window.location.pathname}`;
-
   const text = `⚔️ *DESAFIO 1 vs 1 — OLIMPÍADAS DO BÁSICO*\n🔥 *${activeDuel.hostName}* está te chamando para um Duelo ao vivo agora!\n\n📲 Abra o aplicativo para aceitar o convite: ${link}`;
-
   window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
-
 }
-
-
-
 function handleIncomingDuelPacket(pkt) {
-
   if (!pkt || !pkt.type) return;
-
-
-
   if (pkt.type === "invite" && pkt.guestKey === currentUserKey) {
-
     if (activeDuel) return;
-
     pendingDuelInvite = pkt;
-
     playHitSuccessSound();
-
     $("inviteFromNameDisplay").textContent = pkt.hostName;
-
     $("duelInvitePopup").classList.remove("hidden");
-
     return;
-
   }
-
-
-
   if (!activeDuel || pkt.duelId !== activeDuel.duelId) return;
   if (activeDuel.status === "finished") return;
-
-
-
   if (pkt.type === "decline") {
-
     playWrongAnswerSound();
-
     alert(`❌ ${activeDuel.guestName} recusou o convite de duelo no momento.`);
-
     leaveActiveDuel(false);
-
     return;
-
   }
-
-
-
   if (pkt.type === "accept" && activeDuel.isHost && activeDuel.status === "waiting") {
-
     activeDuel.status = "playing";
-
     hostStartNextDuelRound();
-
     return;
-
   }
-
-
-
   if (pkt.type === "question") {
     if (Number(pkt.round) <= Number(activeDuel.round || 0)) return;
-
     activeDuel.status = "playing";
-
     activeDuel.round = pkt.round;
-
     activeDuel.scoreHost = pkt.scoreHost;
-
     activeDuel.scoreGuest = pkt.scoreGuest;
-
     activeDuel.currentQuestion = pkt.question;
-
     activeDuel.roundResolved = false;
-
     activeDuel.lockedPlayers = {};
-
     playCardFlipSound();
-
     renderDuelRoundUI();
-
     return;
-
   }
-
-
-
   if (pkt.type === "answer" && activeDuel.status === "playing" && !activeDuel.roundResolved && pkt.round === activeDuel.round && [activeDuel.hostKey,activeDuel.guestKey].includes(pkt.playerKey)) {
     if (activeDuel.lockedPlayers?.[pkt.playerKey]) return;
-
     if (pkt.isCorrect) {
-
       activeDuel.roundResolved = true;
-
       if (pkt.playerKey === activeDuel.hostKey) activeDuel.scoreHost++;
-
       else activeDuel.scoreGuest++;
-
-
-
       updateDuelScoreboardUI();
-
       playHitSuccessSound();
-
       showDuelBanner(`⚡ ${pkt.playerName} acertou primeiro e marcou +1 ponto!`, "emerald");
-
-
-
       if (activeDuel.isHost) {
-
         setTimeout(() => {
-
           if (!activeDuel) return;
-
           if (activeDuel.scoreHost >= 5 || activeDuel.scoreGuest >= 5) {
-
             const winnerName = activeDuel.scoreHost >= 5 ? activeDuel.hostName : activeDuel.guestName;
             const winnerKey = activeDuel.scoreHost >= 5 ? activeDuel.hostKey : activeDuel.guestKey;
-
             publishDuelPacket({
-
               type: "finish",
-
               duelId: activeDuel.duelId,
-
               winnerName: winnerName,
               winnerKey: winnerKey,
               scoreHost: activeDuel.scoreHost,
-
               scoreGuest: activeDuel.scoreGuest
-
             });
-
           } else {
-
             hostStartNextDuelRound();
-
           }
-
         }, 1900);
-
       }
-
     } else {
-
       activeDuel.lockedPlayers[pkt.playerKey] = true;
-
       playWrongAnswerSound();
-
       if (pkt.playerKey === currentUserKey) {
-
         showDuelBanner(`❌ Você errou! Aguardando tentativa do oponente...`, "red");
-
       } else {
-
         showDuelBanner(`🔥 ${pkt.playerName} errou! Responda com calma para ganhar o ponto!`, "amber");
-
       }
-
-
-
       if (activeDuel.lockedPlayers[activeDuel.hostKey] && activeDuel.lockedPlayers[activeDuel.guestKey]) {
-
         activeDuel.roundResolved = true;
-
         showDuelBanner(`😅 Nenhum dos dois acertou! Próxima pergunta...`, "red");
-
         if (activeDuel.isHost) {
-
           setTimeout(() => { if (activeDuel) hostStartNextDuelRound(); }, 1900);
-
         }
-
       }
-
     }
-
     return;
-
   }
-
-
-
   if (pkt.type === "finish") {
     // A partida só encerra ao alcançar 5 pontos. Legado sem winnerKey não pontua.
     const winnerKey = pkt.scoreHost >= 5 && pkt.scoreHost > pkt.scoreGuest ? activeDuel.hostKey
@@ -3715,925 +1711,408 @@ function handleIncomingDuelPacket(pkt) {
       }
     }
     activeDuel.scoreHost = pkt.scoreHost;
-
     activeDuel.scoreGuest = pkt.scoreGuest;
-
     updateDuelScoreboardUI();
-
     playMcDonaldsJingle();
-
     $("duelQuestionArea").classList.add("hidden");
-
     $("duelWinnerBox").classList.remove("hidden");
-
     $("duelWinnerTitle").textContent = `🏆 ${pkt.winnerName} Venceu!`;
-
     $("duelWinnerSub").textContent = `Placar final: ${activeDuel.hostName} (${pkt.scoreHost}) x (${pkt.scoreGuest}) ${activeDuel.guestName}. ${eligibleWinner?(xpAwarded?'🏆 Você ganhou +100 XP!':'Recompensa já registrada.'):'O vencedor ganha +100 XP.'}`;
-
-
-
     saveDuelHistoryRecord({
-
       p1: activeDuel.hostName,
-
       p2: activeDuel.guestName,
-
       score1: pkt.scoreHost,
-
       score2: pkt.scoreGuest,
-
       winner: pkt.winnerName,
       duelId:activeDuel.duelId, rewardXp:DUEL_WIN_XP,
-
       date: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-
     });
-
     return;
-
   }
-
-
-
   if (pkt.type === "leave" && pkt.playerKey !== currentUserKey) {
-
     alert("O seu oponente saiu da Arena de Duelo.");
-
     leaveActiveDuel(false);
-
   }
-
 }
-
-
-
 function saveDuelHistoryRecord(record) {
   if(record.duelId && duelHistoryList.some(h=>h.duelId===record.duelId))return;
   duelHistoryList.unshift(record);
-
   if (duelHistoryList.length > 5) duelHistoryList.pop();
-
   localStorage.setItem(STORAGE_DUEL_HISTORY, JSON.stringify(duelHistoryList));
-
   renderDuelHistory();
-
 }
-
-
-
 function renderDuelHistory() {
-
   const container = $("duelHistoryContainer");
-
   if (!container) return;
-
-
-
   if (duelHistoryList.length === 0) {
-
     container.innerHTML = `<div class="p-3 rounded-xl subtle-box text-xs text-center text-muted-pro">Nenhum duelo finalizado recentemente. Desafie alguém na aba Simulado!</div>`;
-
     return;
-
   }
-
-
-
   container.innerHTML = duelHistoryList.map(h => `
-
     <div class="flex items-center justify-between p-2.5 rounded-xl subtle-box text-xs font-bold">
-
       <div class="flex items-center gap-2">
-
         <span>⚔️</span>
-
         <span><strong>${h.p1}</strong> (${h.score1}) x (${h.score2}) <strong>${h.p2}</strong></span>
-
       </div>
-
       <div class="text-right">
-
         <span class="text-amber-500 font-black">🏆 ${h.winner}</span>
-
         <span class="block text-[9px] text-muted-pro">${h.date}</span>
-
       </div>
-
     </div>
-
   `).join("");
-
 }
-
-
-
 function acceptDuelInvite() {
-
   playTabClickSound();
-
   if (!pendingDuelInvite) return;
-
   $("duelInvitePopup").classList.add("hidden");
-
-
-
   activeDuel = {
-
     duelId: pendingDuelInvite.duelId,
-
     isHost: false,
-
     hostKey: pendingDuelInvite.hostKey,
-
     hostName: pendingDuelInvite.hostName,
-
     hostAvatar: pendingDuelInvite.hostAvatar || "🍔",
-
     guestKey: pendingDuelInvite.guestKey,
-
     guestName: pendingDuelInvite.guestName,
-
     guestAvatar: pendingDuelInvite.guestAvatar || "🍟",
-
     scoreHost: 0,
-
     scoreGuest: 0,
-
     round: 0,
-
     status: "playing"
-
   };
-
   pendingDuelInvite = null;
-
-
-
   openDuelArenaUI();
-
   $("duelWaitingBox").classList.remove("hidden");
-
   $("duelWaitingText").textContent = "Conectando e sorteando a 1ª pergunta...";
-
-
-
   publishDuelPacket({ type: "accept", duelId: activeDuel.duelId });
-
 }
-
-
-
 function declineDuelInvite() {
-
   playTabClickSound();
-
   if (!pendingDuelInvite) return;
-
   $("duelInvitePopup").classList.add("hidden");
-
   publishDuelPacket({ type: "decline", duelId: pendingDuelInvite.duelId });
-
   pendingDuelInvite = null;
-
 }
-
-
-
 function openDuelArenaUI() {
-
   if (!activeDuel) return;
-
   $("duelArenaModal").classList.remove("hidden");
-
   updateDuelScoreboardUI();
-
 }
-
-
-
 function updateDuelScoreboardUI() {
-
   if (!activeDuel) return;
-
   const p1Av = $("duelP1Avatar");
-
   const p2Av = $("duelP2Avatar");
-
   if (p1Av) p1Av.innerHTML = isPhotoAvatar(activeDuel.hostAvatar) ? `<img src="${activeDuel.hostAvatar}" class="w-9 h-9 rounded-xl object-cover border border-[#FFC72C] mx-auto" />` : activeDuel.hostAvatar;
-
   if (p2Av) p2Av.innerHTML = isPhotoAvatar(activeDuel.guestAvatar) ? `<img src="${activeDuel.guestAvatar}" class="w-9 h-9 rounded-xl object-cover border border-[#FFC72C] mx-auto" />` : activeDuel.guestAvatar;
-
-
-
   $("duelP1Name").textContent = activeDuel.hostName;
-
   $("duelP1Score").textContent = activeDuel.scoreHost;
-
   $("duelP2Name").textContent = activeDuel.guestName;
-
   $("duelP2Score").textContent = activeDuel.scoreGuest;
-
   $("duelRoundBadge").textContent = `Rodada #${activeDuel.round || 1}`;
-
 }
-
-
-
 function hostStartNextDuelRound() {
-
   if (!activeDuel || !activeDuel.isHost) return;
-
   const nextRound = (activeDuel.round || 0) + 1;
-
   const bank=getQuestionBank();
   const randomItem=bank[Math.floor(Math.random()*bank.length)];
-
   const shuffledOptions = [...randomItem.w, randomItem.a].sort(() => 0.5 - Math.random());
-
-
-
   publishDuelPacket({
-
     type: "question",
-
     duelId: activeDuel.duelId,
-
     round: nextRound,
-
     scoreHost: activeDuel.scoreHost,
-
     scoreGuest: activeDuel.scoreGuest,
-
     question: { id: randomItem.id, level: randomItem.level, q: randomItem.q, a: randomItem.a, options: shuffledOptions }
-
   });
-
 }
-
-
-
 function renderDuelRoundUI() {
-
   if (!activeDuel || !activeDuel.currentQuestion) return;
-
   $("duelWaitingBox").classList.add("hidden");
-
   $("duelWinnerBox").classList.add("hidden");
-
   $("duelQuestionArea").classList.remove("hidden");
-
   $("duelStatusBanner").classList.add("hidden");
-
-
-
   updateDuelScoreboardUI();
-
-
-
   const qObj = activeDuel.currentQuestion;
-
   $("duelQuestionText").textContent = `(#${qObj.id}) ${qObj.q}`;
-
-
-
   const letters = ["A", "B", "C", "D"];
-
   const container = $("duelOptionsContainer");
-
   container.innerHTML = "";
-
-
-
   qObj.options.forEach((optText, idx) => {
-
     const letter = letters[idx];
-
     const btn = document.createElement("button");
-
     btn.className = "option-btn w-full text-left p-3.5 rounded-2xl font-bold text-xs flex items-center gap-3";
-
     btn.innerHTML = `
-
       <span class="w-7 h-7 rounded-xl subtle-box font-black text-xs flex items-center justify-center shrink-0">${letter}</span>
-
       <span class="flex-1 leading-snug">${trainerSafeHtml(optText)}</span>
-
     `;
-
     btn.onclick = () => submitDuelAnswer(btn, optText, qObj.a);
-
     container.appendChild(btn);
-
   });
-
 }
-
-
-
 function submitDuelAnswer(selectedBtn, chosen, correct) {
-
   if (!activeDuel || activeDuel.roundResolved) return;
-
   if (activeDuel.lockedPlayers && activeDuel.lockedPlayers[currentUserKey]) return;
-
-
-
   const allBtns = document.querySelectorAll("#duelOptionsContainer button");
-
   allBtns.forEach(b => b.disabled = true);
-
-
-
   const isCorrect = (chosen === correct);
-
   selectedBtn.className = isCorrect
-
     ? "anim-pop-correct w-full text-left p-3.5 rounded-2xl border-2 border-emerald-500 bg-emerald-500/20 font-extrabold text-xs flex items-center gap-3"
-
     : "anim-shake-wrong w-full text-left p-3.5 rounded-2xl border-2 border-red-500 bg-red-500/20 font-extrabold text-xs flex items-center gap-3";
-
-
-
   const myName = (users[currentUserKey] && users[currentUserKey].name) || "Jogador";
-
   publishDuelPacket({
-
     type: "answer",
-
     duelId: activeDuel.duelId,
-
     playerKey: currentUserKey,
-
     playerName: myName,
-
     isCorrect: isCorrect,
     round: activeDuel.round
-
   });
-
 }
-
-
-
 function showDuelBanner(msg, color) {
-
   const banner = $("duelStatusBanner");
-
   banner.classList.remove("hidden");
-
   banner.className = color === "emerald"
-
     ? "p-3 rounded-2xl text-xs font-extrabold text-center bg-emerald-500/20 text-emerald-500 border border-emerald-500/40"
-
     : color === "amber"
-
       ? "p-3 rounded-2xl text-xs font-extrabold text-center bg-amber-500/20 text-amber-500 border border-amber-500/40"
-
       : "p-3 rounded-2xl text-xs font-extrabold text-center bg-red-500/20 text-red-500 border border-red-500/40";
-
   banner.textContent = msg;
-
 }
-
-
-
 function leaveActiveDuel(notifyOther = true) {
-
   playTabClickSound();
-
   if (activeDuel && notifyOther) {
-
     publishDuelPacket({ type: "leave", duelId: activeDuel.duelId, playerKey: currentUserKey });
-
   }
-
   activeDuel = null;
-
   $("duelArenaModal").classList.add("hidden");
-
 }
-
-
-
 // =========================================================================
-
 // CORAÇÕES E RECARGA DE 10 MINUTOS
-
 // =========================================================================
-
-
-
 function getActiveHeartsLockUntil() {
-
   if (currentUserKey && users[currentUserKey]) return users[currentUserKey].heartsLockUntil || 0;
-
   return parseInt(localStorage.getItem("mequi_guest_hearts_lock") || "0", 10);
-
 }
-
-
-
 function setActiveHeartsState(heartsVal, lockUntilVal) {
-
   currentHearts = heartsVal;
-
   if (currentUserKey && users[currentUserKey]) {
-
     users[currentUserKey].hearts = heartsVal;
-
     users[currentUserKey].heartsLockUntil = lockUntilVal;
-
     users[currentUserKey].updatedAt = Date.now();
-
     localStorage.setItem(STORAGE_USERS_KEY, JSON.stringify(users));
-
   } else {
-
     localStorage.setItem("mequi_guest_hearts", String(heartsVal));
-
     localStorage.setItem("mequi_guest_hearts_lock", String(lockUntilVal));
-
   }
-
   updateHeartsDisplay();
-
 }
-
-
-
 function syncActiveUserHeartsState() {
-
   const now = Date.now();
-
   let lockUntil = getActiveHeartsLockUntil();
-
-
-
   if (currentUserKey && users[currentUserKey]) {
-
     currentHearts = users[currentUserKey].hearts !== undefined ? users[currentUserKey].hearts : 5;
-
   } else {
-
     currentHearts = parseInt(localStorage.getItem("mequi_guest_hearts") || "5", 10);
-
   }
-
-
-
   if (lockUntil > 0 && now >= lockUntil) {
-
     setActiveHeartsState(5, 0);
-
     lockUntil = 0;
-
   }
-
-
-
   updateHeartsDisplay();
-
   checkAndRenderCooldownScreen();
-
 }
-
-
-
 function formatTimeRemaining(ms) {
-
   const totalSec = Math.max(0, Math.ceil(ms / 1000));
-
   const m = Math.floor(totalSec / 60);
-
   const s = totalSec % 60;
-
   return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
-
 }
-
-
-
 function checkAndRenderCooldownScreen() {
-
   const lockUntil = getActiveHeartsLockUntil();
-
   const now = Date.now();
-
   const cooldownBox = $("quizCooldownBox");
-
   const activeArea = $("quizActiveArea");
-
   const timerDisplay = $("cooldownTimerDisplay");
-
-
-
   if (lockUntil > now) {
-
     cooldownBox.classList.remove("hidden");
-
     activeArea.classList.add("hidden");
-
     timerDisplay.textContent = formatTimeRemaining(lockUntil - now);
-
-
-
     if (!cooldownIntervalId) {
-
       cooldownIntervalId = setInterval(() => {
-
         const rem = getActiveHeartsLockUntil() - Date.now();
-
         if (rem <= 0) {
-
           clearInterval(cooldownIntervalId);
-
           cooldownIntervalId = null;
-
           setActiveHeartsState(5, 0);
-
           cooldownBox.classList.add("hidden");
-
           activeArea.classList.remove("hidden");
-
           loadNextQuizQuestion();
-
           if (currentUserKey) scheduleCloudSync(currentUserKey, true);
-
         } else {
-
           timerDisplay.textContent = formatTimeRemaining(rem);
-
         }
-
       }, 1000);
-
     }
-
     return true;
-
   } else {
-
     if (cooldownIntervalId) {
-
       clearInterval(cooldownIntervalId);
-
       cooldownIntervalId = null;
-
     }
-
     if (currentHearts <= 0) setActiveHeartsState(5, 0);
-
     cooldownBox.classList.add("hidden");
-
     activeArea.classList.remove("hidden");
-
     return false;
-
   }
-
 }
-
-
-
 function changeQuizLevelFilter() {
-
   playTabClickSound();
-
-  currentStreak = 0;
-
   loadNextQuizQuestion();
-
 }
-
-
-
 function updateHeartsDisplay() {
-
   const safeHearts = Math.max(0, Math.min(5, currentHearts));
-
   const el = $("quizHeartsInfo");
-
   if (el) el.textContent = "❤️".repeat(safeHearts) + "🖤".repeat(5 - safeHearts);
-
 }
-
-
-
 function loadNextQuizQuestion() {
-
   playTabClickSound();
-
   syncActiveUserHeartsState();
-
   if (checkAndRenderCooldownScreen()) return;
-
-
-
   const levelFilter = $("quizLevelFilter").value;
-
   const pool = levelFilter === "ALL" ? getQuestionBank() : getQuestionBank().filter(item => item.level === levelFilter);
-
   const randomItem = pool[Math.floor(Math.random() * pool.length)];
-
   currentQuizQuestionId = randomItem.id;
-
-
-
   $("quizQuestionMeta").textContent = `Questão #${randomItem.id} • Nível ${randomItem.level}`;
-
   $("statStreakDisplay").textContent = `${currentStreak} 🔥`;
-
   $("quizQuestionText").textContent = randomItem.q;
-
   $("quizFeedback").classList.add("hidden");
-
   $("nextQuizBtn").classList.add("hidden");
-
-
-
   const wrongChoices = (randomItem.w && randomItem.w.length === 3)
-
     ? [...randomItem.w]
-
     : getQuestionBank().filter(item => item.id !== randomItem.id).sort(() => 0.5 - Math.random()).slice(0, 3).map(item => item.a);
-
-
-
   const shuffledOptions = [...wrongChoices, randomItem.a].sort(() => 0.5 - Math.random());
-
   const letters = ["A", "B", "C", "D"];
-
   const container = $("quizOptions");
-
   container.innerHTML = "";
-
-
-
   shuffledOptions.forEach((optText, idx) => {
-
     const letter = letters[idx];
-
     const btn = document.createElement("button");
-
     btn.style.animationDelay = `${idx * 40}ms`;
-
     btn.className = "option-btn w-full text-left p-3.5 rounded-2xl font-bold text-xs flex items-center gap-3";
-
     btn.innerHTML = `
-
       <span class="w-7 h-7 rounded-xl subtle-box font-black text-xs flex items-center justify-center shrink-0">${letter}</span>
-
       <span class="flex-1 leading-snug">${trainerSafeHtml(optText)}</span>
-
     `;
-
     btn.onclick = () => checkQuizAnswer(btn, optText, randomItem.a, letter);
-
     container.appendChild(btn);
-
   });
-
 }
-
-
-
 function checkQuizAnswer(selectedBtn, chosen, correct, letter) {
-
   const allBtns = document.querySelectorAll("#quizOptions button");
-
   allBtns.forEach(b => {
-
     b.disabled = true;
-
     if (b.innerText.includes(correct) && chosen !== correct) {
-
       b.className = "w-full text-left p-3.5 rounded-2xl border-2 border-emerald-500 bg-emerald-500/15 font-extrabold text-xs flex items-center gap-3";
-
     }
-
   });
-
-
-
   const fb = $("quizFeedback");
-
   fb.classList.remove("hidden");
-
-
-
   if (chosen === correct) {
-
     selectedBtn.className = "anim-pop-correct w-full text-left p-3.5 rounded-2xl border-2 border-emerald-500 bg-emerald-500/20 font-extrabold text-xs flex items-center gap-3 shadow-md";
-
     currentStreak++;
-
+    saveQuizStreak();
     if (currentUserKey && users[currentUserKey]) {
-
       users[currentUserKey].correctAnswers = (users[currentUserKey].correctAnswers || 0) + 1;
-
     }
-
     addXp(25);
-
     recordMissionActivity("quiz_correct");
     recordTrainerChallengeCorrect();
-
     fb.className = "p-3.5 rounded-2xl text-xs font-extrabold bg-emerald-500/15 text-emerald-500 border border-emerald-500/30";
-
     fb.textContent = `✅ Alternativa ${letter} Correta! Você ganhou +25 XP!`;
-
     $("nextQuizBtn").textContent = "PRÓXIMA PERGUNTA ➡️";
-
     $("nextQuizBtn").classList.remove("hidden");
-
   } else {
-
     selectedBtn.className = "anim-shake-wrong w-full text-left p-3.5 rounded-2xl border-2 border-red-500 bg-red-500/20 font-extrabold text-xs flex items-center gap-3";
-
     currentStreak = 0;
-
+    saveQuizStreak();
     playWrongAnswerSound();
-
-
-
     if (currentQuizQuestionId) recordMistakeQuestion(currentQuizQuestionId);
-
     const newHearts = Math.max(0, currentHearts - 1);
-
-
-
     if (newHearts <= 0) {
-
       const lockUntil = Date.now() + HEARTS_COOLDOWN_MS;
-
       setActiveHeartsState(0, lockUntil);
-
       if (currentUserKey) scheduleCloudSync(currentUserKey, true);
-
-
-
       fb.className = "p-3.5 rounded-2xl text-xs font-extrabold bg-red-500/15 text-red-500 border border-red-500/30";
-
       fb.innerHTML = `💔 <strong>Você perdeu todos os seus 5 corações!</strong><br>Gabarito: <span class="underline">${correct}</span>.<br><span class="mt-1 inline-block">⏳ Aguarde 10 minutos (ou abra a Bancada Monta-Lanche na aba Treinos)!</span>`;
-
       $("nextQuizBtn").textContent = "VER CRONÔMETRO DE RECARGA (10 MIN) ⏳";
-
       $("nextQuizBtn").classList.remove("hidden");
-
     } else {
-
       setActiveHeartsState(newHearts, 0);
-
       if (currentUserKey) scheduleCloudSync(currentUserKey, false);
-
-
-
       fb.className = "p-3.5 rounded-2xl text-xs font-extrabold bg-red-500/15 text-red-500 border border-red-500/30";
-
       fb.innerHTML = `❌ Quase! Você perdeu 1 coração (Restam ${newHearts} ❤️) e a questão foi salva em <strong>Minhas Dúvidas</strong>.<br>Gabarito: <span class="underline mt-1 inline-block">${correct}</span>`;
-
       $("nextQuizBtn").textContent = "PRÓXIMA PERGUNTA ➡️";
-
       $("nextQuizBtn").classList.remove("hidden");
-
     }
-
   }
-
-
-
   $("statStreakDisplay").textContent = `${currentStreak} 🔥`;
-
 }
-
-
-
 // =========================================================================
-
 // FLASHCARDS 3D, BOOK E RANKING
-
 // =========================================================================
-
-
-
 function loadRandomFlashcard() {
-
   playCardFlipSound();
-
   const inner = $("fcFlipInner");
-
   if (!inner) return;
-
   inner.classList.remove("is-flipped");
-
   setTimeout(() => {
-
     const bank=getQuestionBank();
     const item=bank[Math.floor(Math.random()*bank.length)];
-
     $("fcMeta").textContent = `Questão #${item.id} (${item.level}) • Toque para girar 3D 🔄`;
-
     $("fcQuestion").textContent = item.q;
-
     $("fcAnswer").textContent = item.a;
-
   }, 150);
-
 }
-
-
-
 function flipFlashcard() {
-
   playCardFlipSound();
-
   const inner = $("fcFlipInner");
-
   if (inner) inner.classList.toggle("is-flipped");
-
 }
-
-
-
 let bookVisibleCount = 20;
 function debouncedBookSearch() {
   bookVisibleCount = 20;
-
   clearTimeout(searchDebounceTimer);
-
   searchDebounceTimer = setTimeout(() => { renderBookList(); }, 150);
-
 }
-
-
-
 function setBookFilter(level) {
-
   playTabClickSound();
-
   currentBookFilter = level;
   bookVisibleCount = 20;
-
   ["ALL", "Básico", "Intermediário", "Avançado"].forEach(lvl => {
-
     const btn = $(`filter-${lvl}`);
-
     if (btn) {
-
       btn.className = lvl === level
-
         ? "px-3.5 py-1.5 rounded-xl text-xs font-extrabold bg-red-600 text-white shadow-sm shrink-0 btn-tap"
-
         : "px-3.5 py-1.5 rounded-xl text-xs font-extrabold subtle-box shrink-0 btn-tap";
-
     }
-
   });
-
   renderBookList();
-
 }
-
-
-
 function renderBookList() {
-
   const search = $("searchBookInput").value.toLowerCase();
-
   const container = $("bookQuestionsContainer");
-
-
-
   const filtered = getQuestionBank().filter(item => {
-
     const matchesLevel = currentBookFilter === "ALL" || item.level === currentBookFilter;
-
     const matchesText = !search || item.q.toLowerCase().includes(search) || item.a.toLowerCase().includes(search) || String(item.id).includes(search);
-
     return matchesLevel && matchesText;
-
   });
-
-
-
   $("bookCountBadge").textContent = `${filtered.length} questões`;
-
-
-
   container.innerHTML = filtered.slice(0, bookVisibleCount).map(item => `
-
     <div class="pro-card rounded-2xl p-4">
-
       <div class="flex items-center justify-between mb-1.5">
-
         <span class="text-[10px] font-black px-2.5 py-0.5 rounded-full bg-red-500/10 text-red-500 border border-red-500/20">Questão #${item.id} • ${item.level}</span>
-
         <button onclick="revealBookAnswer(this)" class="text-[11px] font-extrabold text-amber-500 hover:underline btn-tap">Ver Resposta</button>
-
       </div>
-
       <p class="font-extrabold text-xs leading-relaxed">${trainerSafeHtml(item.q)}</p>
-
       <p class="hidden mt-2.5 pt-2.5 border-t border-slate-500/20 text-xs font-bold text-emerald-500">✅ ${trainerSafeHtml(item.a)}</p>
     </div>
   `).join("") + (filtered.length > bookVisibleCount ?
@@ -4661,7 +2140,6 @@ function revealBookAnswer(btn) {
 // ============================================================================
 let publicProfileSelectedKey = null;
 let publicProfileReturnFocus = null;
-
 function escapePublicHtml(value) {
   return String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 }
@@ -4775,7 +2253,6 @@ document.addEventListener('keydown',event=>{
     else if(!event.shiftKey && document.activeElement===last){event.preventDefault();first.focus();}
   }
 });
-
 function renderLeaderboard() {
   const podiumContainer = $("podiumTop3Container");
   const container = $("leaderboardContainer");
@@ -4875,63 +2352,32 @@ function shareMyScoreWhatsApp() {
 // =========================================================================
 // PAINEL ADM (SENHA: 342005)
 // =========================================================================
-
 function unlockAdminPanel() {
-
   const pass = $("adminPassInput").value.trim();
-
   const err = $("adminAuthError");
-
   if (pass === ADMIN_SECRET_PASS) {
-
     isAdminUnlocked = true;
-
     playHitSuccessSound();
-
     err.classList.add("hidden");
-
     $("adminLockScreen").classList.add("hidden");
-
     $("adminDashboard").classList.remove("hidden");
-
     renderAdminUsersList();
-
     fetchCloudHistorySafe(true);
-
   } else {
-
     playWrongAnswerSound();
-
     err.classList.remove("hidden");
-
   }
-
 }
-
-
-
 function lockAdminPanel() {
-
   playTabClickSound();
-
   isAdminUnlocked = false;
-
   $("adminPassInput").value = "";
-
   $("adminDashboard").classList.add("hidden");
-
   $("adminLockScreen").classList.remove("hidden");
-
 }
-
-
-
 function renderAdminUsersList() {
-
   const container = $("adminUsersList");
-
   const entries = Object.entries(users).filter(([k, u]) => u && u.name && !u._deleted).sort((a, b) => (b[1].xp || 0) - (a[1].xp || 0));
-
   $("adminStatsSummary").textContent = `Total: ${entries.length} colaborador(es) cadastrado(s)`;
   if (entries.length === 0) {
     container.innerHTML = `<p class="text-xs text-muted-pro text-center py-4 font-bold">Nenhum colaborador cadastrado.</p>`;
@@ -5031,6 +2477,8 @@ function adminResetUser(key) {
   if (!confirm(`Zerar o XP e os acertos de ${users[key].name}?`)) return;
   users[key].xp = 0;
   users[key].correctAnswers = 0;
+  users[key].quizStreak = 0;
+  users[key].quizStreakUpdatedAt = Date.now();
   users[key].hearts = 5;
   users[key].heartsLockUntil = 0;
   users[key].updatedAt = Date.now();
@@ -5065,6 +2513,8 @@ function adminSaveMember() {
     hearts: 5,
     heartsLockUntil: 0,
     mistakes: users[key]?.mistakes || [],
+    quizStreak: users[key]?.quizStreak || 0,
+    quizStreakUpdatedAt: users[key]?.quizStreakUpdatedAt || 0,
     missionProgress:users[key]?.missionProgress,
     profilePremium:users[key]?.profilePremium,
     trainerChallenges:users[key]?.trainerChallenges,
@@ -5120,6 +2570,7 @@ window.onload = () => {
   injectCountdownAndKitchenUI();
   renderMissionHub();
   rescuePreviousLocalRegistrations();
+  restoreQuizStreak();
   renderAvatarSelector();
   syncActiveUserHeartsState();
   loadNextQuizQuestion();
