@@ -7,7 +7,8 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="Olimpíadas Méqui" />
-  <title>Olimpíadas do Básico — Venture v8.4</title>
+  <title>Olimpíadas do Básico — Venture v8.5</title>
+  <meta name="app-version" content="8.5" />
   <!-- Favicon Oficial: Arcos Dourados em Vetor SVG -->
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='24' fill='%23DA291C'/%3E%3Cpath fill='%23FFC72C' d='M50 46c-3.6-13.8-10.8-23.5-19.6-23.5-12 0-21.6 18.5-21.6 52.5h9.1c0-26.4 6.4-42.8 12.5-42.8 6 0 12 17.6 12.5 42.8H50zm0 0c3.6-13.8 10.8-23.5 19.6-23.5 12 0 21.6 18.5 21.6 52.5h-9.1c0-26.4-6.4-42.8-12.5-42.8-6 0-12 17.6-12.5 42.8H50z'/%3E%3C/svg%3E" />
   <script src="https://cdn.tailwindcss.com"></script>
@@ -15,12 +16,18 @@
   <!-- Biblioteca para Print Automático em PNG -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=84" />
+  <link rel="stylesheet" href="style.css?v=85" />
 </head>
 <body class="min-h-screen pb-36">
   <!-- Input invisível para galeria / PC -->
   <input type="file" id="hiddenGalleryInput" accept="image/*" class="hidden" onchange="handleGalleryFileSelected(event)" />
   <div id="xpToastContainer"></div>
+  <!-- ATUALIZAÇÕES AUTOMÁTICAS: AVISO COMPACTO, SEM INTERROMPER O JOGO -->
+  <aside id="appUpdateBanner" class="app-update-banner hidden" role="status" aria-live="polite" aria-label="Atualização disponível">
+    <div class="app-update-icon" aria-hidden="true">🔄</div>
+    <div class="app-update-copy"><strong>Nova versão <span id="appUpdateNewVersion">disponível</span>!</strong><p>Novidades prontas. Seus pontos e conquistas continuam salvos.</p></div>
+    <div class="app-update-actions"><button type="button" class="app-update-install" onclick="installLatestAppVersion()">Atualizar</button><button type="button" class="app-update-later" onclick="postponeAppUpdate()" aria-label="Atualizar depois">Depois</button></div>
+  </aside>
   <!-- POP-UP DE CONVITE DE DUELO 1v1 -->
   <div id="duelInvitePopup" class="hidden fixed inset-0 bg-slate-950/85 backdrop-blur-md z-50 flex items-center justify-center p-4">
     <div class="pro-card rounded-[2rem] max-w-sm w-full p-6 text-center space-y-4 border-4 border-[#FFC72C] shadow-2xl">
@@ -160,7 +167,7 @@
           </svg>
         </div>
         <h1 class="text-2xl font-black tracking-tight">OLIMPÍADAS DO BÁSICO</h1>
-        <p class="text-xs text-muted-pro font-semibold mt-0.5">Plataforma Venture • Versão 8.4 🏆</p>
+        <p class="text-xs text-muted-pro font-semibold mt-0.5">Plataforma Venture • Versão 8.5 🏆</p>
       </div>
       <div class="flex rounded-2xl subtle-box p-1.5 mb-5">
         <button id="tabLoginBtn" onclick="switchAuthTab('login')" class="flex-1 py-2.5 text-xs font-extrabold rounded-xl bg-[#DA291C] text-white shadow-sm btn-tap">ENTRAR</button>
@@ -636,8 +643,9 @@
         <button type="button" onclick="switchMainTab('trainer')" class="more-menu-item"><span class="more-menu-icon" aria-hidden="true">🎓</span><span class="more-menu-copy"><strong>Central do Treinador</strong><small>Perguntas, comunicados e desafios especiais</small></span><span class="more-chevron" aria-hidden="true">›</span></button>
         <button type="button" onclick="switchMainTab('admin')" class="more-menu-item"><span class="more-menu-icon" aria-hidden="true">⚙️</span><span class="more-menu-copy"><strong>Painel ADM</strong><small>Gerenciamento de colaboradores e XP</small></span><span class="more-chevron" aria-hidden="true">›</span></button>
         <button type="button" onclick="switchMainTab('updates')" class="more-menu-item"><span class="more-menu-icon" aria-hidden="true">🔔</span><span class="more-menu-copy"><strong>Novidades e versões</strong><small>O que mudou no aplicativo</small></span><span class="more-chevron" aria-hidden="true">›</span></button>
+        <div class="app-version-control" aria-label="Versão do aplicativo"><span>✅ Versão instalada: <strong id="appInstalledVersion">8.5</strong></span><button type="button" onclick="checkForAppUpdate(true)">🔄 Procurar atualização</button><p id="appVersionStatus" role="status" aria-live="polite">Checagem automática a cada 60 segundos enquanto o site está aberto.</p></div>
       </div>
-      <div class="more-info"><strong>Olimpíadas do Básico · Venture</strong><span>Versão 8.4 · Sequência salva automaticamente</span></div>
+      <div class="more-info"><strong>Olimpíadas do Básico · Venture</strong><span>Versão 8.5 · Atualização automática</span></div>
     </section>
     <!-- V8.3: CENTRAL DO TREINADOR (restrição de interface; sem autorização de servidor) -->
     <section id="tab-trainer" class="app-screen hidden space-y-4" aria-label="Central do Treinador">
@@ -766,8 +774,9 @@
             <h2 class="font-black text-base">🚀 Histórico Completo de Versões</h2>
             <p class="text-[11px] text-muted-pro font-semibold">Todas as evoluções do aplicativo desde o lançamento</p>
           </div>
-          <span class="bg-red-500/15 text-red-500 text-xs font-black px-3 py-1 rounded-full">v8.4 Sequência salva</span>
+          <span class="bg-red-500/15 text-red-500 text-xs font-black px-3 py-1 rounded-full">v8.5 Atualização automática</span>
         </div>
+        <div class="border-l-4 border-[#FFC72C] pl-3.5 space-y-1"><span class="text-[11px] font-extrabold text-amber-500 uppercase">Versão 8.5 • Atualização Automática</span><h4 class="font-black text-sm">🔄 Checagem de versão durante o uso</h4><p class="text-xs text-muted-pro">O site verifica novas publicações no GitHub Pages e permite atualizar com um toque ou automaticamente após um período sem atividade. Não interrompe duelos e preserva os dados do navegador.</p></div>
         <div class="border-l-4 border-[#FFC72C] pl-3.5 space-y-1"><span class="text-[11px] font-extrabold text-amber-500 uppercase">Versão 8.4 • Sequência Persistente</span><h4 class="font-black text-sm">🔥 Sua sequência de acertos não some ao sair</h4><p class="text-xs text-muted-pro">A sequência fica no cadastro e é restaurada ao reabrir o site ou fazer login. Apenas uma resposta errada (ou zerar pelo ADM) reinicia a sequência. Código organizado e sem linhas vazias em excesso.</p></div>
         <div class="border-l-4 border-[#FFC72C] pl-3.5 space-y-1"><span class="text-[11px] font-extrabold text-amber-500 uppercase">Versão 8.3 • Central do Treinador</span><h4 class="font-black text-sm">🎓 Perguntas, avisos, desafio especial e 100 XP ao vencer o 1v1</h4><p class="text-xs text-muted-pro">Banco extra de perguntas, comunicado da equipe, desafio com progresso individual e recompensa única por vitória no duelo.</p></div>
         <div class="border-l-4 border-[#FFC72C] pl-3.5 space-y-1">
@@ -813,6 +822,6 @@
     </nav>
   </div>
 <script src="questions.js"></script>
-  <script src="script.js?v=84"></script>
+  <script src="script.js?v=85"></script>
 </body>
 </html>
