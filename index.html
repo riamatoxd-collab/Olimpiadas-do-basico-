@@ -7,7 +7,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="Olimpíadas Méqui" />
-  <title>Olimpíadas do Básico — Venture v7.9</title>
+  <title>Olimpíadas do Básico — Venture v8.0</title>
 
   <!-- Favicon Oficial: Arcos Dourados em Vetor SVG -->
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='24' fill='%23DA291C'/%3E%3Cpath fill='%23FFC72C' d='M50 46c-3.6-13.8-10.8-23.5-19.6-23.5-12 0-21.6 18.5-21.6 52.5h9.1c0-26.4 6.4-42.8 12.5-42.8 6 0 12 17.6 12.5 42.8H50zm0 0c3.6-13.8 10.8-23.5 19.6-23.5 12 0 21.6 18.5 21.6 52.5h-9.1c0-26.4-6.4-42.8-12.5-42.8-6 0-12 17.6-12.5 42.8H50z'/%3E%3C/svg%3E" />
@@ -19,7 +19,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css" />
 </head>
-<body class="min-h-screen pb-32">
+<body class="min-h-screen pb-36">
 
   <!-- Input invisível para galeria / PC -->
   <input type="file" id="hiddenGalleryInput" accept="image/*" class="hidden" onchange="handleGalleryFileSelected(event)" />
@@ -131,7 +131,7 @@
           </svg>
         </div>
         <h1 class="text-2xl font-black tracking-tight">OLIMPÍADAS DO BÁSICO</h1>
-        <p class="text-xs text-muted-pro font-semibold mt-0.5">Plataforma Venture • Versão 7.9 🏆</p>
+        <p class="text-xs text-muted-pro font-semibold mt-0.5">Plataforma Venture • Versão 8.0 🏆</p>
       </div>
 
       <div class="flex rounded-2xl subtle-box p-1.5 mb-5">
@@ -198,8 +198,8 @@
   </div>
 
   <!-- CABEÇALHO DO COLABORADOR COM BOLINHA VERDE ONLINE -->
-  <header class="mc-gradient text-white pt-4 pb-5 px-4 rounded-b-[2.5rem] shadow-2xl sticky top-0 z-30 border-b-4 border-[#FFC72C]">
-    <div class="max-w-xl mx-auto">
+  <header class="app-header mc-gradient text-white">
+    <div class="max-w-2xl mx-auto">
       <div class="flex items-center justify-between gap-2 mb-3">
         <div class="flex items-center gap-3">
           <div class="relative">
@@ -241,10 +241,18 @@
     </div>
   </header>
 
-  <main class="max-w-xl mx-auto px-4 mt-5">
+  <main class="app-main max-w-2xl mx-auto px-4 mt-6">
 
     <!-- ABA 1: SIMULADO INTERATIVO + DUELO + REVISÃO -->
-    <section id="tab-quiz" class="space-y-4">
+    <!-- TELA PRINCIPAL: APENAS O SIMULADO E INDICADORES -->
+    <section id="tab-quiz" class="app-screen space-y-5" aria-label="Simulado">
+      <div class="page-heading">
+        <div>
+          <span class="page-eyebrow">SUA ÁREA DE TREINAMENTO</span>
+          <h1>Hora de praticar <span aria-hidden="true">🎯</span></h1>
+          <p>Uma pergunta de cada vez. Evolua no seu ritmo!</p>
+        </div>
+      </div>
       <div class="grid grid-cols-3 gap-2.5">
         <div class="pro-card rounded-2xl p-3 text-center">
           <span class="text-[10px] font-extrabold uppercase text-muted-pro block">Acertos</span>
@@ -259,33 +267,6 @@
           <span id="quizHeartsInfo" class="font-black text-xs text-red-500 mt-1 block tracking-tighter">❤️❤️❤️❤️❤️</span>
         </div>
       </div>
-
-      <!-- MISSÕES E CONQUISTAS — v7.9 (compatível com os cadastros anteriores) -->
-      <section id="missionHub" class="pro-card mission-hub rounded-3xl p-4 sm:p-5 space-y-3" aria-label="Missões e conquistas">
-        <div class="flex items-start justify-between gap-3">
-          <div class="flex items-center gap-3">
-            <span class="mission-hub-icon" aria-hidden="true">🎯</span>
-            <div>
-              <span class="text-[10px] font-black uppercase tracking-wider text-amber-500">Desafios dos colaboradores</span>
-              <h2 class="text-base font-black leading-tight">Missões & Conquistas</h2>
-              <p id="missionCycleLabel" class="text-[11px] text-muted-pro font-semibold">Acompanhe seu progresso e ganhe XP</p>
-            </div>
-          </div>
-          <div id="missionCompletedCount" class="mission-counter" aria-live="polite">0/3</div>
-        </div>
-        <div class="mission-switch" role="group" aria-label="Período das missões">
-          <button id="missionViewDaily" type="button" onclick="setMissionView('daily')" class="mission-switch-btn is-active" aria-pressed="true">☀️ Hoje</button>
-          <button id="missionViewWeekly" type="button" onclick="setMissionView('weekly')" class="mission-switch-btn" aria-pressed="false">📅 Semana</button>
-        </div>
-        <div id="missionList" class="space-y-2.5" aria-live="polite">
-          <p class="text-xs text-muted-pro">Carregando missões...</p>
-        </div>
-        <p class="text-[11px] font-semibold text-muted-pro">✨ Bônus de XP liberados automaticamente ao concluir. Missões reiniciam no período seguinte.</p>
-        <details id="medalGallery" class="medal-gallery">
-          <summary class="cursor-pointer text-xs font-black flex items-center gap-2">🏅 Minha coleção de medalhas <span id="medalCount" class="text-muted-pro font-bold">0/8</span></summary>
-          <div id="medalGrid" class="grid grid-cols-2 gap-2 pt-3"></div>
-        </details>
-      </section>
 
       <!-- SIMULADO -->
       <div class="pro-card rounded-3xl p-5">
@@ -332,6 +313,29 @@
         </div>
       </div>
 
+      <div class="shortcut-row" aria-label="Acesso rápido">
+        <button type="button" onclick="switchMainTab('training')" class="shortcut-link">🍔 Outros treinos <span aria-hidden="true">↗</span></button>
+        <button type="button" onclick="switchMainTab('missions')" class="shortcut-link">🏅 Minhas missões <span aria-hidden="true">↗</span></button>
+      </div>
+    </section>
+
+    <!-- TELA DE ATIVIDADES: MOSTRA UMA POR VEZ -->
+    <section id="tab-training" class="app-screen hidden space-y-5" aria-label="Treinos">
+      <div class="page-heading">
+        <div>
+          <span class="page-eyebrow">TREINOS INTERATIVOS</span>
+          <h1>Escolha seu treino <span aria-hidden="true">🍔</span></h1>
+          <p>Cozinha, revisão, duelo ou flashcards em um só lugar.</p>
+        </div>
+      </div>
+      <div class="training-switch" role="group" aria-label="Tipo de treino">
+        <button id="training-nav-kitchen" type="button" class="training-choice is-active" onclick="switchTrainingMode('kitchen')" aria-pressed="true"><span aria-hidden="true">🍔</span><span>Cozinha</span></button>
+        <button id="training-nav-review" type="button" class="training-choice" onclick="switchTrainingMode('review')" aria-pressed="false"><span aria-hidden="true">🧠</span><span>Revisão</span></button>
+        <button id="training-nav-duel" type="button" class="training-choice" onclick="switchTrainingMode('duel')" aria-pressed="false"><span aria-hidden="true">⚔️</span><span>Duelo</span></button>
+        <button id="training-nav-flash" type="button" class="training-choice" onclick="switchTrainingMode('flash')" aria-pressed="false"><span aria-hidden="true">🎴</span><span>Cartões</span></button>
+      </div>
+      <div id="training-mode-kitchen" class="training-panel space-y-3" aria-label="Montagem de lanches"></div>
+      <div id="training-mode-review" class="training-panel hidden space-y-3" aria-label="Revisar dúvidas">
       <!-- REVISAR MINHAS DÚVIDAS -->
       <div class="pro-card rounded-3xl p-5 border-2 border-purple-500/30 space-y-3">
         <div class="flex items-center justify-between gap-2">
@@ -350,7 +354,8 @@
           </button>
         </div>
       </div>
-
+      </div>
+      <div id="training-mode-duel" class="training-panel hidden space-y-3" aria-label="Desafio entre colegas">
       <!-- DUELO 1 vs 1 AO VIVO -->
       <div class="pro-card rounded-3xl p-5 border-2 border-amber-500/40 space-y-3">
         <div class="flex items-center justify-between">
@@ -373,7 +378,8 @@
           </button>
         </div>
       </div>
-
+      </div>
+      <div id="training-mode-flash" class="training-panel hidden space-y-3" aria-label="Flashcards de estudo">
       <!-- FLASHCARD 3D -->
       <div class="pro-card rounded-3xl p-5 space-y-3">
         <div class="flex items-center justify-between">
@@ -397,11 +403,52 @@
           </div>
         </div>
       </div>
+      </div>
+    </section>
+
+    <!-- MISSÕES: UM LOCAL DEDICADO PARA PROGRESSO E MEDALHAS -->
+    <section id="tab-missions" class="app-screen hidden space-y-5" aria-label="Missões e conquistas">
+      <div class="page-heading">
+        <div>
+          <span class="page-eyebrow">SEUS OBJETIVOS</span>
+          <h1>Missões & medalhas <span aria-hidden="true">🏅</span></h1>
+          <p>Complete desafios, libere conquistas e ganhe XP extra.</p>
+        </div>
+      </div>
+      <!-- MISSÕES E CONQUISTAS — v7.9 (compatível com os cadastros anteriores) -->
+      <section id="missionHub" class="pro-card mission-hub rounded-3xl p-4 sm:p-5 space-y-3" aria-label="Missões e conquistas">
+        <div class="flex items-start justify-between gap-3">
+          <div class="flex items-center gap-3">
+            <span class="mission-hub-icon" aria-hidden="true">🎯</span>
+            <div>
+              <span class="text-[10px] font-black uppercase tracking-wider text-amber-500">Desafios dos colaboradores</span>
+              <h2 class="text-base font-black leading-tight">Missões & Conquistas</h2>
+              <p id="missionCycleLabel" class="text-[11px] text-muted-pro font-semibold">Acompanhe seu progresso e ganhe XP</p>
+            </div>
+          </div>
+          <div id="missionCompletedCount" class="mission-counter" aria-live="polite">0/3</div>
+        </div>
+        <div class="mission-switch" role="group" aria-label="Período das missões">
+          <button id="missionViewDaily" type="button" onclick="setMissionView('daily')" class="mission-switch-btn is-active" aria-pressed="true">☀️ Hoje</button>
+          <button id="missionViewWeekly" type="button" onclick="setMissionView('weekly')" class="mission-switch-btn" aria-pressed="false">📅 Semana</button>
+        </div>
+        <div id="missionList" class="space-y-2.5" aria-live="polite">
+          <p class="text-xs text-muted-pro">Carregando missões...</p>
+        </div>
+        <p class="text-[11px] font-semibold text-muted-pro">✨ Bônus de XP liberados automaticamente ao concluir. Missões reiniciam no período seguinte.</p>
+        <details id="medalGallery" class="medal-gallery">
+          <summary class="cursor-pointer text-xs font-black flex items-center gap-2">🏅 Minha coleção de medalhas <span id="medalCount" class="text-muted-pro font-bold">0/8</span></summary>
+          <div id="medalGrid" class="grid grid-cols-2 gap-2 pt-3"></div>
+        </details>
+      </section>
+      <div class="shortcut-row"><button type="button" onclick="switchMainTab('quiz')" class="shortcut-link">🎯 Voltar ao simulado <span aria-hidden="true">↗</span></button></div>
     </section>
 
     <!-- ABA 2: BOOK OFICIAL -->
-    <section id="tab-book" class="hidden space-y-3">
-      <div class="pro-card rounded-3xl p-4 sticky top-32 z-20 space-y-3">
+    <section id="tab-book" class="app-screen hidden space-y-4">
+      <div class="page-heading"><div><span class="page-eyebrow">CONSULTA E ESTUDO</span><h1>Book oficial 📖</h1><p>Pesquise os padrões e as perguntas do treinamento.</p></div></div>
+      <button class="back-link" type="button" onclick="switchMainTab('more')">← Voltar ao menu</button>
+      <div class="pro-card rounded-3xl p-4 book-search-card space-y-3">
         <div class="flex items-center justify-between">
           <span class="text-xs font-black">📖 Apostila Oficial Venture (200 Questões)</span>
           <span id="bookCountBadge" class="text-[11px] font-extrabold text-red-500 bg-red-500/10 px-2.5 py-0.5 rounded-full">Carregando...</span>
@@ -418,7 +465,8 @@
     </section>
 
     <!-- ABA 3: RANKING COM PÓDIO 3D + HISTÓRICO DE DUELOS + PRINT WHATSAPP -->
-    <section id="tab-prizes" class="hidden space-y-4">
+    <section id="tab-prizes" class="app-screen hidden space-y-5">
+      <div class="page-heading"><div><span class="page-eyebrow">COMPETIÇÃO DA LOJA</span><h1>Ranking geral 🏆</h1><p>Confira os destaques, as posições e o histórico de duelos.</p></div></div>
       <div class="mc-gradient text-white rounded-3xl p-5 shadow-xl relative overflow-hidden border-2 border-[#FFC72C]">
         <div class="flex items-center gap-4">
           <div class="text-5xl bg-white/15 p-3.5 rounded-2xl border border-white/25 shadow-inner float-slow">☕</div>
@@ -449,6 +497,8 @@
         <div id="leaderboardContainer" class="space-y-2.5"></div>
       </div>
 
+      <details class="rank-disclosure">
+        <summary>⚔️ Histórico de duelos<span aria-hidden="true">⌄</span></summary>
       <!-- HISTÓRICO DE DUELOS 1 vs 1 -->
       <div class="pro-card rounded-3xl p-5 space-y-3 border-2 border-amber-500/30">
         <div class="flex items-center justify-between">
@@ -456,9 +506,10 @@
           <span class="text-[10px] font-extrabold text-amber-500 bg-amber-500/10 px-2.5 py-0.5 rounded-full">Placar Ao Vivo</span>
         </div>
         <div id="duelHistoryContainer" class="space-y-2">
-          <div class="p-3 rounded-xl subtle-box text-xs text-center text-muted-pro">Nenhum duelo finalizado recentemente. Desafie alguém na aba Simulado!</div>
+          <div class="p-3 rounded-xl subtle-box text-xs text-center text-muted-pro">Nenhum duelo finalizado recentemente. Desafie alguém na aba Treinos!</div>
         </div>
       </div>
+      </details>
 
       <!-- BOTÕES WHATSAPP -->
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
@@ -471,6 +522,8 @@
         </button>
       </div>
 
+      <details class="rank-disclosure">
+        <summary>📈 Conhecer as 7 patentes de XP<span aria-hidden="true">⌄</span></summary>
       <!-- Tabela das 7 Patentes -->
       <div class="pro-card rounded-3xl p-5 space-y-3">
         <div class="flex items-center justify-between">
@@ -508,10 +561,25 @@
           </div>
         </div>
       </div>
+      </details>
+
+    </section>
+
+    <!-- MENU: ACESSO A FUNÇÕES MENOS USADAS -->
+    <section id="tab-more" class="app-screen hidden space-y-5" aria-label="Mais opções">
+      <div class="page-heading"><div><span class="page-eyebrow">TUDO ORGANIZADO</span><h1>Mais opções <span aria-hidden="true">✨</span></h1><p>Materiais de consulta e recursos de gerenciamento.</p></div></div>
+      <div class="more-menu" role="group" aria-label="Menu de recursos">
+        <button type="button" onclick="switchMainTab('book')" class="more-menu-item"><span class="more-menu-icon" aria-hidden="true">📖</span><span class="more-menu-copy"><strong>Book oficial</strong><small>Consulte as 200 questões e respostas</small></span><span class="more-chevron" aria-hidden="true">›</span></button>
+        <button type="button" onclick="switchMainTab('admin')" class="more-menu-item"><span class="more-menu-icon" aria-hidden="true">⚙️</span><span class="more-menu-copy"><strong>Painel ADM</strong><small>Gerenciamento de colaboradores e XP</small></span><span class="more-chevron" aria-hidden="true">›</span></button>
+        <button type="button" onclick="switchMainTab('updates')" class="more-menu-item"><span class="more-menu-icon" aria-hidden="true">🔔</span><span class="more-menu-copy"><strong>Novidades e versões</strong><small>O que mudou no aplicativo</small></span><span class="more-chevron" aria-hidden="true">›</span></button>
+      </div>
+      <div class="more-info"><strong>Olimpíadas do Básico · Venture</strong><span>Versão 8.0 · Interface reorganizada</span></div>
     </section>
 
     <!-- ABA 4: PAINEL ADM -->
-    <section id="tab-admin" class="hidden space-y-4">
+    <section id="tab-admin" class="app-screen hidden space-y-4">
+      <div class="page-heading"><div><span class="page-eyebrow">ACESSO RESTRITO</span><h1>Administração ⚙️</h1><p>Gerencie os dados da equipe.</p></div></div>
+      <button class="back-link" type="button" onclick="switchMainTab('more')">← Voltar ao menu</button>
       <div id="adminLockScreen" class="pro-card rounded-3xl p-6 text-center space-y-4">
         <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl dark-gradient text-[#FFC72C] text-3xl font-black shadow-lg float-slow">🔒</div>
         <div>
@@ -568,7 +636,9 @@
     </section>
 
     <!-- ABA 5: VERSÕES -->
-    <section id="tab-updates" class="hidden space-y-3">
+    <section id="tab-updates" class="app-screen hidden space-y-4">
+      <div class="page-heading"><div><span class="page-eyebrow">NOVIDADES</span><h1>Versões 🔔</h1><p>Conheça as melhorias do aplicativo.</p></div></div>
+      <button class="back-link" type="button" onclick="switchMainTab('more')">← Voltar ao menu</button>
       <div class="pro-card rounded-3xl p-5 space-y-5">
         <div class="flex items-center justify-between border-b border-slate-200/40 pb-3">
           <div>
@@ -585,6 +655,11 @@
           <p class="text-xs text-muted-pro font-semibold">Bônus de XP por desafios concluídos, coleção de 8 medalhas e progresso por colaborador. Compatível com o histórico de XP e com as contas anteriores.</p>
         </div>
 
+        <div class="border-l-4 border-[#DA291C] pl-3.5 space-y-1">
+          <span class="text-[11px] font-extrabold text-red-500 uppercase">Versão 8.0 • Interface organizada</span>
+          <h4 class="font-black text-sm">Navegação em áreas de estudo</h4>
+          <p class="text-xs text-muted-pro">Simulado separado de Cozinha, Revisão, Duelo e Flashcards. Missões em aba própria; Book e ADM no menu Mais. Todos os cadastros e pontos continuam no mesmo armazenamento.</p>
+        </div>
         <!-- Versão 7.6 -->
         <div class="border-l-4 border-[#FFC72C] pl-3.5 space-y-1">
           <span class="text-[11px] font-extrabold text-amber-500 uppercase">Versão 7.6 • Atualização Atual (Jingle de Nível Superior)</span>
@@ -598,31 +673,14 @@
 
   </main>
 
-  <!-- BARRA DE NAVEGAÇÃO FLUTUANTE -->
-  <div class="fixed bottom-3 inset-x-0 px-3 z-40 pointer-events-none">
-    <nav class="max-w-md mx-auto pro-card rounded-3xl p-1.5 shadow-2xl pointer-events-auto border-2 border-[#FFC72C]/40">
-      <div class="grid grid-cols-5 gap-1">
-        <button onclick="switchMainTab('quiz')" id="nav-quiz" class="nav-btn active-nav flex flex-col items-center py-1.5 rounded-2xl text-[10px]">
-          <span class="nav-icon text-base transition-transform">🎯</span>
-          <span>Simulado</span>
-        </button>
-        <button onclick="switchMainTab('book')" id="nav-book" class="nav-btn flex flex-col items-center py-1.5 rounded-2xl font-bold text-[10px]">
-          <span class="nav-icon text-base transition-transform">📖</span>
-          <span>Book</span>
-        </button>
-        <button onclick="switchMainTab('prizes')" id="nav-prizes" class="nav-btn flex flex-col items-center py-1.5 rounded-2xl font-bold text-[10px]">
-          <span class="nav-icon text-base transition-transform">🏆</span>
-          <span>Ranking</span>
-        </button>
-        <button onclick="switchMainTab('admin')" id="nav-admin" class="nav-btn flex flex-col items-center py-1.5 rounded-2xl font-bold text-[10px]">
-          <span class="nav-icon text-base transition-transform">⚙️</span>
-          <span>ADM</span>
-        </button>
-        <button onclick="switchMainTab('updates')" id="nav-updates" class="nav-btn flex flex-col items-center py-1.5 rounded-2xl font-bold text-[10px]">
-          <span class="nav-icon text-base transition-transform">🔔</span>
-          <span>Versões</span>
-        </button>
-      </div>
+  <!-- NAVEGAÇÃO INFERIOR: CINCO ÁREAS CLARAS E OBJETIVAS -->
+  <div class="bottom-nav-shell">
+    <nav class="bottom-nav" aria-label="Navegação principal">
+      <button type="button" onclick="switchMainTab('quiz')" id="nav-quiz" class="nav-btn active-nav" aria-current="page"><span class="nav-icon" aria-hidden="true">🎯</span><span>Simulado</span></button>
+      <button type="button" onclick="switchMainTab('training')" id="nav-training" class="nav-btn"><span class="nav-icon" aria-hidden="true">🍔</span><span>Treinos</span></button>
+      <button type="button" onclick="switchMainTab('missions')" id="nav-missions" class="nav-btn"><span class="nav-icon" aria-hidden="true">🏅</span><span>Missões</span></button>
+      <button type="button" onclick="switchMainTab('prizes')" id="nav-prizes" class="nav-btn"><span class="nav-icon" aria-hidden="true">🏆</span><span>Ranking</span></button>
+      <button type="button" onclick="switchMainTab('more')" id="nav-more" class="nav-btn"><span class="nav-icon" aria-hidden="true">☰</span><span>Mais</span></button>
     </nav>
   </div>
 <script src="questions.js"></script>

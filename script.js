@@ -710,7 +710,7 @@ function injectCountdownAndKitchenUI() {
 
 
 
-const themeBtn = $("themeToggleBtn");
+const themeBtn = $("tab-more");
 
 
 
@@ -726,7 +726,7 @@ sb.id = "soundTestBtn"; sb.title = "Tocar Jingle"; sb.innerHTML = "🔊";
 
 
 
-sb.className = "bg-slate-950/30 hover:bg-slate-950/45 w-9 h-9 rounded-2xl flex items-center justify-center text-sm border border-white/15 btn-tap";
+sb.className = "sound-test-button"; sb.textContent = "🔊 Testar som do aplicativo";
 
 
 
@@ -734,7 +734,7 @@ sb.onclick = playMcDonaldsJingle;
 
 
 
-themeBtn.parentNode.insertBefore(sb, themeBtn);
+themeBtn.appendChild(sb);
 
 
 
@@ -750,7 +750,7 @@ themeBtn.parentNode.insertBefore(sb, themeBtn);
 
 
 
-const mainEl = document.querySelector("main");
+const mainEl = $("tab-prizes");
 
 
 
@@ -862,11 +862,11 @@ printArea.insertBefore(pb, printArea.children[1]);
 
 
 
-const tabQuiz = $("tab-quiz");
+const kitchenMount = $("training-mode-kitchen");
 
 
 
-if (tabQuiz && !$("kitchenSystemCard")) {
+if (kitchenMount && !$("kitchenSystemCard")) {
 
 
 
@@ -998,7 +998,7 @@ Toque no 1º ingrediente abaixo para iniciar a montagem!
 
 
 
-tabQuiz.insertBefore(kitchenCard, tabQuiz.children[2]);
+kitchenMount.appendChild(kitchenCard);
 
 
 
@@ -4097,7 +4097,7 @@ function checkQuizAnswer(selectedBtn, chosen, correct, letter) {
 
       fb.className = "p-3.5 rounded-2xl text-xs font-extrabold bg-red-500/15 text-red-500 border border-red-500/30";
 
-      fb.innerHTML = `💔 <strong>Você perdeu todos os seus 5 corações!</strong><br>Gabarito: <span class="underline">${correct}</span>.<br><span class="mt-1 inline-block">⏳ Aguarde 10 minutos (ou treine na Bancada Monta-Lanche abaixo)!</span>`;
+      fb.innerHTML = `💔 <strong>Você perdeu todos os seus 5 corações!</strong><br>Gabarito: <span class="underline">${correct}</span>.<br><span class="mt-1 inline-block">⏳ Aguarde 10 minutos (ou abra a Bancada Monta-Lanche na aba Treinos)!</span>`;
 
       $("nextQuizBtn").textContent = "VER CRONÔMETRO DE RECARGA (10 MIN) ⏳";
 
@@ -4177,7 +4177,9 @@ function flipFlashcard() {
 
 
 
+let bookVisibleCount = 20;
 function debouncedBookSearch() {
+  bookVisibleCount = 20;
 
   clearTimeout(searchDebounceTimer);
 
@@ -4192,6 +4194,7 @@ function setBookFilter(level) {
   playTabClickSound();
 
   currentBookFilter = level;
+  bookVisibleCount = 20;
 
   ["ALL", "Básico", "Intermediário", "Avançado"].forEach(lvl => {
 
@@ -4239,7 +4242,7 @@ function renderBookList() {
 
 
 
-  container.innerHTML = filtered.map(item => `
+  container.innerHTML = filtered.slice(0, bookVisibleCount).map(item => `
 
     <div class="pro-card rounded-2xl p-4">
 
@@ -4255,7 +4258,12 @@ function renderBookList() {
 
       <p class="hidden mt-2.5 pt-2.5 border-t border-slate-500/20 text-xs font-bold text-emerald-500">✅ ${item.a}</p>
     </div>
-  `).join("");
+  `).join("") + (filtered.length > bookVisibleCount ?
+    `<button class="book-load-more" type="button" onclick="loadMoreBookQuestions()">Mostrar mais questões (${Math.min(20, filtered.length-bookVisibleCount)} de ${filtered.length-bookVisibleCount} restantes) ↓</button>` : "");
+}
+function loadMoreBookQuestions() {
+  bookVisibleCount += 20;
+  renderBookList();
 }
 function revealBookAnswer(btn) {
   playCardFlipSound();
@@ -4565,17 +4573,37 @@ function adminSaveMember() {
   $("admNewHits").value = "";
   alert(`Colaborador ${name} (${role}) salvo com sucesso!`);
 }
-function switchMainTab(tab) {
-  playTabClickSound();
-  ["quiz", "book", "prizes", "admin", "updates"].forEach(t => {
-    $(`tab-${t}`).classList.add("hidden");
-    const navEl = $(`nav-${t}`);
-    if (navEl) navEl.className = "nav-btn flex flex-col items-center py-1.5 rounded-2xl font-bold text-[10px]";
+function switchTrainingMode(mode) {
+  const valid = ["kitchen", "review", "duel", "flash"];
+  if (!valid.includes(mode)) return;
+  valid.forEach(name => {
+    const panel = $(`training-mode-${name}`);
+    const btn = $(`training-nav-${name}`);
+    if (panel) panel.classList.toggle("hidden", name !== mode);
+    if (btn) {
+      btn.classList.toggle("is-active", name === mode);
+      btn.setAttribute("aria-pressed", String(name === mode));
+    }
   });
-  $(`tab-${tab}`).classList.remove("hidden");
-  const activeNav = $(`nav-${tab}`);
-  if (activeNav) activeNav.className = "nav-btn active-nav flex flex-col items-center py-1.5 rounded-2xl text-[10px]";
+}
+function switchMainTab(tab) {
+  const screens = ["quiz", "training", "missions", "prizes", "more", "book", "admin", "updates"];
+  if (!screens.includes(tab)) return;
+  playTabClickSound();
+  screens.forEach(name => {
+    const screen = $(`tab-${name}`);
+    if (screen) screen.classList.toggle("hidden", name !== tab);
+  });
+  const currentNav = ["book", "admin", "updates"].includes(tab) ? "more" : tab;
+  ["quiz", "training", "missions", "prizes", "more"].forEach(name => {
+    const button = $(`nav-${name}`);
+    if (!button) return;
+    button.classList.toggle("active-nav", name === currentNav);
+    if (name === currentNav) button.setAttribute("aria-current", "page");
+    else button.removeAttribute("aria-current");
+  });
   if (tab === "prizes" || tab === "admin") fetchCloudHistorySafe(false);
+  if (typeof window.scrollTo === "function") window.scrollTo({ top: 0, behavior: "instant" });
 }
 window.onload = () => {
   initTheme();
