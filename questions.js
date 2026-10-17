@@ -1,36 +1,39 @@
-const KITCHEN_RECIPES = [
+/* =========================================================================
+   QUESTIONS.JS — BANCO OFICIAL DE RECEITAS E 200 QUESTÕES (VENTURE)
+   ========================================================================= */
+
+window.KITCHEN_RECIPES = [
   {
-    id: "smokehouse1", name: "🥓 Brabo SmokeHouse (1 Carne)", xp: 5,
+    id: "smokehouse1", name: "🥓 Brabo SmokeHouse (1 Carne)", xp: 30,
     steps: ["Coroa Pão Brioche", "Molho Méquinese (1 oz)", "Cebola Crispy (10 g)", "Bacon em Tiras (3 fatias)", "Queijo Cheddar (1 fatia)", "Carne 4:1 (1 unidade)", "Queijo Cheddar (1 fatia)", "Bacon Triturado (10 g)", "Geleia Agridoce Defumada (2/3 oz)", "Base Pão Brioche"]
   },
   {
-    id: "smokehouse2", name: "🔥 Brabo SmokeHouse (2 Carnes)", xp: 5,
+    id: "smokehouse2", name: "🔥 Brabo SmokeHouse (2 Carnes)", xp: 30,
     steps: ["Coroa Pão Brioche", "Molho Méquinese (1 oz)", "Cebola Crispy (10 g)", "Bacon em Tiras (3 fatias)", "Queijo Cheddar (1 fatia)", "Carne 4:1 (2 unidades)", "Queijo Cheddar (1 fatia)", "Bacon Triturado (10 g)", "Geleia Agridoce Defumada (2/3 oz)", "Base Pão Brioche"]
   },
   {
-    id: "bigmac", name: "🍔 Big Mac Oficial", xp: 5,
+    id: "bigmac", name: "🍔 Big Mac Oficial", xp: 30,
     steps: ["Pão Big Mac (Base + Club + Coroa)", "Molho Big Mac (1/2 oz Base + 1/2 oz Club)", "Alface (12 g Base + 12 g Club = 24 g)", "Picles (2 fatias no Club)", "Queijo Cheddar (1 fatia na Base)", "2 Carnes 10:1 c/ Cebola (3,5 g)"]
   },
   {
-    id: "quarteirao", name: "🧀 Quarteirão com Queijo", xp: 5,
+    id: "quarteirao", name: "🧀 Quarteirão com Queijo", xp: 30,
     steps: ["Pão Quarteirão (Coroa e Base)", "Mostarda (1/40 oz)", "Ketchup (1/2 oz)", "Cebola Fresca (7 g)", "Picles (2 fatias)", "2 Queijos Cheddar em Estrela", "1 Carne 4:1"]
   },
   {
-    id: "cheeseburger", name: "🍔 Cheeseburger Padrão", xp: 5,
+    id: "cheeseburger", name: "🍔 Cheeseburger Padrão", xp: 30,
     steps: ["Pão Regular (Coroa e Base)", "Mostarda (1/40 oz)", "Ketchup (1/3 oz)", "Picles (1 fatia)", "Queijo Cheddar (1 fatia)", "1 Carne 10:1 c/ 3,5 g Cebola"]
   },
   {
-    id: "mcnifico", name: "🥓 McNífico Bacon", xp: 5,
+    id: "mcnifico", name: "🥓 McNífico Bacon", xp: 30,
     steps: ["Mostarda (1/40 oz) + Ketchup (1/2 oz)", "Cebola Fresca (7 g)", "Molho Maionese (2/3 oz)", "Alface (28 g) + 2 Tomates", "2 Fatias de Bacon + 1 Queijo Cheddar", "1 Carne 4:1"]
   },
   {
-    id: "bigtasty", name: "👑 Big Tasty", xp: 5,
+    id: "bigtasty", name: "👑 Big Tasty", xp: 30,
     steps: ["Molho Tasty (1 oz Coroa + 1 oz Base)", "Cebola Fresca (10 g)", "Alface (28 g) + 2 Tomates", "3 Queijos Ementhal", "Carne 4:1 (Destacando a TAG)"]
   }
 ];
 
-// BANCO OFICIAL DE 200 QUESTÕES — BOOK VENTURE
-const QUESTIONS_DB = [
+window.QUESTIONS_DB = [
   { id: 1, level: "Básico", q: "Quantas gramas de alface colocamos no BigMac?", a: "12 gr na base e 12 gr no clube, totalizando 24 gramas.", w: ["14 gr na base e 14 gr no clube, totalizando 28 gramas.", "10 gr na base e 10 gr no clube, totalizando 20 gramas.", "15 gr na base e 15 gr no clube, totalizando 30 gramas."] },
   { id: 2, level: "Básico", q: "Quantas gramas de alface colocamos no McChicken?", a: "28 gramas de alface.", w: ["24 gramas de alface.", "30 gramas de alface.", "14 gramas de alface."] },
   { id: 3, level: "Básico", q: "Quantas gramas (oz) de molho vai no Big Tasty?", a: "1 oz na coroa e 1 oz na base, totalizando 2 oz.", w: ["1/2 oz na coroa e 1/2 oz na base, totalizando 1 oz.", "2/3 oz na coroa e 2/3 oz na base, totalizando 4/3 oz.", "1 oz apenas na base, totalizando 1 oz."] },
@@ -169,7 +172,7 @@ const QUESTIONS_DB = [
   { id: 139, level: "Intermediário", q: "Com quanto tempo de antecedência deve ser feito o plano de chão?", a: "48 horas.", w: ["24 horas.", "12 horas.", "72 horas."] },
   { id: 140, level: "Intermediário", q: "Qual é a promessa do fazer?", a: "Fazer bem, fazer rápido e fazer especial.", w: ["Fazer limpo, fazer quente e fazer barato.", "Olhar, servir e ativar no tempo certo.", "Limpar, lavar, enxaguar e sanitizar."] },
   { id: 141, level: "Intermediário", q: "Qual a condimentação e quantidades de ingredientes do Quarteirão?", a: "1/40 oz de mostarda, 1/2 oz de ketchup, 7 g de cebola fresca, 2 picles, 2 fatias de queijo em estrela, 1 carne 4:1.", w: ["1/40 oz de mostarda, 1/3 oz de ketchup, 3,5 g de cebola hidratada, 1 picles, 1 queijo, 1 carne 4:1.", "1/2 oz de mostarda, 1/2 oz de ketchup, 10 g de cebola fresca, 3 picles, 2 queijos, 1 carne 10:1.", "1/40 oz de mostarda, 1/2 oz de ketchup, 28 g de alface, 2 tomates, 2 queijos, 1 carne 4:1."] },
-  { id: 142, level: "Intermediário", q: "Qual a condimentação e quantidades de ingredientes do Cheeseburger?", a: "1/40 oz de mostarda, 1/3 oz de ketchup, 1 picles, 1 fatia de queijo, 1 carne de 10:1 com 3,5 g de cebola.", w: ["1/40 oz de mostarda, 1/2 oz de ketchup, 2 picles, 2 queijos, 1 carne 10:1 com 7 g de cebola.", "1/3 oz de mostarda, 1/3 oz de ketchup, 2 picles, 1 queijo, 1 carne 4:1 com 3,5 g de cebola.", "1/40 oz de mostarda, 1/3 oz de ketchup, 12 g de alface, 1 picles, 1 queijo e 1 carne 10:1."] },
+  { id: 142, level: "Intermediário", q: "Qual a condimentação e quantidades de ingredientes do Cheeseburger?", a: "1/40 oz de mostarda, 1/3 oz de ketchup, 1 picles, 1 fatia de queijo, 1 carne de 10:1 com 3,5 g de cebola.", w: ["1/40 oz de mostarda, 1/3 oz de ketchup, 2 picles, 2 queijos, 1 carne 10:1 com 7 g de cebola.", "1/3 oz de mostarda, 1/3 oz de ketchup, 2 picles, 1 queijo, 1 carne 4:1 com 3,5 g de cebola.", "1/40 oz de mostarda, 1/3 oz de ketchup, 12 g de alface, 1 picles, 1 queijo e 1 carne 10:1."] },
   { id: 143, level: "Intermediário", q: "Qual a condimentação e quantidades de ingredientes do McNífico Bacon?", a: "1/40 oz mostarda, 1/2 oz ketchup, 7 g cebola fresca, 2/3 oz maionese, 28 g alface, 2 tomates, 2 bacons, 1 queijo, 1 carne 4:1.", w: ["1/40 oz mostarda, 1/3 oz ketchup, 3,5 g cebola, 1/2 oz maionese, 12 g alface, 1 tomate, 3 bacons, 2 queijos, 1 carne 4:1.", "1 oz molho tasty, 1/2 oz ketchup, 10 g cebola, 28 g alface, 2 tomates, 2 bacons, 3 queijos ementhal, 1 carne 4:1.", "1/40 oz mostarda, 1/2 oz ketchup, 7 g cebola, 2/3 oz maionese, 24 g alface, 1 tomate, 1 bacon, 2 queijos, 1 carne 10:1."] },
   { id: 144, level: "Intermediário", q: "Qual o distanciamento e espaçamento que devemos manter entre as caixas nas câmaras?", a: "5 cm do chão e das paredes e 2,5 cm entre as caixas.", w: ["10 cm do chão e das paredes e 5 cm entre as caixas.", "3 cm do chão e das paredes e 1 cm entre as caixas.", "8 cm do chão e das paredes e 4 cm entre as caixas."] },
   { id: 145, level: "Intermediário", q: "Qual o empilhamento máximo para as caixas de batata?", a: "6 caixas.", w: ["4 caixas.", "5 caixas.", "8 caixas."] },
@@ -222,7 +225,7 @@ const QUESTIONS_DB = [
   { id: 192, level: "Avançado", q: "Quais são os 7 básicos operacionais?", a: "Plano de chão, Rota Gerencial, Pré-Plantão, Pós-Plantão, Posicionamento, Checklist e Experimentação.", w: ["Agilidade, Generosidade, Humildade, Vocação de Serviço, Inclusão, Simpatia e Vendas.", "Chapa, Linha, Fritura, Bebidas, Sobremesas, Balcão e Drive-Thru.", "Limpeza, Organização, Preparação, Estocagem, Recebimento, Contagem e Fechamento."] },
   { id: 193, level: "Avançado", q: "O que é overrun do mix e qual o seu percentual?", a: "Mede a proporção entre mix e ar; seu percentual é de 55 a 65% com ideal 58%.", w: ["Mede o tempo de congelamento do cilindro; percentual de 40 a 50% com ideal 45%.", "Mede a gordura do leite no mix; percentual de 20 a 30% com ideal 24%.", "Mede a velocidade de extração em 10s; percentual de 70 a 80% com ideal 75%."] },
   { id: 194, level: "Avançado", q: "Quais as quantidades corretas de complementos dos sorvetes?", a: "Gotas 50 g, Rocks 20 g, Ovomaltine 20 g, Paçoca 20 g, Ovo Shake 54 g.", w: ["Gotas 30 g, Rocks 30 g, Ovomaltine 30 g, Paçoca 15 g, Ovo Shake 40 g.", "Gotas 20 g, Rocks 50 g, Ovomaltine 54 g, Paçoca 20 g, Ovo Shake 20 g.", "Gotas 40 g, Rocks 15 g, Ovomaltine 25 g, Paçoca 25 g, Ovo Shake 60 g."] },
-  { id: 195, level: "Avançado", q: "Qual a temperatura do café coado?", a: "A partir de 77°C.", w: ["A partir de 65°C.", "De 57°C a 63°C.", "A partir de 85°C."] },
+  { id: 195, level: "Avançado", q: "Qual a temperatura do café coado?", a: "A partir de 77°C.", w: ["A partir de 65°C.", "De 57° a 63°C.", "A partir de 85°C."] },
   { id: 196, level: "Avançado", q: "Qual a proporção correta de água e café para o café coado?", a: "1.100 ml de água para 1 pacote de 50 g de café.", w: ["1.000 ml de água para 1 pacote de 100 g de café.", "1.500 ml de água para 1 pacote de 50 g de café.", "800 ml de água para 1 pacote de 40 g de café."] },
   { id: 197, level: "Avançado", q: "O que é Best Burger?", a: "É o novo padrão para os hambúrgueres McDonald's. Pequenas mudanças, grande impacto.", w: ["É o sistema de fritura rápida para carnes brancas em 3 minutos.", "É o programa de auditoria semestral de limpeza das chapas.", "É a campanha promocional exclusiva para venda no Drive-Thru."] },
   { id: 198, level: "Avançado", q: "Quais são as técnicas dos influencers vendedores?", a: "Somos Especialistas, Gostamos de Surpreender, Criamos Oportunidades, Vivenciamos as mesmas coisas, Criamos tendência, Somos Afetuosos.", w: ["Sugestão de Vendas, Venda Sugestiva, Adicionais, Combo Grande, Sobremesa e Café.", "Fazer bem, Fazer rápido, Fazer especial, Sorrir, Agradecer e Despedir.", "Olhar nos olhos, Oferecer bacon, Oferecer batata grande, Cobrar rápido e Entregar."] },
