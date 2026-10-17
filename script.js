@@ -1,5 +1,5 @@
 /* =========================================================================
-OLIMPÍADAS DO BÁSICO — VENTURE (script.js v7.8 COMPACTO & COMPLETO)
+OLIMPÍADAS DO BÁSICO — VENTURE (script.js v7.9 COM MISSÕES & CONQUISTAS)
 Finalização 25/10 + Sistema de Cozinha (Monta-Lanche) + Sons + Print + 1v1
 ========================================================================= */
 const $ = id => document.getElementById(id);
@@ -310,6 +310,211 @@ let duelHistoryList = JSON.parse(localStorage.getItem(STORAGE_DUEL_HISTORY) || "
 
 
 let activeRecipe = KITCHEN_RECIPES[0], currentRecipeStep = 0;
+
+// =========================================================================
+// 🎯 MISSÕES & CONQUISTAS v7.9 — SEM ALTERAR CHAVES DE ARMAZENAMENTO
+// Cada usuário recebe o campo opcional missionProgress. Cadastros antigos
+// são migrados ao primeiro acesso, preservando XP, acertos e credenciais.
+// =========================================================================
+const MISSION_DEFINITIONS = [
+  { id: "quiz5", cycle: "daily", icon: "🎯", title: "5 acertos no simulado", detail: "Acerte 5 questões hoje", metric: "quizCorrect", target: 5, xp: 40 },
+  { id: "kitchen2", cycle: "daily", icon: "🍔", title: "Dupla de lanches", detail: "Monte 2 receitas diferentes hoje", metric: "kitchenRecipes", target: 2, xp: 30 },
+  { id: "review1", cycle: "daily", icon: "🧠", title: "Aprender com o erro", detail: "Corrija 1 questão em Minhas Dúvidas", metric: "reviewsCorrect", target: 1, xp: 20 },
+  { id: "quiz25", cycle: "weekly", icon: "📚", title: "Maratona de conhecimento", detail: "Acerte 25 questões nesta semana", metric: "quizCorrect", target: 25, xp: 120 },
+  { id: "kitchen5", cycle: "weekly", icon: "👨‍🍳", title: "Chef versátil", detail: "Monte 5 receitas diferentes na semana", metric: "kitchenRecipes", target: 5, xp: 90 },
+  { id: "review5", cycle: "weekly", icon: "💡", title: "Revisão inteligente", detail: "Corrija 5 dúvidas nesta semana", metric: "reviewsCorrect", target: 5, xp: 60 }
+];
+const MEDAL_DEFINITIONS = [
+  { id:"first_hit", icon:"🌟", title:"Primeiro Acerto", detail:"1 questão correta", test:(u,p)=> (u.correctAnswers||0)>=1 },
+  { id:"quiz10", icon:"🎯", title:"Mira Certa", detail:"10 questões corretas", test:(u,p)=> (u.correctAnswers||0)>=10 },
+  { id:"quiz50", icon:"🧠", title:"Mestre do Básico", detail:"50 questões corretas", test:(u,p)=> (u.correctAnswers||0)>=50 },
+  { id:"first_recipe", icon:"🍔", title:"Primeiro Lanche", detail:"Monte sua primeira receita", test:(u,p)=> p.lifetime.kitchenRecipes.length>=1 },
+  { id:"chef5", icon:"👨‍🍳", title:"Chef de Ouro", detail:"Monte 5 receitas diferentes", test:(u,p)=> p.lifetime.kitchenRecipes.length>=5 },
+  { id:"reviews3", icon:"💡", title:"Erros Viram Lições", detail:"Corrija 3 dúvidas", test:(u,p)=> p.lifetime.reviewsCorrect>=3 },
+  { id:"missions5", icon:"🏅", title:"Caçador de Missões", detail:"Complete 5 missões", test:(u,p)=> Object.keys(p.claims).length>=5 },
+  { id:"gold_level", icon:"👑", title:"Padrão Ouro", detail:"Alcance o nível 4 (6.000 XP)", test:(u,p)=> (u.xp||0)>=6000 }
+];
+let missionViewCycle = "daily";
+
+function missionPeriodKeys(at = new Date()) {
+  // Mesmo calendário da campanha em todos os aparelhos (horário de Brasília).
+  const parts = new Intl.DateTimeFormat("en-US", { timeZone:"America/Sao_Paulo", year:"numeric", month:"2-digit", day:"2-digit" }).formatToParts(at);
+  const get = k => parts.find(part => part.type === k).value;
+  const day = `${get("year")}-${get("month")}-${get("day")}`;
+  const monday = new Date(`${day}T12:00:00Z`);
+  monday.setUTCDate(monday.getUTCDate() - (monday.getUTCDay() + 6) % 7);
+  return { daily:day, weekly:monday.toISOString().slice(0,10) };
+}
+function emptyMissionCycle(key) {
+  return { key, quizCorrect:0, reviewsCorrect:0, kitchenRecipes:[] };
+}
+function ensureMissionProgress(user) {
+  if (!user) return null;
+  const keys = missionPeriodKeys();
+  const p = user.missionProgress && typeof user.missionProgress === "object" ? user.missionProgress : {};
+  p.version = 1;
+  for (const cycle of ["daily", "weekly"]) {
+    const old = p[cycle];
+    // Não retroagir o calendário caso chegue um snapshot futuro de outro celular.
+    if (!old || !old.key || old.key < keys[cycle]) p[cycle] = emptyMissionCycle(keys[cycle]);
+    else {
+      old.quizCorrect = Math.max(0, Number(old.quizCorrect)||0);
+      old.reviewsCorrect = Math.max(0, Number(old.reviewsCorrect)||0);
+      old.kitchenRecipes = Array.isArray(old.kitchenRecipes) ? [...new Set(old.kitchenRecipes)] : [];
+    }
+  }
+  if (!p.lifetime || typeof p.lifetime !== "object") p.lifetime = {};
+  p.lifetime.reviewsCorrect = Math.max(0,Number(p.lifetime.reviewsCorrect)||0);
+  p.lifetime.kitchenRecipes = Array.isArray(p.lifetime.kitchenRecipes) ? [...new Set(p.lifetime.kitchenRecipes)] : [];
+  p.claims = p.claims && typeof p.claims === "object" && !Array.isArray(p.claims) ? p.claims : {};
+  p.badges = p.badges && typeof p.badges === "object" && !Array.isArray(p.badges) ? p.badges : {};
+  user.missionProgress = p;
+  return p;
+}
+function mergeMissionCycle(a, b) {
+  if (!a) return b;
+  if (!b) return a;
+  if (a.key !== b.key) return a.key > b.key ? a : b;
+  return {
+    key:a.key,
+    quizCorrect:Math.max(Number(a.quizCorrect)||0,Number(b.quizCorrect)||0),
+    reviewsCorrect:Math.max(Number(a.reviewsCorrect)||0,Number(b.reviewsCorrect)||0),
+    kitchenRecipes:[...new Set([...(Array.isArray(a.kitchenRecipes)?a.kitchenRecipes:[]),...(Array.isArray(b.kitchenRecipes)?b.kitchenRecipes:[])])]
+  };
+}
+function mergeMissionProgress(a, b) {
+  if (!a && !b) return undefined;
+  if (!a) return b;
+  if (!b) return a;
+  const la = a.lifetime || {}, lb = b.lifetime || {};
+  return {
+    version:1,
+    daily:mergeMissionCycle(a.daily,b.daily),
+    weekly:mergeMissionCycle(a.weekly,b.weekly),
+    lifetime:{
+      reviewsCorrect:Math.max(Number(la.reviewsCorrect)||0, Number(lb.reviewsCorrect)||0),
+      kitchenRecipes:[...new Set([...(Array.isArray(la.kitchenRecipes)?la.kitchenRecipes:[]),...(Array.isArray(lb.kitchenRecipes)?lb.kitchenRecipes:[])])]
+    },
+    claims:{...(a.claims||{}),...(b.claims||{})},
+    badges:{...(a.badges||{}),...(b.badges||{})}
+  };
+}
+function missionMetric(cycleData, metric) {
+  return metric === "kitchenRecipes" ? cycleData.kitchenRecipes.length : (Number(cycleData[metric])||0);
+}
+function unlockEarnedMedals(user, progress) {
+  const newMedals = [];
+  MEDAL_DEFINITIONS.forEach(medal => {
+    if (!progress.badges[medal.id] && medal.test(user,progress)) {
+      progress.badges[medal.id] = Date.now();
+      newMedals.push(medal);
+    }
+  });
+  return newMedals;
+}
+function showMissionToast(message) {
+  const toast = document.createElement("div");
+  toast.className = "mission-toast";
+  toast.textContent = message;
+  document.body.appendChild(toast);
+  setTimeout(() => toast.remove(), 3500);
+}
+function recordMissionActivity(kind, recipeId = null) {
+  if (!currentUserKey || !users[currentUserKey] || users[currentUserKey]._deleted) return;
+  const user = users[currentUserKey];
+  const p = ensureMissionProgress(user);
+  if (kind === "quiz_correct") {
+    p.daily.quizCorrect++; p.weekly.quizCorrect++;
+  } else if (kind === "review_correct") {
+    p.daily.reviewsCorrect++; p.weekly.reviewsCorrect++; p.lifetime.reviewsCorrect++;
+  } else if (kind === "kitchen_complete" && KITCHEN_RECIPES.some(r=>r.id === recipeId)) {
+    for (const list of [p.daily.kitchenRecipes,p.weekly.kitchenRecipes,p.lifetime.kitchenRecipes]) {
+      if (!list.includes(recipeId)) list.push(recipeId);
+    }
+  } else return;
+  const earned = [];
+  let bonus = 0;
+  MISSION_DEFINITIONS.forEach(m => {
+    const cycle = p[m.cycle];
+    const claimId = `${m.cycle}:${cycle.key}:${m.id}`;
+    if (!p.claims[claimId] && missionMetric(cycle,m.metric) >= m.target) {
+      p.claims[claimId] = Date.now();
+      bonus += m.xp;
+      earned.push(m);
+    }
+  });
+  const medalUnlocks = unlockEarnedMedals(user,p);
+  user.updatedAt = Date.now();
+  // addXp() mantém o mesmo processo de atualização de nível e ranking.
+  if (bonus) addXp(bonus);
+  else scheduleCloudSync(currentUserKey,false);
+  // A conquista de Padrão Ouro também pode ocorrer com o bônus recém ganho.
+  medalUnlocks.push(...unlockEarnedMedals(user,p));
+  if (earned.length) showMissionToast(`🎯 ${earned.map(m=>m.title).join(" • ")}! +${bonus} XP`);
+  if (medalUnlocks.length) showMissionToast(`🏅 Nova medalha: ${medalUnlocks.map(m=>m.title).join(", ")}`);
+  renderMissionHub();
+}
+function setMissionView(cycle) {
+  if (cycle !== "daily" && cycle !== "weekly") return;
+  missionViewCycle = cycle;
+  if (typeof playTabClickSound === "function") playTabClickSound();
+  renderMissionHub();
+}
+function renderMissionHub() {
+  const list = $("missionList");
+  if (!list) return;
+  const user = currentUserKey && users[currentUserKey] && !users[currentUserKey]._deleted ? users[currentUserKey] : null;
+  if (!user) {
+    list.innerHTML = '<div class="mission-item text-xs font-bold text-muted-pro">Entre na sua conta para começar as missões!</div>';
+    $("medalGrid").innerHTML = "";
+    $("medalCount").textContent = `0/${MEDAL_DEFINITIONS.length}`;
+    return;
+  }
+  const p = ensureMissionProgress(user);
+  unlockEarnedMedals(user,p); // reconhece acertos/XP obtidos antes desta versão
+  const cycle = p[missionViewCycle];
+  const items = MISSION_DEFINITIONS.filter(m=>m.cycle===missionViewCycle);
+  const completedCount = items.filter(m=>p.claims[`${m.cycle}:${cycle.key}:${m.id}`]).length;
+  $("missionCycleLabel").textContent = missionViewCycle === "daily"
+    ? `Hoje (${cycle.key.split("-").reverse().join("/")}) • reinicia à meia-noite (Brasília)`
+    : `Semana de ${cycle.key.split("-").reverse().join("/")} • reinicia segunda-feira`;
+  $("missionCompletedCount").textContent = `${completedCount}/${items.length} completas`;
+  for (const name of ["daily","weekly"]) {
+    const btn = $(name === "daily" ? "missionViewDaily" : "missionViewWeekly");
+    if (btn) {
+      btn.classList.toggle("is-active",missionViewCycle===name);
+      btn.setAttribute("aria-pressed",String(missionViewCycle===name));
+    }
+  }
+  list.innerHTML = items.map(m => {
+    const progress = Math.min(m.target,missionMetric(cycle,m.metric));
+    const complete = Boolean(p.claims[`${m.cycle}:${cycle.key}:${m.id}`]);
+    const pct = Math.round(100*progress/m.target);
+    return `<article class="mission-item ${complete?'is-complete':''}">
+      <div class="flex items-start justify-between gap-2">
+        <div class="min-w-0 flex gap-2.5 items-start">
+          <span class="text-xl" aria-hidden="true">${m.icon}</span>
+          <div><h3 class="text-xs font-black leading-snug">${m.title}</h3><p class="text-[11px] text-muted-pro font-medium mt-0.5">${m.detail}</p></div>
+        </div>
+        <span class="mission-reward">${complete?'✅ Recebido':`+${m.xp} XP`}</span>
+      </div>
+      <div class="mt-2.5 flex items-center gap-2">
+        <div class="mission-progress-track flex-1" role="progressbar" aria-valuemin="0" aria-valuemax="${m.target}" aria-valuenow="${progress}" aria-label="${m.title}"><div class="mission-progress-fill" style="width:${pct}%"></div></div>
+        <span class="text-[10px] font-black text-muted-pro whitespace-nowrap">${progress}/${m.target}</span>
+      </div>
+    </article>`;
+  }).join("");
+  const total = MEDAL_DEFINITIONS.filter(m=>p.badges[m.id]).length;
+  $("medalCount").textContent = `${total}/${MEDAL_DEFINITIONS.length}`;
+  $("medalGrid").innerHTML = MEDAL_DEFINITIONS.map(m => {
+    const earned = Boolean(p.badges[m.id]);
+    return `<div class="medal-tile ${earned?'is-unlocked':'is-locked'}" aria-label="${m.title}: ${earned?'conquistada':'bloqueada'}">
+      <span class="text-2xl" aria-hidden="true">${earned?m.icon:'🔒'}</span>
+      <strong>${m.title}</strong><small>${earned?'✅ Conquistada':m.detail}</small>
+    </div>`;
+  }).join("");
+}
+
 
 
 
@@ -1131,6 +1336,8 @@ renderKitchenState();
 
 addXp(activeRecipe.xp);
 
+recordMissionActivity("kitchen_complete",activeRecipe.id);
+
 
 
 fb.classList.remove("hidden");
@@ -1701,15 +1908,15 @@ if (!ex) return inc;
 
 
 
-if ((inc.adminOverrideAt || 0) > (ex.adminOverrideAt || 0)) return inc;
+if ((inc.adminOverrideAt || 0) > (ex.adminOverrideAt || 0)) return { ...inc, missionProgress:mergeMissionProgress(ex.missionProgress,inc.missionProgress) };
 
 
 
-if ((ex.adminOverrideAt || 0) > (inc.adminOverrideAt || 0)) return ex;
+if ((ex.adminOverrideAt || 0) > (inc.adminOverrideAt || 0)) return { ...ex, missionProgress:mergeMissionProgress(ex.missionProgress,inc.missionProgress) };
 
 
 
-if (inc._deleted && (inc.updatedAt || 0) >= (ex.updatedAt || 0)) return inc;
+if (inc._deleted && (inc.updatedAt || 0) >= (ex.updatedAt || 0)) return { ...inc, missionProgress:mergeMissionProgress(ex.missionProgress,inc.missionProgress) };
 
 
 
@@ -1750,6 +1957,8 @@ heartsLockUntil: newer && inc.heartsLockUntil !== undefined ? inc.heartsLockUnti
 
 
 mistakes: newer && Array.isArray(inc.mistakes) ? inc.mistakes : (Array.isArray(ex.mistakes) ? ex.mistakes : []),
+
+missionProgress: mergeMissionProgress(ex.missionProgress,inc.missionProgress),
 
 
 
@@ -1809,7 +2018,7 @@ function refreshUIIfNeeded() {
 
 
 
-updateHeaderUI(); syncActiveUserHeartsState(); updateMistakesBadge(); populateDuelOpponentList(); renderDuelHistory();
+updateHeaderUI(); syncActiveUserHeartsState(); updateMistakesBadge(); populateDuelOpponentList(); renderDuelHistory(); renderMissionHub();
 
 
 
@@ -2293,7 +2502,8 @@ xp: users[key] && !users[key]._deleted ? (users[key].xp || 0) : 0,
 
 correctAnswers: users[key] && !users[key]._deleted ? (users[key].correctAnswers || 0) : 0,
 
-hearts: 5, heartsLockUntil: 0, mistakes: users[key]?.mistakes || [], lastSeen: Date.now(), updatedAt: Date.now()
+hearts: 5, heartsLockUntil: 0, mistakes: users[key]?.mistakes || [],
+missionProgress:users[key]?.missionProgress, lastSeen: Date.now(), updatedAt: Date.now()
 
 };
 
@@ -2768,6 +2978,8 @@ function checkReviewAnswer(selectedBtn, chosen, correct, qId) {
     selectedBtn.className = "anim-pop-correct w-full text-left p-3.5 rounded-2xl border-2 border-emerald-500 bg-emerald-500/20 font-extrabold text-xs flex items-center gap-3";
 
     removeMistakeQuestion(qId);
+
+    recordMissionActivity("review_correct");
 
     playHitSuccessSound();
 
@@ -3847,6 +4059,8 @@ function checkQuizAnswer(selectedBtn, chosen, correct, letter) {
 
     addXp(25);
 
+    recordMissionActivity("quiz_correct");
+
     fb.className = "p-3.5 rounded-2xl text-xs font-extrabold bg-emerald-500/15 text-emerald-500 border border-emerald-500/30";
 
     fb.textContent = `✅ Alternativa ${letter} Correta! Você ganhou +25 XP!`;
@@ -4338,6 +4552,7 @@ function adminSaveMember() {
     hearts: 5,
     heartsLockUntil: 0,
     mistakes: users[key]?.mistakes || [],
+    missionProgress:users[key]?.missionProgress,
     lastSeen: Date.now(),
     updatedAt: Date.now(),
     adminOverrideAt: Date.now()
@@ -4365,6 +4580,7 @@ function switchMainTab(tab) {
 window.onload = () => {
   initTheme();
   injectCountdownAndKitchenUI();
+  renderMissionHub();
   rescuePreviousLocalRegistrations();
   renderAvatarSelector();
   syncActiveUserHeartsState();
