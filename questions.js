@@ -1,30 +1,30 @@
 const KITCHEN_RECIPES = [
   {
-    id: "smokehouse1", name: "🥓 Brabo SmokeHouse (1 Carne)", xp: 30,
+    id: "smokehouse1", name: "🥓 Brabo SmokeHouse (1 Carne)", xp: 5,
     steps: ["Coroa Pão Brioche", "Molho Méquinese (1 oz)", "Cebola Crispy (10 g)", "Bacon em Tiras (3 fatias)", "Queijo Cheddar (1 fatia)", "Carne 4:1 (1 unidade)", "Queijo Cheddar (1 fatia)", "Bacon Triturado (10 g)", "Geleia Agridoce Defumada (2/3 oz)", "Base Pão Brioche"]
   },
   {
-    id: "smokehouse2", name: "🔥 Brabo SmokeHouse (2 Carnes)", xp: 30,
+    id: "smokehouse2", name: "🔥 Brabo SmokeHouse (2 Carnes)", xp: 5,
     steps: ["Coroa Pão Brioche", "Molho Méquinese (1 oz)", "Cebola Crispy (10 g)", "Bacon em Tiras (3 fatias)", "Queijo Cheddar (1 fatia)", "Carne 4:1 (2 unidades)", "Queijo Cheddar (1 fatia)", "Bacon Triturado (10 g)", "Geleia Agridoce Defumada (2/3 oz)", "Base Pão Brioche"]
   },
   {
-    id: "bigmac", name: "🍔 Big Mac Oficial", xp: 30,
+    id: "bigmac", name: "🍔 Big Mac Oficial", xp: 5,
     steps: ["Pão Big Mac (Base + Club + Coroa)", "Molho Big Mac (1/2 oz Base + 1/2 oz Club)", "Alface (12 g Base + 12 g Club = 24 g)", "Picles (2 fatias no Club)", "Queijo Cheddar (1 fatia na Base)", "2 Carnes 10:1 c/ Cebola (3,5 g)"]
   },
   {
-    id: "quarteirao", name: "🧀 Quarteirão com Queijo", xp: 30,
+    id: "quarteirao", name: "🧀 Quarteirão com Queijo", xp: 5,
     steps: ["Pão Quarteirão (Coroa e Base)", "Mostarda (1/40 oz)", "Ketchup (1/2 oz)", "Cebola Fresca (7 g)", "Picles (2 fatias)", "2 Queijos Cheddar em Estrela", "1 Carne 4:1"]
   },
   {
-    id: "cheeseburger", name: "🍔 Cheeseburger Padrão", xp: 30,
+    id: "cheeseburger", name: "🍔 Cheeseburger Padrão", xp: 5,
     steps: ["Pão Regular (Coroa e Base)", "Mostarda (1/40 oz)", "Ketchup (1/3 oz)", "Picles (1 fatia)", "Queijo Cheddar (1 fatia)", "1 Carne 10:1 c/ 3,5 g Cebola"]
   },
   {
-    id: "mcnifico", name: "🥓 McNífico Bacon", xp: 30,
+    id: "mcnifico", name: "🥓 McNífico Bacon", xp: 5,
     steps: ["Mostarda (1/40 oz) + Ketchup (1/2 oz)", "Cebola Fresca (7 g)", "Molho Maionese (2/3 oz)", "Alface (28 g) + 2 Tomates", "2 Fatias de Bacon + 1 Queijo Cheddar", "1 Carne 4:1"]
   },
   {
-    id: "bigtasty", name: "👑 Big Tasty", xp: 30,
+    id: "bigtasty", name: "👑 Big Tasty", xp: 5,
     steps: ["Molho Tasty (1 oz Coroa + 1 oz Base)", "Cebola Fresca (10 g)", "Alface (28 g) + 2 Tomates", "3 Queijos Ementhal", "Carne 4:1 (Destacando a TAG)"]
   }
 ];
