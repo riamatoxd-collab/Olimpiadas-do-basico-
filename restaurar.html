@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<title>Recuperação de cadastros | Venture</title>
+<style>
+:root{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#16243b;background:#f3f5f9;line-height:1.45}
+*{box-sizing:border-box}body{margin:0}header{background:linear-gradient(115deg,#ce2c22,#8b1b15);border-bottom:5px solid #ffcb32;color:#fff;padding:24px 14px}header>div,main{max-width:920px;margin:auto}h1{font-size:1.4rem;margin:0 0 4px}h2{font-size:1.08rem;margin:0 0 10px}p{margin:.55rem 0}main{padding:12px 12px 54px}.card{background:#fff;border:1px solid #dfe4ec;border-radius:18px;margin:14px 0;padding:20px;box-shadow:0 3px 15px #16243b0a}.warn{background:#fff7e5;border-left:4px solid #e6aa19;border-radius:8px;padding:12px}.danger{background:#fff0ef;border-left:4px solid #d9382a;border-radius:8px;padding:12px}button{border:0;border-radius:11px;background:#c02e22;color:#fff;font:700 .88rem system-ui;padding:12px 15px;cursor:pointer;min-height:44px}button.secondary{background:#eef2f8;border:1px solid #bbc8d8;color:#172943}button:disabled{opacity:.44;cursor:not-allowed}input[type=file]{display:block;max-width:100%;padding:10px;border:1px solid #cbd4df;border-radius:9px;background:#fff}input[type=text]{max-width:190px;padding:12px;border:1px solid #b9c4d3;border-radius:9px}input[type=checkbox]{height:18px;width:18px;vertical-align:middle}.buttons{display:flex;gap:9px;flex-wrap:wrap;margin:12px 0 0}.muted,small{color:#5f6e82}.status{white-space:pre-wrap;font-size:.89rem;margin-top:11px}.scroll{overflow:auto;max-height:370px}.statline{display:flex;flex-wrap:wrap;gap:7px}.pill{background:#f3f6fb;border:1px solid #e1e7f0;border-radius:11px;padding:8px 11px;font-size:.8rem}table{border-collapse:collapse;width:100%;min-width:610px;font-size:.83rem}td,th{padding:9px;border-bottom:1px solid #e8ecf3;text-align:left}th{color:#485f79;font-size:.7rem;text-transform:uppercase;position:sticky;top:0;background:white}td:nth-child(3),td:nth-child(4){font-variant-numeric:tabular-nums}label{display:block;margin:10px 0}.checkline{display:flex;gap:8px;align-items:flex-start}.checkline input{flex:0 0 auto}.summary{font-weight:700;margin-top:8px}code{overflow-wrap:anywhere}footer{font-size:.79rem;color:#607086;padding:10px} @media(max-width:480px){.card{padding:14px}.pill{flex:1 1 40%}}
+</style>
+</head>
+<body>
+<header><div><h1>🛟 Recuperação dos pontos Venture</h1><span>Importador local seguro para relatório .json — versão de resgate</span></div></header>
+<main>
+<section class="card">
+<div class="danger"><strong>Antes de continuar:</strong> use esta página somente depois de corrigir o erro da v8.9, mantendo os demais celulares sem realizar novas sincronizações. A recuperação nesta página é <strong>local</strong>: não publica dados na nuvem e não garante restauração em todos os aparelhos.</div>
+<p>Esta ferramenta não envia arquivos a terceiros. O arquivo selecionado é lido somente dentro do navegador. O relatório contém pontuações históricas que devem ser conferidas pelo responsável.</p>
+</section>
+<section class="card">
+<h2>1. Selecione o relatório sem senhas (.json)</h2>
+<input id="reportFile" type="file" accept=".json,application/json">
+<div id="loadStatus" role="status" class="status muted">Nenhum arquivo selecionado.</div>
+</section>
+<section class="card">
+<h2>2. Confira os cadastros e valores</h2>
+<p class="muted" style="font-size:.85rem">A ferramenta usa o maior XP entre o relatório e os cadastros locais, sem diminuir pontos existentes. Marque somente os colaboradores cujos valores você conferiu. Contas excluídas não são reativadas automaticamente.</p>
+<div id="stats" class="statline"><span class="pill">Aguardando relatório.</span></div>
+<div class="buttons"><button class="secondary" id="selectAll" disabled>Selecionar todos os elegíveis</button><button class="secondary" id="clearAll" disabled>Desmarcar</button></div>
+<div class="scroll"><table><thead><tr><th>Restaurar</th><th>Colaborador</th><th>XP encontrado</th><th>XP atual</th><th>Situação</th></tr></thead><tbody id="items"><tr><td colspan="5">Carregue o relatório.</td></tr></tbody></table></div>
+<div id="selectionStatus" class="summary" aria-live="polite"></div>
+</section>
+<section class="card">
+<h2>3. Baixe um backup deste navegador</h2>
+<p>O backup preserva exatamente os dados locais anteriores à restauração, inclusive os campos dos cadastros ainda disponíveis.</p>
+<div class="warn"><strong>Arquivo privado:</strong> o backup local pode conter senhas antigas em texto simples. Nunca envie ao GitHub, por WhatsApp ou a grupos. Guarde-o de forma privada.</div>
+<div class="buttons"><button id="backupBtn" class="secondary" disabled>⬇️ Baixar backup local antes de alterar</button></div>
+<div id="backupStatus" class="status muted">Obrigatório antes de restaurar.</div>
+</section>
+<section class="card">
+<h2>4. Restaurar apenas neste navegador</h2>
+<p>Cadastros com senha existente mantêm sua senha e demais dados. Quando só existe o nome e XP, o colaborador aparece no ranking com <strong>senha temporária aleatória e desconhecida</strong>; o administrador precisará definir uma nova senha na conta antes do acesso.</p>
+<label class="checkline"><input type="checkbox" id="confirm"> <span>Conferi os pontos selecionados, entendi que a restauração é local e guardarei o backup.</span></label>
+<label>Digite <strong>RESTAURAR</strong> para confirmar:</label>
+<input type="text" id="confirmation" autocomplete="off" placeholder="RESTAURAR">
+<div class="buttons"><button id="applyBtn" disabled>Restaurar selecionados no navegador</button></div>
+<div id="result" class="status" role="status"></div>
+</section>
+<footer>É necessário abrir em <code>https://.../Olimpiadas-do-basico-/restaurar.html</code>, na mesma origem do jogo. Abrir o arquivo diretamente pelo computador não permite recuperar o armazenamento do site. Não inclui biblioteca externa nem faz consultas de rede.</footer>
+</main>
+<script>
+'use strict';
+const MAIN='mequi_olimpiadas_users_v6',XPBACKUP='mequi_venture_score_backup_v891';
+const KEYS=[MAIN,'mequi_olimpiadas_users_v5','mequi_olimpiadas_users_v4','mequi_olimpiadas_users_v3',XPBACKUP];
+const $=id=>document.getElementById(id);
+let records=[],current=null,backupDownloaded=false,restored=false,selected=new Set(),sourceFile='';
+const isObject=x=>!!x&&typeof x==='object'&&!Array.isArray(x);
+function int(value){const n=Number(value);return Number.isSafeInteger(n)&&n>=0&&n<=100000000? n:null;}
+function idFor(str){return String(str).trim().toLocaleLowerCase('pt-BR');}
+function goodId(k){return k.length>=2&&k.length<=160&&!['__proto__','constructor','prototype'].includes(k);}
+function output(id,msg,err=false){$(id).textContent=msg;$(id).style.color=err?'#bc2019':'#41536e';}
+function checkOrigin(){return window.location.protocol==='https:'&&!!window.localStorage;}
+function readLocal(){const out={};for(const k of KEYS){const s=localStorage.getItem(k);if(!s){out[k]=null;continue}const obj=JSON.parse(s);if(!isObject(obj))throw Error('Dados locais inesperados na chave '+k);out[k]=obj;}return out;}
+function getLocalForKey(all,key){let candidate=null;
+for(const k of KEYS){const source=all[k];if(!isObject(source))continue;const u=source[key];if(!isObject(u)||!u.name)continue;
+if(!candidate)candidate={...u};else{candidate={...u,...candidate}; candidate.xp=Math.max(int(candidate.xp)||0,int(u.xp)||0);candidate.correctAnswers=Math.max(int(candidate.correctAnswers)||0,int(u.correctAnswers)||0);if(!candidate.password&&u.password)candidate.password=u.password;}
+}return candidate;
+}
+function safeParseReport(parsed){if(!isObject(parsed)||!Array.isArray(parsed.users)||parsed.entries)throw Error('Formato incompatível: use o relatório JSON sem senhas baixado do resgate.');
+if(parsed.users.length<1||parsed.users.length>500)throw Error('Quantidade de colaboradores inválida.');
+const seen=new Set(),arr=[];
+for(const row of parsed.users){if(!isObject(row)||('password' in row)||('entries' in row))throw Error('O arquivo contém dados inesperados. Não use backups técnicos nesta tela.');
+const name=String(row.name||'').trim(),key=idFor(row.key||name),xp=int(row.xp),correct=int(row.correct??row.correctAnswers);
+if(!goodId(key)||!name||name.length>160||xp===null||correct===null||seen.has(key))throw Error('Há um cadastro inválido, duplicado ou com XP fora do limite.');
+seen.add(key);arr.push({key,name,xp,correct,source:String(row.source||'')});}
+return arr;
+}
+function statusFor(row){const u=getLocalForKey(current,row.key);
+if(u?._deleted)return {label:'Excluída; revisão manual',blocked:true,currentXp:int(u.xp)||0,exists:true};
+if(u)return {label:u.password?'Cadastro local existente':'Cadastro local sem senha',blocked:false,currentXp:int(u.xp)||0,exists:true};
+return {label:'Sem cadastro local (exigirá nova senha)',blocked:false,currentXp:0,exists:false};
+}
+function render(){const area=$('items');area.replaceChildren();let eligible=0,missing=0,withLocal=0;
+for(const r of records){const status=statusFor(r);if(!status.blocked)eligible++;if(status.exists)withLocal++;else missing++;
+const tr=document.createElement('tr'),cell=(s)=>{const td=document.createElement('td');td.textContent=s;tr.append(td);return td;};
+const td=document.createElement('td'),c=document.createElement('input');c.type='checkbox';c.checked=selected.has(r.key);c.disabled=status.blocked||restored;c.setAttribute('aria-label','Restaurar '+r.name);c.addEventListener('change',()=>{if(c.checked)selected.add(r.key);else selected.delete(r.key);updateButtons();});td.append(c);tr.append(td);
+cell(r.name);cell(r.xp.toLocaleString('pt-BR'));cell(status.currentXp.toLocaleString('pt-BR'));cell(status.label);area.append(tr);}
+$('stats').replaceChildren();for(const v of [`${records.length} encontrados`,`${eligible} elegíveis`,`${withLocal} com alguma cópia local`,`${missing} sem cadastro local`]){const s=document.createElement('span');s.className='pill';s.textContent=v;$('stats').append(s);}
+updateButtons();}
+function updateButtons(){const has=records.length>0&&!restored;$('selectAll').disabled=!has;$('clearAll').disabled=!has;$('backupBtn').disabled=!has||!checkOrigin();$('applyBtn').disabled=!has||selected.size===0||!backupDownloaded||!$('confirm').checked||$('confirmation').value.trim()!=='RESTAURAR'||!checkOrigin();$('selectionStatus').textContent=`${selected.size} colaborador(es) selecionado(s).`}
+function download(filename,obj){const blob=new Blob([JSON.stringify(obj,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=filename;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),10000);}
+$('reportFile').addEventListener('change',async e=>{records=[];selected.clear();backupDownloaded=false;restored=false;current=null;sourceFile='';$('confirm').checked=false;$('confirmation').value='';output('result','');
+const f=e.target.files?.[0];if(!f){output('loadStatus','Nenhum arquivo selecionado.');render();return;}
+try{if(!checkOrigin())throw Error('Abra esta página pelo HTTPS do seu GitHub Pages, não como arquivo local.');if(f.size>2*1024*1024)throw Error('Arquivo muito grande para um relatório sem senhas.');
+const parsed=JSON.parse(await f.text());records=safeParseReport(parsed);current=readLocal();sourceFile=f.name;
+output('loadStatus',`${records.length} colaboradores lidos do relatório. Nenhum dado foi modificado. Revise as pontuações antes de selecionar.`);render();}
+catch(err){records=[];current=null;output('loadStatus',String(err.message||err),true);render();}});
+$('selectAll').addEventListener('click',()=>{for(const r of records)if(!statusFor(r).blocked)selected.add(r.key);render();});
+$('clearAll').addEventListener('click',()=>{selected.clear();render();});
+$('backupBtn').addEventListener('click',()=>{try{current=readLocal();const saved={generatedAt:new Date().toISOString(),origin:location.origin,reportFile:sourceFile,warning:'CONFIDENCIAL: pode conter senhas em texto simples. Não publicar nem compartilhar.',storage:{}};
+for(const k of KEYS)saved.storage[k]=localStorage.getItem(k);
+download('venture_BACKUP_LOCAL_PRIVADO_ANTES_DA_RESTAURACAO.json',saved);
+backupDownloaded=true;output('backupStatus','Backup preparado para download. Guarde o arquivo em lugar privado; ele pode conter senhas.');updateButtons();}
+catch(err){backupDownloaded=false;output('backupStatus','Não foi possível preparar backup: '+String(err.message||err),true);updateButtons();}});
+$('confirm').addEventListener('change',updateButtons);$('confirmation').addEventListener('input',updateButtons);
+function randomPassword(){if(!globalThis.crypto?.getRandomValues)throw Error('Ambiente sem geração segura de credencial aleatória.');const bytes=new Uint8Array(32);crypto.getRandomValues(bytes);return Array.from(bytes,b=>b.toString(16).padStart(2,'0')).join('');}
+$('applyBtn').addEventListener('click',()=>{
+if(!backupDownloaded||!checkOrigin()||restored||$('confirmation').value.trim()!=='RESTAURAR'||!$('confirm').checked||!selected.size)return;
+if(!confirm('Aplicar restauração LOCAL para '+selected.size+' colaborador(es)? Nenhum registro será enviado à nuvem agora.'))return;
+try{const live=readLocal(),oldMain=localStorage.getItem(MAIN),oldB=localStorage.getItem(XPBACKUP);const main=isObject(live[MAIN])?{...live[MAIN]}:{},reserve=isObject(live[XPBACKUP])?{...live[XPBACKUP]}:{};
+let added=0,changed=0,pending=0;
+for(const r of records){if(!selected.has(r.key))continue;const u=getLocalForKey(live,r.key);if(u?._deleted)continue;
+const existing=isObject(main[r.key])?main[r.key]:null;const richest=u||{};const xp=Math.max(r.xp,int(richest.xp)||0,int(existing?.xp)||0);const correct=Math.max(r.correct,int(richest.correctAnswers)||0,int(existing?.correctAnswers)||0);
+const lostCredentials=!richest.password&&!existing?.password;
+const password=existing?.password||richest.password||randomPassword();
+const next={...richest,...(existing||{}),name:existing?.name||richest.name||r.name,role:existing?.role||richest.role||'Atendente',avatar:existing?.avatar||richest.avatar||'🍔',password,xp,correctAnswers:correct,_deleted:false,
+hearts:existing?.hearts??richest.hearts??5,heartsLockUntil:existing?.heartsLockUntil??richest.heartsLockUntil??0,mistakes:existing?.mistakes??richest.mistakes??[],updatedAt:Date.now(),lastSeen:existing?.lastSeen||richest.lastSeen||0};
+if(lostCredentials){next.recoveryPending=true;pending++;}else if(next.recoveryPending)delete next.recoveryPending;
+main[r.key]=next;if(!existing)added++;else changed++;
+const pre=isObject(reserve[r.key])?reserve[r.key]:{};
+reserve[r.key]={...pre,name:next.name,xp:Math.max(int(pre.xp)||0,xp),correctAnswers:Math.max(int(pre.correctAnswers)||0,correct),lastCollectedAt:Date.now()};
+}
+try{localStorage.setItem(MAIN,JSON.stringify(main));localStorage.setItem(XPBACKUP,JSON.stringify(reserve));}
+catch(err){if(oldMain===null)localStorage.removeItem(MAIN);else localStorage.setItem(MAIN,oldMain);
+if(oldB===null)localStorage.removeItem(XPBACKUP);else localStorage.setItem(XPBACKUP,oldB);throw err;}
+current=readLocal();restored=true;render();output('result',`Concluído neste navegador: ${changed} cadastro(s) existentes atualizados, ${added} cadastro(s) adicionados, ${pending} aguardando redefinição de senha. Nenhum registro foi enviado à nuvem. NÃO APAGUE O BACKUP. Agora confira a versão corrigida do jogo antes de retomar a sincronização.`);
+}catch(err){output('result','Falha: '+String(err.message||err)+'. Revise o backup e não abra a versão defeituosa do jogo.',true);}
+});
+if(!checkOrigin())output('loadStatus','Abra esta página pelo mesmo endereço HTTPS do jogo no GitHub Pages para acessar os dados locais.',true);
+</script>
+</body>
+</html>
