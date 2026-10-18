@@ -110,15 +110,21 @@ mistakes: Array.isArray(u.mistakes) ? u.mistakes : [], lastSeen: u.lastSeen || 0
 });
 localStorage.setItem(STORAGE_USERS_KEY, JSON.stringify(users));
 }
+function mergeQuizRotation(ex,inc){
+  const a=ex&&ex.quizRotation, b=inc&&inc.quizRotation;
+  if(!a)return b;
+  if(!b)return a;
+  return (Number(b.updatedAt)||0)>(Number(a.updatedAt)||0)?b:a;
+}
 function mergeSingleUser(ex, inc) {
 if (!ex) return inc;
 const streak = mergeQuizStreak(ex, inc);
-if ((inc.adminOverrideAt || 0) > (ex.adminOverrideAt || 0)) return { ...inc, ...streak, missionProgress:mergeMissionProgress(ex.missionProgress,inc.missionProgress), profilePremium:mergeProfilePremium(ex.profilePremium,inc.profilePremium), trainerChallenges:mergeTrainerChallenges(ex.trainerChallenges,inc.trainerChallenges), duelRewards:{...ex.duelRewards,...inc.duelRewards}, practicalAssessments:mergePracticalAssessments(ex.practicalAssessments,inc.practicalAssessments), dailyChest:mergeDailyChest(ex.dailyChest,inc.dailyChest) };
-if ((ex.adminOverrideAt || 0) > (inc.adminOverrideAt || 0)) return { ...ex, ...streak, missionProgress:mergeMissionProgress(ex.missionProgress,inc.missionProgress), profilePremium:mergeProfilePremium(ex.profilePremium,inc.profilePremium), trainerChallenges:mergeTrainerChallenges(ex.trainerChallenges,inc.trainerChallenges), duelRewards:{...ex.duelRewards,...inc.duelRewards}, practicalAssessments:mergePracticalAssessments(ex.practicalAssessments,inc.practicalAssessments), dailyChest:mergeDailyChest(ex.dailyChest,inc.dailyChest) };
-if (inc._deleted && (inc.updatedAt || 0) >= (ex.updatedAt || 0)) return { ...inc, ...streak, missionProgress:mergeMissionProgress(ex.missionProgress,inc.missionProgress), profilePremium:mergeProfilePremium(ex.profilePremium,inc.profilePremium), trainerChallenges:mergeTrainerChallenges(ex.trainerChallenges,inc.trainerChallenges), duelRewards:{...ex.duelRewards,...inc.duelRewards}, practicalAssessments:mergePracticalAssessments(ex.practicalAssessments,inc.practicalAssessments), dailyChest:mergeDailyChest(ex.dailyChest,inc.dailyChest) };
+if ((inc.adminOverrideAt || 0) > (ex.adminOverrideAt || 0)) return { ...inc, ...streak, quizRotation, missionProgress:mergeMissionProgress(ex.missionProgress,inc.missionProgress), profilePremium:mergeProfilePremium(ex.profilePremium,inc.profilePremium), trainerChallenges:mergeTrainerChallenges(ex.trainerChallenges,inc.trainerChallenges), duelRewards:{...ex.duelRewards,...inc.duelRewards}, practicalAssessments:mergePracticalAssessments(ex.practicalAssessments,inc.practicalAssessments), dailyChest:mergeDailyChest(ex.dailyChest,inc.dailyChest) };
+if ((ex.adminOverrideAt || 0) > (inc.adminOverrideAt || 0)) return { ...ex, ...streak, quizRotation, missionProgress:mergeMissionProgress(ex.missionProgress,inc.missionProgress), profilePremium:mergeProfilePremium(ex.profilePremium,inc.profilePremium), trainerChallenges:mergeTrainerChallenges(ex.trainerChallenges,inc.trainerChallenges), duelRewards:{...ex.duelRewards,...inc.duelRewards}, practicalAssessments:mergePracticalAssessments(ex.practicalAssessments,inc.practicalAssessments), dailyChest:mergeDailyChest(ex.dailyChest,inc.dailyChest) };
+if (inc._deleted && (inc.updatedAt || 0) >= (ex.updatedAt || 0)) return { ...inc, ...streak, quizRotation, missionProgress:mergeMissionProgress(ex.missionProgress,inc.missionProgress), profilePremium:mergeProfilePremium(ex.profilePremium,inc.profilePremium), trainerChallenges:mergeTrainerChallenges(ex.trainerChallenges,inc.trainerChallenges), duelRewards:{...ex.duelRewards,...inc.duelRewards}, practicalAssessments:mergePracticalAssessments(ex.practicalAssessments,inc.practicalAssessments), dailyChest:mergeDailyChest(ex.dailyChest,inc.dailyChest) };
 const newer = (inc.updatedAt || 0) >= (ex.updatedAt || 0);
 return {
-...ex, ...inc, ...streak, _deleted: false,
+...ex, ...inc, ...streak, quizRotation, _deleted: false,
 role: inc.role || ex.role || "Atendente",
 avatar: (newer && inc.avatar) ? inc.avatar : (ex.avatar || inc.avatar || "🍔"),
 xp: Math.max(ex.xp || 0, inc.xp || 0),
@@ -272,7 +278,7 @@ xp: users[key] && !users[key]._deleted ? (users[key].xp || 0) : 0,
 correctAnswers: users[key] && !users[key]._deleted ? (users[key].correctAnswers || 0) : 0,
 hearts: 5, heartsLockUntil: 0, mistakes: users[key]?.mistakes || [],
 quizStreak: users[key]?.quizStreak || 0, quizStreakUpdatedAt: users[key]?.quizStreakUpdatedAt || 0,
-missionProgress:users[key]?.missionProgress, profilePremium:users[key]?.profilePremium, trainerChallenges:users[key]?.trainerChallenges || {}, duelRewards:users[key]?.duelRewards || {}, practicalAssessments:users[key]?.practicalAssessments, dailyChest:users[key]?.dailyChest, lastSeen: Date.now(), updatedAt: Date.now()
+quizRotation:users[key]?.quizRotation, missionProgress:users[key]?.missionProgress, profilePremium:users[key]?.profilePremium, trainerChallenges:users[key]?.trainerChallenges || {}, duelRewards:users[key]?.duelRewards || {}, practicalAssessments:users[key]?.practicalAssessments, dailyChest:users[key]?.dailyChest, lastSeen: Date.now(), updatedAt: Date.now()
 };
 currentUserKey = key; localStorage.setItem(STORAGE_CURRENT_KEY, key);
 $("authModal").classList.add("hidden"); playHitSuccessSound();

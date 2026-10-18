@@ -4,14 +4,46 @@
 // Cada usuário recebe o campo opcional missionProgress. Cadastros antigos
 // são migrados ao primeiro acesso, preservando XP, acertos e credenciais.
 // =========================================================================
+// Catálogo mais amplo: quatro missões sorteadas por dia e quatro por semana.
+// O sorteio depende do colaborador e do período para não mudar em cada acesso.
 const MISSION_DEFINITIONS = [
-  { id: "quiz5", cycle: "daily", icon: "🎯", title: "5 acertos no simulado", detail: "Acerte 5 questões hoje", metric: "quizCorrect", target: 5, xp: 40 },
-  { id: "kitchen2", cycle: "daily", icon: "🍔", title: "Dupla de lanches", detail: "Monte 2 receitas diferentes hoje", metric: "kitchenRecipes", target: 2, xp: 30 },
-  { id: "review1", cycle: "daily", icon: "🧠", title: "Aprender com o erro", detail: "Corrija 1 questão em Minhas Dúvidas", metric: "reviewsCorrect", target: 1, xp: 20 },
-  { id: "quiz25", cycle: "weekly", icon: "📚", title: "Maratona de conhecimento", detail: "Acerte 25 questões nesta semana", metric: "quizCorrect", target: 25, xp: 120 },
-  { id: "kitchen5", cycle: "weekly", icon: "👨‍🍳", title: "Chef versátil", detail: "Monte 5 receitas diferentes na semana", metric: "kitchenRecipes", target: 5, xp: 90 },
-  { id: "review5", cycle: "weekly", icon: "💡", title: "Revisão inteligente", detail: "Corrija 5 dúvidas nesta semana", metric: "reviewsCorrect", target: 5, xp: 60 }
+  {id:"quiz3",cycle:"daily",icon:"⚡",title:"Aquecimento rápido",detail:"Acerte 3 questões hoje",metric:"quizCorrect",target:3,xp:20},
+  {id:"quiz5",cycle:"daily",icon:"🎯",title:"5 acertos no simulado",detail:"Acerte 5 questões hoje",metric:"quizCorrect",target:5,xp:40},
+  {id:"quiz8",cycle:"daily",icon:"📚",title:"Desafio do conhecimento",detail:"Acerte 8 questões hoje",metric:"quizCorrect",target:8,xp:50},
+  {id:"quiz12",cycle:"daily",icon:"🔥",title:"Dia de maratona",detail:"Acerte 12 questões hoje",metric:"quizCorrect",target:12,xp:70},
+  {id:"kitchen1",cycle:"daily",icon:"🍔",title:"Primeiro pedido",detail:"Monte uma receita hoje",metric:"kitchenRecipes",target:1,xp:15},
+  {id:"kitchen2",cycle:"daily",icon:"👨‍🍳",title:"Dupla de lanches",detail:"Monte 2 receitas diferentes hoje",metric:"kitchenRecipes",target:2,xp:30},
+  {id:"kitchen3",cycle:"daily",icon:"🥪",title:"Trio na bancada",detail:"Monte 3 receitas diferentes hoje",metric:"kitchenRecipes",target:3,xp:45},
+  {id:"review1",cycle:"daily",icon:"🧠",title:"Aprender com o erro",detail:"Corrija 1 questão em Minhas Dúvidas",metric:"reviewsCorrect",target:1,xp:20},
+  {id:"review2",cycle:"daily",icon:"💡",title:"Revisão certeira",detail:"Corrija 2 dúvidas hoje",metric:"reviewsCorrect",target:2,xp:35},
+  {id:"quiz10",cycle:"weekly",icon:"🎯",title:"Dez no alvo",detail:"Acerte 10 questões nesta semana",metric:"quizCorrect",target:10,xp:55},
+  {id:"quiz25",cycle:"weekly",icon:"📚",title:"Maratona de conhecimento",detail:"Acerte 25 questões nesta semana",metric:"quizCorrect",target:25,xp:120},
+  {id:"quiz40",cycle:"weekly",icon:"🚀",title:"Mestre das respostas",detail:"Acerte 40 questões na semana",metric:"quizCorrect",target:40,xp:170},
+  {id:"quiz60",cycle:"weekly",icon:"🏆",title:"Semana de campeão",detail:"Acerte 60 questões na semana",metric:"quizCorrect",target:60,xp:220},
+  {id:"kitchen2w",cycle:"weekly",icon:"🍔",title:"Dupla na cozinha",detail:"Monte 2 receitas diferentes na semana",metric:"kitchenRecipes",target:2,xp:45},
+  {id:"kitchen4",cycle:"weekly",icon:"👨‍🍳",title:"Mão na massa",detail:"Monte 4 receitas diferentes na semana",metric:"kitchenRecipes",target:4,xp:75},
+  {id:"kitchen5",cycle:"weekly",icon:"🥇",title:"Chef versátil",detail:"Monte 5 receitas diferentes na semana",metric:"kitchenRecipes",target:5,xp:90},
+  {id:"kitchen8",cycle:"weekly",icon:"🥪",title:"Mestre da bancada",detail:"Monte 8 receitas diferentes na semana",metric:"kitchenRecipes",target:8,xp:140},
+  {id:"review2w",cycle:"weekly",icon:"🧠",title:"Revisão da semana",detail:"Corrija 2 dúvidas na semana",metric:"reviewsCorrect",target:2,xp:35},
+  {id:"review5",cycle:"weekly",icon:"💡",title:"Revisão inteligente",detail:"Corrija 5 dúvidas nesta semana",metric:"reviewsCorrect",target:5,xp:60},
+  {id:"review8",cycle:"weekly",icon:"🌟",title:"Nunca parar de aprender",detail:"Corrija 8 dúvidas na semana",metric:"reviewsCorrect",target:8,xp:90}
 ];
+// Sorteio reproduzível no celular e em qualquer outro aparelho da mesma conta.
+// Uma missão de cada tipo + a quarta sorteada entre as restantes.
+function missionSelection(cycle, periodKey, userKey) {
+  const pool=MISSION_DEFINITIONS.filter(m=>m.cycle===cycle);
+  let hash=2166136261;
+  const seed=`venture89:${userKey||"visitante"}:${cycle}:${periodKey}`;
+  for(let i=0;i<seed.length;i++){
+    hash^=seed.charCodeAt(i);hash=Math.imul(hash,16777619)>>>0;
+  }
+  const random=()=>{hash^=hash<<13;hash^=hash>>>17;hash^=hash<<5;return (hash>>>0)/4294967296;};
+  const pick=arr=>arr[Math.floor(random()*arr.length)];
+  const selected=["quizCorrect","kitchenRecipes","reviewsCorrect"].map(metric=>pick(pool.filter(m=>m.metric===metric)));
+  const remaining=pool.filter(m=>!selected.some(chosen=>chosen.id===m.id));
+  selected.push(pick(remaining));
+  return selected;
+}
 const MEDAL_DEFINITIONS = [
   { id:"first_hit", icon:"🌟", title:"Primeiro Acerto", detail:"1 questão correta", test:(u,p)=> (u.correctAnswers||0)>=1 },
   { id:"quiz10", icon:"🎯", title:"Mira Certa", detail:"10 questões corretas", test:(u,p)=> (u.correctAnswers||0)>=10 },
@@ -237,7 +269,8 @@ function recordMissionActivity(kind, recipeId = null) {
   } else return;
   const earned = [];
   let bonus = 0;
-  MISSION_DEFINITIONS.forEach(m => {
+  const activeMissions=[...missionSelection("daily",p.daily.key,currentUserKey),...missionSelection("weekly",p.weekly.key,currentUserKey)];
+  activeMissions.forEach(m => {
     const cycle = p[m.cycle];
     const claimId = `${m.cycle}:${cycle.key}:${m.id}`;
     if (!p.claims[claimId] && missionMetric(cycle,m.metric) >= m.target) {
@@ -276,11 +309,11 @@ function renderMissionHub() {
   const p = ensureMissionProgress(user);
   unlockEarnedMedals(user,p); // reconhece acertos/XP obtidos antes desta versão
   const cycle = p[missionViewCycle];
-  const items = MISSION_DEFINITIONS.filter(m=>m.cycle===missionViewCycle);
+  const items = missionSelection(missionViewCycle,cycle.key,currentUserKey);
   const completedCount = items.filter(m=>p.claims[`${m.cycle}:${cycle.key}:${m.id}`]).length;
   $("missionCycleLabel").textContent = missionViewCycle === "daily"
-    ? `Hoje (${cycle.key.split("-").reverse().join("/")}) • reinicia à meia-noite (Brasília)`
-    : `Semana de ${cycle.key.split("-").reverse().join("/")} • reinicia segunda-feira`;
+    ? `4 missões sorteadas • Hoje (${cycle.key.split("-").reverse().join("/")}) • renovam à meia-noite (Brasília)`
+    : `4 missões sorteadas • Semana de ${cycle.key.split("-").reverse().join("/")} • renovam segunda-feira`;
   $("missionCompletedCount").textContent = `${completedCount}/${items.length} completas`;
   for (const name of ["daily","weekly"]) {
     const btn = $(name === "daily" ? "missionViewDaily" : "missionViewWeekly");

@@ -537,15 +537,69 @@ function updateHeartsDisplay() {
   if (el) el.textContent = "❤️".repeat(safeHearts) + "🖤".repeat(5 - safeHearts);
   renderDailyChest();
 }
+// Sorteio sem reposição. A lista de questões vistas fica na conta;
+// ao esgotar o filtro ativo, só as questões daquele filtro são reiniciadas.
+// Assim, trocar de nível não reapresenta questões já vistas no ciclo.
+const GUEST_QUIZ_ROTATION_KEY="mequi_venture_quiz_rotation_guest_v89";
+function quizRotationForCurrentUser() {
+  const user=currentUserKey&&users[currentUserKey];
+  if(user){
+    if(!user.quizRotation||typeof user.quizRotation!=="object") user.quizRotation={seen:[],updatedAt:0,lastId:null};
+    return user.quizRotation;
+  }
+  try {
+    const data=JSON.parse(localStorage.getItem(GUEST_QUIZ_ROTATION_KEY)||"null");
+    return data&&typeof data==="object"?data:{seen:[],updatedAt:0,lastId:null};
+  } catch(e){return {seen:[],updatedAt:0,lastId:null};}
+}
+function drawUnseenQuizQuestion(pool) {
+  const rotation=quizRotationForCurrentUser();
+  const allowed=new Set(pool.map(q=>String(q.id)));
+  const valid=new Set(getQuestionBank().map(q=>String(q.id)));
+  rotation.seen=Array.isArray(rotation.seen)?[...new Set(rotation.seen.map(String).filter(id=>valid.has(id)))]:[];
+  let seen=new Set(rotation.seen);
+  let remaining=pool.filter(q=>!seen.has(String(q.id)));
+  let newRound=false;
+  if(!remaining.length){
+    // Reinicia somente depois de mostrar todas as questões do filtro.
+    rotation.seen=rotation.seen.filter(id=>!allowed.has(id));
+    remaining=pool;
+    newRound=true;
+  }
+  let choices=remaining;
+  if(newRound&&remaining.length>1){
+    choices=remaining.filter(q=>String(q.id)!==String(rotation.lastId));
+    if(!choices.length) choices=remaining;
+  }
+  const item=choices[Math.floor(Math.random()*choices.length)];
+  rotation.seen.push(String(item.id));
+  rotation.lastId=String(item.id);
+  rotation.updatedAt=Date.now();
+  if(currentUserKey&&users[currentUserKey]){
+    users[currentUserKey].updatedAt=Math.max(Number(users[currentUserKey].updatedAt)||0,rotation.updatedAt);
+    localStorage.setItem(STORAGE_USERS_KEY,JSON.stringify(users));
+    scheduleCloudSync(currentUserKey,false);
+  }else{
+    localStorage.setItem(GUEST_QUIZ_ROTATION_KEY,JSON.stringify(rotation));
+  }
+  return {item,position:pool.length-remaining.length+1,total:pool.length,newRound};
+}
 function loadNextQuizQuestion() {
   playTabClickSound();
   syncActiveUserHeartsState();
   if (checkAndRenderCooldownScreen()) return;
   const levelFilter = $("quizLevelFilter").value;
   const pool = levelFilter === "ALL" ? getQuestionBank() : getQuestionBank().filter(item => item.level === levelFilter);
-  const randomItem = pool[Math.floor(Math.random() * pool.length)];
+  if (!pool.length) {
+    $("quizQuestionMeta").textContent = "Sem questões neste nível";
+    $("quizQuestionText").textContent = "Ainda não há perguntas cadastradas para esta dificuldade.";
+    $("quizOptions").replaceChildren();
+    currentQuizQuestionId=null;
+    return;
+  }
+  const {item:randomItem,position,total,newRound}=drawUnseenQuizQuestion(pool);
   currentQuizQuestionId = randomItem.id;
-  $("quizQuestionMeta").textContent = `Questão #${randomItem.id} • Nível ${randomItem.level}`;
+  $("quizQuestionMeta").textContent = `Questão #${randomItem.id} • ${randomItem.level} • ${position}/${total}${newRound?" 🔄 Nova rodada":""}`;
   $("statStreakDisplay").textContent = `${currentStreak} 🔥`;
   $("quizQuestionText").textContent = randomItem.q;
   $("quizFeedback").classList.add("hidden");

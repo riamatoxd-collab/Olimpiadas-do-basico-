@@ -36,7 +36,19 @@ steps: ["Mostarda (1/40 oz) + Ketchup (1/2 oz)", "Cebola Fresca (7 g)", "Molho M
 },
 {
 id: "bigtasty", name: "👑 Big Tasty", xp: 5,
-steps: ["Molho Tasty (1 oz Coroa + 1 oz Base)", "Cebola Fresca (10 g)", "Alface (28 g) + 2 Tomates", "3 Queijos Ementhal", "Carne 4:1 (Destacando a TAG)"]
+steps: ["Base Pão Big Tasty", "Molho Tasty (1 oz Coroa + 1 oz Base)", "Cebola Fresca (10 g)", "Alface (28 g) + 2 Tomates", "3 Queijos Ementhal", "Carne 4:1 (Destacando a TAG)", "Coroa Pão Big Tasty"]
+},
+{
+id: "quarteirao_melt_parmesao", name: "🧀 Quarteirão Melt Parmesão", xp: 5,
+steps: ["Base Pão Quarteirão", "Melt Parmesão (2/3 oz)", "Queijo Cheddar (1 fatia)", "Carne 4:1 (1 unidade)", "Queijo Cheddar (1 fatia)", "Bacon (3 fatias)", "Picles (2 unidades)", "Cebola Crispy (10 g)", "Ketchup (1/2 oz)", "Mostarda (1/40 oz)", "Coroa Pão Quarteirão"]
+},
+{
+id: "chicken_legend_2", name: "🍗 Chicken Legend 2", xp: 5,
+steps: ["Base Pão Crispy", "Molho CBO (1 oz)", "Carne Crispy (1 unidade)", "Queijo Cheddar (1 fatia)", "Bacon (2 fatias)", "Alface em Tiras (28 g)", "Cebola Crispy (10 g)", "Molho CBO (1 oz)", "Coroa Pão Crispy"]
+},
+{
+id: "crispy_chicken_melt_parmesao", name: "🟢 Crispy Chicken Melt Parmesão", xp: 5,
+steps: ["Base Pão Batata", "Melt Parmesão (1/3 oz)", "Queijo Cheddar (1 fatia)", "Carne Crispy (1 unidade)", "Queijo Cheddar (1 fatia)", "Bacon (3 fatias)", "Picles (2 unidades)", "Cebola Crispy (10 g)", "Melt Parmesão (1/3 oz)", "Coroa Pão Batata"]
 }
 ];
 // BANCO OFICIAL DE 200 QUESTÕES — BOOK VENTURE
