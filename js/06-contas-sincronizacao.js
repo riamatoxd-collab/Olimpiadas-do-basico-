@@ -91,24 +91,52 @@ scheduleCloudSync(currentUserKey, false);
 }
 }, 10000);
 }
-function rescuePreviousLocalRegistrations() {
-["mequi_olimpiadas_users_v3", "mequi_olimpiadas_users_v4", "mequi_olimpiadas_users_v5", "mequi_olimpiadas_users_v6"].forEach(k => {
-try {
-const parsed = JSON.parse(localStorage.getItem(k) || "null");
-if (parsed && typeof parsed === "object") {
-Object.keys(parsed).forEach(uk => {
-const u = parsed[uk];
-if (!u || !u.name) return;
-users[uk] = mergeSingleUser(users[uk], {
-...u, role: u.role || u.station || "Atendente", avatar: u.avatar || "🍔",
-hearts: u.hearts !== undefined ? u.hearts : 5, heartsLockUntil: u.heartsLockUntil || 0,
-mistakes: Array.isArray(u.mistakes) ? u.mistakes : [], lastSeen: u.lastSeen || 0, updatedAt: u.updatedAt || Date.now()
-});
-});
+// CORREÇÃO CRÍTICA v8.9.1: recuperação de cadastros sem substituir o registro
+// moderno por um legado incompleto. Um erro em uma conta não invalida as demais.
+const STORAGE_XP_EMERGENCY_BACKUP = "mequi_venture_score_backup_v891";
+function backupKnownScores(candidates) {
+  try {
+    const old=JSON.parse(localStorage.getItem(STORAGE_XP_EMERGENCY_BACKUP)||"{}");
+    const safe=old&&typeof old==="object"&&!Array.isArray(old)?old:{};
+    Object.entries(candidates).forEach(([key,u])=>{
+      if(!u||!u.name||u._deleted)return;
+      const prev=safe[key]||{};
+      safe[key]={ name:String(u.name),xp:Math.max(Number(prev.xp)||0,Number(u.xp)||0),
+        correctAnswers:Math.max(Number(prev.correctAnswers)||0,Number(u.correctAnswers)||0),
+        lastCollectedAt:Date.now() };
+    });
+    localStorage.setItem(STORAGE_XP_EMERGENCY_BACKUP,JSON.stringify(safe));
+  }catch(e){ console.warn('Backup de pontos indisponível',e); }
 }
-} catch (e) {}
-});
-localStorage.setItem(STORAGE_USERS_KEY, JSON.stringify(users));
+function rescuePreviousLocalRegistrations() {
+  // v6 primeiro: é o cadastro atual. Outros armazenamentos são backups parciais.
+  const keys=["mequi_olimpiadas_users_v6","mequi_olimpiadas_users_v5","mequi_olimpiadas_users_v4","mequi_olimpiadas_users_v3"];
+  const staged={...users};
+  let error=false;
+  for(const k of keys){
+    let parsed;
+    try {parsed=JSON.parse(localStorage.getItem(k)||"null");}
+    catch(e){console.error('Falha ao ler armazenamento '+k,e);error=true;continue;}
+    if(!parsed||typeof parsed!=="object"||Array.isArray(parsed)) continue;
+    for(const [uk,u] of Object.entries(parsed)){
+      if(!u||!u.name)continue;
+      const incoming={...u,role:u.role||u.station||"Atendente",avatar:u.avatar||"🍔",
+        hearts:u.hearts!==undefined?u.hearts:5,heartsLockUntil:u.heartsLockUntil||0,
+        mistakes:Array.isArray(u.mistakes)?u.mistakes:[],lastSeen:u.lastSeen||0,updatedAt:u.updatedAt||0};
+      try {staged[uk]=mergeSingleUser(staged[uk],incoming);}
+      catch(e){error=true;console.error('Falha recuperando colaborador',uk,e);}
+    }
+  }
+  backupKnownScores(staged);
+  if(error){
+    console.error('Recuperação incompleta. Não sobrescrevemos o cadastro original.');
+    // Os dados recuperados continuam disponíveis na sessão, mas nenhum backup
+    // original é substituído se alguma etapa de migração falhar.
+    users=staged;
+    return;
+  }
+  users=staged;
+  localStorage.setItem(STORAGE_USERS_KEY,JSON.stringify(users));
 }
 function mergeQuizRotation(ex,inc){
   const a=ex&&ex.quizRotation, b=inc&&inc.quizRotation;
@@ -119,6 +147,7 @@ function mergeQuizRotation(ex,inc){
 function mergeSingleUser(ex, inc) {
 if (!ex) return inc;
 const streak = mergeQuizStreak(ex, inc);
+const quizRotation = mergeQuizRotation(ex, inc);
 if ((inc.adminOverrideAt || 0) > (ex.adminOverrideAt || 0)) return { ...inc, ...streak, quizRotation, missionProgress:mergeMissionProgress(ex.missionProgress,inc.missionProgress), profilePremium:mergeProfilePremium(ex.profilePremium,inc.profilePremium), trainerChallenges:mergeTrainerChallenges(ex.trainerChallenges,inc.trainerChallenges), duelRewards:{...ex.duelRewards,...inc.duelRewards}, practicalAssessments:mergePracticalAssessments(ex.practicalAssessments,inc.practicalAssessments), dailyChest:mergeDailyChest(ex.dailyChest,inc.dailyChest) };
 if ((ex.adminOverrideAt || 0) > (inc.adminOverrideAt || 0)) return { ...ex, ...streak, quizRotation, missionProgress:mergeMissionProgress(ex.missionProgress,inc.missionProgress), profilePremium:mergeProfilePremium(ex.profilePremium,inc.profilePremium), trainerChallenges:mergeTrainerChallenges(ex.trainerChallenges,inc.trainerChallenges), duelRewards:{...ex.duelRewards,...inc.duelRewards}, practicalAssessments:mergePracticalAssessments(ex.practicalAssessments,inc.practicalAssessments), dailyChest:mergeDailyChest(ex.dailyChest,inc.dailyChest) };
 if (inc._deleted && (inc.updatedAt || 0) >= (ex.updatedAt || 0)) return { ...inc, ...streak, quizRotation, missionProgress:mergeMissionProgress(ex.missionProgress,inc.missionProgress), profilePremium:mergeProfilePremium(ex.profilePremium,inc.profilePremium), trainerChallenges:mergeTrainerChallenges(ex.trainerChallenges,inc.trainerChallenges), duelRewards:{...ex.duelRewards,...inc.duelRewards}, practicalAssessments:mergePracticalAssessments(ex.practicalAssessments,inc.practicalAssessments), dailyChest:mergeDailyChest(ex.dailyChest,inc.dailyChest) };
@@ -184,6 +213,7 @@ if (['question','answer','finish'].includes(pkt.type)) handleIncomingDuelPacket(
 mqttClients.forEach(c => { if (c && c.connected) try { c.publish(DUEL_MQTT_TOPIC, p); } catch (e) {} });
 }
 function scheduleCloudSync(keyToPush, immediate = false) {
+backupKnownScores(users);
 localStorage.setItem(STORAGE_USERS_KEY, JSON.stringify(users));
 refreshUIIfNeeded();
 clearTimeout(cloudSyncQueueTimer);
@@ -211,10 +241,11 @@ if (d.type === "single" && d.k && d.u) users[d.k] = mergeSingleUser(users[d.k], 
 }
 } catch (e) {}
 });
+backupKnownScores(users);
 localStorage.setItem(STORAGE_USERS_KEY, JSON.stringify(users));
 refreshUIIfNeeded();
 }
-} catch (e) {}
+} catch (e) {console.warn('Histórico de nuvem indisponível',e);}
 }
 function forceSyncNow() {
 playTabClickSound();

@@ -1,4 +1,4 @@
-/* Venture 8.9 · script.js · arquivo carregado na ordem indicada no HTML. */
+/* Venture 8.9.1 · script.js · arquivo carregado na ordem indicada no HTML. */
 function switchTrainingMode(mode) {
   const valid = ["kitchen", "review", "duel", "flash"];
   if (!valid.includes(mode)) return;
@@ -37,7 +37,7 @@ function switchMainTab(tab) {
 // =========================================================================
 // V8.5 — ATUALIZAÇÃO DE VERSÃO NO GITHUB PAGES (SEM APAGAR DADOS)
 // =========================================================================
-const APP_VERSION = "8.9";
+const APP_VERSION = "8.9.1";
 const APP_UPDATE_INTERVAL_MS = 60000; // Github Pages é estático: checagem periódica, não push instantâneo.
 const APP_UPDATE_IDLE_MS = 45000;
 let availableAppUpdate = null;
@@ -163,12 +163,12 @@ function initAppAutoUpdater() {
   setInterval(maybeInstallAppUpdate, 5000);
 }
 
-window.onload = () => {
+window.onload = async () => {
   initTheme();
   injectCountdownAndKitchenUI();
+  rescuePreviousLocalRegistrations();
   renderMissionHub();
   renderXpModeStatus();
-  rescuePreviousLocalRegistrations();
   restoreQuizStreak();
   renderAvatarSelector();
   syncActiveUserHeartsState();
@@ -180,9 +180,11 @@ window.onload = () => {
     $("authModal").classList.add("hidden");
     updateHeaderUI();
   }
+  // Recuperar históricos anteriores ANTES de publicar estados potencialmente
+  // defasados no canal MQTT. O limite evita travar o site em redes lentas.
+  await Promise.race([fetchCloudHistorySafe(true),new Promise(resolve=>setTimeout(resolve,4500))]);
   initClusterSync();
   startHeartbeat();
-  fetchCloudHistorySafe(true);
   fetchTrainerHistory(true);
   renderTrainerPublicContent();
   initAppAutoUpdater();

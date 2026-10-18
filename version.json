@@ -1,5 +1,5 @@
 {
-  "version": "8.9",
+  "version": "8.9.1",
   "released_at": "2026-10-18",
-  "description": "Cozinha com novos lanches e Big Tasty completo, missões variadas por período e simulado sem repetição até esgotar o filtro"
+  "description": "Correção emergencial de regressão na mesclagem dos cadastros e recuperação de pontos preservados em versões locais/histórico remoto"
 }
