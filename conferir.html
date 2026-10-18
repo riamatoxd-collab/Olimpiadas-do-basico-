@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; connect-src 'none'; img-src data:; base-uri 'none'; form-action 'none'">
+<title>Venture · Auditoria local sem sincronização</title>
+<style>
+:root{font-family:system-ui,-apple-system,'Segoe UI',sans-serif;color-scheme:light;--ink:#142034;--muted:#5a6980;--border:#dce3ef;--red:#bb251d;--card:#fff}
+*{box-sizing:border-box}body{margin:0;background:#f3f6fa;color:var(--ink)}header{background:linear-gradient(110deg,#b92020,#85150f);padding:26px 16px;color:#fff;border-bottom:5px solid #ffc72c}header>div{max-width:960px;margin:auto}h1{font-size:1.5rem;margin:0 0 6px}h2{font-size:1.05rem;margin:0 0 12px}p{line-height:1.52;margin:8px 0}main{max-width:960px;margin:auto;padding:14px 12px 48px}.panel{background:var(--card);border:1px solid var(--border);padding:18px;border-radius:16px;margin:14px 0}.warning{background:#fff5d9;border-left:5px solid #d69c1a;padding:12px;border-radius:7px}.danger{background:#fff0ef;border-left:5px solid #c62c23;padding:12px;border-radius:7px}.muted{color:var(--muted);font-size:.86rem}button{border:0;background:var(--red);color:white;border-radius:12px;min-height:44px;padding:10px 16px;font-weight:750;cursor:pointer;font-size:.95rem}button.secondary{background:#edf1f7;color:#253653;border:1px solid #d3dbe9}button:disabled{opacity:.45;cursor:not-allowed}button:focus-visible,input:focus-visible{outline:3px solid #fdc53d;outline-offset:2px}.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin:14px 0}.stat{background:#f7f9fd;border:1px solid #dce2ee;border-radius:12px;padding:12px}.stat strong{display:block;font-size:1.7rem;line-height:1.2}.stat span{font-size:.75rem;color:#5a6980}.stat.alert strong{color:#b12b22}.scroll{overflow:auto}table{width:100%;min-width:760px;border-collapse:collapse;font-size:.83rem}th,td{text-align:left;padding:10px 8px;border-bottom:1px solid #e4e8f0;vertical-align:top}th{font-size:.7rem;text-transform:uppercase;letter-spacing:.03em;color:#596981}td.num{font-variant-numeric:tabular-nums;text-align:right;font-weight:650}.pill{font-size:.75rem;font-weight:750;display:inline-block;padding:3px 9px;border-radius:100px;background:#e8f4ef;color:#157348}.pill.warn{background:#fff2d7;color:#975d05}.pill.bad{background:#ffebe8;color:#b82d22}label{display:flex;gap:8px;align-items:flex-start;margin-top:10px}input[type=checkbox]{width:18px;height:18px;flex:none}.status{white-space:pre-wrap;font-size:.86rem;margin-top:10px;color:#33445d}code{word-break:break-word}@media(max-width:650px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.stat strong{font-size:1.42rem}.panel{padding:14px}}
+</style>
+</head>
+<body>
+<header><div><h1>🛡️ Conferência de cadastros — Venture</h1><div>Auditoria local · sem login · sem sincronização · somente leitura</div></div></header>
+<main>
+<div class="warning"><strong>Antes de começar:</strong> não abra o jogo principal, não limpe os dados do navegador e não use “Sincronizar Agora”. Use esta página no <strong>mesmo navegador e endereço</strong> em que restaurou os registros.</div>
+<section class="panel"><h2>1. Conferir cadastros no navegador</h2>
+<p>Esta ferramenta apenas lê os dados guardados no aparelho. Não carrega o jogo, não se conecta à nuvem, não envia mensagens e não grava no armazenamento.</p>
+<div class="row"><button id="scan">🔎 Verificar cadastros sem sincronizar</button><button id="report" class="secondary" disabled>⬇️ Relatório de conferência (sem senhas)</button></div>
+<div id="status" class="status" role="status">Clique em “Verificar” para começar.</div>
+</section>
+<section class="panel"><h2>2. Resultado da conferência</h2>
+<div class="stats">
+ <div class="stat"><strong id="all">—</strong><span>Nomes nas cópias locais</span></div>
+ <div class="stat"><strong id="active">—</strong><span>Contas ativas na chave atual (v6)</span></div>
+ <div class="stat alert"><strong id="missing">—</strong><span>Sem conta ativa na v6</span></div>
+ <div class="stat alert"><strong id="review">—</strong><span>Registros que exigem revisão</span></div>
+</div>
+<p class="muted">O “maior XP local” é o maior valor encontrado neste aparelho e não representa confirmação oficial da pontuação. A ferramenta não faz somas de registros duplicados.</p>
+<div class="scroll"><table><thead><tr><th>Colaborador</th><th>Maior XP local</th><th>XP na v6</th><th>Acertos na v6</th><th>Situação do cadastro</th><th>Observações</th></tr></thead><tbody id="rows"><tr><td colspan="6">Nenhum dado lido ainda.</td></tr></tbody></table></div>
+</section>
+<section class="panel"><h2>3. Backup técnico privado</h2>
+<div class="danger"><strong>Confidencial:</strong> o backup pode conter senhas em texto simples e informações pessoais. Não envie o arquivo para o GitHub, para este chat ou para outros colaboradores.</div>
+<label><input type="checkbox" id="aware"><span>Vou guardar o backup privadamente e não vou publicá-lo.</span></label>
+<div class="row" style="margin-top:12px"><button id="backup" class="secondary" disabled>🔐 Baixar cópia privada dos dados locais</button></div>
+<p class="muted">Este botão apenas cria um arquivo local para download. Não modifica os dados do jogo.</p>
+</section>
+<section class="panel"><h2>4. O que enviar como resultado</h2>
+<p>Informe apenas os quatro totais acima: <strong>nomes encontrados, contas ativas, contas ausentes e registros para revisão</strong>. Não é necessário enviar JSON nem nomes de colaboradores.</p>
+<p class="muted">A conferência por si só não restaura contas e não habilita sincronização. Uma etapa posterior será necessária após validar as diferenças.</p>
+</section>
+</main>
+<script>
+'use strict';
+const PREFIX='mequi_olimpiadas_users_v';
+const SOURCES=[{key:PREFIX+'6',label:'Atual v6',rank:6},{key:PREFIX+'5',label:'Legado v5',rank:5},{key:PREFIX+'4',label:'Legado v4',rank:4},{key:PREFIX+'3',label:'Legado v3',rank:3},{key:'mequi_venture_score_backup_v891',label:'Reserva XP',rank:1}];
+const $=id=>document.getElementById(id);
+let analyzed=null,rawSnapshots=null;
+function cleanInt(value){const n=Number(value);return Number.isFinite(n)&&n>=0?Math.trunc(n):0;}
+function keyFor(rawKey,user){return String(rawKey||user?.name||'').trim().toLocaleLowerCase('pt-BR');}
+function validObject(value){return !!value&&typeof value==='object'&&!Array.isArray(value);}
+function identity(origin,rawKey,u){return {id:keyFor(rawKey,u),name:String(u.name||'').trim(),origin, xp:cleanInt(u.xp),hits:cleanInt(u.correctAnswers),deleted:!!u._deleted,pending:!!u.recoveryPending,hasPassword:typeof u.password==='string'&&u.password.length>0,updatedAt:cleanInt(u.updatedAt)};}
+function inspect(){
+ if(location.origin!=='https://riamatoxd-collab.github.io'||!location.pathname.startsWith('/Olimpiadas-do-basico-/'))throw Error('Abra pelo endereço oficial do GitHub Pages, no mesmo navegador usado para restaurar.');
+ const entries=new Map(),sources=[],snapshot={};
+ for(const source of SOURCES){const text=localStorage.getItem(source.key);snapshot[source.key]=text;
+   if(text===null){sources.push({key:source.key,entries:0,present:false});continue;}
+   let obj;try{obj=JSON.parse(text)}catch{throw Error('A chave '+source.key+' contém JSON inválido. Nenhum dado foi modificado.');}
+   if(!validObject(obj))throw Error('Formato inesperado em '+source.key+'. Nenhum dado foi modificado.');
+   let count=0;
+   for(const [k,value] of Object.entries(obj)){
+     if(!validObject(value)||!value.name)continue;
+     const a=identity(source.key,k,value);
+     if(!a.id||!a.name)continue;
+     if(!entries.has(a.id))entries.set(a.id,{id:a.id,name:a.name,items:[],maxXp:0,maxHits:0,latestStamp:0,main:null});
+     const target=entries.get(a.id);target.items.push(a);
+     if(a.xp>target.maxXp){target.maxXp=a.xp;target.name=a.name;}
+     if(a.hits>target.maxHits)target.maxHits=a.hits;
+     if(a.updatedAt>target.latestStamp)target.latestStamp=a.updatedAt;
+     if(source.rank===6)target.main=a;
+     count++;
+   }
+   sources.push({key:source.key,present:true,entries:count});
+ }
+ const users=[...entries.values()].sort((a,b)=>b.maxXp-a.maxXp||a.name.localeCompare(b.name));
+ for(const u of users){
+   u.reasons=[];
+   if(!u.main)u.reasons.push('Somente em cópia antiga');
+   else {
+     if(u.main.deleted)u.reasons.push('Excluída na v6; não reativar automaticamente');
+     if(u.main.pending)u.reasons.push('Redefinição de senha pendente');
+     if(!u.main.hasPassword)u.reasons.push('Sem senha válida na v6');
+     if(u.main.xp<u.maxXp)u.reasons.push('XP na v6 menor que maior cópia local');
+     if(u.main.hits<u.maxHits)u.reasons.push('Acertos na v6 menores que maior cópia local');
+   }
+ }
+ return {users,sources,snapshot,count:users.length,active:users.filter(u=>u.main&&!u.main.deleted).length,missing:users.filter(u=>!u.main||u.main.deleted).length,review:users.filter(u=>u.reasons.length>0).length};
+}
+function cell(row,value,klass=''){const td=document.createElement('td');td.textContent=value;if(klass)td.className=klass;row.append(td);return td;}
+function display(result){$('all').textContent=result.count;$('active').textContent=result.active;$('missing').textContent=result.missing;$('review').textContent=result.review;
+ const body=$('rows');body.replaceChildren();
+ if(!result.users.length){const row=document.createElement('tr');cell(row,'Nenhum colaborador localizado.').colSpan=6;body.append(row);return;}
+ for(const u of result.users){const row=document.createElement('tr');cell(row,u.name);cell(row,u.maxXp.toLocaleString('pt-BR'),'num');cell(row,u.main?u.main.xp.toLocaleString('pt-BR'):'—','num');cell(row,u.main?u.main.hits.toLocaleString('pt-BR'):'—','num');
+   const td=document.createElement('td'),tag=document.createElement('span');tag.className='pill'+(!u.main||u.main.deleted?' bad':u.reasons.length?' warn':'');tag.textContent=!u.main?'Sem cadastro atual':u.main.deleted?'Excluído na v6':u.reasons.length?'Revisar':'Presente na v6';td.append(tag);row.append(td);cell(row,u.reasons.join(' · ')||'Sem divergência local detectada');body.append(row);
+ }
+}
+function download(name,obj){const blob=new Blob([JSON.stringify(obj,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.download=name;a.href=url;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),8000);}
+$('scan').addEventListener('click',()=>{try{const audit=inspect();rawSnapshots=audit.snapshot;analyzed={count:audit.count,active:audit.active,missing:audit.missing,review:audit.review,sources:audit.sources,users:audit.users.map(u=>({name:u.name,key:u.id,maxXp:u.maxXp,maxHits:u.maxHits,xpCurrent:u.main?u.main.xp:null,hitsCurrent:u.main?u.main.hits:null,accountPresent:!!u.main,deleted:!!u.main?.deleted,pending:!!u.main?.pending,reasons:u.reasons}))};display(audit);$('report').disabled=false;$('status').textContent=`Leitura local concluída. ${audit.count} nome(s) nas cópias, ${audit.active} na chave atual, ${audit.missing} sem conta ativa. Nenhuma gravação ou sincronização foi realizada.\nFontes presentes: ${audit.sources.filter(s=>s.present).map(s=>s.key).join(', ')||'nenhuma'}.`;
+ }catch(err){rawSnapshots=null;analyzed=null;$('report').disabled=true;$('status').textContent='Não foi possível concluir: '+String(err.message||err);}});
+$('report').addEventListener('click',()=>{if(!analyzed)return;download('venture_conferencia_LOCAL_sem_senhas.json',{generatedAt:new Date().toISOString(),note:'Dados locais não validados. Não contém senhas. Não altera o site.',...analyzed});});
+function backupEnabled(){$('backup').disabled=!rawSnapshots||!$('aware').checked;}
+$('aware').addEventListener('change',backupEnabled);
+$('scan').addEventListener('click',backupEnabled);
+$('backup').addEventListener('click',()=>{if(!rawSnapshots||!$('aware').checked)return;download('venture_backup_PRIVADO_24_cadastros.json',{generatedAt:new Date().toISOString(),site:location.origin+location.pathname,warning:'CONFIDENCIAL: as cópias originais podem conter senhas. Não publicar nem compartilhar.',storage:rawSnapshots});});
+</script>
+</body>
+</html>
