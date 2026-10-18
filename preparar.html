@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; connect-src 'none'; img-src 'none'; base-uri 'none'; form-action 'none'; object-src 'none'; frame-src 'none'">
+<title>Venture — Plano de recuperação sem sincronização</title>
+<style>
+:root{font-family:system-ui,-apple-system,Segoe UI,sans-serif;color:#172238;background:#f3f6fb;--red:#bf2920;--border:#dbe2eb;--muted:#586a81}*{box-sizing:border-box}body{margin:0}header{background:linear-gradient(120deg,#c82c21,#82160f);border-bottom:5px solid #ffcf33;color:white;padding:24px 16px}header>div,main{max-width:1020px;margin:auto}header h1{font-size:clamp(1.25rem,4vw,1.75rem);margin:0 0 5px}header p{margin:0;font-size:.88rem}main{padding:13px 12px 40px}.panel{background:white;border:1px solid var(--border);border-radius:16px;padding:17px;margin:13px 0}h2{font-size:1.02rem;margin:0 0 10px}p{line-height:1.5;margin:6px 0 11px}.danger{background:#fff0ed;border-left:4px solid #d03b2f;padding:12px;border-radius:9px}.note{background:#fff8e4;border-left:4px solid #e0ac25;padding:12px;border-radius:9px}.muted{font-size:.83rem;color:var(--muted)}.actions{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 0}button{border:0;background:var(--red);color:#fff;padding:12px 14px;border-radius:10px;min-height:44px;font:750 .85rem system-ui;cursor:pointer}button.alt{background:#f0f4fa;color:#20334d;border:1px solid #d2dce9}button:disabled{opacity:.45;cursor:default}input[type=file]{width:100%;max-width:480px;border:1px solid var(--border);border-radius:9px;padding:11px}select{max-width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:10px;background:#fff;font:600 .87rem system-ui}button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid #ffc72c;outline-offset:2px}.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}.stat{background:#f7f9fd;border:1px solid var(--border);padding:12px;border-radius:12px}.stat strong{display:block;font-size:1.5rem}.stat span{color:var(--muted);font-size:.71rem}.tablewrap{overflow:auto;max-height:640px}table{border-collapse:collapse;width:100%;min-width:820px;font-size:.8rem}td,th{padding:10px 8px;text-align:left;border-bottom:1px solid #e6ebf2;vertical-align:top}th{color:#54667d;font-size:.69rem;text-transform:uppercase;position:sticky;top:0;background:#fff}td.num{text-align:right;font-variant-numeric:tabular-nums;font-weight:700}.tag{display:inline-block;font-size:.7rem;padding:3px 8px;border-radius:20px;font-weight:800;background:#edf6ef;color:#136943}.tag.warn{background:#fff2d8;color:#99600a}.tag.bad{background:#ffe9e5;color:#a52d24}.status{white-space:pre-wrap;margin-top:9px;font-size:.85rem}.row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.grow{flex:1}footer{font-size:.75rem;color:var(--muted)}@media(max-width:560px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.panel{padding:13px}.stat strong{font-size:1.3rem}}
+</style>
+</head>
+<body>
+<header><div><h1>🛡️ Plano seguro de recuperação</h1><p>Venture · Sem alteração dos cadastros · Sem sincronização · Sem conexão externa</p></div></header>
+<main>
+<div class="danger"><strong>Não abra o jogo principal ainda.</strong> Esta ferramenta apenas lê os cadastros do seu navegador e, opcionalmente, um relatório JSON. Ela NÃO restaura contas, NÃO altera XP e NÃO se conecta aos serviços de sincronização. Mantenha os backups privados já baixados.</div>
+<section class="panel"><h2>1. Ler cadastros neste navegador</h2>
+<p>Use o mesmo navegador e perfil em que fez a restauração, pelo endereço <strong>/preparar.html</strong> do seu GitHub Pages.</p>
+<div class="actions"><button id="scan">🔎 Analisar cópias locais</button></div><div id="localStatus" class="status" role="status">Nenhuma consulta efetuada.</div>
+</section>
+<section class="panel"><h2>2. Comparar o relatório original (opcional)</h2>
+<p>Escolha somente o <strong>relatório sem senhas (.json)</strong> que você baixou no resgate inicial. Isso ajuda a comparar os XP encontrados no histórico remoto com os pontos atuais. Não use o backup técnico com senhas.</p>
+<input type="file" id="reportFile" accept=".json,application/json" aria-label="Relatório sem senhas do resgate">
+<div id="fileStatus" class="status">Nenhum relatório importado.</div>
+</section>
+<section class="panel"><h2>3. Resultado da comparação</h2>
+<div class="stats"><div class="stat"><strong id="found">—</strong><span>Nomes identificados</span></div><div class="stat"><strong id="active">—</strong><span>Contas ativas na v6</span></div><div class="stat"><strong id="missing">—</strong><span>Sem conta ativa</span></div><div class="stat"><strong id="review">—</strong><span>Com pendências a revisar</span></div></div>
+<p class="muted">As pendências se sobrepõem: uma conta ausente pode também estar entre os registros para revisão. Maior XP histórico não é pontuação validada.</p>
+<div class="row" style="margin:12px 0"><label for="filter">Mostrar:</label><select id="filter"><option value="all">Todos</option><option value="missing">Sem conta ativa</option><option value="review">Precisam de revisão</option><option value="deleted">Excluídos</option><option value="ok">Sem divergência detectada</option></select><span id="shown" class="muted"></span></div>
+<div class="tablewrap"><table><thead><tr><th>Colaborador</th><th>Conta atual</th><th>XP atual</th><th>Maior XP nas cópias</th><th>XP no relatório</th><th>O que revisar</th></tr></thead><tbody id="rows"><tr><td colspan="6">Clique em analisar.</td></tr></tbody></table></div>
+</section>
+<section class="panel"><h2>4. Guardar os resultados sem tocar nos pontos</h2>
+<p>Faça download de um diagnóstico privado sem senhas para conferir os casos pendentes. Você também pode baixar <strong>apenas um resumo numérico, sem nomes</strong>, para compartilhar os totais com segurança.</p>
+<div class="actions"><button id="saveSummary" class="alt" disabled>⬇️ Resumo sem nomes</button><button id="saveDetail" class="alt" disabled>⬇️ Plano privado sem senhas</button></div>
+<p class="muted">Esses downloads usam arquivos criados dentro do navegador. Não publicam nada no GitHub e não modificam o armazenamento. O plano detalhado contém nomes e pontuações: guarde-o privadamente.</p>
+</section>
+<section class="panel"><h2>5. Próxima decisão</h2>
+<div class="note">O próximo procedimento será decidido por grupos: <strong>(a)</strong> contas preservadas sem divergências; <strong>(b)</strong> contas ausentes mas presentes em cópias antigas; <strong>(c)</strong> senhas pendentes, exclusões e XP divergentes. Nenhum grupo será sincronizado antes da validação dos registros e de um backup completo.</div>
+<p><strong>Para continuar comigo, informe somente:</strong> total de contas sem conta ativa, quantas dessas têm alguma cópia antiga com senha, quantas estão marcadas como excluídas e quantas contas ativas têm XP divergente. Não compartilhe senhas, backups técnicos ou nomes.</p>
+<div id="nextNumbers" class="status"></div>
+</section>
+<footer>Esta página não contém bibliotecas externas, não usa fetch/WebSocket/MQTT e não chama funções que gravam em localStorage. A consulta exige a mesma origem do site. Se alguém ainda estiver usando o jogo em outro aparelho, mantenha a competição pausada para evitar gravações concorrentes.</footer>
+</main>
+<script>
+'use strict';
+const MAIN='mequi_olimpiadas_users_v6';
+const SOURCES=[MAIN,'mequi_olimpiadas_users_v5','mequi_olimpiadas_users_v4','mequi_olimpiadas_users_v3','mequi_venture_score_backup_v891'];
+const $=id=>document.getElementById(id);
+let localRows=null,reportRows=null,merged=null;
+const obj=x=>!!x&&typeof x==='object'&&!Array.isArray(x);
+const num=x=>{const n=Number(x);return Number.isSafeInteger(n)&&n>=0&&n<=1e8?n:0;};
+const id=s=>String(s||'').trim().toLocaleLowerCase('pt-BR');
+const hasPass=u=>typeof u?.password==='string'&&u.password.length>0;
+function assertOrigin(){if(location.protocol!=='https:'||location.hostname!=='riamatoxd-collab.github.io'||!location.pathname.startsWith('/Olimpiadas-do-basico-/'))throw Error('Abra esta página pelo endereço do projeto no GitHub Pages, no mesmo navegador da restauração.');}
+function readLocal(){assertOrigin();const users=new Map();for(const source of SOURCES){const raw=localStorage.getItem(source);if(raw===null)continue;const parsed=JSON.parse(raw);if(!obj(parsed))throw Error('Dados inválidos na chave '+source+'. Nenhum registro foi alterado.');for(const [key,u] of Object.entries(parsed)){if(!obj(u)||typeof u.name!=='string'||!u.name.trim())continue;const k=id(key);if(k.length<2)continue;if(!users.has(k))users.set(k,{id:k,name:u.name.trim(),current:null,history:[],maxXp:0,maxHits:0,historicalWithPassword:false});const item=users.get(k);const copy={source,xp:num(u.xp),hits:num(u.correctAnswers),deleted:!!u._deleted,pending:!!u.recoveryPending,hasPassword:hasPass(u),name:u.name.trim()};item.history.push(copy);item.maxXp=Math.max(item.maxXp,copy.xp);item.maxHits=Math.max(item.maxHits,copy.hits);if(source!==MAIN&&copy.hasPassword&&!copy.deleted)item.historicalWithPassword=true;if(source===MAIN){item.current=copy;item.name=copy.name;}}}return users;}
+function parseReport(text){const file=JSON.parse(text);if(!obj(file)||!Array.isArray(file.users)||file.users.length>500||file.users.length===0)throw Error('Arquivo incompatível. Selecione o relatório JSON sem senhas do resgate.');const result=new Map();for(const v of file.users){if(!obj(v)||'password' in v||'entries' in v)throw Error('Não selecione backup técnico. Use o relatório sem senhas.');const k=id(v.key||v.name);if(k.length<2||k.length>160||typeof v.name!=='string'||!v.name.trim()||result.has(k))throw Error('Nome duplicado ou inválido no relatório.');const xp=Number(v.xp),hits=Number(v.correct??v.correctAnswers);if(!Number.isSafeInteger(xp)||xp<0||xp>1e8||!Number.isSafeInteger(hits)||hits<0||hits>1e8)throw Error('Valor de XP ou acertos inválido.');result.set(k,{id:k,name:v.name.trim(),xp,hits});}return result;}
+function evaluate(){const all=new Map();if(localRows)for(const [k,v] of localRows)all.set(k,{...v,history:[...v.history]});if(reportRows)for(const [k,v] of reportRows){if(!all.has(k))all.set(k,{id:k,name:v.name,current:null,history:[],maxXp:0,maxHits:0,historicalWithPassword:false});all.get(k).report=v;}
+merged=[...all.values()].map(u=>{const c=u.current,missing=!c||c.deleted,review=[],deleted=!!c?.deleted;const reportXp=u.report?.xp??null;
+if(!c)review.push('Ausente na chave ativa v6');
+if(deleted)review.push('Marcada como excluída: NÃO reativar automaticamente');
+if(c&&!deleted&&!c.hasPassword)review.push('Senha ausente no cadastro ativo');
+if(c?.pending)review.push('Redefinição de senha pendente');
+if(c&&!deleted&&c.xp<u.maxXp)review.push('XP atual abaixo de cópia local');
+if(c&&!deleted&&c.hits<u.maxHits)review.push('Acertos atuais abaixo de cópia local');
+if(reportXp!==null&&c&&!deleted&&c.xp<reportXp)review.push('XP do relatório maior que o atual: validar antes de alterar');
+if(reportXp!==null&&c&&!deleted&&c.hits<(u.report.hits||0))review.push('Acertos do relatório maiores que os atuais');
+if(!c&&u.history.length===0&&u.report)review.push('Consta apenas no relatório; não há cadastro local');
+return {...u,missing,deleted,review,reportXp};}).sort((a,b)=>(b.reportXp??b.maxXp)-(a.reportXp??a.maxXp)||a.name.localeCompare(b.name));
+render();}
+function td(row,str,cls=''){const c=document.createElement('td');c.textContent=String(str);if(cls)c.className=cls;row.append(c);return c;}
+function badge(row,txt,cls){const c=document.createElement('td');const span=document.createElement('span');span.className='tag'+(cls?' '+cls:'');span.textContent=txt;c.append(span);row.append(c);}
+function render(){if(!merged)return;const active=merged.filter(u=>u.current&&!u.deleted).length,missing=merged.filter(u=>u.missing).length,review=merged.filter(u=>u.review.length).length;
+$('found').textContent=merged.length;$('active').textContent=active;$('missing').textContent=missing;$('review').textContent=review;
+const mode=$('filter').value;const rows=merged.filter(u=>mode==='all'||(mode==='missing'&&u.missing)||(mode==='review'&&u.review.length)||(mode==='deleted'&&u.deleted)||(mode==='ok'&&!u.review.length));$('shown').textContent=rows.length+' exibidos';const body=$('rows');body.replaceChildren();
+for(const u of rows){const tr=document.createElement('tr');td(tr,u.name);badge(tr,u.deleted?'Excluído':!u.current?'Ausente':u.current.pending?'Senha pendente':'Ativo',u.deleted||!u.current?'bad':u.review.length?'warn':'');td(tr,u.current?u.current.xp.toLocaleString('pt-BR'):'—','num');td(tr,u.history.length?u.maxXp.toLocaleString('pt-BR'):'—','num');td(tr,u.reportXp===null||u.reportXp===undefined?'—':u.reportXp.toLocaleString('pt-BR'),'num');td(tr,u.review.join(' · ')||'Sem divergência detectada');body.append(tr);}if(!rows.length){const tr=document.createElement('tr');td(tr,'Nenhum registro nesta categoria.').colSpan=6;body.append(tr);}
+$('saveSummary').disabled=false;$('saveDetail').disabled=false;
+const absent=merged.filter(u=>u.missing),withLegacyPass=absent.filter(u=>!u.deleted&&u.historicalWithPassword).length,deletedCount=absent.filter(u=>u.deleted).length,activeMismatch=merged.filter(u=>u.current&&!u.deleted&&(u.current.xp<u.maxXp||(u.reportXp!==null&&u.current.xp<u.reportXp))).length;
+$('nextNumbers').textContent=`Resumo: ${absent.length} sem conta ativa; ${withLegacyPass} desses têm senha em cópia histórica não excluída; ${deletedCount} estão marcados como excluídos; ${activeMismatch} contas ativas têm XP inferior a alguma cópia ou relatório. Nenhuma informação foi sincronizada.`;}
+$('scan').addEventListener('click',()=>{try{localRows=readLocal();$('localStatus').textContent=`${localRows.size} nomes localizados nas chaves do navegador. Somente leitura; nenhum cadastro foi alterado.`;evaluate();}catch(e){$('localStatus').textContent='Erro: '+String(e.message||e);}});
+$('reportFile').addEventListener('change',async e=>{const f=e.target.files?.[0];if(!f)return;try{if(f.size>2e6)throw Error('Arquivo muito grande para relatório sem senhas.');reportRows=parseReport(await f.text());$('fileStatus').textContent=`${reportRows.size} nomes importados. Arquivo lido somente neste navegador, sem envio.`;evaluate();}catch(err){$('fileStatus').textContent='Falha: '+String(err.message||err);}});
+$('filter').addEventListener('change',render);
+function dl(name,x){const blob=new Blob([JSON.stringify(x,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),6000);}
+$('saveSummary').addEventListener('click',()=>{if(!merged)return;const absent=merged.filter(u=>u.missing);dl('venture_resumo_NUMERICO_sem_nomes.json',{createdAt:new Date().toISOString(),note:'Diagnóstico local, sem sincronização. Não equivale a confirmação de XP.',total:merged.length,active:merged.filter(u=>u.current&&!u.deleted).length,missing:absent.length,review:merged.filter(u=>u.review.length).length,deleted:absent.filter(u=>u.deleted).length,missingWithOldPassword:absent.filter(u=>!u.deleted&&u.historicalWithPassword).length,activeWithXpDifference:merged.filter(u=>u.current&&!u.deleted&&(u.current.xp<u.maxXp||(u.reportXp!==null&&u.current.xp<u.reportXp))).length});});
+$('saveDetail').addEventListener('click',()=>{if(!merged)return;dl('venture_PLANO_PRIVADO_sem_senhas.json',{createdAt:new Date().toISOString(),note:'Somente leitura; maiores valores históricos não validados. Não importar no jogo automaticamente.',accounts:merged.map(u=>({name:u.name,key:u.id,active:!!u.current&&!u.deleted,deleted:u.deleted,pending:!!u.current?.pending,hasPasswordCurrently:!!u.current?.hasPassword,hasOldPassword:u.historicalWithPassword,xpCurrent:u.current?.xp??null,hitsCurrent:u.current?.hits??null,maxLocalXp:u.history.length?u.maxXp:null,maxLocalHits:u.history.length?u.maxHits:null,reportXp:u.reportXp,reportHits:u.report?.hits??null,issues:u.review,originalCopies:u.history.map(x=>({source:x.source,xp:x.xp,hits:x.hits,deleted:x.deleted,pending:x.pending,hasPassword:x.hasPassword}))}))});});
+</script></body></html>
