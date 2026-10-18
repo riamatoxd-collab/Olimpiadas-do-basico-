@@ -1,5 +1,5 @@
 /* =========================================================================
-   OLIMPÍADAS DO BÁSICO — VENTURE (FOLHA DE ESTILO OFICIAL: style.css v8.7)
+   OLIMPÍADAS DO BÁSICO — VENTURE (FOLHA DE ESTILO OFICIAL: style.css v8.8)
    ========================================================================= */
 :root {
   --mc-red: #DA291C;
@@ -595,3 +595,51 @@ textarea.trainer-field {resize:vertical;min-height:76px}
 .daily-chest-note{font-size:10px;color:var(--text-muted);font-weight:600;line-height:1.5;padding:0 0 12px;margin:0}
 .cooldown-chest-link{display:block;margin:9px auto 0;padding:10px;background:#f59e0b;color:#1f2937;font-weight:900;font-size:11px;border-radius:13px;max-width:100%;line-height:1.3}
 @media(max-width:359px){.daily-chest{padding:12px}.daily-chest-symbol{width:42px;height:42px;flex-basis:42px}.daily-chest-tag{display:none}.daily-chest-prizes span{font-size:9px;letter-spacing:-.02em}}
+
+/* v8.8 — Cozinha 2.0: layout mobile-first, camadas visuais e botões amplos. */
+.kitchen-20{padding:clamp(13px,3.5vw,23px);border-radius:24px;display:grid;gap:16px;min-width:0}
+.kitchen-hero{display:flex;gap:10px;align-items:center;min-width:0}
+.kitchen-hero-icon{width:48px;height:48px;flex:0 0 48px;display:grid;place-items:center;background:linear-gradient(145deg,#db281a,#801309);color:white;font-size:28px;border-radius:15px}
+.kitchen-hero-title{flex:1;min-width:0}.kitchen-hero-title>span{display:block;font-size:9px;letter-spacing:.12em;font-weight:900;color:#e24b3d}
+.kitchen-hero-title h2{font-weight:950;font-size:20px;line-height:1.25}.kitchen-hero-title p{font-size:11px;color:var(--text-muted);line-height:1.5;margin-top:3px}
+.kitchen-hero-xp{background:#fef3c7;color:#92400e;border-radius:999px;padding:7px 10px;font-size:11px;font-weight:900;white-space:nowrap}
+.kitchen-selector label{font-size:11px;font-weight:900;display:block;margin-bottom:7px}
+.kitchen-selector-row{display:flex;gap:8px}.kitchen-selector select{flex:1;min-width:0;border-radius:12px;padding:11px;font-weight:800;font-size:12px}
+.kitchen-restart{padding:10px 12px;background:rgba(218,41,28,.09);color:var(--mc-red);border-radius:12px;font-size:11px;font-weight:850;flex-shrink:0}
+.kitchen-board{padding:14px;background:var(--bg-subtle);border:1px solid var(--border-color);border-radius:20px;overflow:hidden}
+.kitchen-board-top{display:flex;justify-content:space-between;gap:8px;font-size:11px;font-weight:900;margin-bottom:10px;color:var(--text-main)}
+.kitchen-progress-track{height:9px;overflow:hidden;border-radius:99px;background:var(--border-color)}
+#kitchenProgressFill{height:100%;width:0;border-radius:99px;background:linear-gradient(90deg,#f59e0b,#da291c);transition:width .28s ease}
+.kitchen-art{position:relative;min-height:200px;padding:16px 12px 20px;display:flex;align-items:center;justify-content:flex-end;flex-direction:column;overflow:hidden}
+.kitchen-art-glow{position:absolute;width:210px;height:145px;left:50%;top:13px;transform:translateX(-50%);background:radial-gradient(ellipse,rgba(245,158,11,.18),transparent 70%);pointer-events:none}
+.kitchen-board-plate{height:11px;width:min(100%,260px);border-radius:50%;background:linear-gradient(180deg,#94a3b8,#cbd5e1);box-shadow:0 5px 0 rgba(148,163,184,.18);z-index:1}
+.kitchen-stack{display:flex;flex-direction:column-reverse;align-items:center;justify-content:center;gap:2px;min-height:157px;max-width:100%;z-index:2}
+.kitchen-stack .kitchen-empty-visual{font-size:58px;filter:drop-shadow(0 7px 12px rgba(0,0,0,.1))}
+.kitchen-stack>small{font-size:10px;font-weight:750;color:var(--text-muted)}
+.kitchen-layer{display:flex;align-items:center;gap:6px;width:min(100%,260px);max-width:100%;min-height:25px;border-radius:99px;background:#fb923c;color:#422006;padding:3px 11px;box-shadow:0 3px 0 rgba(0,0,0,.08);animation:kitchenPlace .23s ease both;font-size:9px;font-weight:850;overflow:hidden}
+.kitchen-layer>span:first-child{flex:0 0 auto;font-size:14px}.kitchen-layer>span:last-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.kitchen-bread{background:#f7be62}.kitchen-cheese{background:#facc15}.kitchen-meat{background:#a16207;color:#fff7ed}.kitchen-lettuce{background:#86efac}.kitchen-bacon{background:#fca5a5}.kitchen-tomato{background:#fda4af}.kitchen-onion{background:#fde68a}.kitchen-pickle{background:#bef264}.kitchen-sauce{background:#fed7aa}
+@keyframes kitchenPlace{from{transform:translateY(-13px) scale(.91);opacity:.3}to{transform:translateY(0) scale(1);opacity:1}}
+.kitchen-steps{font-size:11px;color:var(--text-muted);font-weight:700;line-height:1.5;text-align:center;margin-top:11px}
+.kitchen-choices-head{display:flex;align-items:center;justify-content:space-between;gap:8px}.kitchen-choices-head strong{font-size:12px}.kitchen-choices-head small{font-size:10px;color:var(--text-muted)}
+.kitchen-choice-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.kitchen-choice{display:flex;align-items:center;gap:7px;min-height:65px;padding:10px;text-align:left;background:var(--bg-card);border:1.5px solid var(--border-color);border-radius:15px;color:var(--text-main);transition:transform .12s ease,border-color .12s ease}
+.kitchen-choice:active{transform:scale(.975)}.kitchen-choice:hover{border-color:var(--mc-yellow)}
+.kitchen-choice-emoji{flex-shrink:0;font-size:21px}.kitchen-choice-label{flex:1;font-size:10px;font-weight:850;line-height:1.35;min-width:0;overflow-wrap:anywhere}
+.kitchen-choice-plus{font-weight:900;font-size:15px;color:#d97706}.kitchen-choice-wrong{border-color:#ef4444;background:rgba(239,68,68,.12);animation:shakeError .38s ease-in-out}
+.kitchen-feedback{padding:12px;border-radius:13px;text-align:center;font-size:11px;font-weight:850;line-height:1.5}
+.kitchen-feedback-success{background:rgba(16,185,129,.12);color:#059669;border:1px solid rgba(16,185,129,.3)}
+.kitchen-feedback-error{background:rgba(239,68,68,.1);color:#e11d48;border:1px solid rgba(239,68,68,.3)}
+.kitchen-play-again{grid-column:1/-1;border-radius:13px;padding:14px;background:var(--mc-yellow);color:#452600;font-size:12px;font-weight:950}
+@media(max-width:360px){.kitchen-hero-xp{font-size:10px;padding:6px}.kitchen-hero-title h2{font-size:17px}.kitchen-choice-grid{grid-template-columns:1fr}.kitchen-choice{min-height:53px}.kitchen-art{min-height:165px}}
+@media(prefers-reduced-motion:reduce){.kitchen-layer,.kitchen-choice{animation:none;transition:none}}
+/* v8.8 — Botão do ADM para campanha XP x2. */
+.xp2-admin-card{padding:18px;display:grid;gap:13px;border:1.5px solid rgba(245,158,11,.42)}
+.xp2-admin-head{display:flex;align-items:center;gap:10px}.xp2-admin-head>span{display:grid;place-items:center;width:42px;height:42px;flex-shrink:0;background:#ffedd5;border-radius:13px;font-size:24px}
+.xp2-admin-head h3{font-size:14px;font-weight:950}.xp2-admin-head p,.xp2-admin-row p,.xp2-admin-foot{font-size:11px;color:var(--text-muted);line-height:1.5}
+.xp2-admin-row{display:flex;align-items:center;gap:10px;justify-content:space-between;background:var(--bg-subtle);border:1px solid var(--border-color);border-radius:13px;padding:12px}
+.xp2-admin-row>div{min-width:0;flex:1}.xp2-admin-row strong{font-size:14px;font-weight:950}
+.xp2-admin-toggle{background:#1e293b;color:#fff;padding:11px 13px;border-radius:12px;font-size:11px;font-weight:900;min-width:113px}
+.xp2-admin-toggle.is-active{background:#f59e0b;color:#432b08}
+.xp2-badge{display:block;margin-top:3px;font-size:8px;font-weight:950;letter-spacing:.02em;color:#fef08a;white-space:nowrap}
+@media(max-width:360px){.xp2-admin-row{align-items:stretch;flex-direction:column}.xp2-admin-toggle{width:100%}}
