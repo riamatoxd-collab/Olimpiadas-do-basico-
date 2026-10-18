@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Resgate de Cadastros — Venture</title>
+<style>
+:root{color-scheme:light;font-family:system-ui,-apple-system,Segoe UI,sans-serif;--red:#bd2319;--line:#e6e9ee;--surface:#f6f8fb;--text:#18243a}
+*{box-sizing:border-box}body{margin:0;background:var(--surface);color:var(--text)}header{background:linear-gradient(125deg,#be201b,#831913);color:white;padding:30px 18px;border-bottom:5px solid #ffcc33}main{max-width:850px;margin:auto;padding:20px 14px 60px}h1{font-size:1.45rem;margin:0 0 8px}h2{font-size:1.04rem;margin:0 0 10px}p{line-height:1.5}small,.muted{color:#637086}.panel{background:white;border:1px solid var(--line);border-radius:19px;padding:20px;margin:16px 0;box-shadow:0 2px 15px #1b28400a}.notice{border-left:5px solid #ffca39;background:#fff8df;padding:13px;border-radius:8px}.danger{border-left:5px solid #de3c30;background:#fff0ee;padding:13px;border-radius:8px}.buttons{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}button{border:0;background:#bb281e;color:#fff;font:700 .91rem inherit;padding:11px 15px;border-radius:12px;cursor:pointer;min-height:45px;font-weight:700}button.secondary{background:#eef2f7;color:#24354e;border:1px solid #ccd4df}button:disabled{opacity:.5;cursor:not-allowed}label{display:flex;align-items:flex-start;gap:10px;font-size:.9rem;margin-top:14px}input[type=checkbox]{width:20px;height:20px;flex-shrink:0}table{width:100%;border-collapse:collapse;font-size:.84rem;min-width:480px}th,td{text-align:left;border-bottom:1px solid var(--line);padding:10px 7px;vertical-align:top}th{font-size:.72rem;color:#56647a;text-transform:uppercase}td:nth-child(2),td:nth-child(3){font-variant-numeric:tabular-nums}td:nth-child(2){font-weight:800}.overflow{overflow-x:auto}.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:12px 0}.stat{border:1px solid var(--line);border-radius:13px;padding:10px;background:#f9fafc}.stat strong{font-size:1.25rem;display:block}.stat span{font-size:.73rem;color:#697587}.status{font-size:.88rem;color:#3b4d66;min-height:22px;margin-top:10px;white-space:pre-wrap}footer{font-size:.78rem;color:#637086;margin-top:12px}code{font-size:.85em;overflow-wrap:anywhere} @media(max-width:400px){.panel{padding:15px}.stats{gap:4px}.stat{padding:9px}.stat strong{font-size:1.04rem}}
+</style>
+</head>
+<body>
+<header><div style="max-width:850px;margin:auto"><h1>🛟 Resgate de cadastros — Venture</h1><div>Ferramenta de diagnóstico emergencial · somente leitura</div></div></header>
+<main>
+<div class="notice"><strong>Importante:</strong> esta página <strong>não restaura nem altera</strong> os pontos. Ela apenas identifica cópias que ainda existam. <strong>Não limpe os dados do navegador e não entre novamente na aplicação com problemas.</strong></div>
+<div class="panel"><h2>1. Verificar dados deste aparelho</h2>
+<p>Acesse esta página <strong>pelo mesmo endereço do seu GitHub Pages</strong> e no <strong>mesmo navegador</strong> em que o colaborador usava o jogo. A página não consegue ler os dados de outros celulares.</p>
+<div class="buttons"><button id="localBtn">🔎 Procurar cadastros locais</button></div><div id="localStatus" class="status" role="status"></div>
+</div>
+<div class="panel"><h2>2. Procurar cópias no histórico remoto</h2>
+<p>O código antigo enviava registros ao serviço <code>ntfy.sh</code>. Este botão tenta <strong>consultar</strong> as mensagens ainda disponíveis, sem enviar nem modificar nada. Esse histórico pode estar incompleto ou ter expirado.</p>
+<div class="buttons"><button id="cloudBtn" class="secondary">☁️ Consultar histórico (somente leitura)</button></div><div id="cloudStatus" class="status" role="status"></div>
+</div>
+<div class="panel"><h2>3. Registros encontrados</h2>
+<p class="muted" style="font-size:.85rem;margin:0">O XP abaixo é o <strong>maior valor encontrado nas cópias</strong>; precisa ser conferido antes de restaurar. Não significa que o saldo foi validado pelo servidor.</p>
+<div class="stats"><div class="stat"><strong id="count">0</strong><span>Colaboradores</span></div><div class="stat"><strong id="sources">0</strong><span>Cópias lidas</span></div><div class="stat"><strong id="sum">0</strong><span>XP encontrado</span></div></div>
+<div class="overflow"><table><thead><tr><th>Colaborador</th><th>Maior XP</th><th>Acertos</th><th>Origem do registro</th></tr></thead><tbody id="rows"><tr><td colspan="4">Clique em um dos botões acima para começar.</td></tr></tbody></table></div>
+<div class="buttons"><button id="csvBtn" class="secondary" disabled>⬇️ Baixar relatório sem senhas (.csv)</button><button id="jsonBtn" class="secondary" disabled>⬇️ Baixar relatório sem senhas (.json)</button></div>
+<p style="font-size:.84rem">Os relatórios incluem nomes e pontuações. Guarde-os em local privado e não os publique no GitHub.</p>
+</div>
+<div class="panel"><h2>4. Backup técnico (opcional)</h2>
+<p style="font-size:.85rem">Se for necessário recuperar as contas completas, um backup técnico pode preservar o que ainda existe. <strong>ATENÇÃO:</strong> os cadastros antigos incluem senhas em texto simples. Nunca publique esse arquivo ou compartilhe em grupos.</p>
+<label><input type="checkbox" id="aware">Estou ciente de que o backup técnico pode conter senhas e dados pessoais, e vou armazená-lo de forma privada.</label>
+<div class="buttons"><button id="rawBtn" class="secondary" disabled>🔐 Baixar backup técnico privado</button></div>
+</div>
+<footer>Esta página não carrega o JavaScript do jogo, não grava no localStorage, não envia dados e não se conecta ao MQTT. A consulta remota ocorre somente ao tocar no respectivo botão. Se você abrir este HTML como arquivo local (file://), ele não terá acesso ao armazenamento do GitHub Pages.</footer>
+</main>
+<script>
+'use strict';
+const KEYS=['mequi_olimpiadas_users_v6','mequi_olimpiadas_users_v5','mequi_olimpiadas_users_v4','mequi_olimpiadas_users_v3','mequi_venture_score_backup_v891'];
+const CLOUD='https://ntfy.sh/mequi_venture_olimpiadas_2026_v63_store/json?poll=1&since=all';
+const found=new Map(),raw=[];let copies=0;
+const el=id=>document.getElementById(id);
+function safeNumber(value){const n=Number(value);return Number.isFinite(n)&&n>=0?Math.floor(n):0;}
+function normalizedKey(key,u){return String(key||u?.name||'').trim().toLocaleLowerCase('pt-BR');}
+function addUsers(object,source){if(!object||typeof object!=='object'||Array.isArray(object))return 0;let added=0;
+for(const [key,u] of Object.entries(object)){if(!u||typeof u!=='object'||!u.name)continue;const id=normalizedKey(key,u);if(!id)continue;const xp=safeNumber(u.xp),correct=safeNumber(u.correctAnswers),before=found.get(id);const updatedAt=safeNumber(u.updatedAt);const incoming={key:id,name:String(u.name),xp,correct,source,updatedAt};
+if(!before){found.set(id,incoming);}else{
+  if(xp>before.xp||(xp===before.xp&&updatedAt>before.updatedAt)){before.xp=xp;before.name=incoming.name;before.source=source;before.updatedAt=updatedAt;}
+  before.correct=Math.max(before.correct,correct);
+}added++;}return added;}
+function draw(){let items=[...found.values()].sort((a,b)=>b.xp-a.xp||a.name.localeCompare(b.name));el('count').textContent=items.length;el('sources').textContent=copies;el('sum').textContent=items.reduce((n,x)=>n+x.xp,0).toLocaleString('pt-BR');const body=el('rows');body.replaceChildren();if(!items.length){const tr=document.createElement('tr');const td=document.createElement('td');td.colSpan=4;td.textContent='Nenhum cadastro encontrado até o momento.';tr.append(td);body.append(tr)}else{for(const u of items){const tr=document.createElement('tr');for(const val of [u.name,u.xp.toLocaleString('pt-BR'),u.correct.toLocaleString('pt-BR'),u.source]){const td=document.createElement('td');td.textContent=val;tr.append(td)}body.append(tr)}}el('csvBtn').disabled=!items.length;el('jsonBtn').disabled=!items.length;el('rawBtn').disabled=!raw.length||!el('aware').checked;}
+function scanLocal(){let total=0,errors=[];for(const key of KEYS){let stored=null;try{stored=localStorage.getItem(key)}catch(e){errors.push('Armazenamento indisponível neste endereço.');break;}if(!stored)continue;try{const obj=JSON.parse(stored);const n=addUsers(obj,'Local: '+key);total+=n;raw.push({source:'local:'+key,records:obj});copies++;}catch(e){errors.push('Não foi possível analisar '+key);}}draw();el('localStatus').textContent=`Leitura concluída. ${total} registro(s) encontrado(s) nas cópias locais. ${errors.join(' ')}`;}
+function scanRawCloudMessage(message){let data;try{data=typeof message==='string'?JSON.parse(message):message}catch{return 0};if(!data||typeof data!=='object')return 0;let n=0;
+if(data.type==='single'&&data.u&&data.k)n=addUsers({[data.k]:data.u},'Histórico remoto');
+else if(data.type==='full'&&data.users)n=addUsers(data.users,'Histórico remoto');
+else if(data.users&&typeof data.users==='object')n=addUsers(data.users,'Histórico remoto');
+else if(Object.values(data).some(v=>v&&typeof v==='object'&&v.name))n=addUsers(data,'Histórico remoto');
+if(n){raw.push({source:'remote',records:data});copies++}return n;}
+async function scanCloud(){const btn=el('cloudBtn');btn.disabled=true;el('cloudStatus').textContent='Consultando... Esta operação não envia nem altera dados.';const controller=new AbortController();const timer=setTimeout(()=>controller.abort(),15000);try{const response=await fetch(CLOUD+'&_r='+Date.now(),{cache:'no-store',signal:controller.signal});if(!response.ok)throw new Error('HTTP '+response.status);const content=await response.text();let total=0,events=0;for(const line of content.split(/\r?\n/)){if(!line.trim())continue;let item;try{item=JSON.parse(line)}catch{continue}events++;if(item.event==='message'&&item.message)total+=scanRawCloudMessage(item.message);else if(item.message)total+=scanRawCloudMessage(item.message);else total+=scanRawCloudMessage(item);}draw();el('cloudStatus').textContent=`Consulta concluída. ${events} evento(s) examinados; ${total} registro(s) de colaboradores localizados. O serviço pode não preservar todo o histórico.`;}catch(e){el('cloudStatus').textContent='A consulta não pôde ser concluída ('+(e?.name==='AbortError'?'tempo esgotado':String(e.message||e))+'). Isso não prova que os dados foram apagados.';}finally{clearTimeout(timer);btn.disabled=false}}
+function rowsForExport(){return [...found.values()].sort((a,b)=>b.xp-a.xp||a.name.localeCompare(b.name));}
+function downloadText(name,content,mime){const blob=new Blob([content],{type:mime});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),10000)}
+function csvSafe(value){let s=String(value??'');if(/^[=+@\-\t\r]/.test(s))s="'"+s;return '"'+s.replace(/"/g,'""')+'"'}
+el('localBtn').addEventListener('click',scanLocal);el('cloudBtn').addEventListener('click',scanCloud);el('aware').addEventListener('change',draw);
+el('csvBtn').addEventListener('click',()=>{const list=rowsForExport(),content=[['Nome','XP encontrado','Acertos encontrados','Origem'].map(csvSafe).join(';'),...list.map(u=>[u.name,u.xp,u.correct,u.source].map(csvSafe).join(';'))].join('\r\n');downloadText('venture_relatorio_resgate.csv','\ufeff'+content,'text/csv;charset=utf-8')});
+el('jsonBtn').addEventListener('click',()=>downloadText('venture_relatorio_resgate.json',JSON.stringify({generatedAt:new Date().toISOString(),note:'Maior pontuação localizada, não validada',users:rowsForExport()},null,2),'application/json'));
+el('rawBtn').addEventListener('click',()=>{if(!el('aware').checked)return;downloadText('venture_BACKUP_PRIVADO_NAO_COMPARTILHAR.json',JSON.stringify({generatedAt:new Date().toISOString(),entries:raw},null,2),'application/json')});
+</script>
+</body>
+</html>
