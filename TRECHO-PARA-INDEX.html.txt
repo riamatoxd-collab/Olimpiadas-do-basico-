@@ -1,0 +1,7 @@
+Se preferir NÃO substituir o index.html atual, insira somente esta linha
+DENTRO do <div class="more-menu"> do seu index.html, antes do primeiro botão:
+
+        <!-- Jornada dos Campeões: experiência isolada, sem crédito de XP real. -->
+        <a href="./jornada-campeoes.html" class="more-menu-item" style="text-decoration:none;color:inherit" aria-label="Abrir Jornada dos Campeões em modo de testes"><span class="more-menu-icon" aria-hidden="true">🏆</span><span class="more-menu-copy"><strong>Jornada dos Campeões · 27 níveis</strong><small>5 ligas, chefões e XP de demonstração · seguro</small></span><span class="more-chevron" aria-hidden="true">›</span></a>
+
+Assim você não desfaz eventuais alterações que já existem no site.
