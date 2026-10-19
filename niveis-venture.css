@@ -1,0 +1,34 @@
+/* Venture · Jornada 27 níveis. CSS isolado, sem modificar os estilos originais. */
+.venture-levels-launch {margin-top:10px;width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px;border:1px solid rgba(255,199,44,.44);background:rgba(255,199,44,.11);color:#ffe8a1;border-radius:13px;padding:9px 12px;font-weight:850;font-size:12px;line-height:1.35;cursor:pointer;transition:background .18s;}
+.venture-levels-launch:hover,.venture-levels-launch:focus-visible {background:rgba(255,199,44,.24);outline:2px solid #ffc72c;outline-offset:2px;}
+.venture-levels-launch-note{white-space:nowrap;font-size:10px;color:#ffdc77;}
+.venture-levels-new{margin-left:auto;display:inline-block;background:#ffdf83;color:#3b2400;border-radius:999px;padding:3px 8px;font-size:10px;font-weight:900;}
+.venture-levels-intro{display:grid;gap:5px;}
+.venture-levels-intro strong{font-size:15px;}
+.venture-levels-intro small{color:var(--text-muted,#8490a2);font-size:11px;line-height:1.45;}
+.venture-levels-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:12px;}
+.venture-levels-metric{min-width:0;padding:10px 9px;border:1px solid rgba(131,142,161,.18);border-radius:13px;background:rgba(127,129,145,.085);display:flex;flex-direction:column;gap:5px;}
+.venture-levels-metric small{color:var(--text-muted,#8895a5);font-size:10px;font-weight:700;}
+.venture-levels-metric strong{font-weight:900;font-size:12px;overflow-wrap:anywhere;}
+.venture-levels-grid{display:grid;gap:7px;}
+.venture-level-item{display:flex;align-items:center;gap:10px;padding:10px 11px;border-radius:14px;border:1px solid rgba(115,126,145,.22);background:rgba(115,126,145,.06);opacity:.72;}
+.venture-level-item.is-unlocked{opacity:1;border-color:rgba(245,181,47,.35);background:rgba(245,181,47,.085);}
+.venture-level-item.is-current{opacity:1;border:2px solid #d29d32;background:linear-gradient(100deg,rgba(255,199,44,.25),rgba(218,41,28,.08));box-shadow:0 1px 10px rgba(243,189,45,.12);}
+.venture-level-item-index{flex:none;width:34px;height:34px;border-radius:11px;background:rgba(119,131,151,.17);font-size:14px;font-weight:950;display:grid;place-items:center;}
+.venture-level-item.is-current .venture-level-item-index{background:#ffc72c;color:#1d1d1d;}
+.venture-level-item-body{flex:1;min-width:0;display:grid;gap:4px;}
+.venture-level-item-body strong{font-size:12px;font-weight:850;line-height:1.25;}
+.venture-level-item-body small{font-size:10px;color:var(--text-muted,#8f9aac);font-weight:600;}
+.venture-level-item-status{font-size:9px;font-weight:950;white-space:nowrap;color:var(--text-muted,#929ba9);}
+.venture-level-item.is-current .venture-level-item-status{color:#c88e12;}
+.venture-level-item.is-unlocked:not(.is-current) .venture-level-item-status{color:#27a567;}
+.venture-levels-overlay{position:fixed;inset:0;z-index:99999;padding:16px 10px;background:rgba(9,15,26,.82);display:flex;align-items:center;justify-content:center;}
+.venture-levels-overlay.hidden{display:none!important;}
+.venture-levels-dialog{background:var(--bg-card,#fff);color:var(--text-main,#1c2430);width:min(100%,530px);height:min(92dvh,760px);display:flex;flex-direction:column;border-radius:24px;overflow:hidden;box-shadow:0 30px 100px rgba(0,0,0,.42);border:1px solid rgba(255,199,44,.25);}
+.venture-levels-dialog-head{background:linear-gradient(110deg,#bd1b18,#ef3d27);color:white;padding:20px;display:flex;justify-content:space-between;align-items:start;gap:10px;}
+.venture-levels-eyebrow{display:block;color:#ffe4a0;font-size:9px;letter-spacing:1.4px;font-weight:900;margin-bottom:4px;}
+.venture-levels-dialog-head h2{font-size:19px;line-height:1.2;font-weight:950;color:white;margin:0;}
+.venture-levels-close{display:grid;place-items:center;flex:none;width:38px;height:38px;border-radius:12px;background:rgba(0,0,0,.17);border:1px solid rgba(255,255,255,.22);color:white;font-size:17px;cursor:pointer;}
+.venture-levels-dialog-content{padding:15px;overflow-y:auto;overscroll-behavior:contain;}
+.venture-levels-note{background:rgba(255,199,44,.08);border-left:3px solid #e7a920;border-radius:8px;padding:9px 10px;font-size:11px;margin:0 0 13px;line-height:1.4;}
+@media(max-width:360px){.venture-level-item-body strong{font-size:11px}.venture-levels-metric strong{font-size:11px}.venture-levels-dialog-content{padding:11px}.venture-levels-dialog-head{padding:15px}.venture-levels-launch{font-size:11px}}

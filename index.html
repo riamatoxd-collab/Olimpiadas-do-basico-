@@ -16,6 +16,7 @@
   <!-- Biblioteca para Print Automático em PNG -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="niveis-venture.css?v=892" />
   <link rel="stylesheet" href="style.css?v=891" />
 </head>
 <body class="min-h-screen pb-36">
@@ -270,6 +271,9 @@
         <span id="currentLevelNum">Nível 1</span>
         <span id="nextLevelTarget">Faltam 1000 XP para o Nível 2</span>
       </div>
+      <button type="button" class="venture-levels-launch" onclick="openVentureLevels()" aria-label="Ver minha jornada e os 27 níveis">
+        <span>🗺️ Minha jornada de 27 níveis</span><span class="venture-levels-launch-note">+20 novos <span aria-hidden="true">↗</span></span>
+      </button>
     </div>
   </header>
   <main class="app-main max-w-2xl mx-auto px-4 mt-6">
@@ -624,45 +628,13 @@
           <span>📲 Enviar Meu Placar Individual no WhatsApp</span>
         </button>
       </div>
-      <details class="rank-disclosure">
-        <summary>📈 Conhecer as 7 patentes de XP<span aria-hidden="true">⌄</span></summary>
-      <!-- Tabela das 7 Patentes -->
-      <div class="pro-card rounded-3xl p-5 space-y-3">
-        <div class="flex items-center justify-between">
-          <h3 class="font-black text-sm">📈 As 7 Patentes Oficiais de XP</h3>
-          <span class="text-[10px] font-extrabold bg-amber-500/20 text-amber-500 px-2.5 py-0.5 rounded-full">Padrão Venture</span>
+      <details id="ventureLevelsDetails" class="rank-disclosure venture-levels-disclosure">
+        <summary>🗺️ Jornada de 27 níveis de XP <span class="venture-levels-new" aria-hidden="true">+20 novos</span> <span aria-hidden="true">⌄</span></summary>
+        <div class="pro-card rounded-3xl p-4 space-y-3">
+          <div class="venture-levels-intro"><strong>🏆 Todas as 27 patentes</strong><small>Os 7 níveis anteriores foram mantidos. Os demais são desbloqueados pelo XP já conquistado, sem bônus nem desconto de pontos.</small></div>
+          <div id="ventureLevelsRankStats" class="venture-levels-stats"></div>
+          <div id="ventureLevelsRankGrid" class="venture-levels-grid" aria-label="Lista de patentes por XP"></div>
         </div>
-        <div class="space-y-2 text-xs font-bold">
-          <div class="flex justify-between items-center p-2.5 rounded-xl subtle-box">
-            <span>🔰 Nível 1 — Iniciante</span>
-            <span class="text-muted-pro">0 a 999 XP</span>
-          </div>
-          <div class="flex justify-between items-center p-2.5 rounded-xl subtle-box">
-            <span>🥉 Nível 2 — Chapa de Bronze</span>
-            <span class="text-orange-500">1.000 a 2.999 XP</span>
-          </div>
-          <div class="flex justify-between items-center p-2.5 rounded-xl subtle-box">
-            <span>🥈 Nível 3 — Especialista de Prata</span>
-            <span class="text-slate-400">3.000 a 5.999 XP</span>
-          </div>
-          <div class="flex justify-between items-center p-2.5 rounded-xl subtle-box">
-            <span>🥇 Nível 4 — Padrão Ouro Venture</span>
-            <span class="text-amber-500">6.000 a 9.999 XP</span>
-          </div>
-          <div class="flex justify-between items-center p-2.5 rounded-xl subtle-box">
-            <span>💎 Nível 5 — Diamante Best Burger</span>
-            <span class="text-cyan-500">10.000 a 14.999 XP</span>
-          </div>
-          <div class="flex justify-between items-center p-2.5 rounded-xl subtle-box">
-            <span>🔥 Nível 6 — Mestre das Olimpíadas</span>
-            <span class="text-rose-500">15.000 a 24.999 XP</span>
-          </div>
-          <div class="flex justify-between items-center p-3 rounded-xl gold-gradient text-slate-950 font-black shadow-sm">
-            <span>👑 Nível 7 — Lenda dos Arcos Dourados</span>
-            <span>25.000+ XP</span>
-          </div>
-        </div>
-      </div>
       </details>
     </section>
     <!-- MENU: ACESSO A FUNÇÕES MENOS USADAS -->
@@ -887,6 +859,20 @@
       <button type="button" onclick="switchMainTab('more')" id="nav-more" class="nav-btn"><span class="nav-icon" aria-hidden="true">☰</span><span>Mais</span></button>
     </nav>
   </div>
+<!-- Módulo adicional somente de leitura: nível derivado do XP existente. -->
+<div id="ventureLevelsModal" class="venture-levels-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="ventureLevelsTitle" aria-hidden="true">
+  <div class="venture-levels-dialog" role="document">
+    <div class="venture-levels-dialog-head">
+      <div><span class="venture-levels-eyebrow">MINHA JORNADA VENTURE</span><h2 id="ventureLevelsTitle">🏆 27 níveis para conquistar</h2></div>
+      <button type="button" id="ventureLevelsClose" class="venture-levels-close" onclick="closeVentureLevels()" aria-label="Fechar jornada">✕</button>
+    </div>
+    <div class="venture-levels-dialog-content">
+      <div id="ventureLevelsModalStats" class="venture-levels-stats"></div>
+      <div class="venture-levels-note">Seus pontos atuais definem seu nível automaticamente. <strong>Nenhum XP é alterado.</strong></div>
+      <div id="ventureLevelsModalGrid" class="venture-levels-grid" aria-label="Todos os 27 níveis"></div>
+    </div>
+  </div>
+</div>
 <script src="questions.js"></script>
   <script src="js/01-dados.js?v=891"></script>
   <script src="js/02-estado.js?v=891"></script>
@@ -896,6 +882,7 @@
   <script src="js/06-contas-sincronizacao.js?v=891"></script>
   <script src="js/07-jogos.js?v=891"></script>
   <script src="js/08-comunidade-adm.js?v=891"></script>
+  <script src="js/09-niveis-extra.js?v=892"></script>
   <script src="script.js?v=891"></script>
 </body>
 </html>
