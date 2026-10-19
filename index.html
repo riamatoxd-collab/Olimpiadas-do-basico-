@@ -19,8 +19,27 @@
   <link rel="stylesheet" href="niveis-venture.css?v=8922" />
   <link rel="stylesheet" href="style.css?v=8922" />
   <link rel="stylesheet" href="hub-pc.css?v=2">
+  <link rel="stylesheet" href="venture-intro.css?v=clean3" />
 </head>
 <body class="min-h-screen pb-36">
+  <!-- Venture Splash Clean: somente apresentação, sem conexão com XP ou cadastros. -->
+  <div id="ventureSplash" class="vs-overlay" role="dialog" aria-modal="true" aria-label="Introdução Venture">
+    <div class="vs-stage">
+      <div class="vs-overline">PLATAFORMA DE APRENDIZADO</div>
+      <div class="vs-mark-wrap" aria-hidden="true"><span class="vs-letter">M</span></div>
+      <h1 class="vs-brand">VENTURE</h1>
+      <p class="vs-subtitle">OLIMPÍADAS DO BÁSICO</p>
+      <div class="vs-rule" aria-hidden="true"><span></span></div>
+      <p class="vs-status" role="status">Preparando sua experiência...</p>
+      <div class="vs-track" aria-hidden="true"><div class="vs-fill"></div></div>
+      <div class="vs-actions">
+        <button type="button" class="vs-action" data-vs-sound aria-pressed="false" aria-label="Ativar som opcional">♪ Ativar som</button>
+        <button type="button" class="vs-action vs-skip" data-vs-skip>Pular introdução →</button>
+      </div>
+    </div>
+  </div>
+  <script src="venture-intro.js?v=clean3"></script>
+
   <!-- Input invisível para galeria / PC -->
   <input type="file" id="hiddenGalleryInput" accept="image/*" class="hidden" onchange="handleGalleryFileSelected(event)" />
   <div id="xpToastContainer"></div>
