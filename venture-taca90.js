@@ -1,4 +1,4 @@
-/* Olimpíadas do Básico — Venture 9.0 BETA · Taça Semanal.
+/* Olimpíadas do Básico — Venture 9.0.1 BETA · Taça em aba própria.
  * PROTEÇÃO: este módulo NUNCA chama addXp, nunca grava diretamente no saldo xp,
  * e nunca escreve senhas. O quiz padrão continua responsável pelo XP de acertos.
  * Placar semanal = registro derivado de até 5 respostas/dia do quiz existente.
@@ -154,9 +154,29 @@
     paint();
     const q=$v('quizQuestionText');if(q)q.scrollIntoView({behavior:'smooth',block:'center'});
   }
+  // A Taça tem sua própria tela; NÃO é mais inserida dentro do Simulado.
   function revealRanking(){
-    if(typeof switchMainTab==='function')switchMainTab('quiz');
-    $v('v90Leaderboard')?.scrollIntoView({behavior:'smooth',block:'start'});
+    if(typeof switchMainTab==='function')switchMainTab('taca');
+  }
+  function installNavigation(){
+    if(typeof window.switchMainTab!=='function'||window.switchMainTab.__v90SeparateTab)return;
+    const original=window.switchMainTab;
+    const nav=function(tab){
+      if(tab==='taca'){
+        // O núcleo conhece somente as abas originais. Mantemos o fluxo nativo,
+        // com o botão Mais ativo, e substituímos VISUALMENTE a tela Mais pela Taça.
+        const result=original.call(this,'more');
+        $v('tab-more')?.classList.add('hidden');
+        $v('tab-taca')?.classList.remove('hidden');
+        paint();
+        return result;
+      }
+      const result=original.apply(this,arguments);
+      $v('tab-taca')?.classList.add('hidden');
+      return result;
+    };
+    nav.__v90SeparateTab=true;
+    window.switchMainTab=nav;
   }
   function paint(){
     const hub=$v('v90Hub');if(!hub)return;
@@ -199,24 +219,49 @@
   }
   function mount(){
     if($v('v90Hub')||!$v('tab-quiz'))return;
-    const container=document.createElement('section');container.id='v90Hub';container.className='v90-hub';
-    container.innerHTML=`<div class="v90-hero"><div class="v90-hero-content"><span class="v90-kicker">✦ VENTURE 9.0 · TAÇA SEMANAL</span><h2 id="v90Welcome">Sua próxima conquista começa aqui.</h2><p>Toda semana é uma nova chance de vencer. Seus XP antigos continuam valendo no ranking geral.</p><div class="v90-hero-actions"><button type="button" id="v90Start">Começar desafio do dia</button><button type="button" id="v90SeeRanking">🏆 Ver classificação</button></div><small>5 questões por dia · 20 pontos por acerto na Taça · XP normal do Simulado</small></div><div class="v90-hero-trophy" aria-hidden="true">🏆</div></div><div class="v90-overview"><div class="v90-metric"><span>🏅 Minha Taça Semanal</span><strong id="v90MyScore">0</strong><small>pontos nesta semana</small></div><div class="v90-metric"><span>⭐ Minha posição</span><strong id="v90MyRank">—</strong><small>classificação da semana</small></div><div class="v90-metric"><span>🎯 Desafio de hoje</span><strong id="v90DailyProgress">0 de 5 questões</strong><small>com XP habitual por acerto</small></div></div><p id="v90Status" class="v90-status" role="status" aria-live="polite">Comece o desafio e responda as perguntas no Simulado logo abaixo.</p><div id="v90Leaderboard" class="v90-leaderboard"><div class="v90-leader-head"><div><span>CAMPEONATO DA SEMANA</span><h3>🏆 Taça dos Campeões</h3></div><small id="v90WeekPeriod"></small></div><div class="v90-track"><div id="v90TrackFill"></div></div><div id="v90BoardList" class="v90-board-list"></div><div class="v90-footnote">⚠️ Fase beta: placar compartilhado pelo sincronizador atual, sem auditoria em servidor. Não usar para premiações oficiais até validação.</div></div>`;
-    $v('tab-quiz').insertBefore(container,$v('tab-quiz').firstChild);
+
+    // Tela própria de campeonato, ao lado do Simulado (e não dentro dele).
+    const screen=document.createElement('section');
+    screen.id='tab-taca';
+    screen.className='app-screen hidden space-y-5 v90-taca-screen';
+    screen.setAttribute('aria-label','Taça dos Campeões — classificação semanal');
+    screen.innerHTML='<div class="v90-pagehead"><div><span class="page-eyebrow">COMPETIÇÃO SEMANAL · VENTURE 9.0</span><h1>🏆 Taça dos Campeões</h1><p>Uma disputa nova toda semana, sem zerar o XP geral.</p></div><button type="button" class="v90-backlink" id="v90BackToMore">← Mais opções</button></div>';
+    $v('tab-quiz').insertAdjacentElement('afterend',screen);
+    const container=document.createElement('div');container.id='v90Hub';container.className='v90-hub';
+    container.innerHTML=`<div class="v90-hero"><div class="v90-hero-content"><span class="v90-kicker">✦ VENTURE 9.0 · TAÇA SEMANAL</span><h2 id="v90Welcome">Sua próxima conquista começa aqui.</h2><p>Toda semana é uma nova chance de vencer. Seus XP antigos continuam valendo no ranking geral.</p><div class="v90-hero-actions"><button type="button" id="v90Start">Começar desafio do dia</button><button type="button" id="v90SeeRanking">🏆 Ver classificação</button></div><small>5 questões por dia · 20 pontos por acerto na Taça · XP normal do Simulado</small></div><div class="v90-hero-trophy" aria-hidden="true">🏆</div></div><div class="v90-overview"><div class="v90-metric"><span>🏅 Minha Taça Semanal</span><strong id="v90MyScore">0</strong><small>pontos nesta semana</small></div><div class="v90-metric"><span>⭐ Minha posição</span><strong id="v90MyRank">—</strong><small>classificação da semana</small></div><div class="v90-metric"><span>🎯 Desafio de hoje</span><strong id="v90DailyProgress">0 de 5 questões</strong><small>com XP habitual por acerto</small></div></div><p id="v90Status" class="v90-status" role="status" aria-live="polite">Comece o desafio para responder às perguntas no Simulado.</p><div id="v90Leaderboard" class="v90-leaderboard"><div class="v90-leader-head"><div><span>CAMPEONATO DA SEMANA</span><h3>🏆 Classificação da Taça</h3></div><small id="v90WeekPeriod"></small></div><div class="v90-track"><div id="v90TrackFill"></div></div><div id="v90BoardList" class="v90-board-list"></div><div class="v90-footnote">⚠️ Fase beta: placar compartilhado pelo sincronizador atual, sem auditoria em servidor. Não usar para premiações oficiais até validação.</div></div>`;
+    screen.append(container);
     $v('v90Start').addEventListener('click',begin);
-    $v('v90SeeRanking').addEventListener('click',revealRanking);
+    $v('v90SeeRanking').addEventListener('click',()=>{
+      $v('v90Leaderboard')?.scrollIntoView({behavior:'smooth',block:'start'});
+    });
+    $v('v90BackToMore').addEventListener('click',()=>window.switchMainTab?.('more'));
+
     const more=$v('tab-more')?.querySelector('.more-menu');
     if(more&&!$v('v90MoreButton')){
       const btn=document.createElement('button');btn.type='button';btn.id='v90MoreButton';btn.className='more-menu-item';
-      btn.innerHTML='<span class="more-menu-icon" aria-hidden="true">🏆</span><span class="more-menu-copy"><strong>Taça Semanal · Venture 9.0</strong><small>Desafio de 5 perguntas com XP habitual e placar semanal beta</small></span><span class="more-chevron" aria-hidden="true">›</span>';
+      btn.innerHTML='<span class="more-menu-icon" aria-hidden="true">🏆</span><span class="more-menu-copy"><strong>Taça dos Campeões · Venture 9.0</strong><small>Desafio de 5 perguntas com XP normal e ranking semanal beta</small></span><span class="more-chevron" aria-hidden="true">›</span>';
       btn.addEventListener('click',revealRanking);more.insertBefore(btn,more.firstChild);
     }
     const sidebar=$v('venturePcSidebar')?.querySelector('.vh-nav');
     if(sidebar&&!$v('v90SideButton')){
       const btn=document.createElement('button');btn.type='button';btn.id='v90SideButton';
-      btn.innerHTML='<span class="vh-ic">🏆</span>Taça Semanal · 9.0';btn.addEventListener('click',revealRanking);sidebar.insertBefore(btn,sidebar.children[1]||null);
+      btn.dataset.vhTab='taca';
+      btn.innerHTML='<span class="vh-ic">🏆</span>Taça dos Campeões';
+      btn.addEventListener('click',e=>{e.stopPropagation();revealRanking();});sidebar.insertBefore(btn,sidebar.children[1]||null);
+      const quizLabel=sidebar.querySelector('[data-vh-tab="quiz"]');
+      if(quizLabel)quizLabel.innerHTML='<span class="vh-ic">🎯</span>Simulado';
+      const moreLabel=sidebar.querySelector('[data-vh-tab="more"]');
+      if(moreLabel)moreLabel.innerHTML='<span class="vh-ic">⌂</span>Início e Mais';
     }
+    // No PC, o dashboard premium passa a ficar em Mais, deixando o Simulado
+    // reservado a perguntas, coração, acertos e revisão do quiz.
+    const pcDashboard=$v('venturePcDashboard');
+    const moreScreen=$v('tab-more');
+    if(pcDashboard&&moreScreen&&pcDashboard.parentElement===$v('tab-quiz'))moreScreen.prepend(pcDashboard);
+
+    installNavigation();
     attachMerge();attachQuiz();paint();
-    setInterval(()=>{attachMerge();attachQuiz();paint();},3500);
+    setInterval(()=>{installNavigation();attachMerge();attachQuiz();paint();},3500);
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mount,{once:true});else mount();
   // Testes de regressão usam apenas as funções puras abaixo, sem contas reais.
