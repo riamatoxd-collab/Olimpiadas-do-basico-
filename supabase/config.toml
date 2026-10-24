@@ -1,0 +1,7 @@
+project_id = "venture-xp-integrity"
+
+[functions.issue-xp-challenge]
+verify_jwt = true
+
+[functions.submit-xp-answer]
+verify_jwt = true
