@@ -42,3 +42,8 @@
 .dark-mode .vn-empty{border-color:#475569;color:#94a3b8}
 @media(min-width:640px){.vn-modal{align-items:center}.vn-dialog{border-radius:28px}.vn-bell{right:22px;bottom:24px}}
 @media(max-width:420px){.vn-bell{right:10px;bottom:88px;padding:10px 12px}.vn-dialog{max-height:90dvh;border-radius:22px}.vn-head{padding:15px 14px 0}.vn-toolbar{padding:0 14px}.vn-list{padding:0 14px 4px}.vn-admin{padding:12px 14px 14px}}
+
+/* Tailwind .hidden must win over component display rules. */
+.vn-modal.hidden,.vn-bell-count.hidden,.vn-admin.hidden{display:none!important}
+.vn-dialog{grid-template-rows:auto auto minmax(0,1fr) auto auto}
+.vn-list{min-height:0}
