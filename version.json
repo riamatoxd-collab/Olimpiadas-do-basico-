@@ -1,5 +1,5 @@
 {
-  "version": "8.9.2",
-  "released_at": "2026-10-19",
-  "description": "Venture completo: Hub PC 2.0, Book fiel ao documento original, Jornada dos 27 níveis e correção isolada dos convites 1v1; lógica de XP/cadastros mantida da 8.9.1"
+  "version": "9.1.0",
+  "released_at": "2026-10-24",
+  "description": "Venture 9.1.0: ligas mensais com dez divisões, XP de temporada calculado a partir do XP Ledger, promoção e rebaixamento mensal. Ranking geral, XP acumulado, cadastros e funções existentes preservados. Flashcards e Taça semanal retirados da navegação nesta fase, com arquivos legados mantidos para rollback. A sincronização continua legada e o ranking mensal ainda não tem validação antifraude no servidor."
 }

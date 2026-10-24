@@ -1,6 +1,6 @@
-/* Venture 8.9.2 · script.js · arquivo carregado na ordem indicada no HTML. */
+/* Venture 9.1.0 · script.js · arquivo carregado na ordem indicada no HTML. */
 function switchTrainingMode(mode) {
-  const valid = ["kitchen", "review", "duel", "flash"];
+  const valid = ["kitchen", "arena", "review", "duel"];
   if (!valid.includes(mode)) return;
   valid.forEach(name => {
     const panel = $(`training-mode-${name}`);
@@ -11,6 +11,8 @@ function switchTrainingMode(mode) {
       btn.setAttribute("aria-pressed", String(name === mode));
     }
   });
+  if (mode === "arena" && typeof renderVentureArena === "function") renderVentureArena();
+  if (mode === "duel" && typeof renderVentureDuelDashboard === "function") renderVentureDuelDashboard();
 }
 function switchMainTab(tab) {
   const screens = ["quiz", "training", "missions", "prizes", "more", "profile", "book", "trainer", "admin", "updates"];
@@ -28,6 +30,8 @@ function switchMainTab(tab) {
     if (name === currentNav) button.setAttribute("aria-current", "page");
     else button.removeAttribute("aria-current");
   });
+  if (tab === "training" && typeof renderVentureArena === "function") renderVentureArena();
+  if (tab === "training" && typeof renderVentureDuelDashboard === "function") renderVentureDuelDashboard();
   if (tab === "profile") renderPremiumProfile();
   if (tab === "prizes" || tab === "admin") fetchCloudHistorySafe(false);
   if (tab === "trainer") {renderPracticalChecklist();renderTrainerCenter();fetchTrainerHistory(false);}
@@ -37,7 +41,7 @@ function switchMainTab(tab) {
 // =========================================================================
 // V8.5 — ATUALIZAÇÃO DE VERSÃO NO GITHUB PAGES (SEM APAGAR DADOS)
 // =========================================================================
-const APP_VERSION = "8.9.2";
+const APP_VERSION = "9.1.0";
 const APP_UPDATE_INTERVAL_MS = 60000; // Github Pages é estático: checagem periódica, não push instantâneo.
 const APP_UPDATE_IDLE_MS = 45000;
 let availableAppUpdate = null;
@@ -167,13 +171,15 @@ window.onload = async () => {
   initTheme();
   injectCountdownAndKitchenUI();
   rescuePreviousLocalRegistrations();
+  if (typeof recoverPendingXpRewards === "function") recoverPendingXpRewards(currentUserKey);
   renderMissionHub();
+  if (typeof renderVentureArena === "function") renderVentureArena();
+  if (typeof renderVentureDuelDashboard === "function") renderVentureDuelDashboard();
   renderXpModeStatus();
   restoreQuizStreak();
   renderAvatarSelector();
   syncActiveUserHeartsState();
   loadNextQuizQuestion();
-  loadRandomFlashcard();
   renderBookList();
   refreshUIIfNeeded();
   if (currentUserKey && users[currentUserKey] && !users[currentUserKey]._deleted) {

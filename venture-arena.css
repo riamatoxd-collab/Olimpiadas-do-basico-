@@ -1,0 +1,22 @@
+/* Venture 9.0 — Arena de Treino e painel complementar de duelos */
+.venture-arena-hero{position:relative;overflow:hidden;border:1px solid rgba(245,158,11,.32);background:linear-gradient(135deg,rgba(245,158,11,.12),rgba(239,68,68,.06) 58%,rgba(99,102,241,.08));}
+.venture-arena-hero:before{content:"";position:absolute;right:-38px;top:-48px;width:150px;height:150px;border-radius:999px;background:rgba(245,158,11,.09);pointer-events:none;}
+.venture-arena-kicker{font-size:10px;letter-spacing:.14em;font-weight:900;text-transform:uppercase;color:#d97706;}
+.venture-arena-stat{border:1px solid var(--border-color,rgba(148,163,184,.2));border-radius:16px;padding:12px;background:rgba(148,163,184,.06);min-width:0;}
+.venture-arena-stat strong{display:block;font-size:19px;line-height:1.2;font-weight:900;}
+.venture-arena-stat span{display:block;margin-top:4px;font-size:10px;font-weight:800;color:var(--muted-pro,#64748b);text-transform:uppercase;letter-spacing:.04em;}
+.venture-arena-progress{height:8px;border-radius:999px;background:rgba(148,163,184,.2);overflow:hidden;}
+.venture-arena-progress-fill{height:100%;width:0;border-radius:999px;background:linear-gradient(90deg,#f59e0b,#f97316);transition:width .25s ease;}
+.venture-arena-option{width:100%;display:flex;align-items:flex-start;gap:10px;text-align:left;padding:13px;border-radius:15px;border:1px solid rgba(148,163,184,.25);background:rgba(148,163,184,.055);font-size:12px;font-weight:750;line-height:1.45;transition:border-color .15s,background .15s,transform .15s;}
+.venture-arena-option:not(:disabled):hover{border-color:#f59e0b;background:rgba(245,158,11,.09);transform:translateY(-1px);}
+.venture-arena-option:disabled{cursor:default;opacity:1;}
+.venture-arena-option.is-correct{border-color:#10b981;background:rgba(16,185,129,.13);}
+.venture-arena-option.is-wrong{border-color:#ef4444;background:rgba(239,68,68,.12);}
+.venture-arena-option-letter{display:inline-flex;align-items:center;justify-content:center;flex:0 0 26px;height:26px;border-radius:9px;background:rgba(148,163,184,.14);font-size:11px;font-weight:900;}
+.venture-arena-primary{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:11px 16px;border-radius:14px;background:#fbbf24;color:#111827;font-size:12px;font-weight:900;box-shadow:0 8px 22px rgba(245,158,11,.14);transition:transform .15s,opacity .15s;}
+.venture-arena-primary:hover{transform:translateY(-1px);}
+.venture-arena-primary:disabled{opacity:.5;cursor:not-allowed;transform:none;}
+.venture-arena-secondary{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:42px;padding:10px 14px;border-radius:13px;border:1px solid rgba(148,163,184,.3);font-size:11px;font-weight:850;}
+.venture-arena-duel-card{border:1px solid rgba(245,158,11,.25);background:linear-gradient(125deg,rgba(245,158,11,.08),rgba(148,163,184,.035));}
+@media (max-width:420px){.venture-arena-stat{padding:10px}.venture-arena-stat strong{font-size:17px}.venture-arena-option{padding:11px;font-size:11px}}
+.training-switch{grid-template-columns:repeat(5,minmax(0,1fr));}
