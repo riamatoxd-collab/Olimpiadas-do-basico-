@@ -432,49 +432,80 @@
     }
     const entries = getAllUsers();
     if (!entries.length) return;
+    const divisionForSeason = function (user) {
+      const league = getLeagueState(user);
+      const historical = league.history.find(function (item) { return item && item.season === season && item.divisionId; });
+      if (historical) {
+        const index = DIVISIONS.findIndex(function (division) { return division.id === historical.divisionId; });
+        if (index >= 0) return index;
+      }
+      return getDivisionIndex(user);
+    };
     const groups = new Map();
     entries.forEach(function (pair) {
-      const index = getDivisionIndex(pair[1]);
+      const index = divisionForSeason(pair[1]);
       if (!groups.has(index)) groups.set(index, []);
       const xp = getSeasonXp(pair[1], season);
-      if (xp > 0) groups.get(index).push({ key: pair[0], user: pair[1], xp: xp });
+      if (xp > 0) groups.get(index).push({ key: pair[0], user: pair[1], xp: xp, oldIndex: index });
     });
+    const planned = new Map();
     groups.forEach(function (group, index) {
       group.sort(function (a, b) { return b.xp - a.xp || String(a.user.name).localeCompare(String(b.user.name), "pt-BR"); });
-      if (group.length < 5) return;
-      const promoteCount = index < DIVISIONS.length - 1 ? Math.max(1, Math.floor(group.length * 0.2)) : 0;
-      const demoteCount = index > 0 ? Math.max(1, Math.floor(group.length * 0.2)) : 0;
+      const canMove = group.length >= 5;
+      const promoteCount = canMove && index < DIVISIONS.length - 1 ? Math.max(1, Math.floor(group.length * 0.2)) : 0;
+      const demoteCount = canMove && index > 0 ? Math.max(1, Math.floor(group.length * 0.2)) : 0;
       group.forEach(function (row, rank) {
         const league = getLeagueState(row.user);
         if (league.lastFinalizedSeason && league.lastFinalizedSeason >= season) return;
-        let newIndex = index, result = "permaneceu";
+        let newIndex = index;
+        let result = canMove ? "permaneceu" : "permaneceu";
         if (promoteCount && rank < promoteCount) { newIndex = index + 1; result = "promovido"; }
         else if (demoteCount && rank >= group.length - demoteCount) { newIndex = index - 1; result = "rebaixado"; }
-        league.divisionId = DIVISIONS[newIndex].id;
-        league.updatedAt = Date.now();
-        league.lastFinalizedSeason = season;
-        league.history = (league.history || []).filter(function (item) { return item.season !== season; });
-        league.history.push({ season: season, divisionId: DIVISIONS[index].id, result: result, xp: row.xp, finalizedAt: Date.now() });
-        league.history = league.history.slice(-12);
-        if (result !== "permaneceu" && window.VentureNotifications && typeof window.VentureNotifications.addForUser === "function") {
-          window.VentureNotifications.addForUser(row.key, result === "promovido" ? "Você subiu de liga! " + DIVISIONS[newIndex].name : "Resultado da liga mensal", result === "promovido" ? "Parabéns! Você avançou para a Liga " + DIVISIONS[newIndex].name + "." : "Você foi para a Liga " + DIVISIONS[newIndex].name + ". Continue treinando para voltar a subir.", result === "promovido" ? "promotion" : "league", "league-result:" + season + ":" + row.key);
-        }
+        planned.set(row.key, { key: row.key, user: row.user, oldIndex: index, newIndex: newIndex, xp: row.xp, result: result });
       });
     });
     entries.forEach(function (pair) {
-      const league = getLeagueState(pair[1]);
-      if (!league.lastFinalizedSeason || league.lastFinalizedSeason < season) {
-        league.lastFinalizedSeason = season;
-        league.updatedAt = Date.now();
-        league.history = (league.history || []).filter(function (item) { return item.season !== season; });
-        league.history.push({ season: season, divisionId: league.divisionId, result: "sem-participacao", xp: getSeasonXp(pair[1], season), finalizedAt: Date.now() });
-        league.history = league.history.slice(-12);
+      const key = pair[0], user = pair[1], league = getLeagueState(user);
+      if (league.lastFinalizedSeason && league.lastFinalizedSeason >= season) return;
+      if (planned.has(key)) return;
+      const oldIndex = divisionForSeason(user);
+      planned.set(key, { key: key, user: user, oldIndex: oldIndex, newIndex: oldIndex, xp: getSeasonXp(user, season), result: getSeasonXp(user, season) > 0 ? "permaneceu" : "sem-participacao" });
+    });
+    const notifications = [];
+    planned.forEach(function (row) {
+      const league = getLeagueState(row.user);
+      league.divisionId = DIVISIONS[row.newIndex].id;
+      league.updatedAt = Date.now();
+      league.lastFinalizedSeason = season;
+      league.history = (league.history || []).filter(function (item) { return item.season !== season; });
+      league.history.push({ season: season, divisionId: DIVISIONS[row.oldIndex].id, result: row.result, xp: row.xp, finalizedAt: Date.now() });
+      league.history = league.history.slice(-12);
+      notifications.push(row);
+    });
+    try { localStorage.setItem(STORAGE_USERS_KEY, JSON.stringify(users)); } catch (_) {}
+    notifications.forEach(function (row) {
+      if (!window.VentureNotifications || typeof window.VentureNotifications.addForUser !== "function") return;
+      let title = "Resultado da liga mensal";
+      let body = "Você permaneceu na Liga " + DIVISIONS[row.newIndex].name + ". Continue treinando para avançar.";
+      let type = "league";
+      if (row.result === "promovido") {
+        title = "Você subiu de liga!";
+        body = "Parabéns! Você avançou para a Liga " + DIVISIONS[row.newIndex].name + ".";
+        type = "promotion";
+      } else if (row.result === "rebaixado") {
+        title = "Resultado da liga mensal";
+        body = "Nesta temporada você ficou na Liga " + DIVISIONS[row.newIndex].name + ". Treine para voltar a subir.";
+      } else if (row.result === "sem-participacao") {
+        title = "Temporada encerrada";
+        body = "Não registramos XP nesta temporada. Sua Liga " + DIVISIONS[row.newIndex].name + " foi mantida.";
       }
+      window.VentureNotifications.addForUser(row.key, title, body, type, "league-result:" + season + ":" + row.key, false);
     });
     try { localStorage.setItem(STORAGE_USERS_KEY, JSON.stringify(users)); } catch (_) {}
     if (typeof currentUserKey !== "undefined" && currentUserKey && typeof scheduleCloudSync === "function") scheduleCloudSync(currentUserKey, true);
     renderMonthlyLeague();
-    alert("Temporada " + formatMonth(season) + " fechada. As ligas e os avisos de resultado foram atualizados neste conjunto de dados. Confira a sincronização antes de divulgar o resultado oficial.");
+    if (window.VentureAllStar && typeof window.VentureAllStar.render === "function") window.VentureAllStar.render();
+    alert("Temporada " + formatMonth(season) + " fechada. Ligas e avisos foram atualizados neste conjunto de dados. Confira a sincronização antes de divulgar o resultado oficial.");
   }
   function recoverCurrentUser() {
     const user = currentUser();
