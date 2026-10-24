@@ -499,7 +499,7 @@
         title = "Temporada encerrada";
         body = "Não registramos XP nesta temporada. Sua Liga " + DIVISIONS[row.newIndex].name + " foi mantida.";
       }
-      window.VentureNotifications.addForUser(row.key, title, body, type, "league-result:" + season + ":" + row.key, false);
+      window.VentureNotifications.addForUser(row.key, title, body, type, "league-result:" + season + ":" + row.key, false, true);
     });
     try { localStorage.setItem(STORAGE_USERS_KEY, JSON.stringify(users)); } catch (_) {}
     if (typeof currentUserKey !== "undefined" && currentUserKey && typeof scheduleCloudSync === "function") scheduleCloudSync(currentUserKey, true);
