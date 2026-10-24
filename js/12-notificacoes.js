@@ -45,7 +45,7 @@
       };
     } catch (_) {}
   }
-  function addForUser(userKey, title, body, type, id, sync) {
+  function addForUser(userKey, title, body, type, id, sync, deferPersist) {
     const user = typeof users !== "undefined" && users ? users[userKey] : null;
     if (!user || user._deleted) return null;
     const items = listFor(user);
@@ -62,7 +62,7 @@
     };
     items.unshift(item);
     user.ventureNotifications = items.slice(0, 100);
-    persist(sync !== false && userKey === currentUserKey);
+    if (!deferPersist) persist(sync !== false && userKey === currentUserKey);
     if (userKey === currentUserKey) {
       render();
       browserNotify(item);
@@ -246,7 +246,7 @@
     let sent = 0;
     Object.keys(users || {}).forEach(function (key) {
       if (!users[key] || !users[key].name || users[key]._deleted) return;
-      addForUser(key, title, body, "admin", id, false);
+      addForUser(key, title, body, "admin", id, false, true);
       sent += 1;
     });
     persist(false);
