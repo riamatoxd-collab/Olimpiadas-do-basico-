@@ -30,7 +30,7 @@ Adicionar notificações internas, preparar Web Push, apresentar badges Big Mac 
 ## Limites e riscos conhecidos
 - O site continua usando sincronização legada via MQTT/HTTP. O ledger por ID reduz duplicações e facilita a reconciliação, mas não garante transações exactly-once entre aparelhos simultâneos.
 - O fechamento mensal é manual para evitar que cada aparelho finalize a temporada de forma independente.
-- Avisos internos são persistidos no cadastro e podem ser propagados pela sincronização atual. A entrega depende de os dispositivos sincronizarem.
+- Avisos internos são persistidos no cadastro e podem ser propagados pela sincronização atual. A entrega depende de os dispositivos sincronizarem. O formulário administrativo usa a autorização local legada, não uma identidade validada no servidor; não enviar conteúdo sensível.
 - A permissão do navegador e o service worker podem ser preparados gratuitamente. Push confiável com o site fechado exige endpoint de backend, VAPID e armazenamento/gestão de inscrições; não há chaves nem backend de envio incluídos no repositório.
 - O All Star aqui é uma trilha de preparação independente, não uma integração oficial com sistemas internos da Arcos Dorados/McDonald's e não concede classificação oficial.
 
