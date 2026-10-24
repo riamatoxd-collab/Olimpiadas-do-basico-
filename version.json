@@ -1,5 +1,5 @@
 {
-  "version": "9.1.0",
+  "version": "9.2.0",
   "released_at": "2026-10-24",
-  "description": "Venture 9.1.0: ligas mensais com dez divisões, XP de temporada calculado a partir do XP Ledger, promoção e rebaixamento mensal. Ranking geral, XP acumulado, cadastros e funções existentes preservados. Flashcards e Taça semanal retirados da navegação nesta fase, com arquivos legados mantidos para rollback. A sincronização continua legada e o ranking mensal ainda não tem validação antifraude no servidor."
+  "description": "Venture 9.2.0: centro de notificações internas, preparação para Web Push, badges Big Mac nas ligas mensais e trilha preparatória All Star. O ranking geral e XP vitalício são preservados. Primeira temporada mensal em novembro de 2026. Push com site fechado depende de backend, VAPID e inscrições configuradas. Branch de desenvolvimento; requer teste manual antes de publicação."
 }

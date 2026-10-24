@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="112" fill="#DA291C"/>
+  <circle cx="256" cy="256" r="204" fill="#B91C1C" opacity=".5"/>
+  <path d="M106 218c7-84 69-136 150-136s143 52 150 136z" fill="#FFC72C" stroke="#FDE68A" stroke-width="12" stroke-linejoin="round"/>
+  <g fill="#FFF7D6"><ellipse cx="197" cy="132" rx="9" ry="16" transform="rotate(-25 197 132)"/><ellipse cx="252" cy="116" rx="9" ry="16" transform="rotate(10 252 116)"/><ellipse cx="306" cy="137" rx="9" ry="16" transform="rotate(28 306 137)"/></g>
+  <path d="M100 234h312l-30 37H130z" fill="#2F855A"/>
+  <path d="M118 270h276l-26 38H144z" fill="#FFC72C"/>
+  <path d="M136 308h240c-10 43-52 62-120 62s-110-19-120-62z" fill="#6B3417"/>
+  <path d="M134 373h244c-18 43-56 63-122 63s-104-20-122-63z" fill="#F4B942"/>
+  <path d="M156 385c55 16 145 16 200 0" fill="none" stroke="#FDE68A" stroke-width="10" stroke-linecap="round"/>
+  <text x="256" y="480" text-anchor="middle" font-family="Arial,sans-serif" font-size="28" font-weight="900" fill="#FFF7D6">VENTURE</text>
+</svg>
