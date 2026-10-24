@@ -8,3 +8,5 @@
 .dark-mode .vml-profile-burger{background:linear-gradient(145deg,#3b2b13,#292116)}
 .dark-mode .vml-profile-season{color:#94a3b8}
 .dark-mode .vml-admin-finalize{background:#292116;color:#fcd34d;border-color:#92400e}
+
+.vml-admin-finalize.hidden{display:none!important}
