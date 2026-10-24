@@ -86,9 +86,13 @@
       (Array.isArray(list) ? list : []).forEach(function (entry) {
         if (!entry || !entry.id) return;
         const prior = byId.get(String(entry.id));
-        if (!prior || (entry.status === "applied" && prior.status !== "applied") || (Number(entry.at) || 0) > (Number(prior.at) || 0)) {
-          byId.set(String(entry.id), Object.assign({}, prior || {}, entry));
-        } else if (prior.status !== "applied" && entry.status === "applied") {
+        if (!prior) {
+          byId.set(String(entry.id), Object.assign({}, entry));
+        } else if (prior.status === "applied" && entry.status !== "applied") {
+          byId.set(String(entry.id), prior);
+        } else if (entry.status === "applied" && prior.status !== "applied") {
+          byId.set(String(entry.id), Object.assign({}, prior, entry));
+        } else if ((Number(entry.at) || 0) > (Number(prior.at) || 0)) {
           byId.set(String(entry.id), Object.assign({}, prior, entry));
         }
       });
@@ -176,6 +180,12 @@
       const prior = ledger.entries.find(function (entry) { return entry && entry.id === id; });
       if (prior && prior.status === "applied") return 0;
       const beforeXp = toNumber(user.xp);
+      if (prior && prior.status === "pending" && beforeXp >= toNumber(prior.expectedAfterXp) && beforeXp > toNumber(prior.beforeXp)) {
+        saveLedger(user, Object.assign({}, prior, { status: "applied", amount: toNumber(prior.expectedAfterXp) - toNumber(prior.beforeXp), afterXp: beforeXp, recoveredAt: Date.now() }));
+        persist(true);
+        renderMonthlyLeague();
+        return 0;
+      }
       let entry = prior;
       if (!entry) {
         const expected = typeof xpForReward === "function" ? toNumber(xpForReward(baseAmount)) : baseAmount;
