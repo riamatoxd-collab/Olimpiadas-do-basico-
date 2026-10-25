@@ -302,17 +302,14 @@ function adminRestoreHearts(key) {
 function adminAdjustXp(key, delta) {
   if (!users[key]) return;
   const oldLevel = getLevelInfo(users[key].xp || 0).level;
-  users[key].xp = Math.max(0, (users[key].xp || 0) + delta);
-  const newLevel = getLevelInfo(users[key].xp || 0).level;
-  users[key].updatedAt = Date.now();
-  users[key].adminOverrideAt = Date.now();
-  if (newLevel > oldLevel) {
-    playMcDonaldsJingle();
-  } else if (delta > 0) {
-    playHitSuccessSound();
-  } else {
-    playTabClickSound();
+  const target = Math.max(0, (Number(users[key].xp) || 0) + (Number(delta) || 0));
+  if (typeof setXpBalanceForUser !== "function" || !setXpBalanceForUser(key, target, { adminOverride: true })) {
+    alert("Não foi possível salvar a alteração de XP. Nenhum saldo foi alterado permanentemente."); return;
   }
+  const newLevel = getLevelInfo(users[key].xp || 0).level;
+  if (newLevel > oldLevel) playMcDonaldsJingle();
+  else if (delta > 0) playHitSuccessSound();
+  else playTabClickSound();
   scheduleCloudSync(key, true);
 }
 function adminSetCustomXp(key) {
@@ -323,15 +320,12 @@ function adminSetCustomXp(key) {
   const parsed = parseInt(val, 10);
   if (!isNaN(parsed)) {
     const oldLevel = getLevelInfo(users[key].xp || 0).level;
-    users[key].xp = Math.max(0, parsed);
-    const newLevel = getLevelInfo(users[key].xp || 0).level;
-    users[key].updatedAt = Date.now();
-    users[key].adminOverrideAt = Date.now();
-    if (newLevel > oldLevel) {
-      playMcDonaldsJingle();
-    } else {
-      playHitSuccessSound();
+    if (typeof setXpBalanceForUser !== "function" || !setXpBalanceForUser(key, Math.max(0, parsed), { adminOverride: true })) {
+      alert("Não foi possível salvar a alteração de XP. Nenhum saldo foi alterado permanentemente."); return;
     }
+    const newLevel = getLevelInfo(users[key].xp || 0).level;
+    if (newLevel > oldLevel) playMcDonaldsJingle();
+    else playHitSuccessSound();
     scheduleCloudSync(key, true);
   }
 }
@@ -339,7 +333,9 @@ function adminResetUser(key) {
   playTabClickSound();
   if (!users[key]) return;
   if (!confirm(`Zerar o XP e os acertos de ${users[key].name}?`)) return;
-  users[key].xp = 0;
+  if (typeof setXpBalanceForUser !== "function" || !setXpBalanceForUser(key, 0, { adminOverride: true })) {
+    alert("Não foi possível salvar a alteração de XP. O cadastro foi preservado."); return;
+  }
   users[key].correctAnswers = 0;
   users[key].quizStreak = 0;
   users[key].quizStreakUpdatedAt = Date.now();

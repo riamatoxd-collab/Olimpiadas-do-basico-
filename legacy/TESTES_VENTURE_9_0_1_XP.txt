@@ -1,0 +1,29 @@
+VENTURE 9.0.1 — RELATÓRIO DE TESTES DO XP
+Data: 24/10/2026
+
+RESULTADO: TESTES AUTOMATIZADOS PASSARAM.
+
+Verificações executadas:
+- Sintaxe JavaScript: node --check em todos os arquivos .js do pacote.
+- HTML: 271 IDs verificados, nenhum ID duplicado; 23 referências locais de scripts/estilos verificadas, nenhuma ausente.
+- Arena diária: cinco questões distintas, prioridade para dúvidas anteriores, bloqueio de resposta repetida, conclusão e bônus diário.
+- XP x2: o valor dobrado é salvo como delta final e não é recalculado durante a recuperação.
+- Ledger: saldo legado preservado como base, IDs estáveis idempotentes e registros de transação compactos.
+- Concorrência: duas recompensas distintas de dois aparelhos com a mesma base são somadas; um mesmo ID não é somado duas vezes.
+- Baseline legado: snapshot antigo é adotado quando está atrás do ledger; conflitos de base preservam o maior saldo conhecido, marcam a divergência e absorvem transações ambíguas.
+- Falha simulada: quando a segunda gravação no localStorage falha, a intenção pendente permanece e é recuperada sem duplicação.
+- Retry XP x2: repetir o mesmo ID após mudar o multiplicador recupera o valor original, sem recalcular nem duplicar.
+- Reconciliação: transações já gravadas reparam marcadores de missão, desafio do treinador, baú, duelo e Arena.
+- Administração: redefinição explícita rebaseia o ledger, limpa recompensas pendentes e prevalece sobre um registro de aparelho antigo.
+- Duelos: o painel local calcula vitórias e permite selecionar o último adversário disponível.
+
+LIMITES QUE NÃO FORAM TESTADOS COMO GARANTIA:
+- Execução integral no navegador real.
+- Sincronização MQTT/HTTP real entre dispositivos.
+- Garantia exatamente uma vez com servidor autenticado (não implantado).
+- Resistência a manipulação do localStorage ou do JavaScript pelo usuário.
+- Segurança das credenciais no sistema legado de sincronização pública.
+
+COMANDOS:
+node tests/venture-arena-smoke.cjs
+node tests/xp-ledger-smoke.cjs

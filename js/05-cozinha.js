@@ -132,6 +132,10 @@ let kitchenClockId = null;
 let kitchenStartedAt = 0;
 let kitchenFinishedAt = 0;
 let kitchenMistakes = 0;
+let kitchenRunId = null;
+function kitchenCreateRunId() {
+  return typeof createXpEventId === "function" ? createXpEventId("kitchen") : `kitchen:${Date.now()}:${Math.random().toString(36).slice(2,12)}`;
+}
 const KITCHEN_VISUALS = [
   [/pão|base|coroa|club/i,['🍞','kitchen-bread']],
   [/queijo|cheddar|ementhal/i,['🧀','kitchen-cheese']],
@@ -164,7 +168,7 @@ function selectKitchenRecipe(id) {
 }
 function initKitchenGame() {activeRecipe=KITCHEN_RECIPES[0];resetKitchenGame();}
 function resetKitchenGame() {
-  currentRecipeStep=0;kitchenStartedAt=0;kitchenFinishedAt=0;kitchenMistakes=0;
+  currentRecipeStep=0;kitchenStartedAt=0;kitchenFinishedAt=0;kitchenMistakes=0;kitchenRunId=kitchenCreateRunId();
   clearInterval(kitchenClockId);kitchenClockId=null;
   const fb=$('kitchenFeedback');if(fb)fb.classList.add('hidden');
   renderKitchenState(); kitchenUpdateClock();
@@ -223,7 +227,7 @@ function handleKitchenStepClick(btn, chosenStep) {
   playCardFlipSound();
   if(currentRecipeStep===activeRecipe.steps.length){
     kitchenFinishedAt=Date.now();clearInterval(kitchenClockId);kitchenClockId=null;
-    const awarded=addXp(activeRecipe.xp);
+    const awarded=addXp(activeRecipe.xp, `kitchen-run:${kitchenRunId || kitchenCreateRunId()}`, { source: 'kitchen-completion' });
     recordMissionActivity('kitchen_complete',activeRecipe.id);
     renderKitchenState();kitchenUpdateClock();
     fb.className='kitchen-feedback kitchen-feedback-success';

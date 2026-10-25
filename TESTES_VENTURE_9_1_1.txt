@@ -1,0 +1,16 @@
+TESTES VENTURE 9.1.1 — EMBLEMAS DAS LIGAS
+Data: 25/10/2026
+
+Execute na pasta do projeto com Node.js:
+  node tests/venture-monthly-league-smoke.cjs
+  node tests/venture-arena-smoke.cjs
+  node tests/xp-ledger-smoke.cjs
+
+O teste de ligas verifica as dez divisões, os caminhos de imagem exclusivos e a presença dos dez arquivos WebP, além das regras de pontuação mensal, promoção, rebaixamento e sincronização de estado.
+
+Validação visual recomendada no navegador:
+- Abrir Ranking geral > Ligas mensais.
+- Confirmar os dez emblemas no caminho de progressão.
+- Confirmar o emblema da liga atual e o emblema no cabeçalho da classificação.
+- Testar em desktop, celular e modo escuro.
+- Confirmar que o XP acumulado e o ranking geral continuam intactos.

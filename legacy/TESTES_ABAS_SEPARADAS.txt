@@ -1,0 +1,30 @@
+Venture 9.0.1 — testes locais simulados (SEM usuários reais)
+
+PASSOU: criação de tab-taca separado de tab-quiz.
+PASSOU: link Mais > Taça abre a tela independente.
+PASSOU: sidebar PC > Taça abre a tela independente.
+PASSOU: dashboard PC sai da área do Simulado e passa para Mais.
+PASSOU: botão Começar Desafio abre o Simulado.
+PASSOU: 5 respostas corretas fictícias geram 100 pontos semanais.
+PASSOU: em 6 acertos fictícios o Simulado aplicou o XP usual em todos,
+        mas o sexto resultado NÃO aumentou a pontuação semanal.
+PASSOU: nenhum erro JavaScript no teste isolado do navegador.
+PASSOU: arquivos JS passam na verificação de sintaxe.
+
+NÃO TESTADO: troca simultânea entre celulares reais, MQTT remoto, autenticação,
+             integridade dos registros em produção, redes instáveis.
+NOTA: a Taça permanece BETA e NÃO possui backend autenticado para prêmios oficiais.
+
+
+VENTURE 9.0.0 — TESTES DA ARENA (CONTAS FICTÍCIAS)
+- Confirmar que a aba Treinos tem cinco opções e Arena abre/fecha sem ocultar outras telas.
+- Começar desafio com cadastro fictício: cria 5 IDs distintos e salva a sessão em ventureArena.
+- Confirmar que questões de Minhas Dúvidas têm prioridade quando disponíveis.
+- Resposta correta: usa addXp(20), atualiza a missão de acerto e respeita XP x2.
+- Resposta errada: não dá XP e registra a questão em Minhas Dúvidas.
+- Recarga no meio da sessão: restaura pergunta, respostas e progresso.
+- 4/5 ou 5/5: credita bônus de 50 XP base uma vez; repetir o botão não repete o bônus.
+- Nova sessão no mesmo dia é bloqueada; novo dia libera novo desafio.
+- Merge simulado: une claims/histórico e prefere uma sessão concluída para reduzir duplicação.
+- Duelos: painel mostra resultados do histórico local e a revanche seleciona o adversário mais recente se ainda estiver cadastrado.
+- Risco ainda aberto: duas sessões concorrentes antes de sincronizar podem conciliar XP de forma imperfeita; validar em teste separado.

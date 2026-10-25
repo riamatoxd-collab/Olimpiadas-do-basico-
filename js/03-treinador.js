@@ -100,10 +100,18 @@ function recordTrainerChallengeCorrect() {
   progress.count=Math.min(challenge.target, Math.max(0,Number(progress.count)||0)+1);
   u.trainerChallenges[challenge.id]=progress;
   if (progress.count>=challenge.target) {
-    progress.claimedAt=Date.now(); // grava antes de dar o bônus
+    const rewardId=`trainer-challenge:${challenge.id}`;
+    let awarded=0;
+    if (Number(challenge.xp)>0) {
+      awarded=addXp(challenge.xp,rewardId,{source:'trainer-challenge'});
+      const tx=typeof getXpTransaction==='function'?getXpTransaction(rewardId,u):null;
+      if(!tx){u.updatedAt=Date.now();scheduleCloudSync(currentUserKey,false);renderTrainerPublicContent();return;}
+      awarded=awarded||Number(tx.delta)||0;
+    }
+    progress.claimedAt=Date.now(); // o ID idempotente torna segura a recuperação após interrupção
     u.updatedAt=Date.now();
-    const awarded=challenge.xp ? addXp(challenge.xp) : 0;
     if(!challenge.xp) scheduleCloudSync(currentUserKey,false);
+    else scheduleCloudSync(currentUserKey,false);
     showMissionToast(`🎯 Desafio ${challenge.title} concluído! +${awarded} XP`);
   } else {u.updatedAt=Date.now();scheduleCloudSync(currentUserKey,false);}
   renderTrainerPublicContent();

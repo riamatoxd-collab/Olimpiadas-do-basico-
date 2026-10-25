@@ -1,4 +1,5 @@
-/* Venture 8.8 · js/07-jogos.js · arquivo carregado na ordem indicada no HTML. */
+/* Venture 9.0.1 · js/07-jogos.js · arquivo carregado na ordem indicada no HTML. */
+let currentQuizAttemptId = null;
 function getActiveUserMistakes() {
   if (currentUserKey && users[currentUserKey]) {
     if (!Array.isArray(users[currentUserKey].mistakes)) users[currentUserKey].mistakes = [];
@@ -268,9 +269,16 @@ function handleIncomingDuelPacket(pkt) {
       const user=users[currentUserKey];
       user.duelRewards=user.duelRewards && typeof user.duelRewards==='object'?user.duelRewards:{};
       if(!user.duelRewards[activeDuel.duelId]) {
-        user.duelRewards[activeDuel.duelId]=Date.now();
-        user.updatedAt=Date.now();
-        const xpAmount=addXp(DUEL_WIN_XP); activeDuel.xpWon=xpAmount; xpAwarded=true;
+        const rewardId=`duel-win:${activeDuel.duelId}:${winnerKey}`;
+        const xpAmount=addXp(DUEL_WIN_XP,rewardId,{source:'duel-win'});
+        const tx=typeof getXpTransaction==='function'?getXpTransaction(rewardId,user):null;
+        if(tx){
+          user.duelRewards[activeDuel.duelId]=Date.now();
+          user.updatedAt=Date.now();
+          activeDuel.xpWon=Number(tx.delta)||xpAmount;
+          xpAwarded=xpAmount>0;
+          scheduleCloudSync(currentUserKey,true);
+        }
       }
     }
     activeDuel.scoreHost = pkt.scoreHost;
@@ -595,10 +603,12 @@ function loadNextQuizQuestion() {
     $("quizQuestionText").textContent = "Ainda não há perguntas cadastradas para esta dificuldade.";
     $("quizOptions").replaceChildren();
     currentQuizQuestionId=null;
+    currentQuizAttemptId=null;
     return;
   }
   const {item:randomItem,position,total,newRound}=drawUnseenQuizQuestion(pool);
   currentQuizQuestionId = randomItem.id;
+  currentQuizAttemptId = typeof createXpEventId === "function" ? createXpEventId("quiz") : `quiz:${Date.now()}:${Math.random().toString(36).slice(2,10)}`;
   $("quizQuestionMeta").textContent = `Questão #${randomItem.id} • ${randomItem.level} • ${position}/${total}${newRound?" 🔄 Nova rodada":""}`;
   $("statStreakDisplay").textContent = `${currentStreak} 🔥`;
   $("quizQuestionText").textContent = randomItem.q;
@@ -641,7 +651,7 @@ function checkQuizAnswer(selectedBtn, chosen, correct, letter) {
     if (currentUserKey && users[currentUserKey]) {
       users[currentUserKey].correctAnswers = (users[currentUserKey].correctAnswers || 0) + 1;
     }
-    const earnedQuizXp = addXp(25);
+    const earnedQuizXp = addXp(25, `quiz-correct:${currentQuizAttemptId || createXpEventId("quiz")}`, { source: "quiz-correct" });
     recordMissionActivity("quiz_correct");
     recordTrainerChallengeCorrect();
     fb.className = "p-3.5 rounded-2xl text-xs font-extrabold bg-emerald-500/15 text-emerald-500 border border-emerald-500/30";

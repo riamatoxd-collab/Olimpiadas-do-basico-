@@ -75,7 +75,9 @@ function mergeDailyChest(a,b){
   const claims={...(a?.claims||{})};
   Object.entries(b?.claims||{}).forEach(([date,prize])=>{
     const old=claims[date];
-    if(!old || (Number(prize?.at)||0)<(Number(old.at)||0))claims[date]=prize;
+    const oldPendingXp=old?.kind==="xp" && old?.status==="pending";
+    const newPendingXp=prize?.kind==="xp" && prize?.status==="pending";
+    if(!old || (newPendingXp && !oldPendingXp) || (!oldPendingXp && !newPendingXp && (Number(prize?.at)||0)<(Number(old.at)||0))) claims[date]=prize;
   });
   const used={...(a?.used||{})};
   Object.entries(b?.used||{}).forEach(([date,at])=>{used[date]=Math.max(Number(used[date])||0,Number(at)||0);});
@@ -112,16 +114,31 @@ function openDailyChest(){
   }
   refreshLocalChestUser();
   const user=users[currentUserKey], chest=ensureDailyChest(user), today=dailyChestDay();
-  if(chest.claims[today]){renderDailyChest();return;}
+  let claim=chest.claims[today];
+  if(claim){
+    if(claim.kind==="xp" && claim.status==="pending"){
+      const rewardId=claim.rewardId||`daily-chest:${today}`;
+      addXp(Number(claim.amount)||0,rewardId,{source:"daily-chest"});
+      const tx=typeof getXpTransaction==="function"?getXpTransaction(rewardId,user):null;
+      if(tx){claim.status="claimed";claim.awardedXp=Number(tx.delta)||0;claim.at=Number(claim.at)||Date.now();user.updatedAt=Date.now();scheduleCloudSync(currentUserKey,true);}
+    }
+    renderDailyChest();return;
+  }
   const kind=["bigmac","drink","fries","xp"][chestRandomInt(4)];
   const amount=kind==="xp" ? 20+chestRandomInt(181):CHEST_POTIONS[kind].hearts;
-  chest.claims[today]={kind,amount,at:Date.now()};
+  claim={kind,amount,at:Date.now(),status:kind==="xp"?"pending":"claimed"};
+  if(kind==="xp")claim.rewardId=`daily-chest:${today}`;
+  chest.claims[today]=claim;
   user.updatedAt=Date.now();
-  // Registrar antes do XP para impedir recompensa repetida no próximo clique.
-  localStorage.setItem(STORAGE_USERS_KEY,JSON.stringify(users));
+  try{localStorage.setItem(STORAGE_USERS_KEY,JSON.stringify(users));}
+  catch(err){delete chest.claims[today];showMissionToast("Não foi possível salvar o baú. Tente novamente.");return;}
   if(kind==="xp"){
-    const received = addXp(amount);
-    showMissionToast(`🎁 Seu baú revelou +${received} XP!`);
+    addXp(amount,claim.rewardId,{source:"daily-chest"});
+    const tx=typeof getXpTransaction==="function"?getXpTransaction(claim.rewardId,user):null;
+    if(!tx){showMissionToast("🎁 A recompensa ficou pendente. Toque no baú novamente para recuperar o XP.");renderDailyChest();return;}
+    claim.status="claimed";claim.awardedXp=Number(tx.delta)||0;claim.at=Date.now();user.updatedAt=Date.now();
+    scheduleCloudSync(currentUserKey,true);
+    showMissionToast(`🎁 Seu baú revelou +${claim.awardedXp} XP!`);
   }else{
     playHitSuccessSound();
     scheduleCloudSync(currentUserKey,true);
@@ -130,6 +147,7 @@ function openDailyChest(){
   }
   renderDailyChest();
 }
+
 function useDailyPotion(kind){
   if(!CHEST_POTIONS[kind] || !currentUserKey || !users[currentUserKey])return;
   refreshLocalChestUser();
@@ -154,12 +172,13 @@ function renderDailyChest(){
   if(!button || !status)return;
   const user=currentUserKey && users[currentUserKey] && !users[currentUserKey]._deleted ? users[currentUserKey]:null;
   const chest=user?ensureDailyChest(user):null, today=dailyChestDay(), claimed=chest?.claims[today];
-  button.disabled=!user || !!claimed;
-  button.textContent=!user?"🔒 Entre para abrir":claimed?"✅ Baú de hoje aberto":"🎁 Abrir baú de hoje";
-  status.textContent=!user?"Entre na sua conta para receber a recompensa.":claimed?"Volte amanhã para um novo presente!":"Seu presente de hoje está disponível.";
-  if(tag)tag.textContent=claimed?"RECEBIDO":"DIÁRIO";
+  const pending=Boolean(claimed && claimed.kind==="xp" && claimed.status==="pending");
+  button.disabled=!user || (Boolean(claimed) && !pending);
+  button.textContent=!user?"🔒 Entre para abrir":pending?"⏳ Recuperar XP":claimed?"✅ Baú de hoje aberto":"🎁 Abrir baú de hoje";
+  status.textContent=!user?"Entre na sua conta para receber a recompensa.":pending?"Sua recompensa está pendente. Toque para recuperar o crédito com segurança.":claimed?"Volte amanhã para um novo presente!":"Seu presente de hoje está disponível.";
+  if(tag)tag.textContent=pending?"PENDENTE":claimed?"RECEBIDO":"DIÁRIO";
   const result=$("dailyChestResult");
-  if(result)result.textContent=!claimed?"":claimed.kind==="xp"?`⚡ Você recebeu +${claimed.amount} XP hoje.`:CHEST_POTIONS[claimed.kind]?`${CHEST_POTIONS[claimed.kind].icon} Você ganhou ${CHEST_POTIONS[claimed.kind].label} (+${claimed.amount} corações).`:"✅ Recompensa resgatada.";
+  if(result)result.textContent=!claimed?"":pending?"⏳ Recompensa de XP pendente de confirmação.":claimed.kind==="xp"?`⚡ Você recebeu +${Number(claimed.awardedXp)||Number(claimed.amount)||0} XP hoje.`:CHEST_POTIONS[claimed.kind]?`${CHEST_POTIONS[claimed.kind].icon} Você ganhou ${CHEST_POTIONS[claimed.kind].label} (+${claimed.amount} corações).`:"✅ Recompensa resgatada.";
   const inventory=chestPotionInventory(chest), count=Object.values(inventory).reduce((sum,days)=>sum+days.length,0);
   const badge=$("dailyChestInventoryCount"),list=$("dailyChestInventory");
   if(badge)badge.textContent=`${count} guardada${count===1?"":"s"}`;
@@ -268,22 +287,28 @@ function recordMissionActivity(kind, recipeId = null) {
     }
   } else return;
   const earned = [];
-  let bonus = 0;
+  let bonus = 0, gainedXp = 0;
   const activeMissions=[...missionSelection("daily",p.daily.key,currentUserKey),...missionSelection("weekly",p.weekly.key,currentUserKey)];
   activeMissions.forEach(m => {
     const cycle = p[m.cycle];
     const claimId = `${m.cycle}:${cycle.key}:${m.id}`;
-    if (!p.claims[claimId] && missionMetric(cycle,m.metric) >= m.target) {
-      p.claims[claimId] = Date.now();
-      bonus += m.xp;
-      earned.push(m);
+    if (p.claims[claimId] || missionMetric(cycle,m.metric) < m.target) return;
+    const rewardId = `mission:${claimId}`;
+    if (Number(m.xp) > 0 && typeof addXp === "function") {
+      addXp(m.xp, rewardId, { source: "mission" });
+      const tx = typeof getXpTransaction === "function" ? getXpTransaction(rewardId, user) : null;
+      // Se o crédito não foi salvo, não marcamos a missão como recebida. Na próxima
+      // atividade o mesmo ID permite recuperar sem conceder o XP uma segunda vez.
+      if (!tx) return;
+      bonus += Number(tx.delta) || 0;
+      gainedXp += Number(tx.delta) || 0;
     }
+    p.claims[claimId] = Date.now();
+    earned.push(m);
   });
   const medalUnlocks = unlockEarnedMedals(user,p);
   user.updatedAt = Date.now();
-  // addXp() mantém o mesmo processo de atualização de nível e ranking.
-  const gainedXp = bonus ? addXp(bonus) : 0;
-  if (!bonus) scheduleCloudSync(currentUserKey,false);
+  if (!earned.length) scheduleCloudSync(currentUserKey,false);
   // A conquista de Padrão Ouro também pode ocorrer com o bônus recém ganho.
   medalUnlocks.push(...unlockEarnedMedals(user,p));
   if (earned.length) showMissionToast(`🎯 ${earned.map(m=>m.title).join(" • ")}! +${gainedXp} XP`);

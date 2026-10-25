@@ -1,5 +1,5 @@
 {
-  "version": "9.1.0",
-  "released_at": "2026-10-24",
-  "description": "Venture 9.1.0: ligas mensais com dez divisões, XP de temporada calculado a partir do XP Ledger, promoção e rebaixamento mensal. Ranking geral, XP acumulado, cadastros e funções existentes preservados. Flashcards e Taça semanal retirados da navegação nesta fase, com arquivos legados mantidos para rollback. A sincronização continua legada e o ranking mensal ainda não tem validação antifraude no servidor."
+  "version": "9.1.1",
+  "released_at": "2026-10-25",
+  "description": "Venture 9.1.1: dez emblemas 3D otimizados para as ligas mensais, exibidos no caminho de progressão, no selo da liga atual e no cabeçalho da classificação. Mantém XP mensal pelo XP Ledger, promoção/rebaixamento e ranking geral sem alterações de regras."
 }

@@ -1,0 +1,57 @@
+ARQUIVO HISTÓRICO — NÃO USAR COMO INSTRUÇÃO DE INSTALAÇÃO DO VENTURE 9.1.0
+
+Este documento descreve a antiga Taça semanal do Venture 9.0.1. A Taça foi retirada da navegação no pacote 9.1.0; os arquivos ficam nesta pasta somente para rollback manual. O ranking geral de XP permanece ativo e o novo ranking mensal está em js/11-ligas-mensais.js.
+Para restaurar manualmente a Taça, copie legacy/venture-taca90.css e legacy/venture-taca90.js para a raiz do site antes de seguir as instruções antigas abaixo.
+
+--- INSTRUÇÕES ANTIGAS ABAIXO ---
+
+OLIMPÍADAS DO BÁSICO — VENTURE 9.0.1 BETA
+SIMULADO EM ABA PRÓPRIA + TAÇA DOS CAMPEÕES SEPARADA
+===================================================
+
+O QUE MUDA NA TELA
+- Aba SIMULADO: fica apenas com as funções do Simulado já existentes.
+- Taça dos Campeões: tela própria, aberta por MAIS > Taça dos Campeões no celular.
+- PC: botão 'Taça dos Campeões' na lateral; painel de boas-vindas PC passa a ficar em 'Início e Mais'.
+- O desafio diário usa o MESMO Simulado: 5 questões por dia, 20 pontos semanais por acerto.
+- XP: continua sendo concedido exclusivamente pela rotina original do Simulado.
+- Ranking Geral / 27 níveis / Book / missões / 1v1: permanecem com a lógica atual.
+
+INSTALAÇÃO RECOMENDADA (ATUALIZAÇÃO PEQUENA)
+1) ANTES DE TUDO: faça backup privado dos cadastros e XP; guarde cópia dos arquivos atuais.
+2) Faça o teste primeiro em OUTRO repositório, com contas fictícias e outra origem.
+3) No GitHub, substitua somente dois arquivos na pasta principal:
+      venture-taca90.css
+      venture-taca90.js
+4) Abra o index.html ATUAL e altere SOMENTE as duas referências antigas
+   da Taça para estas versões (para forçar o navegador a buscar arquivos novos):
+      <link rel="stylesheet" href="venture-taca90.css?v=901a">
+      <script src="venture-taca90.js?v=901a"></script>
+   Conserve as duas tags nos lugares em que já estão: CSS dentro de <head>,
+   JS no final do arquivo, depois de script.js e hub-pc.js.
+5) Aguarde a publicação do GitHub Pages. No PC, use Ctrl+F5.
+6) Teste: Simulado deve ficar sem a Taça. Na seção Mais deverá haver
+   'Taça dos Campeões'. No PC deverá surgir seu atalho lateral.
+7) Use duas contas FICTÍCIAS para testar retorno ao Simulado e pontuação:
+   cinco acertos = 100 pontos na Taça; XP pelo Simulado usual (geralmente 25/acerto,
+   variável se XP x2 está ativo). A sexta pergunta NÃO aumenta a Taça.
+8) Verifique XP, nomes e ranking geral antes de publicar para todos.
+
+COMPATIBILIDADE / CUIDADOS
+- NÃO substitua o index.html atual por uma versão antiga só para instalar a Taça.
+- NÃO altere version.json só por causa da mudança visual; evita acionar o auto-updater.
+- NÃO exclua a pasta js/ ou backups locais.
+- O ranking semanal BETA reutiliza a sincronização legada; resultados em aparelhos
+  diferentes ainda não são auditados por servidor. NÃO use a Taça para prêmios oficiais.
+- Se já existem resultados semanais ventureV90, a alteração visual não os reinicia.
+- O arquivo PREVIA_ABAS_SEPARADAS.html funciona isolado, com dados FICTÍCIOS.
+
+REVERTER EM CASO DE PROBLEMA
+- Restaure as duas versões anteriores de venture-taca90.css e venture-taca90.js.
+- Restaure as duas referências ?v=90b1 do index.html se eram as antigas.
+- NÃO apague localStorage nem dados dos usuários. Reversão é apenas de interface.
+
+OPÇÃO PACOTE COMPLETO
+- O segundo ZIP usa como base exata o último pacote completo Venture 9.0
+  Beta/8.9.2 gerado anteriormente, adicionando SOMENTE as alterações de interface.
+- NÃO o publique sobre uma versão real que tenha outras modificações posteriores.

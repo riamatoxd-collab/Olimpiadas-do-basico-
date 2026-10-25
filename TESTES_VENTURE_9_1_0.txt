@@ -1,0 +1,41 @@
+VENTURE 9.1.0 — RELATÓRIO DE TESTES
+Data: 24/10/2026
+
+1. TESTES DE SINTAXE
+- Todos os arquivos JavaScript, incluindo módulos legados arquivados, passaram em node --check.
+
+2. TESTES DE LIGAS MENSAIS (tests/venture-monthly-league-smoke.cjs)
+- Dez divisões e ordem Bronze → Diamante.
+- Temporada inaugural programada para novembro de 2026.
+- Pontuação mensal calculada apenas por transações do mês no fuso America/Sao_Paulo.
+- Limites de promoção/rebaixamento determinísticos.
+- Ranking mensal separado do XP acumulado.
+- Mesclagem preserva histórico e a temporada mais recente.
+- Fechamento mensal promove/rebaixa conforme regras e não altera o XP acumulado.
+
+3. REGRESSÃO DA ARENA (tests/venture-arena-smoke.cjs)
+- Questões únicas, prioridade para dúvidas, respostas repetidas bloqueadas.
+- Bônus diário, salvamento local, merge de sessão e XP x2 aprovados.
+- Limitação antiga confirmada: sem validação central, o merge legado pode conservar o maior saldo em conflitos entre aparelhos.
+
+4. REGRESSÃO DO XP LEDGER (tests/xp-ledger-smoke.cjs)
+- Saldo legado preservado, IDs idempotentes, XP x2, mesclagem de transações distintas, reconciliação conservadora, recuperação de pendências e override administrativo aprovados.
+
+5. VERIFICAÇÕES ESTÁTICAS
+- HTML analisado sem tags de fechamento não correspondentes.
+- Todas as referências locais a scripts e folhas de estilo no index.html existem.
+- index.html carrega js/11-ligas-mensais.js e venture-ligas-mensais.css.
+- A Taça semanal não é mais carregada pelo index.html.
+- O painel e botão de Flashcards não aparecem na interface do index.html.
+- O ranking geral antigo, pódio, rankingPrintArea e leaderboardContainer continuam presentes.
+- version.json e APP_VERSION definidos como 9.1.0.
+- O ZIP foi validado por integridade após a montagem.
+
+6. TESTES NÃO EXECUTADOS
+- Não foi feito teste manual completo no navegador com login real.
+- Não foi testada sincronização MQTT real com dois celulares.
+- Não foi feita validação de segurança por servidor nem teste antifraude.
+- A promoção mensal foi testada com dados fictícios, não com contas reais.
+
+CONCLUSÃO
+Os testes automatizados e as verificações estáticas passaram. O pacote é uma cópia de desenvolvimento, não uma autorização para substituir a versão publicada sem teste manual e backup. O ranking mensal usa o XP Ledger local; ainda não oferece garantia antifraude de servidor.
