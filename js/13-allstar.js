@@ -19,35 +19,831 @@
   ];
 
   const QUESTIONS = [
-    { id: "LIN-01", area: "linha", prompt: "Segundo o material, por quanto tempo devem ser lavados mãos e antebraços com sabonete bactericida?", options: ["5 segundos", "10 segundos", "20 segundos", "1 minuto"], answer: 2, explanation: "O material indica lavagem de mãos e antebraços por 20 segundos e uso de gel sanitizante nas situações descritas.", source: "Material de Estudo — Produção Linha, p. 2" },
-    { id: "LIN-02", area: "linha", prompt: "Qual configuração o material informa para a tostadeira rápida?", options: ["275°C, compressão 5, ciclo de 15 segundos", "293°C, compressão 5D, ciclo de 22 segundos", "180°C, compressão 5D, ciclo de 22 segundos", "293°C, compressão 3, ciclo de 30 segundos"], answer: 1, explanation: "Para a tostadeira rápida, o documento indica 293°C, compressão 5D e ciclo de caramelização de 22 segundos.", source: "Material de Estudo — Produção Linha, p. 2" },
-    { id: "LIN-03", area: "linha", prompt: "Qual configuração aparece para a tostadeira HEBT5V?", options: ["275°C, compressão 5 e ciclo de 22 segundos", "293°C, compressão 5D e ciclo de 22 segundos", "168°C e ciclo de 3 minutos e 10 segundos", "218°C, compressão 4 e ciclo de 18 segundos"], answer: 0, explanation: "O material informa 275°C, compressão 5 e ciclo de caramelização de 22 segundos para a HEBT5V.", source: "Material de Estudo — Produção Linha, p. 2" },
-    { id: "LIN-04", area: "linha", prompt: "Qual é o tempo de reação indicado para o Iniciador?", options: ["1 a 2 segundos", "3 a 5 segundos", "10 a 15 segundos", "35 a 50 segundos"], answer: 1, explanation: "O documento indica tempo de reação de 3 a 5 segundos para o Iniciador.", source: "Material de Estudo — Produção Linha, p. 2" },
-    { id: "LIN-05", area: "linha", prompt: "Qual faixa de tempo de linha está registrada no material?", options: ["15 a 20 segundos", "20 a 30 segundos", "35 a 50 segundos", "60 a 90 segundos"], answer: 2, explanation: "O material registra tempo de linha de 35 a 50 segundos.", source: "Material de Estudo — Produção Linha, p. 2" },
-    { id: "LIN-06", area: "linha", prompt: "Se surgir um novo pedido no monitor antes de terminar o ciclo de caramelização, o que o material orienta?", options: ["Esperar o ciclo terminar para iniciar outra rodada", "Ativar uma nova rodada sem esperar terminar o ciclo", "Desligar a tostadeira", "Retirar todos os pães da estação"], answer: 1, explanation: "O documento orienta ativar uma nova rodada quando houver novo pedido, sem esperar o término do ciclo de caramelização.", source: "Material de Estudo — Produção Linha, p. 3" },
-
-    { id: "CHA-01", area: "chapas", prompt: "Quais temperaturas de chapa estão indicadas no Material de Estudo — Produção Linha?", options: ["177°C inferior e 218°C superior", "168°C inferior e 180°C superior", "85°C inferior e 79°C superior", "293°C inferior e 275°C superior"], answer: 0, explanation: "A página de Chapas do material de estudo registra 177°C para a parte inferior e 218°C para a superior.", source: "Material de Estudo — Produção Linha, p. 4" },
-    { id: "CHA-02", area: "chapas", prompt: "Qual combinação de máximo de carnes por platen está registrada no material?", options: ["10:1 = 8; 4:1 = 6; 3:1 = 4", "10:1 = 6; 4:1 = 8; 3:1 = 4", "10:1 = 4; 4:1 = 4; 3:1 = 8", "10:1 = 8; 4:1 = 8; 3:1 = 8"], answer: 0, explanation: "O quadro do material indica máximo de 8 unidades para 10:1, 6 para 4:1 e 4 para 3:1 por platen.", source: "Material de Estudo — Produção Linha, p. 4" },
-    { id: "CHA-03", area: "chapas", prompt: "Segundo o Material de Estudo, quais são os tempos de remoção das carnes?", options: ["10:1 = 15 s; 4:1 = 18 s; 3:1 = 18 s", "10:1 = 18 s; 4:1 = 15 s; 3:1 = 15 s", "Todas = 22 s", "10:1 = 30 s; 4:1 = 20 s; 3:1 = 10 s"], answer: 1, explanation: "O documento lista 18 segundos para 10:1 e 15 segundos para 4:1 e 3:1.", source: "Material de Estudo — Produção Linha, p. 4" },
-    { id: "CHA-04", area: "chapas", prompt: "Quantos panos limpos, sanitizados e dobrados o material pede para a estação de chapas?", options: ["2 panos: um para tudo e outro reserva", "3 panos: um para inox, um para utensílios e um para gordura", "4 panos: um para inox/áreas não gordurosas, dois para utensílios e um para áreas gordurosas", "5 panos, todos com a mesma finalidade"], answer: 2, explanation: "O material descreve quatro panos com as finalidades especificadas na alternativa correta.", source: "Material de Estudo — Produção Linha, p. 4" },
-    { id: "CHA-05", area: "chapas", prompt: "Ao soar o timer aos 5 segundos, quais utensílios o procedimento manda ter à mão?", options: ["Somente um pano e o raspador", "Saleiro em uma mão e espátula e apoio de carnes na outra", "Somente a bandeja UHC", "O pegador de frango e uma embalagem"], answer: 1, explanation: "O procedimento descreve o saleiro em uma mão e a espátula e o apoio de carnes na outra.", source: "Material de Estudo — Produção Linha, p. 5" },
-    { id: "CHA-06", area: "chapas", prompt: "Para carnes 10:1, como o material orienta organizar as carnes na gaveta UHC?", options: ["De duas em duas, apenas nas pontas", "De quatro em quatro, primeiro no centro e depois nas pontas, formando no máximo quatro pilhas", "Todas soltas em uma única camada", "De três em três, formando no máximo três pilhas"], answer: 1, explanation: "O material descreve colocar as carnes 10:1 de quatro em quatro, começando pelo centro e depois pelas pontas, com no máximo quatro pilhas.", source: "Material de Estudo — Produção Linha, p. 5" },
-    { id: "CHA-07", area: "chapas", prompt: "Qual espaçamento aproximado entre carnes é indicado no Guia de Implementação Best Burger 2025?", options: ["Sem espaço entre as carnes", "Aproximadamente 1 cm", "Aproximadamente 5 cm", "Aproximadamente 10 cm"], answer: 1, explanation: "O guia recomenda separação aproximada de 1 cm entre as carnes para favorecer o cozimento e a eficiência da chapa.", source: "Guia de Implementação BB VF 2025, p. 58" },
-    { id: "CHA-08", area: "chapas", prompt: "Qual quantidade mínima de carnes por vez o Guia de Implementação Best Burger 2025 recomenda cozinhar?", options: ["Uma carne", "Duas carnes", "Seis carnes", "Oito carnes"], answer: 1, explanation: "O guia afirma que o restaurante deve cozinhar sempre um mínimo de duas carnes por vez.", source: "Guia de Implementação BB VF 2025, p. 58" },
-
-    { id: "FRI-01", area: "mcfritas", prompt: "Qual temperatura de fritadeira está indicada na seção McFritas do material?", options: ["150°C", "168°C", "180°C", "193°C"], answer: 1, explanation: "A seção McFritas registra temperatura da fritadeira de 168°C.", source: "Material de Estudo — Produção Linha, p. 7" },
-    { id: "FRI-02", area: "mcfritas", prompt: "Qual é o tempo de fritura programado para McFritas, com o Duty indicado no material?", options: ["3 min e 10 s, com Duty de 30 s", "3 min e 15 s, com Duty de 20 s", "6 min, com Duty de 30 s", "7 min, sem Duty"], answer: 0, explanation: "O material registra fritura programada de 3 minutos e 10 segundos, com Duty de 30 segundos.", source: "Material de Estudo — Produção Linha, p. 7" },
-    { id: "FRI-03", area: "mcfritas", prompt: "Quais tempos de vida o material informa para McFritas no congelador portátil e no encestador automático?", options: ["1 hora e 2 horas", "2 horas e 24 horas", "7 minutos e 15 minutos", "24 horas e 48 horas"], answer: 1, explanation: "O documento informa 2 horas no congelador portátil e 24 horas no encestador automático.", source: "Material de Estudo — Produção Linha, p. 7–8" },
-    { id: "FRI-04", area: "mcfritas", prompt: "Ao soar o timer do Duty de 30 segundos durante a fritura, o que o procedimento orienta?", options: ["Retirar as McFritas e já embalá-las", "Erguer o cesto completamente do óleo, sacudir para separar os palitos e voltar o cesto à cuba", "Desligar a fritadeira", "Adicionar sal enquanto o cesto continua submerso"], answer: 1, explanation: "O procedimento manda erguer o cesto com as duas mãos, retirá-lo totalmente do óleo, sacudir para separar os palitos e retorná-lo à cuba.", source: "Material de Estudo — Produção Linha, p. 8" },
-    { id: "FRI-05", area: "mcfritas", prompt: "Depois de a fritura terminar e o cesto ficar preso no suporte da cuba, por quanto tempo o óleo deve escorrer?", options: ["1 a 2 segundos", "5 a 10 segundos", "20 segundos", "1 minuto"], answer: 1, explanation: "O material indica deixar o óleo escorrer por 5 a 10 segundos.", source: "Material de Estudo — Produção Linha, p. 8" },
-    { id: "FRI-06", area: "mcfritas", prompt: "Como o material orienta aplicar o sal às McFritas?", options: ["Espalhar o sal com as mãos", "Segurar o saleiro a 20 cm, sobre o centro, aplicar 4 g com uma única virada sem agitar", "Aplicar 10 g em duas viradas nas bordas", "Aplicar o sal antes de colocar as batatas no óleo"], answer: 1, explanation: "A seção orienta segurar o saleiro pela alça a 20 cm, no centro das McFritas, virá-lo uma única vez sem agitar e despejar 4 g.", source: "Material de Estudo — Produção Linha, p. 8" },
-
-    { id: "PFR-01", area: "fritos", prompt: "Qual temperatura o material indica para as fritadeiras de produtos de frango e tortas?", options: ["168°C", "175°C", "180°C", "193°C"], answer: 2, explanation: "A seção Produtos Fritos indica 180°C para produtos de frango e tortas.", source: "Material de Estudo — Produção Linha, p. 9" },
-    { id: "PFR-02", area: "fritos", prompt: "Quais tempos de fritura programados aparecem para McChicken, McJunior, McNuggets e tortas?", options: ["3 min e 10 s para todos", "3 min e 15 s para McChicken, McJunior e McNuggets; 6 min para tortas", "6 min para frango e 20 min para tortas", "2 min para frango e 3 min para tortas"], answer: 1, explanation: "O material informa 3 minutos e 15 segundos para McChicken, McJunior e McNuggets, e 6 minutos para tortas.", source: "Material de Estudo — Produção Linha, p. 9" },
-    { id: "PFR-03", area: "fritos", prompt: "Quais tempos de validade na UHC estão indicados para os produtos citados?", options: ["McChicken 20 min; McNuggets e McJunior 30 min", "McChicken 30 min; McNuggets e McJunior 20 min", "Todos 15 min", "Todos 60 min"], answer: 1, explanation: "O material lista McChicken com 30 minutos e McNuggets e McJunior com 20 minutos.", source: "Material de Estudo — Produção Linha, p. 9" },
-    { id: "PFR-04", area: "fritos", prompt: "Segundo o material, qual é o tempo de resfriamento das tortas e o tempo total de vida indicado?", options: ["10 min de resfriamento e 120 min de vida", "20 min de resfriamento e 240 min de vida total, incluindo o resfriamento", "30 min de resfriamento e 240 min de vida adicional", "Não há resfriamento nem marcação de validade"], answer: 1, explanation: "O documento informa resfriamento de 20 minutos e vida total de 240 minutos, incluindo o tempo de resfriamento.", source: "Material de Estudo — Produção Linha, p. 9–10" },
-    { id: "PFR-05", area: "fritos", prompt: "Ao colocar tortas no cesto, qual posição o procedimento descreve?", options: ["Costura voltada para baixo", "Costura para cima, encostando a parte superior na lâmina que separa os espaços do cesto", "Tortas empilhadas umas sobre as outras", "A posição é livre, sem orientação no material"], answer: 1, explanation: "O procedimento indica colocar as tortas com a costura para cima, encostando a parte superior na lâmina separadora dos espaços do cesto.", source: "Material de Estudo — Produção Linha, p. 10" },
-    { id: "PFR-06", area: "fritos", prompt: "Qual pegador o material indica para carnes de frango, com a exceção expressamente citada?", options: ["Pegador bege para todas as carnes", "Pegador preto, exceto para McNuggets", "Pegador verde para todas as carnes", "Nenhum pegador deve ser utilizado"], answer: 1, explanation: "O material manda manter um pegador preto para carnes de frango e especifica exceção para McNuggets.", source: "Material de Estudo — Produção Linha, p. 9–10" }
+    {
+      "id": "BK-LIN-07",
+      "area": "linha",
+      "prompt": "Por quanto tempo devemos lavar as mãos?",
+      "options": [
+        "10 segundos",
+        "15 segundos",
+        "20 segundos",
+        "30 segundos"
+      ],
+      "answer": 2,
+      "explanation": "O book informa 20 segundos.",
+      "source": "Book Olimpíadas de Básico — Venture, p. 1, questão 7",
+      "sourceType": "book"
+    },
+    {
+      "id": "BK-LIN-08",
+      "area": "linha",
+      "prompt": "Qual é o primeiro passo na lavagem das mãos?",
+      "options": [
+        "Aplicar o sanitizante",
+        "Molhar as mãos",
+        "Secar as mãos",
+        "Colocar as luvas"
+      ],
+      "answer": 1,
+      "explanation": "O primeiro passo indicado é molhar as mãos.",
+      "source": "Book Olimpíadas de Básico — Venture, p. 1, questão 8",
+      "sourceType": "book"
+    },
+    {
+      "id": "BK-LIN-09",
+      "area": "linha",
+      "prompt": "Qual é a frequência correta para lavagem das mãos?",
+      "options": [
+        "A cada 30 minutos",
+        "A cada 1 hora",
+        "A cada 2 horas",
+        "Somente ao iniciar o turno"
+      ],
+      "answer": 1,
+      "explanation": "O book indica lavagem a cada 1 hora.",
+      "source": "Book Olimpíadas de Básico — Venture, p. 1, questão 9",
+      "sourceType": "book"
+    },
+    {
+      "id": "BK-LIN-11",
+      "area": "linha",
+      "prompt": "Qual opção reúne padrões de higiene citados no book?",
+      "options": [
+        "Cabelos presos, unhas curtas e limpas, sem esmalte ou adornos e com redinha",
+        "Cabelos soltos e unhas esmaltadas",
+        "Somente usar avental",
+        "Usar adornos se estiverem cobertos"
+      ],
+      "answer": 0,
+      "explanation": "O book lista cabelos presos, unhas curtas, sem esmalte e limpas, barba feita, sem adornos e com redinha.",
+      "source": "Book Olimpíadas de Básico — Venture, p. 1, questão 11",
+      "sourceType": "book"
+    },
+    {
+      "id": "BK-LIN-12",
+      "area": "linha",
+      "prompt": "Qual é a compressão do pão e o tempo de tostagem indicados no book?",
+      "options": [
+        "Compressão 3, por 18 segundos",
+        "Compressão 4, por 22 segundos",
+        "Compressão 5, por 30 segundos",
+        "Compressão 5D, por 22 segundos"
+      ],
+      "answer": 1,
+      "explanation": "O book informa compressão 4 e tostagem por 22 segundos.",
+      "source": "Book Olimpíadas de Básico — Venture, p. 1, questão 12",
+      "sourceType": "book"
+    },
+    {
+      "id": "BK-LIN-17",
+      "area": "linha",
+      "prompt": "Qual é o tempo de reação do iniciador?",
+      "options": [
+        "De 1 a 2 segundos",
+        "De 3 a 5 segundos",
+        "De 10 a 15 segundos",
+        "De 20 a 25 segundos"
+      ],
+      "answer": 1,
+      "explanation": "O book indica de 3 a 5 segundos.",
+      "source": "Book Olimpíadas de Básico — Venture, p. 1, questão 17",
+      "sourceType": "book"
+    },
+    {
+      "id": "BK-LIN-18",
+      "area": "linha",
+      "prompt": "Qual pessoa da linha nunca pode sair da estação?",
+      "options": [
+        "A pessoa da condimentação",
+        "A pessoa do iniciador",
+        "A pessoa responsável pelas bebidas",
+        "A pessoa do apoio"
+      ],
+      "answer": 1,
+      "explanation": "O book identifica a pessoa do iniciador.",
+      "source": "Book Olimpíadas de Básico — Venture, p. 1, questão 18",
+      "sourceType": "book"
+    },
+    {
+      "id": "BK-LIN-19",
+      "area": "linha",
+      "prompt": "A partir de quantos sanduíches produzidos na hora devemos abrir o lado 2?",
+      "options": [
+        "75 sanduíches por hora",
+        "100 sanduíches por hora",
+        "125 sanduíches por hora",
+        "150 sanduíches por hora"
+      ],
+      "answer": 2,
+      "explanation": "O book indica 125 sanduíches na hora.",
+      "source": "Book Olimpíadas de Básico — Venture, p. 1, questão 19",
+      "sourceType": "book"
+    },
+    {
+      "id": "BK-LIN-20",
+      "area": "linha",
+      "prompt": "Em qual direção devem ficar a base e a coroa dos pães na linha?",
+      "options": [
+        "Base para a tostadeira e coroa para a UHC",
+        "Base no sentido da UHC e coroa no sentido da tostadeira",
+        "Base e coroa ambas no sentido da UHC",
+        "A direção não importa"
+      ],
+      "answer": 1,
+      "explanation": "O book indica base no sentido UHC e coroa no sentido da tostadeira.",
+      "source": "Book Olimpíadas de Básico — Venture, p. 1, questão 20",
+      "sourceType": "book"
+    },
+    {
+      "id": "BK-LIN-21",
+      "area": "linha",
+      "prompt": "Quantos pães podemos ativar por vez na tostadeira?",
+      "options": [
+        "1 pão",
+        "2 pães",
+        "4 pães",
+        "6 pães"
+      ],
+      "answer": 1,
+      "explanation": "O book indica 2 pães.",
+      "source": "Book Olimpíadas de Básico — Venture, p. 1, questão 21",
+      "sourceType": "book"
+    },
+    {
+      "id": "BK-LIN-22",
+      "area": "linha",
+      "prompt": "Quantos sanduíches podemos condimentar por vez?",
+      "options": [
+        "1 sanduíche",
+        "2 sanduíches",
+        "3 sanduíches",
+        "4 sanduíches"
+      ],
+      "answer": 1,
+      "explanation": "O book indica 2 sanduíches.",
+      "source": "Book Olimpíadas de Básico — Venture, p. 1, questão 22",
+      "sourceType": "book"
+    },
+    {
+      "id": "BK-LIN-25",
+      "area": "linha",
+      "prompt": "Quantos panos devemos ter na linha e para quais usos?",
+      "options": [
+        "2: um para chapa e outro para fritadeira",
+        "3: um para tostadeira, um para mesa de condimentação e um para UHC",
+        "4: dois para utensílios, um para área gordurosa e um para não gordurosa",
+        "1 pano para toda a estação"
+      ],
+      "answer": 1,
+      "explanation": "O book indica três panos com as finalidades descritas na alternativa correta.",
+      "source": "Book Olimpíadas de Básico — Venture, p. 1, questão 25",
+      "sourceType": "book"
+    },
+    {
+      "id": "BK-LIN-26",
+      "area": "linha",
+      "prompt": "Em quantos pedaços devemos cortar a carne Crispy da Salada Mix?",
+      "options": [
+        "De 2 a 3 pedaços",
+        "De 4 a 5 pedaços",
+        "De 5 a 7 pedaços",
+        "De 8 a 10 pedaços"
+      ],
+      "answer": 2,
+      "explanation": "O book indica de 5 a 7 pedaços.",
+      "source": "Book Olimpíadas de Básico — Venture, p. 1, questão 26",
+      "sourceType": "book"
+    },
+    {
+      "id": "BK-CHA-10",
+      "area": "chapas",
+      "prompt": "Quais EPIs são necessários para atuar na estação de chapa, segundo o book?",
+      "options": [
+        "Avental e mangote",
+        "Casaco e luvas térmicas",
+        "Touca e óculos de proteção",
+        "Somente luvas descartáveis"
+      ],
+      "answer": 0,
+      "explanation": "O book indica avental e mangote.",
+      "source": "Book Olimpíadas de Básico — Venture, p. 1, questão 10",
+      "sourceType": "book"
+    },
+    {
+      "id": "BK-CHA-13",
+      "area": "chapas",
+      "prompt": "Qual temperatura das UHCs para carnes vermelhas e brancas, respectivamente?",
+      "options": [
+        "85°C e 79°C",
+        "79°C e 85°C",
+        "79°C e 80°C",
+        "85°C e 85°C"
+      ],
+      "answer": 1,
+      "explanation": "O book indica 79°C para carnes vermelhas e 85°C para carnes brancas.",
+      "source": "Book Olimpíadas de Básico — Venture, p. 1, questão 13",
+      "sourceType": "book"
+    },
+    {
+      "id": "BK-CHA-14",
+      "area": "chapas",
+      "prompt": "Qual é o tempo de vida das carnes vermelhas na UHC?",
+      "options": [
+        "5 minutos",
+        "8 minutos",
+        "10 minutos",
+        "15 minutos"
+      ],
+      "answer": 2,
+      "explanation": "O book indica 10 minutos.",
+      "source": "Book Olimpíadas de Básico — Venture, p. 1, questão 14",
+      "sourceType": "book"
+    },
+    {
+      "id": "BK-CHA-34",
+      "area": "chapas",
+      "prompt": "Quais cores de pegadores são indicadas na linha e para quais carnes?",
+      "options": [
+        "Vermelho para carnes vermelhas com cebola; azul para vermelhas sem cebola; verde para carnes brancas",
+        "Verde para vermelhas; azul para brancas; vermelho para nuggets",
+        "Preto para vermelhas; bege para brancas; azul para tortas",
+        "Vermelho para todas as carnes"
+      ],
+      "answer": 0,
+      "explanation": "O book lista vermelho para carnes vermelhas com cebola, azul para vermelhas sem cebola e verde para carnes brancas.",
+      "source": "Book Olimpíadas de Básico — Venture, p. 2, questão 34",
+      "sourceType": "book"
+    },
+    {
+      "id": "BK-CHA-35",
+      "area": "chapas",
+      "prompt": "Qual procedimento devemos seguir logo após ativar as carnes na chapa?",
+      "options": [
+        "Lavar os utensílios",
+        "Sanitizar as mãos",
+        "Trocar o avental",
+        "Desligar a chapa"
+      ],
+      "answer": 1,
+      "explanation": "O book indica sanitizar as mãos.",
+      "source": "Book Olimpíadas de Básico — Venture, p. 2, questão 35",
+      "sourceType": "book"
+    },
+    {
+      "id": "BK-CHA-37",
+      "area": "chapas",
+      "prompt": "Qual é o ângulo de raspagem da chapa?",
+      "options": [
+        "5°",
+        "10°",
+        "15°",
+        "30°"
+      ],
+      "answer": 2,
+      "explanation": "O book indica 15°.",
+      "source": "Book Olimpíadas de Básico — Venture, p. 2, questão 37",
+      "sourceType": "book"
+    },
+    {
+      "id": "BK-CHA-38",
+      "area": "chapas",
+      "prompt": "Qual é a direção indicada para ativar, salgar e remover as carnes?",
+      "options": [
+        "Da esquerda para a direita, do fundo para a frente",
+        "Da direita para a esquerda, da frente para o fundo",
+        "Do centro para as bordas em qualquer ordem",
+        "Da frente para o fundo e depois da direita para a esquerda"
+      ],
+      "answer": 1,
+      "explanation": "O book indica da direita para a esquerda, da frente para o fundo.",
+      "source": "Book Olimpíadas de Básico — Venture, p. 2, questão 38",
+      "sourceType": "book"
+    },
+    {
+      "id": "BK-CHA-39",
+      "area": "chapas",
+      "prompt": "Qual é o empilhamento máximo de carnes 10:1 na gaveta?",
+      "options": [
+        "1 carne",
+        "2 carnes",
+        "3 carnes",
+        "4 carnes"
+      ],
+      "answer": 2,
+      "explanation": "O book indica no máximo 3 carnes.",
+      "source": "Book Olimpíadas de Básico — Venture, p. 2, questão 39",
+      "sourceType": "book"
+    },
+    {
+      "id": "BK-CHA-40",
+      "area": "chapas",
+      "prompt": "Qual é o empilhamento máximo de carnes 4:1 na gaveta?",
+      "options": [
+        "1 carne; não empilhar carnes 4:1",
+        "2 carnes",
+        "3 carnes",
+        "4 carnes"
+      ],
+      "answer": 0,
+      "explanation": "O book informa uma carne e que não podemos empilhar carnes 4:1.",
+      "source": "Book Olimpíadas de Básico — Venture, p. 2, questão 40",
+      "sourceType": "book"
+    },
+    {
+      "id": "BK-CHA-41",
+      "area": "chapas",
+      "prompt": "Quantas carnes 10:1 podemos ativar no máximo em cada platen?",
+      "options": [
+        "4 carnes",
+        "6 carnes",
+        "8 carnes",
+        "12 carnes"
+      ],
+      "answer": 1,
+      "explanation": "O book indica 6 carnes.",
+      "source": "Book Olimpíadas de Básico — Venture, p. 2, questão 41",
+      "sourceType": "book"
+    },
+    {
+      "id": "BK-CHA-42",
+      "area": "chapas",
+      "prompt": "Quantas carnes 4:1 podemos ativar no máximo em cada platen?",
+      "options": [
+        "2 carnes",
+        "4 carnes",
+        "6 carnes",
+        "8 carnes"
+      ],
+      "answer": 1,
+      "explanation": "O book indica 4 carnes.",
+      "source": "Book Olimpíadas de Básico — Venture, p. 2, questão 42",
+      "sourceType": "book"
+    },
+    {
+      "id": "BK-CHA-43",
+      "area": "chapas",
+      "prompt": "Quantas carnes 4:1 podemos colocar no máximo em cada gaveta?",
+      "options": [
+        "2 carnes",
+        "4 carnes",
+        "6 carnes",
+        "8 carnes"
+      ],
+      "answer": 1,
+      "explanation": "O book indica 4 carnes.",
+      "source": "Book Olimpíadas de Básico — Venture, p. 2, questão 43",
+      "sourceType": "book"
+    },
+    {
+      "id": "BK-CHA-44",
+      "area": "chapas",
+      "prompt": "Quantas carnes 10:1 podemos colocar no máximo em cada gaveta?",
+      "options": [
+        "6 carnes",
+        "8 carnes",
+        "10 carnes",
+        "12 carnes"
+      ],
+      "answer": 3,
+      "explanation": "O book indica 12 carnes.",
+      "source": "Book Olimpíadas de Básico — Venture, p. 2, questão 44",
+      "sourceType": "book"
+    },
+    {
+      "id": "BK-CHA-45",
+      "area": "chapas",
+      "prompt": "Quantas fatias de bacon podemos ativar por vez em cada platen?",
+      "options": [
+        "3 fatias",
+        "4 fatias",
+        "6 fatias",
+        "8 fatias"
+      ],
+      "answer": 2,
+      "explanation": "O book indica 6 fatias.",
+      "source": "Book Olimpíadas de Básico — Venture, p. 2, questão 45",
+      "sourceType": "book"
+    },
+    {
+      "id": "BK-CHA-46",
+      "area": "chapas",
+      "prompt": "Qual pegador devemos usar para ativar as carnes brancas?",
+      "options": [
+        "Vermelho",
+        "Azul",
+        "Verde",
+        "Preto"
+      ],
+      "answer": 3,
+      "explanation": "O book indica o pegador preto.",
+      "source": "Book Olimpíadas de Básico — Venture, p. 2, questão 46",
+      "sourceType": "book"
+    },
+    {
+      "id": "BK-CHA-117",
+      "area": "chapas",
+      "prompt": "Quantos panos devemos ter na área de chapa e para que servem?",
+      "options": [
+        "3: um para chapa, um para UHC e um para tostadeira",
+        "4: dois para utensílios, um para área gordurosa e um para áreas não gordurosas",
+        "2: um para tudo e outro reserva",
+        "5: três para utensílios e dois para inox"
+      ],
+      "answer": 1,
+      "explanation": "O book indica quatro panos: dois para utensílios, um para área gordurosa e um para áreas não gordurosas.",
+      "source": "Book Olimpíadas de Básico — Venture, p. 5, questão 117",
+      "sourceType": "book"
+    },
+    {
+      "id": "BK-CHA-118",
+      "area": "chapas",
+      "prompt": "Qual é o tempo de remoção das carnes?",
+      "options": [
+        "10 segundos",
+        "15 segundos",
+        "18 segundos",
+        "25 segundos"
+      ],
+      "answer": 2,
+      "explanation": "O book indica 18 segundos.",
+      "source": "Book Olimpíadas de Básico — Venture, p. 5, questão 118",
+      "sourceType": "book"
+    },
+    {
+      "id": "BK-CHA-133",
+      "area": "chapas",
+      "prompt": "Quais são as temperaturas dos platens superior e inferior e o tempo de aquecimento das chapas?",
+      "options": [
+        "Superior 218°C, inferior 177°C e aquecimento de 45 minutos",
+        "Superior 177°C, inferior 218°C e aquecimento de 30 minutos",
+        "Ambos 200°C e aquecimento de 15 minutos",
+        "Superior 271°C, inferior 254°C e aquecimento de 60 minutos"
+      ],
+      "answer": 0,
+      "explanation": "O book indica platen superior a 218°C, inferior a 177°C e aquecimento por 45 minutos.",
+      "source": "Book Olimpíadas de Básico — Venture, p. 5, questão 133",
+      "sourceType": "book"
+    },
+    {
+      "id": "BK-FRI-68",
+      "area": "mcfritas",
+      "prompt": "Qual é a temperatura do óleo para McFritas?",
+      "options": [
+        "150°C",
+        "168°C",
+        "180°C",
+        "190°C"
+      ],
+      "answer": 1,
+      "explanation": "O book indica 168°C.",
+      "source": "Book Olimpíadas de Básico — Venture, p. 2, questão 68",
+      "sourceType": "book"
+    },
+    {
+      "id": "BK-FRI-70",
+      "area": "mcfritas",
+      "prompt": "Qual é o tempo de fritura para McFritas?",
+      "options": [
+        "2 minutos e 30 segundos",
+        "3 minutos e 10 segundos",
+        "3 minutos e 15 segundos",
+        "6 minutos"
+      ],
+      "answer": 1,
+      "explanation": "O book indica 3 minutos e 10 segundos.",
+      "source": "Book Olimpíadas de Básico — Venture, p. 2, questão 70",
+      "sourceType": "book"
+    },
+    {
+      "id": "BK-FRI-71",
+      "area": "mcfritas",
+      "prompt": "Qual é o Duty para McFritas?",
+      "options": [
+        "15 segundos",
+        "20 segundos",
+        "30 segundos",
+        "45 segundos"
+      ],
+      "answer": 2,
+      "explanation": "O book indica 30 segundos.",
+      "source": "Book Olimpíadas de Básico — Venture, p. 2, questão 71",
+      "sourceType": "book"
+    },
+    {
+      "id": "BK-FRI-72",
+      "area": "mcfritas",
+      "prompt": "Qual é o tempo de vida das McFritas depois de prontas?",
+      "options": [
+        "3 minutos",
+        "5 minutos",
+        "7 minutos",
+        "10 minutos"
+      ],
+      "answer": 2,
+      "explanation": "O book indica 7 minutos.",
+      "source": "Book Olimpíadas de Básico — Venture, p. 2, questão 72",
+      "sourceType": "book"
+    },
+    {
+      "id": "BK-FRI-73",
+      "area": "mcfritas",
+      "prompt": "Quantas gramas de sal o saleiro das McFritas dispensa?",
+      "options": [
+        "2 gramas",
+        "4 gramas",
+        "6 gramas",
+        "8 gramas"
+      ],
+      "answer": 1,
+      "explanation": "O book indica 4 gramas.",
+      "source": "Book Olimpíadas de Básico — Venture, p. 2, questão 73",
+      "sourceType": "book"
+    },
+    {
+      "id": "BK-FRI-75",
+      "area": "mcfritas",
+      "prompt": "Quantos panos devemos manter na estação de McFritas?",
+      "options": [
+        "1 pano",
+        "2 panos",
+        "3 panos",
+        "4 panos"
+      ],
+      "answer": 1,
+      "explanation": "O book indica 2 panos.",
+      "source": "Book Olimpíadas de Básico — Venture, p. 2, questão 75",
+      "sourceType": "book"
+    },
+    {
+      "id": "BK-FRI-129",
+      "area": "mcfritas",
+      "prompt": "A que altura devemos segurar o saleiro das McFritas?",
+      "options": [
+        "10 cm",
+        "15 cm",
+        "20 cm",
+        "30 cm"
+      ],
+      "answer": 2,
+      "explanation": "O book indica 20 cm.",
+      "source": "Book Olimpíadas de Básico — Venture, p. 5, questão 129",
+      "sourceType": "book"
+    },
+    {
+      "id": "BK-FRI-131",
+      "area": "mcfritas",
+      "prompt": "Quais são os pesos das McFritas P, M e G, respectivamente?",
+      "options": [
+        "73 g, 102 g e 146 g",
+        "70 g, 100 g e 140 g",
+        "75 g, 105 g e 150 g",
+        "80 g, 110 g e 160 g"
+      ],
+      "answer": 0,
+      "explanation": "O book indica 73 g, 102 g e 146 g, respectivamente.",
+      "source": "Book Olimpíadas de Básico — Venture, p. 5, questão 131",
+      "sourceType": "book"
+    },
+    {
+      "id": "BK-FRI-132",
+      "area": "mcfritas",
+      "prompt": "Quantas vezes devemos misturar as McFritas após salgá-las?",
+      "options": [
+        "Uma vez",
+        "De 2 a 3 vezes",
+        "De 4 a 5 vezes",
+        "Não é necessário misturar"
+      ],
+      "answer": 1,
+      "explanation": "O book indica de 2 a 3 vezes para distribuir o sal por igual.",
+      "source": "Book Olimpíadas de Básico — Venture, p. 5, questão 132",
+      "sourceType": "book"
+    },
+    {
+      "id": "BK-PFR-15",
+      "area": "fritos",
+      "prompt": "Qual é o tempo de vida na UHC indicado para carnes brancas?",
+      "options": [
+        "Crispy 60 min; Chicken 30 min; Junior e Nuggets 20 min",
+        "Crispy 30 min; Chicken 60 min; Junior e Nuggets 10 min",
+        "Todos os produtos 20 min",
+        "Todos os produtos 60 min"
+      ],
+      "answer": 0,
+      "explanation": "O book indica Crispy 60 minutos, Chicken 30 minutos, Junior e Nuggets 20 minutos.",
+      "source": "Book Olimpíadas de Básico — Venture, p. 1, questão 15",
+      "sourceType": "book"
+    },
+    {
+      "id": "BK-PFR-47",
+      "area": "fritos",
+      "prompt": "Para que serve o pegador bege sem dentes nos produtos fritos?",
+      "options": [
+        "Para aplicar sal",
+        "Para auxiliar a remoção das carnes dos cestos",
+        "Para ativar carnes na chapa",
+        "Para transportar pão"
+      ],
+      "answer": 1,
+      "explanation": "O book indica que ele auxilia a remoção das carnes dos cestos.",
+      "source": "Book Olimpíadas de Básico — Venture, p. 2, questão 47",
+      "sourceType": "book"
+    },
+    {
+      "id": "BK-PFR-48",
+      "area": "fritos",
+      "prompt": "Quais são as rodadas máximas para ativar carnes brancas e tortas?",
+      "options": [
+        "McChicken e Chicken Jr 6; Crispy 4; Nuggets 24; tortas 16",
+        "McChicken e Chicken Jr 4; Crispy 6; Nuggets 16; tortas 24",
+        "Todos os produtos 6 unidades",
+        "McChicken 8; Crispy 8; Nuggets 12; tortas 12"
+      ],
+      "answer": 0,
+      "explanation": "O book indica McChicken e Chicken Jr 6 carnes, Crispy 4 carnes, Nuggets 24 bolinhas e tortas 16 unidades.",
+      "source": "Book Olimpíadas de Básico — Venture, p. 2, questão 48",
+      "sourceType": "book"
+    },
+    {
+      "id": "BK-PFR-49",
+      "area": "fritos",
+      "prompt": "Qual é o tempo de resfriamento das tortas?",
+      "options": [
+        "10 minutos",
+        "15 minutos",
+        "20 minutos",
+        "30 minutos"
+      ],
+      "answer": 2,
+      "explanation": "O book indica 20 minutos.",
+      "source": "Book Olimpíadas de Básico — Venture, p. 2, questão 49",
+      "sourceType": "book"
+    },
+    {
+      "id": "BK-PFR-50",
+      "area": "fritos",
+      "prompt": "Qual é o tempo de fritura das tortas?",
+      "options": [
+        "3 minutos",
+        "4 minutos",
+        "6 minutos",
+        "8 minutos"
+      ],
+      "answer": 2,
+      "explanation": "O book indica 6 minutos.",
+      "source": "Book Olimpíadas de Básico — Venture, p. 2, questão 50",
+      "sourceType": "book"
+    },
+    {
+      "id": "BK-PFR-51",
+      "area": "fritos",
+      "prompt": "Qual é o tempo de vida das tortas prontas?",
+      "options": [
+        "30 minutos",
+        "1 hora",
+        "2 horas",
+        "4 horas"
+      ],
+      "answer": 2,
+      "explanation": "O book indica 2 horas.",
+      "source": "Book Olimpíadas de Básico — Venture, p. 2, questão 51",
+      "sourceType": "book"
+    },
+    {
+      "id": "BK-PFR-52",
+      "area": "fritos",
+      "prompt": "Quais são os dois sistemas de ativada que podemos usar nos produtos fritos?",
+      "options": [
+        "Manutenção e Recuperação",
+        "Treinamento e Competição",
+        "Rápido e Lento",
+        "Contínuo e Intermitente"
+      ],
+      "answer": 0,
+      "explanation": "O book indica Manutenção e Recuperação.",
+      "source": "Book Olimpíadas de Básico — Venture, p. 2, questão 52",
+      "sourceType": "book"
+    },
+    {
+      "id": "BK-PFR-53",
+      "area": "fritos",
+      "prompt": "Por quanto tempo as carnes devem escorrer sobre o óleo antes de ir para a gaveta?",
+      "options": [
+        "1 a 3 segundos",
+        "5 a 10 segundos",
+        "15 a 20 segundos",
+        "30 segundos"
+      ],
+      "answer": 1,
+      "explanation": "O book indica de 5 a 10 segundos.",
+      "source": "Book Olimpíadas de Básico — Venture, p. 2, questão 53",
+      "sourceType": "book"
+    },
+    {
+      "id": "BK-PFR-67",
+      "area": "fritos",
+      "prompt": "Qual é a temperatura do óleo para carnes brancas e tortas?",
+      "options": [
+        "168°C",
+        "175°C",
+        "180°C",
+        "190°C"
+      ],
+      "answer": 2,
+      "explanation": "O book indica 180°C.",
+      "source": "Book Olimpíadas de Básico — Venture, p. 2, questão 67",
+      "sourceType": "book"
+    },
+    {
+      "id": "BK-PFR-69",
+      "area": "fritos",
+      "prompt": "Qual é o tempo de fritura indicado para carnes brancas?",
+      "options": [
+        "McChicken, Chicken Jr e Nuggets 3 min 15 s; Crispy e tortas 6 min",
+        "Todos os produtos 3 min 10 s",
+        "McChicken 6 min; tortas 3 min 15 s",
+        "Todos os produtos 2 min"
+      ],
+      "answer": 0,
+      "explanation": "O book indica 3 min e 15 s para McChicken, Chicken Jr e Nuggets; Crispy e tortas, 6 minutos.",
+      "source": "Book Olimpíadas de Básico — Venture, p. 2, questão 69",
+      "sourceType": "book"
+    },
+    {
+      "id": "BK-PFR-74",
+      "area": "fritos",
+      "prompt": "Quais EPIs devemos usar para operar as estações de McFritas e Produtos Fritos?",
+      "options": [
+        "Avental e mangote",
+        "Casaco e balaclava",
+        "Somente luvas",
+        "Óculos e protetor auricular"
+      ],
+      "answer": 0,
+      "explanation": "O book indica avental e mangote.",
+      "source": "Book Olimpíadas de Básico — Venture, p. 2, questão 74",
+      "sourceType": "book"
+    },
+    {
+      "id": "BK-PFR-123",
+      "area": "fritos",
+      "prompt": "Qual é o percentual máximo de compostos polares aceitável para a gordura?",
+      "options": [
+        "12%",
+        "18%",
+        "24%",
+        "30%"
+      ],
+      "answer": 2,
+      "explanation": "O book indica 24%.",
+      "source": "Book Olimpíadas de Básico — Venture, p. 5, questão 123",
+      "sourceType": "book"
+    },
+    {
+      "id": "BK-PFR-124",
+      "area": "fritos",
+      "prompt": "Quais são sinais de decomposição do óleo citados no book?",
+      "options": [
+        "Espuma amarelada, cheiro forte e ácido, cor escura e fumaça excessiva",
+        "Somente mudança de temperatura",
+        "Somente bolhas pequenas",
+        "Óleo claro e sem odor"
+      ],
+      "answer": 0,
+      "explanation": "O book lista espuma amarelada, cheiro forte e ácido, cor escura e fumaça excessiva.",
+      "source": "Book Olimpíadas de Básico — Venture, p. 5, questão 124",
+      "sourceType": "book"
+    },
+    {
+      "id": "BK-PFR-125",
+      "area": "fritos",
+      "prompt": "Quais são os seis inimigos do óleo?",
+      "options": [
+        "Sal, ar, água, altas temperaturas, resíduos de carbono e detergente",
+        "Sal, açúcar, gelo, ar, papel e plástico",
+        "Água, gelo, farinha, sal, vapor e detergente",
+        "Ar, óleo novo, sal, papel, água e açúcar"
+      ],
+      "answer": 0,
+      "explanation": "O book lista sal, ar, água, altas temperaturas, resíduos de carbono e detergente.",
+      "source": "Book Olimpíadas de Básico — Venture, p. 5, questão 125",
+      "sourceType": "book"
+    },
+    {
+      "id": "BK-PFR-134",
+      "area": "fritos",
+      "prompt": "Qual é a temperatura e o tempo de congelamento dos congeladores portáteis?",
+      "options": [
+        "De -18 a -23°C e 45 minutos",
+        "De 1 a 4°C e 30 minutos",
+        "De -5 a -10°C e 60 minutos",
+        "De -18 a -23°C e 15 minutos"
+      ],
+      "answer": 0,
+      "explanation": "O book indica de -18 a -23°C e 45 minutos de congelamento.",
+      "source": "Book Olimpíadas de Básico — Venture, p. 5, questão 134",
+      "sourceType": "book"
+    }
   ];
 
   const state = { area: "cozinha", mode: "study", session: null };
