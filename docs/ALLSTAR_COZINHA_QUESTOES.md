@@ -42,12 +42,14 @@ As questões abaixo foram transcritas/parafraseadas apenas a partir dos dois PDF
 - PFR-05: posição das tortas no cesto — p. 10.
 - PFR-06: pegador indicado para frango e exceção expressa para McNuggets — p. 9–10.
 
-## Divergência identificada — não pontuada
-Há divergência nos documentos para parâmetros da UHC de carnes vermelhas:
-- `Material de Estudo — Produção Linha.pdf`: p. 4 indica UHC a 85°C e tempo de vida de 15 minutos para carnes vermelhas 10:1, 3:1 e 4:1.
-- `Guia de Implementação BB VF 2025.pdf`: p. 66 indica temperatura UHC de 79°C, tempo máximo de armazenamento de 10 minutos e rotação alvo de 5 a 8 minutos.
+## Proveniência das questões e padrão de UHC
 
-Os valores conflitantes foram deliberadamente excluídos das questões pontuadas. O conteúdo precisa ser confirmado por responsável autorizado usando o procedimento vigente antes de ser usado como orientação operacional.
+As 26 questões desta primeira versão são questões didáticas autorais, parafraseadas a partir dos dois PDFs fornecidos. Elas não são transcrições do book oficial e não foram validadas página a página contra esse book. Para uma versão rigorosamente alinhada ao book, é necessário conferir o documento oficial e mapear cada questão à página correta.
+
+### UHC de carnes vermelhas
+- Padrão adotado no treinamento: **79°C e tempo máximo de vida de 10 minutos**, conforme correção expressa do responsável pelo conteúdo e referência disponível no `Guia de Implementação BB VF 2025.pdf` (p. 66).
+- O `Material de Estudo — Produção Linha.pdf` (p. 4) contém valores conflitantes: 85°C e 15 minutos.
+- O Venture não deve usar os valores conflitantes do material de estudo para esse parâmetro. A página oficial de referência ainda deve ser confirmada no book oficial, caso seja um documento distinto do guia fornecido.
 
 ## Regras da experiência
 - Treinamento: feedback imediato, resposta correta, explicação e fonte/página após responder.
