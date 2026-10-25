@@ -1,5 +1,5 @@
 {
   "version": "9.2.0",
   "released_at": "2026-10-24",
-  "description": "Venture 9.2.0 development build: monthly leagues, burger badges, internal notifications, XP ledger hardening, and All Star Kitchen guided training + competitive quizzes based on supplied PDFs. Includes 26 source-mapped questions and a documented UHC parameter discrepancy excluded from scoring. All Star results do not modify official XP. Web Push with the site closed still requires backend/VAPID setup. Requires manual browser and multi-device testing before publication."
+  "description": "Venture 9.2.0 development build: monthly leagues, burger badges, internal notifications, XP ledger hardening, and All Star Kitchen training + competition. All Star now includes 55 questions mapped to the Book Olimpíadas de Básico — Venture (question number and page), with generated multiple-choice distractors. UHC red-meat standard follows the book: 79°C and maximum 10 minutes. All Star results do not modify official XP. Web Push with the site closed still requires backend/VAPID setup. Requires browser and multi-device testing before publication."
 }
