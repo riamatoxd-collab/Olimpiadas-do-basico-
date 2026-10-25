@@ -38,3 +38,12 @@ Adicionar notificações internas, preparar Web Push, apresentar badges Big Mac 
 - Correio Jaguariúna, etapa final de 11/09/2026: https://correiojaguariuna.com.br/loja-mcdonalds-de-jaguariuna-recebe-etapa-final-da-competicao-all-star-no-dia-11-de-setembro/
 - O Regional, etapa regional de 08/01/2026: https://oregional.net/unidade-do-mcdonalds-de-jaguariuna-recebe-etapa-regional-da-competicao-all-star-192263
 - App McDonald's AllStar (Arcos Dorados), descrição do programa: https://apps.apple.com/br/app/mcdonalds-allstar/id1399163652
+
+## All Star Cozinha — implementação inicial
+- Experiência jogável de treinamento guiado e prova competitiva.
+- 26 questões com fonte e página: Linha (6), Chapas e Carnes (8), McFritas (6), Produtos Fritos (6).
+- Perguntas do Guia de Implementação BB VF 2025 são identificadas separadamente das perguntas do Material de Estudo — Produção Linha.
+- Em competição, fonte e gabarito ficam ocultos até a revisão final.
+- Resultados são guardados em `user.ventureAllStar`, limitados aos 30 registros mais recentes, e não alteram XP.
+- Divergência de UHC documentada; valores conflitantes foram excluídos das questões pontuadas até validação.
+- Ver checklist e mapa de fontes em `docs/ALLSTAR_COZINHA_QUESTOES.md`.
