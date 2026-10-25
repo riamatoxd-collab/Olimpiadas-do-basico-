@@ -45,5 +45,6 @@ Adicionar notificações internas, preparar Web Push, apresentar badges Big Mac 
 - Perguntas do Guia de Implementação BB VF 2025 são identificadas separadamente das perguntas do Material de Estudo — Produção Linha.
 - Em competição, fonte e gabarito ficam ocultos até a revisão final.
 - Resultados são guardados em `user.ventureAllStar`, limitados aos 30 registros mais recentes, e não alteram XP.
-- Divergência de UHC documentada; valores conflitantes foram excluídos das questões pontuadas até validação.
+- O módulo declara que as 26 questões são autorais e baseadas nos PDFs enviados, não transcrições validadas do book oficial.
+- Padrão adotado para UHC de carnes vermelhas: 79°C e máximo de 10 minutos, conforme correção do responsável pelo conteúdo e referência do Guia BB VF 2025 (p. 66). O Material de Estudo — Produção Linha (p. 4) traz valores conflitantes (85°C/15 min), que não serão usados para esse parâmetro.
 - Ver checklist e mapa de fontes em `docs/ALLSTAR_COZINHA_QUESTOES.md`.
