@@ -1,5 +1,5 @@
 {
   "version": "9.2.0",
   "released_at": "2026-10-24",
-  "description": "Venture 9.2.0: centro de notificações internas, preparação para Web Push, badges Big Mac nas ligas mensais e trilha preparatória All Star. O ranking geral e XP vitalício são preservados. Primeira temporada mensal em novembro de 2026. Push com site fechado depende de backend, VAPID e inscrições configuradas. Branch de desenvolvimento; requer teste manual antes de publicação."
+  "description": "Venture 9.2.0 development build: monthly leagues, burger badges, internal notifications, XP ledger hardening, and All Star Kitchen guided training + competitive quizzes based on supplied PDFs. Includes 26 source-mapped questions and a documented UHC parameter discrepancy excluded from scoring. All Star results do not modify official XP. Web Push with the site closed still requires backend/VAPID setup. Requires manual browser and multi-device testing before publication."
 }
