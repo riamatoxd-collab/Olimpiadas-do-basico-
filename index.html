@@ -7,8 +7,10 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="Olimpíadas Méqui" />
-  <title>Olimpíadas do Básico — Venture v9.1.1</title>
-  <meta name="app-version" content="9.1.1" />
+  <meta name="theme-color" content="#DA291C" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <title>Olimpíadas do Básico — Venture v9.2.0</title>
+  <meta name="app-version" content="9.2.0" />
   <!-- Favicon Oficial: Arcos Dourados em Vetor SVG -->
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='24' fill='%23DA291C'/%3E%3Cpath fill='%23FFC72C' d='M50 46c-3.6-13.8-10.8-23.5-19.6-23.5-12 0-21.6 18.6-21.6 52.5h9.1c0-26.4 6.4-42.8 12.5-42.8 6 0 12 17.6 12.5 42.8H50zm0 0c3.6-13.8 10.8-23.5 19.6-23.5 12 0 21.6 18.6 21.6 52.5h-9.1c0-26.4-6.4-42.8-12.5-42.8-6 0-12 17.6-12.5 42.8H50z'/%3E%3C/svg%3E" />
   <script src="https://cdn.tailwindcss.com"></script>
@@ -16,13 +18,16 @@
   <!-- Biblioteca para Print Automático em PNG -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="niveis-venture.css?v=9100" />
-  <link rel="stylesheet" href="style.css?v=9100" />
+  <link rel="stylesheet" href="niveis-venture.css?v=9200" />
+  <link rel="stylesheet" href="style.css?v=9200" />
   <link rel="stylesheet" href="hub-pc.css?v=2">
   <link rel="stylesheet" href="venture-intro.css?v=clean3" />
   <!-- Venture 9.1.1: ligas mensais com emblemas 3D -->
-  <link rel="stylesheet" href="venture-arena.css?v=9100">
-  <link rel="stylesheet" href="venture-ligas-mensais.css?v=9110">
+  <link rel="stylesheet" href="venture-arena.css?v=9200">
+  <link rel="stylesheet" href="venture-ligas-mensais.css?v=9200">
+  <link rel="stylesheet" href="venture-notifications.css?v=9200">
+  <link rel="stylesheet" href="venture-allstar.css?v=9200">
+  <link rel="stylesheet" href="venture-9-2.css?v=9200">
 </head>
 <body class="min-h-screen pb-36">
   <!-- Venture Splash Clean: somente apresentação, sem conexão com XP ou cadastros. -->
@@ -46,6 +51,29 @@
   <!-- Input invisível para galeria / PC -->
   <input type="file" id="hiddenGalleryInput" accept="image/*" class="hidden" onchange="handleGalleryFileSelected(event)" />
   <div id="xpToastContainer"></div>
+  <!-- Venture 9.2.0: centro de notificações. Avisos internos usam o cadastro atual; push fechado requer backend. -->
+  <button id="ventureNotificationBell" class="vn-bell" type="button" aria-label="Abrir notificações" aria-haspopup="dialog" aria-controls="ventureNotificationsModal">
+    <span class="vn-bell-icon" aria-hidden="true">🔔</span><span>Notificações</span><span id="ventureNotificationCount" class="vn-bell-count hidden">0</span>
+  </button>
+  <div id="ventureNotificationsModal" class="vn-modal hidden" role="dialog" aria-modal="true" aria-labelledby="ventureNotificationsTitle" aria-hidden="true">
+    <div class="vn-dialog">
+      <header class="vn-head"><div><h2 id="ventureNotificationsTitle">🔔 Central de Notificações</h2><p>Novidades das ligas, conquistas e avisos do treinador.</p></div><button id="ventureNotificationsClose" class="vn-close" type="button" aria-label="Fechar notificações">✕</button></header>
+      <div class="vn-toolbar"><small>Seus avisos ficam salvos no cadastro deste Venture.</small><button id="ventureMarkAllReadBtn" class="vn-plain-button" type="button">Marcar todas como lidas</button></div>
+      <div id="ventureNotificationList" class="vn-list"><div class="vn-empty">Entre na sua conta para ver notificações.</div></div>
+      <section id="ventureNotificationAdmin" class="vn-admin hidden" aria-label="Enviar comunicado global">
+        <h3>📣 Comunicado do treinador</h3>
+        <input id="ventureAnnouncementTitle" type="text" maxlength="120" placeholder="Título do aviso" />
+        <textarea id="ventureAnnouncementBody" maxlength="500" placeholder="Escreva um comunicado para os jogadores..."></textarea>
+        <button id="ventureAnnouncementSendBtn" class="vn-admin-send" type="button">Enviar para os cadastros sincronizados</button>
+        <p id="ventureAnnouncementStatus" class="vn-admin-status" role="status" aria-live="polite">O envio usa a sincronização legada e a autorização administrativa é local; não envie dados sensíveis. Os dispositivos precisam sincronizar para receber o aviso.</p>
+      </section>
+      <section class="vn-admin" aria-label="Alertas do navegador">
+        <h3>📲 Alertas no celular ou computador</h3>
+        <p id="venturePushStatus" class="vn-admin-status" role="status" aria-live="polite">Permita alertas neste aparelho. Push com o site fechado exige servidor de envio configurado.</p>
+        <button id="ventureEnablePushBtn" class="vn-admin-send" type="button">Ativar alertas neste aparelho</button>
+      </section>
+    </div>
+  </div>
   <!-- ATUALIZAÇÕES AUTOMÁTICAS: AVISO COMPACTO, SEM INTERROMPER O JOGO -->
   <aside id="appUpdateBanner" class="app-update-banner hidden" role="status" aria-live="polite" aria-label="Atualização disponível">
     <div class="app-update-icon" aria-hidden="true">🔄</div>
@@ -132,6 +160,7 @@
             <h2 id="publicProfileName">Colaborador</h2>
             <p id="publicProfileRole">Atendente</p>
             <span id="publicProfileTitle" class="premium-title-pill">🌟 Em treinamento</span>
+            <span id="publicProfileMonthlyLeagueBadge" class="vml-profile-badge" aria-label="Liga mensal atual"><span class="vml-profile-burger" aria-hidden="true">🍔</span><span><span class="vml-profile-label">Liga Bronze</span><span class="vml-profile-season">Temporada mensal</span></span></span>
           </div>
         </div>
         <div class="premium-level-row"><strong id="publicProfileLevel">Nível 1</strong><strong id="publicProfileXp">0 XP</strong></div>
@@ -195,7 +224,7 @@
           </svg>
         </div>
         <h1 class="text-2xl font-black tracking-tight">OLIMPÍADAS DO BÁSICO</h1>
-        <p class="text-xs text-muted-pro font-semibold mt-0.5">Plataforma Venture • Versão 9.1.0 🏆</p>
+        <p class="text-xs text-muted-pro font-semibold mt-0.5">Plataforma Venture • Versão 9.2.0 🏆</p>
       </div>
       <div class="flex rounded-2xl subtle-box p-1.5 mb-5">
         <button id="tabLoginBtn" onclick="switchAuthTab('login')" class="flex-1 py-2.5 text-xs font-extrabold rounded-xl bg-[#DA291C] text-white shadow-sm btn-tap">ENTRAR</button>
@@ -384,6 +413,18 @@
           <p>Cozinha, Arena, revisão e duelo em um só lugar.</p>
         </div>
       </div>
+      <section id="ventureAllStar" class="vas-card" aria-label="Preparação All Star">
+        <div class="vas-hero"><div><span class="vas-eyebrow">✦ PRÓXIMA FASE · VENTURE ALL STAR</span><h2 class="vas-title">Prepare-se para o desafio All Star</h2><p class="vas-copy">Escolha uma estação para direcionar seus treinos. Pratique qualidade, agilidade, padronização e domínio dos processos.</p></div><div class="vas-star" aria-hidden="true">⭐</div></div>
+        <div id="ventureAllStarTracks" class="vas-track-grid" role="group" aria-label="Escolher trilha All Star">
+          <button type="button" class="vas-track" data-allstar-track="balcao" aria-pressed="false"><span class="vas-track-icon" aria-hidden="true">🛎️</span><span><strong>Balcão e atendimento</strong><small>Precisão do pedido e experiência do cliente.</small></span></button>
+          <button type="button" class="vas-track" data-allstar-track="drive" aria-pressed="false"><span class="vas-track-icon" aria-hidden="true">🚗</span><span><strong>Drive-Thru</strong><small>Agilidade, confirmação e coordenação.</small></span></button>
+          <button type="button" class="vas-track" data-allstar-track="cozinha" aria-pressed="false"><span class="vas-track-icon" aria-hidden="true">🍔</span><span><strong>Cozinha</strong><small>Qualidade, montagem, tempo e segurança.</small></span></button>
+          <button type="button" class="vas-track" data-allstar-track="sobremesas" aria-pressed="false"><span class="vas-track-icon" aria-hidden="true">🍦</span><span><strong>Sobremesas e quiosque</strong><small>Padronização, higiene e apresentação.</small></span></button>
+        </div>
+        <p id="ventureAllStarStatus" class="vas-status" role="status" aria-live="polite">Entre na sua conta para escolher sua trilha de preparação.</p>
+        <div class="vas-metrics"><div class="vas-metric"><span>Minha liga mensal</span><strong id="ventureAllStarLeague">Entre na conta</strong></div><div class="vas-metric"><span>Avaliações práticas registradas</span><strong id="ventureAllStarAssessmentCount">—</strong></div></div>
+        <p class="vas-note">Trilha preparatória independente do Venture. Não é integração nem classificação oficial da Arcos Dorados/McDonald's; avaliações e reconhecimento oficial dependem dos critérios da empresa.</p>
+      </section>
       <div class="training-switch" role="group" aria-label="Tipo de treino">
         <button id="training-nav-kitchen" type="button" class="training-choice is-active" onclick="switchTrainingMode('kitchen')" aria-pressed="true"><span aria-hidden="true">🍔</span><span>Cozinha</span></button>
         <button id="training-nav-arena" type="button" class="training-choice" onclick="switchTrainingMode('arena')" aria-pressed="false"><span aria-hidden="true">⚡</span><span>Arena</span></button>
@@ -561,6 +602,7 @@
             <h2 id="premiumName">Seu nome</h2>
             <p id="premiumRole">Colaborador</p>
             <span id="premiumEquippedTitle" class="premium-title-pill">🌟 Em treinamento</span>
+            <span id="premiumMonthlyLeagueBadge" class="vml-profile-badge" aria-label="Liga mensal atual"><span class="vml-profile-burger" aria-hidden="true">🍔</span><span><span class="vml-profile-label">Liga Bronze</span><span class="vml-profile-season">Temporada mensal</span></span></span>
           </div>
         </div>
         <div class="premium-level-row"><strong id="premiumLevel">Nível 1</strong><strong id="premiumXp">0 XP</strong></div>
@@ -712,7 +754,7 @@
         <button type="button" onclick="switchMainTab('trainer')" class="more-menu-item"><span class="more-menu-icon" aria-hidden="true">🎓</span><span class="more-menu-copy"><strong>Central do Treinador</strong><small>Perguntas, comunicados e desafios especiais</small></span><span class="more-chevron" aria-hidden="true">›</span></button>
         <button type="button" onclick="switchMainTab('admin')" class="more-menu-item"><span class="more-menu-icon" aria-hidden="true">⚙️</span><span class="more-menu-copy"><strong>Painel ADM</strong><small>Gerenciamento de colaboradores e XP</small></span><span class="more-chevron" aria-hidden="true">›</span></button>
         <button type="button" onclick="switchMainTab('updates')" class="more-menu-item"><span class="more-menu-icon" aria-hidden="true">🔔</span><span class="more-menu-copy"><strong>Novidades e versões</strong><small>O que mudou no aplicativo</small></span><span class="more-chevron" aria-hidden="true">›</span></button>
-        <div class="app-version-control" aria-label="Versão do aplicativo"><span>✅ Versão instalada: <strong id="appInstalledVersion">9.1.0</strong></span><button type="button" onclick="checkForAppUpdate(true)">🔄 Procurar atualização</button><p id="appVersionStatus" role="status" aria-live="polite">Checagem automática a cada 60 segundos enquanto o site está aberto.</p></div>
+        <div class="app-version-control" aria-label="Versão do aplicativo"><span>✅ Versão instalada: <strong id="appInstalledVersion">9.2.0</strong></span><button type="button" onclick="checkForAppUpdate(true)">🔄 Procurar atualização</button><p id="appVersionStatus" role="status" aria-live="polite">Checagem automática a cada 60 segundos enquanto o site está aberto.</p></div>
       </div>
       <div class="more-info"><strong>Olimpíadas do Básico · Venture</strong><span>Versão 8.7 · Baú Diário</span></div>
     </section>
@@ -876,7 +918,7 @@
           </div>
           <span class="bg-violet-500/15 text-violet-600 text-xs font-black px-3 py-1 rounded-full">v9.1.0 Ligas Mensais</span>
         </div>
-        <div class="border-l-4 border-violet-500 pl-3.5 space-y-1"><span class="text-[11px] font-extrabold text-violet-600 uppercase">Versão 9.1.0 • Ligas Mensais</span><h4 class="font-black text-sm">💎 Dez divisões, XP mensal e promoção de temporada</h4><p class="text-xs text-muted-pro">Nova competição paralela com Bronze, Prata, Ouro, Safira, Rubi, Esmeralda, Ametista, Pérola, Obsidiana e Diamante. O XP acumulado e o ranking geral permanecem intactos. A Taça semanal e os Flashcards saem da navegação nesta fase, com o código legado mantido para possível retorno.</p></div>
+        <div class="border-l-4 border-red-500 pl-3.5 space-y-1"><span class="text-[11px] font-extrabold text-red-600 uppercase">Versão 9.2.0 • Ligas, alertas e All Star</span><h4 class="font-black text-sm">🔔 Notificações, emblemas no perfil e trilhas preparatórias</h4><p class="text-xs text-muted-pro">Centro de notificações, preparação para alertas do navegador, emblemas das dez ligas nos perfis e trilhas de preparação All Star. O ranking geral e o XP vitalício continuam preservados. Push com o site fechado depende de backend e chaves próprias.</p></div>
         <div class="border-l-4 border-sky-500 pl-3.5 space-y-1"><span class="text-[11px] font-extrabold text-sky-600 uppercase">Versão 9.0.1 • XP Integridade</span><h4 class="font-black text-sm">🛡️ Registro idempotente e recuperação de recompensas</h4><p class="text-xs text-muted-pro">Cada recompensa usa um ID de transação, grava uma intenção antes do crédito e pode ser recuperada após uma interrupção. Ganhos simultâneos de aparelhos com a mesma base podem ser somados; quando as bases entram em conflito, o sistema preserva o maior saldo conhecido e registra a divergência em vez de somar valores incertos. A validação ainda é local e precisa de um servidor autenticado para segurança real.</p></div>
         <div class="border-l-4 border-emerald-500 pl-3.5 space-y-1"><span class="text-[11px] font-extrabold text-emerald-600 uppercase">Versão 9.0.0 • Arena Venture</span><h4 class="font-black text-sm">⚡ Desafio diário, revisão adaptativa e revanche 1v1</h4><p class="text-xs text-muted-pro">Cinco perguntas com prioridade para dúvidas, XP pelo sistema existente, bônus diário por 4/5 acertos, progresso salvo no cadastro e painel complementar para rever duelos recentes. A sincronização segue legada e não é validada por servidor.</p></div>
         <div class="border-l-4 border-[#FFC72C] pl-3.5 space-y-1"><span class="text-[11px] font-extrabold text-amber-500 uppercase">Versão 8.9 • Missões e Sorteio Inteligente</span><h4 class="font-black text-sm">🎯 Missões variadas, perguntas sem repetição e novos lanches</h4><p class="text-xs text-muted-pro">Quatro desafios diferentes por dia e semana, simulado sem repetição no filtro ativo até concluir todas as perguntas, e Cozinha com 10 receitas incluindo Big Tasty completo.</p></div>
@@ -943,22 +985,24 @@
   </div>
 </div>
 <script src="questions.js"></script>
-  <script src="js/01-dados.js?v=9100"></script>
-  <script src="js/02-estado.js?v=9100"></script>
-  <script src="js/03-treinador.js?v=9100"></script>
-  <script src="js/04-missoes-perfil.js?v=9100"></script>
-  <script src="js/05-cozinha.js?v=9100"></script>
-  <script src="js/06-contas-sincronizacao.js?v=9100"></script>
-  <script src="js/07-jogos.js?v=9100"></script>
-  <script src="js/08-comunidade-adm.js?v=9100"></script>
-  <script src="js/09-niveis-extra.js?v=9100"></script>
-  <script src="script.js?v=9100"></script>
+  <script src="js/01-dados.js?v=9200"></script>
+  <script src="js/02-estado.js?v=9200"></script>
+  <script src="js/03-treinador.js?v=9200"></script>
+  <script src="js/04-missoes-perfil.js?v=9200"></script>
+  <script src="js/05-cozinha.js?v=9200"></script>
+  <script src="js/06-contas-sincronizacao.js?v=9200"></script>
+  <script src="js/07-jogos.js?v=9200"></script>
+  <script src="js/08-comunidade-adm.js?v=9200"></script>
+  <script src="js/09-niveis-extra.js?v=9200"></script>
+  <script src="script.js?v=9200"></script>
   <script src="hub-pc.js?v=2"></script>
   <!-- Correcoes isoladas: Book fiel ao Word e convites 1v1 sem alterar XP -->
-  <script src="book-original-fiel.js?v=9100"></script>
-  <script src="duelo-convite-fix.js?v=9100"></script>
+  <script src="book-original-fiel.js?v=9200"></script>
+  <script src="duelo-convite-fix.js?v=9200"></script>
   <!-- Módulos de jogo: Arena diária e ligas mensais. A Taça semanal foi retirada da navegação; seus arquivos ficam em legacy/ para rollback. -->
-  <script src="js/10-arena-venture.js?v=9100"></script>
-  <script src="js/11-ligas-mensais.js?v=9110"></script>
+  <script src="js/10-arena-venture.js?v=9200"></script>
+  <script src="js/11-ligas-mensais.js?v=9200"></script>
+  <script src="js/12-notificacoes.js?v=9200"></script>
+  <script src="js/13-allstar.js?v=9200"></script>
 </body>
 </html>

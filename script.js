@@ -1,4 +1,4 @@
-/* Venture 9.1.0 · script.js · arquivo carregado na ordem indicada no HTML. */
+/* Venture 9.2.0 · script.js · arquivo carregado na ordem indicada no HTML. */
 function switchTrainingMode(mode) {
   const valid = ["kitchen", "arena", "review", "duel"];
   if (!valid.includes(mode)) return;
@@ -41,7 +41,7 @@ function switchMainTab(tab) {
 // =========================================================================
 // V8.5 — ATUALIZAÇÃO DE VERSÃO NO GITHUB PAGES (SEM APAGAR DADOS)
 // =========================================================================
-const APP_VERSION = "9.1.0";
+const APP_VERSION = "9.2.0";
 const APP_UPDATE_INTERVAL_MS = 60000; // Github Pages é estático: checagem periódica, não push instantâneo.
 const APP_UPDATE_IDLE_MS = 45000;
 let availableAppUpdate = null;

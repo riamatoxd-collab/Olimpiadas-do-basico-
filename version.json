@@ -1,5 +1,5 @@
 {
-  "version": "9.1.1",
+  "version": "9.2.0",
   "released_at": "2026-10-25",
-  "description": "Venture 9.1.1: dez emblemas 3D otimizados para as ligas mensais, exibidos no caminho de progressão, no selo da liga atual e no cabeçalho da classificação. Mantém XP mensal pelo XP Ledger, promoção/rebaixamento e ranking geral sem alterações de regras."
+  "description": "Venture 9.2.0: inclui os dez emblemas 3D das ligas da 9.1.1, ranking mensal com estreia em novembro de 2026, badges nos perfis, central de notificações, comunicados locais para cadastros sincronizados, preparação técnica para Web Push e trilhas preparatórias All Star. Preserva cadastros, XP vitalício, ranking geral, Arena, duelos e funções existentes. Push com o site fechado exige backend autenticado e chaves VAPID; sincronização atual continua legada."
 }

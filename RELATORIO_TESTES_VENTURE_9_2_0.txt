@@ -1,0 +1,27 @@
+RELATÓRIO DE VALIDAÇÃO — VENTURE 9.2.0
+Data: 25/10/2026
+Base de trabalho: pacote local 9.1.1 + módulos 9.2.0
+
+APROVADO
+- Sintaxe JavaScript de todos os módulos locais, script principal e service worker.
+- JSON válido em version.json e manifest.webmanifest.
+- Referências locais src/href do index.html: 0 arquivos ausentes.
+- Dez emblemas WebP presentes em assets/ligas/.
+- Testes de XP Ledger: IDs estáveis, XP x2, recuperação de pendências e conflitos conservadores.
+- Testes da Arena: cinco perguntas, bloqueio de repetição diária, bônus e XP x2.
+- Testes de ligas: dez divisões, XP mensal por data, promoção/rebaixamento, mesclagem e XP vitalício intacto.
+- Testes 9.2.0: deduplicação de notificações, persistência de trilha All Star sem alteração de XP, mesclagem de notificações de aparelhos diferentes e aviso por encerramento de temporada.
+
+LIMITAÇÕES NÃO RESOLVIDAS PELO PACOTE
+- Não foi possível completar um teste visual de navegador neste ambiente.
+- Não foi testado em aparelhos reais nem em duas sessões conectadas simultaneamente.
+- Push com o site fechado requer backend, VAPID e endpoint de envio; não está ativo por padrão.
+- A autoridade de XP e de permissões continua no cliente/sincronização legada. Para proteção forte é necessário backend transacional autenticado.
+- Comunicados administrativos são limitados aos cadastros disponíveis no conjunto sincronizado no aparelho atual; não enviar informações sensíveis.
+- A trilha All Star é preparatória e não oficial.
+
+COMANDOS EXECUTADOS
+  node tests/xp-ledger-smoke.cjs
+  node tests/venture-arena-smoke.cjs
+  node tests/venture-monthly-league-smoke.cjs
+  node tests/venture-9-2-smoke.cjs

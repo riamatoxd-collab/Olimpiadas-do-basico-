@@ -1,0 +1,24 @@
+VENTURE — INTRODUÇÃO CLEAN E CORPORATIVA (OPÇÃO C)
+================================================
+Compatível com o pacote Venture v8.9.2 enviado anteriormente.
+
+MODO MAIS SEGURO (adicionar somente 2 arquivos):
+1. Guarde uma cópia do index.html do GitHub e do backup privado dos cadastros.
+2. Envie venture-intro.css e venture-intro.js para a pasta principal do repositório.
+3. No index.html, ANTES de </head>, adicione:
+   <link rel="stylesheet" href="venture-intro.css?v=clean3">
+4. IMEDIATAMENTE depois da linha <body ...>, cole o conteúdo do arquivo TRECHO-APOS-BODY.html.txt.
+5. Não remova nem substitua quaisquer scripts existentes.
+6. Não edite script.js, style.css, version.json nem os arquivos de js/.
+7. Confira primeiro intro-previa.html. Pode publicar essa página isoladamente para testar.
+
+A introdução dura em torno de 3 segundos e permite pular. Aparece uma vez por aba do navegador.
+Para rever a animação no jogo, acrescente ?intro=1 ao endereço.
+O som NÃO toca sozinho: só funciona após clicar 'Ativar som'.
+
+LIMITES DE SEGURANÇA:
+- venture-intro.js não usa localStorage, nem MQTT, nem dados de jogadores.
+- Usa apenas sessionStorage, na chave venture_splash_clean_tab_v1, para não repetir na mesma aba.
+- Se ocorrer qualquer falha de carregamento, o splash se fecha automaticamente em até 7 segundos.
+- A sincronização já existente na v8.9.2 NÃO foi corrigida por esse recurso visual.
+- O pacote COMPLETO é uma cópia da v8.9.2 montada anteriormente, NÃO uma cópia do GitHub em tempo real. Preferir instalação de 2 arquivos para preservar customizações.

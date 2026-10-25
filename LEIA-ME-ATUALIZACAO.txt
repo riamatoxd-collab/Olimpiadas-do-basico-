@@ -1,0 +1,36 @@
+OLIMPÍADAS DO BÁSICO — VENTURE v9.2.0
+Data do pacote: 25/10/2026
+Base: Venture 9.1.1 — Ligas Mensais com Emblemas
+
+O QUE FOI CONSOLIDADO
+- Mantém os dez emblemas 3D em WebP: Bronze, Prata, Ouro, Safira, Rubi, Esmeralda, Ametista, Pérola, Obsidiana e Diamante.
+- Mantém o ranking mensal paralelo ao ranking geral e o XP acumulado.
+- Temporada inaugural mensal prevista para 01/11/2026; outubro permanece como pré-temporada.
+- Adiciona o emblema da liga atual ao perfil do próprio jogador e ao perfil público.
+- Adiciona central de notificações internas, contador de não lidas, marcação individual/em lote e avisos por liga/temporada.
+- Adiciona um formulário para comunicados administrativos destinados aos cadastros que estão no conjunto de dados sincronizado no aparelho atual.
+- Adiciona preparação para notificações do navegador e service worker. A permissão pode ser ativada por HTTPS; push com o site fechado NÃO estará ativo sem backend autenticado, chaves VAPID, armazenamento de inscrições e endpoint de envio.
+- Adiciona a trilha preparatória Venture All Star com foco em Balcão/Atendimento, Drive-Thru, Cozinha e Sobremesas/Quiosque.
+- A escolha da trilha All Star é guardada no cadastro existente e não concede XP.
+- Mantém Arena diária, XP Ledger, multiplicador XP x2, missões, medalhas, ranking geral, perfis, cozinha, revisão, duelos, Book e painel administrativo.
+- Flashcards e Taça semanal continuam fora da navegação principal. Os arquivos legados são preservados em legacy/ para rollback.
+
+XP, CADASTROS E SINCRONIZAÇÃO
+- Não há migração destrutiva nem zeragem de XP.
+- O XP mensal continua derivado das transações existentes do XP Ledger; XP vitalício e ranking geral permanecem separados.
+- O ledger reduz duplicações e recupera operações pendentes no cliente, mas não substitui uma transação autoritativa no servidor.
+- A sincronização atual continua legada. Não anunciar resultados oficiais nem usar comunicados para conteúdo sensível antes de adicionar autenticação/autoridade no servidor.
+- O fechamento mensal é processado pelo módulo existente quando o sistema detecta a mudança de temporada. O resultado depende do conjunto de dados sincronizado no aparelho que executa o fechamento.
+
+ALL STAR
+- Esta é uma trilha de preparação educacional independente. Não é uma integração com sistemas da Arcos Dorados/McDonald's, não confirma elegibilidade e não concede reconhecimento oficial.
+- Critérios e etapas oficiais devem ser confirmados com a liderança/organização da empresa.
+
+TESTES
+Execute os arquivos em tests/ com Node.js:
+  node tests/xp-ledger-smoke.cjs
+  node tests/venture-arena-smoke.cjs
+  node tests/venture-monthly-league-smoke.cjs
+  node tests/venture-9-2-smoke.cjs
+
+Antes de publicar: testar login/cadastro existentes, XP x2, ranking geral, Arena, duelos, ligas, notificações e perfis em navegador e em pelo menos dois dispositivos.
