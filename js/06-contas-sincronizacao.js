@@ -36,29 +36,6 @@ img.src = e.target.result;
 };
 reader.readAsDataURL(file);
 }
-async function captureAndShareRankingImage() {
-playTabClickSound();
-const printArea = $("rankingPrintArea"), btn = $("btnPrintRanking");
-if (!printArea || typeof html2canvas === "undefined") return shareMyScoreWhatsApp();
-const orig = btn.innerHTML;
-btn.innerHTML = `<span>⏳ Gerando Print...</span>`; btn.disabled = true;
-try {
-const canvas = await html2canvas(printArea, { scale: 2, useCORS: true, backgroundColor: document.body.classList.contains("dark-mode") ? "#131b2e" : "#ffffff" });
-canvas.toBlob(async blob => {
-btn.innerHTML = orig; btn.disabled = false;
-if (!blob) return;
-const file = new File([blob], "Ranking_Olimpiadas_Mequi.png", { type: "image/png" });
-const list = Object.values(users).filter(u => u && u.name && !u._deleted).sort((a, b) => (b.xp || 0) - (a.xp || 0));
-const top3 = list.slice(0, 3).map((u, i) => `${i === 0 ? '🥇' : i === 1 ? '🥈' : '🥉'} ${u.name}: ${u.xp || 0} XP`).join("\n");
-const caption = `🏆 *RANKING OFICIAL — OLIMPÍADAS DO BÁSICO (FINALIZA 25/10)*\n\n${top3}\n\n🔗 Link: ${window.location.origin}${window.location.pathname}`;
-if (navigator.canShare && navigator.canShare({ files: [file] })) {
-try { await navigator.share({ files: [file], title: "Ranking Méqui", text: caption }); return; } catch (e) {}
-}
-const a = document.createElement("a"); a.download = "Ranking_Olimpiadas_Mequi.png"; a.href = URL.createObjectURL(blob); a.click();
-window.open(`https://wa.me/?text=${encodeURIComponent(caption)}`, "_blank");
-}, "image/png");
-} catch (e) { btn.innerHTML = orig; btn.disabled = false; shareMyScoreWhatsApp(); }
-}
 function initTheme() {
 if (localStorage.getItem(STORAGE_THEME_KEY) === "dark") {
 document.body.classList.add("dark-mode");
@@ -82,14 +59,32 @@ c.appendChild(t); setTimeout(() => t.remove(), 1250);
 // =========================================================================
 // SINCRONIZAÇÃO EM TEMPO REAL E RESGATE DE CONTAS
 // =========================================================================
+let heartbeatSyncQueueTimer = null;
+function scheduleHeartbeatSync(key) {
+if (!key || !users[key] || users[key]._deleted) return;
+if (heartbeatSyncQueueTimer) clearTimeout(heartbeatSyncQueueTimer);
+heartbeatSyncQueueTimer = setTimeout(() => {
+const user = users[key];
+if (!user || user._deleted) return;
+const packet = JSON.stringify({ __ventureHeartbeat: true, key, lastSeen: user.lastSeen });
+mqttClients.forEach(c => { if (c && c.connected) try { c.publish(SYNC_MQTT_TOPIC, packet); } catch (e) {} });
+fetch(CLOUD_HTTP_URL, { method: "POST", body: JSON.stringify({ type: "single", k: key, u: user }) }).catch(() => {});
+}, 1000);
+}
+function scheduleHeartbeatUiRefresh(key) {
+if (typeof publicProfileSelectedKey !== "undefined" && publicProfileSelectedKey === key) {
+const modal = $("publicProfileModal");
+if (modal && !modal.classList.contains("hidden") && typeof renderPublicProfile === "function") renderPublicProfile();
+}
+}
 function startHeartbeat() {
 if (heartbeatIntervalId) clearInterval(heartbeatIntervalId);
 heartbeatIntervalId = setInterval(() => {
 if (currentUserKey && users[currentUserKey] && !users[currentUserKey]._deleted) {
 users[currentUserKey].lastSeen = Date.now();
-scheduleCloudSync(currentUserKey, false);
+scheduleHeartbeatSync(currentUserKey);
 }
-}, 10000);
+}, 15000);
 }
 // CORREÇÃO CRÍTICA v8.9.1: recuperação de cadastros sem substituir o registro
 // moderno por um legado incompleto. Um erro em uma conta não invalida as demais.
@@ -390,10 +385,18 @@ client.on("message", (topic, msg) => {
 try {
 const data = JSON.parse(msg.toString());
 if (topic === SYNC_MQTT_TOPIC) {
+if (data && data.__ventureHeartbeat === true && data.key && Number.isFinite(Number(data.lastSeen))) {
+const existingUser = users[data.key];
+if (existingUser && !existingUser._deleted) {
+existingUser.lastSeen = Math.max(Number(existingUser.lastSeen) || 0, Number(data.lastSeen) || 0);
+scheduleHeartbeatUiRefresh(data.key);
+}
+} else {
 users = mergeUserDictionaries(users, data);
 localStorage.setItem(STORAGE_USERS_KEY, JSON.stringify(users));
 if (currentUserKey && typeof recoverPendingXpRewards === "function") recoverPendingXpRewards(currentUserKey);
 refreshUIIfNeeded();
+}
 } else if (topic === DUEL_MQTT_TOPIC) handleIncomingDuelPacket(data);
 else if (topic === TRAINER_MQTT_TOPIC) mergeTrainerState(data);
 } catch (e) {}

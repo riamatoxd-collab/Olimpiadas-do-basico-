@@ -157,6 +157,21 @@ function ventureMonthlyCloseSeason(monthKey) {
       state.division = nextDivision; state.seasonKey = nextSeason; state.updatedAt = closedAt;
       entry.user.ventureMonthlyLeague = state;
       entry.user.updatedAt = Math.max(Number(entry.user.updatedAt) || 0, closedAt);
+      // Notificação idempotente por conta e temporada: fechar novamente não duplica o aviso.
+      const notificationApi = typeof window !== 'undefined' ? window.VentureNotifications : null;
+      if (notificationApi && typeof notificationApi.addForUser === 'function') {
+        const divisionName = VENTURE_MONTHLY_LEAGUE_DIVISIONS[nextDivision]?.name || 'Liga';
+        const title = outcome === 'promoted' ? 'Você subiu de liga!' : outcome === 'demoted' ? 'Resultado da sua liga mensal' : 'Temporada mensal encerrada';
+        const body = outcome === 'promoted'
+          ? 'Parabéns! Você foi promovido para a Liga ' + divisionName + ' na temporada seguinte.'
+          : outcome === 'demoted'
+            ? 'A próxima temporada começa na Liga ' + divisionName + '. Continue treinando para subir novamente.'
+            : outcome === 'inactive'
+              ? 'Sua conta não registrou XP nesta temporada. Participe dos treinos para disputar a próxima.'
+              : 'Você permaneceu na Liga ' + divisionName + '. Continue acumulando XP para disputar a promoção.';
+        const noticeType = outcome === 'promoted' ? 'success' : outcome === 'demoted' ? 'warning' : 'info';
+        notificationApi.addForUser(entry.key, title, body, noticeType, 'venture-league-season:' + monthKey + ':' + entry.key, false);
+      }
     });
   });
   return true;
@@ -277,7 +292,7 @@ function renderVentureMonthlyLeague() {
     currentState.division === 9 ? 'Você chegou à liga mais alta.' :
     promoteZone ? '🔥 Você está na zona de promoção!' : active.length < 2 ? 'Jogue para abrir a disputa da liga.' :
       'Ganhe XP nos jogos para entrar na zona de promoção.');
-  setText('vmlPromotionDetail', preSeason ? 'Até lá, seu XP acumulado e o ranking geral continuam valendo normalmente.' :
+  setText('vmlPromotionDetail', preSeason ? 'Até lá, seu XP vitalício permanece preservado; a temporada mensal começa em novembro.' :
     currentState.division === 9 ? 'Mantenha sua posição na Liga Diamante. Os últimos colocados podem cair se houver participantes ativos suficientes.' :
     active.length < 2 ? 'A disputa de promoção abre quando pelo menos dois participantes ganharem XP neste mês.' :
     currentState.division === 0 ? `Os ${movement.promote} melhores participantes ativos podem subir no fechamento do mês. Bronze é a divisão inicial; ninguém cai abaixo dela.` :
@@ -335,7 +350,9 @@ function installVentureMonthlyLeagueHooks() {
   if (typeof window.renderLeaderboard === 'function' && !window.renderLeaderboard.__ventureMonthlyLeagueWrapped) {
     const originalRender = window.renderLeaderboard;
     const wrappedRender = function () {
-      const result = originalRender.apply(this, arguments);
+      // A tela do ranking geral foi removida: evite ordenar todos os cadastros para uma lista invisível.
+      const legacyBoardVisible = document.getElementById('leaderboardContainer') || document.getElementById('podiumTop3Container');
+      const result = legacyBoardVisible ? originalRender.apply(this, arguments) : undefined;
       refreshVentureMonthlyLeague();
       return result;
     };

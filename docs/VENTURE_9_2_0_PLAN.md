@@ -1,7 +1,7 @@
 # Venture 9.2.0 — escopo consolidado
 
 ## Base preservada
-Venture 9.1.1 com dez emblemas de liga em WebP, ranking mensal previsto para novembro de 2026, XP Ledger, Arena, ranking geral, perfis, duelos e arquivos legados de Flashcards/Taça.
+Venture 9.1.1 com dez emblemas de liga em WebP, ranking mensal previsto para novembro de 2026, XP Ledger, Arena, perfis, duelos e arquivos legados de Flashcards/Taça. A transição 9.2.1 remove a interface do ranking geral legado.
 
 ## Novas entregas
 - Central de notificações internas com deduplicação por ID, contador, leitura individual e em lote.
@@ -13,7 +13,7 @@ Venture 9.1.1 com dez emblemas de liga em WebP, ranking mensal previsto para nov
 - Calendário inicial: outubro de 2026 como pré-temporada; primeira temporada mensal em 01–30 de novembro de 2026.
 
 ## Regras de preservação
-- Não zerar XP vitalício nem alterar o ranking geral.
+- Não zerar nem alterar o XP vitalício; a competição principal passa a ser a liga mensal.
 - Não apagar cadastros, IDs, missões, medalhas, Arena, duelos ou histórico legado.
 - Não reintroduzir Flashcards/Taça semanal na navegação nesta fase.
 - Não tratar o sistema de notificações interno como push remoto real.
@@ -21,3 +21,10 @@ Venture 9.1.1 com dez emblemas de liga em WebP, ranking mensal previsto para nov
 
 ## Riscos restantes
 A sincronização e as permissões administrativas ainda dependem do cliente/sistema legado. O XP precisa de backend transacional autenticado para garantia autoritativa sob concorrência. O fechamento mensal usa os dados disponíveis no aparelho que executa a rotina; revisar a sincronização antes de divulgar resultados.
+
+## Venture 9.2.1 — transição para Ligas Mensais
+- O ranking geral legado e a exportação de imagem saem da interface; a aba principal passa a se chamar **Ligas**.
+- XP vitalício, cadastros, histórico de duelos, progressão de níveis e dados já salvos permanecem preservados.
+- Tailwind e MQTT passam a usar `defer`; a biblioteca `html2canvas` e o exportador do ranking geral são removidos.
+- Heartbeat passa de 10s para 15s, envia payload MQTT mínimo não-retido e evita chamar a sincronização completa em cada batimento.
+- Versão do app atualizada para 9.2.1 e URLs de assets recebem novo cache-buster para forçar a atualização dos clientes.
