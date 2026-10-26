@@ -1,4 +1,4 @@
-/* Venture 9.2.0 · script.js · arquivo carregado na ordem indicada no HTML. */
+/* Venture 9.2.1 · script.js · arquivo carregado na ordem indicada no HTML. */
 function switchTrainingMode(mode) {
   const valid = ["kitchen", "arena", "review", "duel"];
   if (!valid.includes(mode)) return;
