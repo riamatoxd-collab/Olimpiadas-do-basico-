@@ -1143,7 +1143,37 @@
       else if (action === "home") { state.session = null; renderQuiz(); }
     }
   }
+  function installMergeHook() {
+    const original = window.mergeSingleUser;
+    if (typeof original !== "function" || original.__ventureAllStarMergeWrapped) return;
+    const wrapped = function (existing, incoming) {
+      const merged = original.apply(this, arguments);
+      if (!merged || !existing || !incoming) return merged;
+      const notifications = new Map();
+      [existing.ventureNotifications, incoming.ventureNotifications].forEach(items => {
+        if (!Array.isArray(items)) return;
+        items.forEach(item => {
+          if (!item || !item.id) return;
+          const old = notifications.get(String(item.id));
+          if (!old) notifications.set(String(item.id), Object.assign({}, item));
+          else {
+            const newer = (Number(item.createdAt) || 0) > (Number(old.createdAt) || 0) ? item : old;
+            notifications.set(String(item.id), Object.assign({}, newer, { readAt: Math.max(Number(item.readAt) || 0, Number(old.readAt) || 0) || null }));
+          }
+        });
+      });
+      if (notifications.size) merged.ventureNotifications = Array.from(notifications.values()).sort((a,b) => (Number(b.createdAt)||0) - (Number(a.createdAt)||0)).slice(0,100);
+      const a = existing.ventureAllStar, b = incoming.ventureAllStar;
+      const winner = !a ? b : !b ? a : (Number(b.updatedAt)||0) >= (Number(a.updatedAt)||0) ? b : a;
+      if (winner && typeof winner === "object") merged.ventureAllStar = Object.assign({}, winner);
+      else delete merged.ventureAllStar;
+      return merged;
+    };
+    wrapped.__ventureAllStarMergeWrapped = true;
+    window.mergeSingleUser = wrapped;
+  }
   function init() {
+    installMergeHook();
     const root = byId("ventureAllStar");
     if (!root) return;
     const user = getUser();
