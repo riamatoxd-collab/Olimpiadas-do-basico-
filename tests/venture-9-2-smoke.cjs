@@ -25,7 +25,7 @@ for (const item of requiredHtml) html.includes(item) ? pass('HTML includes ' + i
 const version = JSON.parse(read('version.json'));
 if (version.version === '9.2.1' && read('script.js').includes('const APP_VERSION = "9.2.1";')) pass('runtime and manifest versions match 9.2.1');
 else fail('runtime and manifest versions do not match 9.2.1');
-if (/id="nav-prizes"[^>]*>[\\s\\S]*?<span>Ligas<\\/span>/.test(html)) pass('main navigation names the competition tab Ligas');
+if (/id="nav-prizes"[^>]*>[\s\S]*?<span>Ligas<\/span>/.test(html)) pass('main navigation names the competition tab Ligas');
 else fail('main navigation does not show Ligas');
 for (const id of ['rankingPrintArea','leaderboardContainer','podiumTop3Container','btnPrintRanking']) {
   if (!html.includes('id="' + id + '"')) pass('legacy ranked UI removed: ' + id);
