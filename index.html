@@ -185,7 +185,7 @@
       </div>
       <div class="public-profile-actions">
         <button type="button" class="public-profile-challenge" id="publicProfileChallenge" onclick="challengeFromPublicProfile()">⚔️ Desafiar para duelo</button>
-        <button type="button" class="public-profile-secondary" onclick="closePublicProfile()">Voltar ao Ranking</button>
+        <button type="button" class="public-profile-secondary" onclick="closePublicProfile()">Voltar às Ligas</button>
       </div>
       <p id="publicProfileDuelHint" class="public-profile-hint">O colega precisa estar com o site aberto para receber o convite.</p>
     </div>
@@ -688,11 +688,11 @@
       </div>
       <div id="bookQuestionsContainer" class="space-y-2.5"></div>
     </section>
-    <!-- ABA 3: RANKING COM PÓDIO 3D + HISTÓRICO DE DUELOS + PRINT WHATSAPP -->
+    <!-- ABA 3: LIGAS MENSAIS VENTURE; ranking geral legado oculto sem apagar dados. -->
     <section id="tab-prizes" class="app-screen hidden space-y-5">
-      <div class="page-heading"><div><span class="page-eyebrow">COMPETIÇÃO DA LOJA</span><h1>Ranking geral 🏆</h1><p>O ranking geral continua valendo. A Liga Mensal adiciona temporadas e promoções sem zerar seus XP acumulados.</p></div></div>
+      <div class="page-heading"><div><span class="page-eyebrow">COMPETIÇÃO VENTURE</span><h1>Ligas mensais 🏆</h1><p>Compita dentro da sua divisão, suba de liga e acompanhe sua evolução mensal. Cadastros, XP vitalício e conquistas continuam preservados.</p></div></div>
       <section id="ventureMonthlyLeague" class="vml-card" aria-label="Ligas mensais Venture">
-        <div class="vml-hero"><div class="vml-hero-copy"><span class="vml-eyebrow">✦ VENTURE · TEMPORADA MENSAL</span><h2>Suba de liga a cada mês.</h2><p>Ganhe XP nos jogos, treinos, missões e duelos. Sua pontuação mensal recomeça em cada temporada; seu XP acumulado e o ranking geral não mudam.</p><span id="vmlCurrentBadge" class="vml-current-badge">🥉 Liga Bronze</span></div></div>
+        <div class="vml-hero"><div class="vml-hero-copy"><span class="vml-eyebrow">✦ VENTURE · TEMPORADA MENSAL</span><h2>Suba de liga a cada mês.</h2><p>Ganhe XP nos jogos, treinos, missões e duelos. Sua pontuação mensal recomeça a cada temporada; seu XP vitalício permanece preservado.</p><span id="vmlCurrentBadge" class="vml-current-badge">🥉 Liga Bronze</span></div></div>
         <div class="vml-stats" aria-label="Resumo da liga mensal">
           <div class="vml-stat"><span>XP nesta temporada</span><strong id="vmlMyMonthlyXp">0</strong><small>Somente XP ganho no mês</small></div>
           <div class="vml-stat"><span>Minha posição</span><strong id="vmlMyRank">—</strong><small>Dentro da sua liga</small></div>
@@ -707,32 +707,6 @@
         </div>
         <p class="vml-footnote">ℹ️ Temporada inicial prevista para novembro de 2026. O placar mensal é calculado pelas transações registradas no XP Ledger. A sincronização atual ainda não é validada por um servidor antifraude.</p>
       </section>
-      <div class="mc-gradient text-white rounded-3xl p-5 shadow-xl relative overflow-hidden border-2 border-[#FFC72C]">
-        <div class="flex items-center gap-4">
-          <div class="text-5xl bg-white/15 p-3.5 rounded-2xl border border-white/25 shadow-inner float-slow">☕</div>
-          <div>
-            <span class="bg-[#FFC72C] text-slate-950 text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase tracking-wider">Grande Prêmio — 1º Lugar</span>
-            <h3 class="text-xl font-black mt-1">Caneca Oficial do McDonald's</h3>
-            <p class="text-xs opacity-90 mt-0.5 leading-relaxed">O colaborador que alcançar o 1º lugar no Ranking Geral de XP das Olimpíadas ganha uma Caneca Exclusiva do Méqui!</p>
-          </div>
-        </div>
-      </div>
-      <!-- ÁREA DE PRINT DO RANKING -->
-      <div id="rankingPrintArea" class="pro-card rounded-3xl p-5 space-y-4">
-        <div class="flex items-center justify-between flex-wrap gap-2">
-          <div>
-            <h3 class="font-black text-base">🏆 Pódio & Ranking da Loja</h3>
-            <span id="syncStatusText" class="text-[11px] text-emerald-500 font-bold">● Servidor Multi-Usuários Estável</span>
-          </div>
-          <button onclick="forceSyncNow()" data-html2canvas-ignore="true" class="bg-red-500/10 hover:bg-red-500/20 text-red-500 border border-red-500/25 font-extrabold text-xs px-3.5 py-2 rounded-xl btn-tap">
-            🔄 Atualizar Agora
-          </button>
-        </div>
-        <!-- Pódio Top 3 -->
-        <div id="podiumTop3Container" class="grid grid-cols-3 gap-2 items-end pt-4 pb-2"></div>
-        <!-- Lista Geral -->
-        <div id="leaderboardContainer" class="space-y-2.5"></div>
-      </div>
       <details class="rank-disclosure">
         <summary>⚔️ Histórico de duelos<span aria-hidden="true">⌄</span></summary>
       <!-- HISTÓRICO DE DUELOS 1 vs 1 -->
@@ -746,15 +720,6 @@
         </div>
       </div>
       </details>
-      <!-- BOTÕES WHATSAPP -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-        <button id="btnPrintRanking" onclick="captureAndShareRankingImage()" class="w-full text-slate-950 font-black py-3.5 px-4 rounded-2xl text-xs flex items-center justify-center gap-2 btn-anim-yellow btn-shine">
-          <span>📸 Tirar Print do Ranking e Mandar no WhatsApp</span>
-        </button>
-        <button onclick="shareMyScoreWhatsApp()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-black py-3.5 px-4 rounded-2xl text-xs flex items-center justify-center gap-2 shadow-md btn-tap">
-          <span>📲 Enviar Meu Placar Individual no WhatsApp</span>
-        </button>
-      </div>
       <details id="ventureLevelsDetails" class="rank-disclosure venture-levels-disclosure">
         <summary>🗺️ Jornada de 27 níveis de XP <span class="venture-levels-new" aria-hidden="true">+20 novos</span> <span aria-hidden="true">⌄</span></summary>
         <div class="pro-card rounded-3xl p-4 space-y-3">
@@ -937,9 +902,10 @@
             <h2 class="font-black text-base">🚀 Histórico Completo de Versões</h2>
             <p class="text-[11px] text-muted-pro font-semibold">Todas as evoluções do aplicativo desde o lançamento</p>
           </div>
-          <span class="bg-violet-500/15 text-violet-600 text-xs font-black px-3 py-1 rounded-full">v9.1.0 Ligas Mensais</span>
+          <span class="bg-violet-500/15 text-violet-600 text-xs font-black px-3 py-1 rounded-full">v9.2.0 Venture</span>
         </div>
-        <div class="border-l-4 border-violet-500 pl-3.5 space-y-1"><span class="text-[11px] font-extrabold text-violet-600 uppercase">Versão 9.1.0 • Ligas Mensais</span><h4 class="font-black text-sm">💎 Dez divisões, XP mensal e promoção de temporada</h4><p class="text-xs text-muted-pro">Nova competição paralela com Bronze, Prata, Ouro, Safira, Rubi, Esmeralda, Ametista, Pérola, Obsidiana e Diamante. O XP acumulado e o ranking geral permanecem intactos. A Taça semanal e os Flashcards saem da navegação nesta fase, com o código legado mantido para possível retorno.</p></div>
+        <div class="border-l-4 border-emerald-500 pl-3.5 space-y-1"><span class="text-[11px] font-extrabold text-emerald-600 uppercase">Versão 9.2.0 • Ligas e All Star</span><h4 class="font-black text-sm">🏆 Ligas mensais como competição principal</h4><p class="text-xs text-muted-pro">A tela antiga de ranking geral saiu da navegação; a classificação principal agora é por divisões mensais: Bronze, Prata, Ouro, Safira, Rubi, Esmeralda, Ametista, Pérola, Obsidiana e Diamante. O XP vitalício, cadastros e histórico continuam preservados. All Star Cozinha, notificações e ajustes de desempenho também estão incluídos. A primeira temporada mensal está prevista para novembro de 2026.</p></div>
+        <div class="border-l-4 border-violet-500 pl-3.5 space-y-1"><span class="text-[11px] font-extrabold text-violet-600 uppercase">Versão 9.1.0 • Ligas Mensais</span><h4 class="font-black text-sm">💎 Dez divisões, XP mensal e promoção de temporada</h4><p class="text-xs text-muted-pro">As ligas mensais incluem Bronze, Prata, Ouro, Safira, Rubi, Esmeralda, Ametista, Pérola, Obsidiana e Diamante. O XP vitalício permanece intacto. A Taça semanal e os Flashcards saíram da navegação, mantendo o código legado para rollback.</p></div>
         <div class="border-l-4 border-sky-500 pl-3.5 space-y-1"><span class="text-[11px] font-extrabold text-sky-600 uppercase">Versão 9.0.1 • XP Integridade</span><h4 class="font-black text-sm">🛡️ Registro idempotente e recuperação de recompensas</h4><p class="text-xs text-muted-pro">Cada recompensa usa um ID de transação, grava uma intenção antes do crédito e pode ser recuperada após uma interrupção. Ganhos simultâneos de aparelhos com a mesma base podem ser somados; quando as bases entram em conflito, o sistema preserva o maior saldo conhecido e registra a divergência em vez de somar valores incertos. A validação ainda é local e precisa de um servidor autenticado para segurança real.</p></div>
         <div class="border-l-4 border-emerald-500 pl-3.5 space-y-1"><span class="text-[11px] font-extrabold text-emerald-600 uppercase">Versão 9.0.0 • Arena Venture</span><h4 class="font-black text-sm">⚡ Desafio diário, revisão adaptativa e revanche 1v1</h4><p class="text-xs text-muted-pro">Cinco perguntas com prioridade para dúvidas, XP pelo sistema existente, bônus diário por 4/5 acertos, progresso salvo no cadastro e painel complementar para rever duelos recentes. A sincronização segue legada e não é validada por servidor.</p></div>
         <div class="border-l-4 border-[#FFC72C] pl-3.5 space-y-1"><span class="text-[11px] font-extrabold text-amber-500 uppercase">Versão 8.9 • Missões e Sorteio Inteligente</span><h4 class="font-black text-sm">🎯 Missões variadas, perguntas sem repetição e novos lanches</h4><p class="text-xs text-muted-pro">Quatro desafios diferentes por dia e semana, simulado sem repetição no filtro ativo até concluir todas as perguntas, e Cozinha com 10 receitas incluindo Big Tasty completo.</p></div>
@@ -987,7 +953,7 @@
       <button type="button" onclick="switchMainTab('quiz')" id="nav-quiz" class="nav-btn active-nav" aria-current="page"><span class="nav-icon" aria-hidden="true">🎯</span><span>Simulado</span></button>
       <button type="button" onclick="switchMainTab('training')" id="nav-training" class="nav-btn"><span class="nav-icon" aria-hidden="true">🍔</span><span>Treinos</span></button>
       <button type="button" onclick="switchMainTab('missions')" id="nav-missions" class="nav-btn"><span class="nav-icon" aria-hidden="true">🏅</span><span>Missões</span></button>
-      <button type="button" onclick="switchMainTab('prizes')" id="nav-prizes" class="nav-btn"><span class="nav-icon" aria-hidden="true">🏆</span><span>Ranking</span></button>
+      <button type="button" onclick="switchMainTab('prizes')" id="nav-prizes" class="nav-btn"><span class="nav-icon" aria-hidden="true">🏆</span><span>Ligas</span></button>
       <button type="button" onclick="switchMainTab('more')" id="nav-more" class="nav-btn"><span class="nav-icon" aria-hidden="true">☰</span><span>Mais</span></button>
     </nav>
   </div>
