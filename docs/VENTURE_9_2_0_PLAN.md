@@ -1,7 +1,7 @@
 # Venture 9.2.0 — plano de implementação
 
 ## Objetivo
-Adicionar notificações internas, preparar Web Push, apresentar badges Big Mac para as dez ligas mensais e abrir uma trilha preparatória All Star, mantendo o ranking geral e os saldos de XP.
+Adicionar notificações internas, preparar Web Push, apresentar badges Big Mac para as dez ligas mensais e abrir uma trilha preparatória All Star. As ligas mensais passam a ser a competição principal; XP vitalício e cadastros são preservados, sem exibir o ranking geral legado.
 
 ## Entregas nesta branch
 - Recriação dos módulos js/10-arena-venture.js e js/11-ligas-mensais.js, que eram referenciados no index.html da base 9.1.0, mas não estavam presentes no repositório.
@@ -51,10 +51,10 @@ Adicionar notificações internas, preparar Web Push, apresentar badges Big Mac 
 
 ## Otimização de desempenho — revisão inicial
 - Scripts Tailwind e MQTT passam a usar `defer`, evitando bloquear a leitura inicial do HTML.
-- A biblioteca `html2canvas` sai do carregamento inicial e é carregada sob demanda apenas ao exportar uma imagem do ranking.
+- O exportador de imagem do ranking geral legado foi retirado junto com a interface; `html2canvas` não é mais carregado nem referenciado no aplicativo.
 - A versão interna do verificador automático foi alinhada para 9.2.0, igual ao HTML e a `version.json`, evitando detectar a própria versão como atualização disponível.
 - Heartbeat reduzido de 10s para 15s para manter o indicador online dentro da janela de 25s; a mensagem de heartbeat usa payload parcial não-retido e não executa backup, serialização de todos os cadastros ou atualização completa da interface.
-- Atualizações visuais do ranking causadas por heartbeat são agrupadas por uma janela de 5s quando a aba de ranking está aberta.
+- Atualizações visuais do ranking causadas por heartbeat são agrupadas por uma janela de 5s quando a aba de ligas está aberta.
 - A sincronização completa e retida continua disponível para mudanças reais de cadastro/progresso.
 - Validação estática dos 19 scripts locais passou sem erros de sintaxe. Ainda falta medir carregamento e responsividade em navegador real; não há benchmark de campo nesta etapa.
 
