@@ -36,14 +36,30 @@ img.src = e.target.result;
 };
 reader.readAsDataURL(file);
 }
+let html2CanvasLoadingPromise = null;
+async function loadHtml2CanvasOnDemand() {
+if (typeof window.html2canvas === "function") return window.html2canvas;
+if (!html2CanvasLoadingPromise) {
+html2CanvasLoadingPromise = new Promise((resolve, reject) => {
+const script = document.createElement("script");
+script.src = "https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js";
+script.async = true;
+script.onload = () => typeof window.html2canvas === "function" ? resolve(window.html2canvas) : reject(new Error("html2canvas não inicializou"));
+script.onerror = () => reject(new Error("Não foi possível carregar html2canvas"));
+document.head.appendChild(script);
+}).finally(() => { html2CanvasLoadingPromise = null; });
+}
+return html2CanvasLoadingPromise;
+}
 async function captureAndShareRankingImage() {
 playTabClickSound();
 const printArea = $("rankingPrintArea"), btn = $("btnPrintRanking");
-if (!printArea || typeof html2canvas === "undefined") return shareMyScoreWhatsApp();
+if (!printArea) return shareMyScoreWhatsApp();
 const orig = btn.innerHTML;
 btn.innerHTML = `<span>⏳ Gerando Print...</span>`; btn.disabled = true;
 try {
-const canvas = await html2canvas(printArea, { scale: 2, useCORS: true, backgroundColor: document.body.classList.contains("dark-mode") ? "#131b2e" : "#ffffff" });
+const renderCanvas = await loadHtml2CanvasOnDemand();
+const canvas = await renderCanvas(printArea, { scale: 2, useCORS: true, backgroundColor: document.body.classList.contains("dark-mode") ? "#131b2e" : "#ffffff" });
 canvas.toBlob(async blob => {
 btn.innerHTML = orig; btn.disabled = false;
 if (!blob) return;
@@ -82,14 +98,39 @@ c.appendChild(t); setTimeout(() => t.remove(), 1250);
 // =========================================================================
 // SINCRONIZAÇÃO EM TEMPO REAL E RESGATE DE CONTAS
 // =========================================================================
+let heartbeatSyncQueueTimer = null;
+let heartbeatLeaderboardRefreshTimer = null;
+function scheduleHeartbeatSync(key) {
+if (!key || !users[key] || users[key]._deleted) return;
+if (heartbeatSyncQueueTimer) clearTimeout(heartbeatSyncQueueTimer);
+heartbeatSyncQueueTimer = setTimeout(() => {
+const user = users[key];
+if (!user || user._deleted) return;
+const packet = JSON.stringify({ __ventureHeartbeat: true, key, user });
+mqttClients.forEach(c => { if (c && c.connected) try { c.publish(SYNC_MQTT_TOPIC, packet); } catch (e) {} });
+fetch(CLOUD_HTTP_URL, { method: "POST", body: JSON.stringify({ type: "single", k: key, u: user }) }).catch(() => {});
+}, 1000);
+}
+function scheduleHeartbeatUiRefresh(key) {
+const modal = $("publicProfileModal");
+if (key && publicProfileSelectedKey === key && modal && !modal.classList.contains("hidden") && typeof renderPublicProfile === "function") renderPublicProfile();
+const rankingTab = $("tab-prizes");
+if (rankingTab && !rankingTab.classList.contains("hidden") && !heartbeatLeaderboardRefreshTimer) {
+heartbeatLeaderboardRefreshTimer = setTimeout(() => {
+heartbeatLeaderboardRefreshTimer = null;
+const tab = $("tab-prizes");
+if (tab && !tab.classList.contains("hidden") && typeof renderLeaderboard === "function") renderLeaderboard();
+}, 5000);
+}
+}
 function startHeartbeat() {
 if (heartbeatIntervalId) clearInterval(heartbeatIntervalId);
 heartbeatIntervalId = setInterval(() => {
 if (currentUserKey && users[currentUserKey] && !users[currentUserKey]._deleted) {
 users[currentUserKey].lastSeen = Date.now();
-scheduleCloudSync(currentUserKey, false);
+scheduleHeartbeatSync(currentUserKey);
 }
-}, 10000);
+}, 15000);
 }
 // CORREÇÃO CRÍTICA v8.9.1: recuperação de cadastros sem substituir o registro
 // moderno por um legado incompleto. Um erro em uma conta não invalida as demais.
@@ -196,9 +237,14 @@ client.on("message", (topic, msg) => {
 try {
 const data = JSON.parse(msg.toString());
 if (topic === SYNC_MQTT_TOPIC) {
+if (data && data.__ventureHeartbeat === true && data.key && data.user && data.user.name) {
+users[data.key] = mergeSingleUser(users[data.key], data.user);
+scheduleHeartbeatUiRefresh(data.key);
+} else {
 users = mergeUserDictionaries(users, data);
 localStorage.setItem(STORAGE_USERS_KEY, JSON.stringify(users));
 refreshUIIfNeeded();
+}
 } else if (topic === DUEL_MQTT_TOPIC) handleIncomingDuelPacket(data);
 else if (topic === TRAINER_MQTT_TOPIC) mergeTrainerState(data);
 } catch (e) {}
