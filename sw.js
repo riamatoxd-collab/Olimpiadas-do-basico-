@@ -1,4 +1,4 @@
-/* Venture 9.2.1 · service worker para notificações push. Requer backend de envio. */
+/* Venture 9.2.2 · service worker para notificações push. Requer backend de envio. */
 self.addEventListener('install', event => { self.skipWaiting(); });
 self.addEventListener('activate', event => { event.waitUntil(self.clients.claim()); });
 self.addEventListener('push', event => {
