@@ -106,7 +106,7 @@ if (heartbeatSyncQueueTimer) clearTimeout(heartbeatSyncQueueTimer);
 heartbeatSyncQueueTimer = setTimeout(() => {
 const user = users[key];
 if (!user || user._deleted) return;
-const packet = JSON.stringify({ __ventureHeartbeat: true, key, user });
+const packet = JSON.stringify({ __ventureHeartbeat: true, key, lastSeen: user.lastSeen });
 mqttClients.forEach(c => { if (c && c.connected) try { c.publish(SYNC_MQTT_TOPIC, packet); } catch (e) {} });
 fetch(CLOUD_HTTP_URL, { method: "POST", body: JSON.stringify({ type: "single", k: key, u: user }) }).catch(() => {});
 }, 1000);
@@ -237,9 +237,12 @@ client.on("message", (topic, msg) => {
 try {
 const data = JSON.parse(msg.toString());
 if (topic === SYNC_MQTT_TOPIC) {
-if (data && data.__ventureHeartbeat === true && data.key && data.user && data.user.name) {
-users[data.key] = mergeSingleUser(users[data.key], data.user);
+if (data && data.__ventureHeartbeat === true && data.key && Number.isFinite(Number(data.lastSeen))) {
+const existingUser = users[data.key];
+if (existingUser && !existingUser._deleted) {
+existingUser.lastSeen = Math.max(Number(existingUser.lastSeen) || 0, Number(data.lastSeen) || 0);
 scheduleHeartbeatUiRefresh(data.key);
+}
 } else {
 users = mergeUserDictionaries(users, data);
 localStorage.setItem(STORAGE_USERS_KEY, JSON.stringify(users));
