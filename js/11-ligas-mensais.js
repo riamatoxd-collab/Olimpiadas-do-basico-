@@ -528,7 +528,10 @@
   const previousLeaderboard = typeof renderLeaderboard === "function" ? renderLeaderboard : null;
   if (previousLeaderboard && !previousLeaderboard.__ventureLeagueWrapped) {
     const wrapped = function () {
-      const result = previousLeaderboard.apply(this, arguments);
+      // A tela de ranking geral foi retirada: não calcule nem desenhe o placar legado.
+      // A classificação mensal continua sendo atualizada quando os dados mudam.
+      const legacyBoardVisible = document.getElementById("leaderboardContainer") || document.getElementById("podiumTop3Container");
+      const result = legacyBoardVisible ? previousLeaderboard.apply(this, arguments) : undefined;
       renderMonthlyLeague();
       return result;
     };
