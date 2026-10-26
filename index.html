@@ -413,16 +413,40 @@
         </div>
       </div>
       <section id="ventureAllStar" class="vas-card" aria-label="Preparação All Star">
-        <div class="vas-hero"><div><span class="vas-eyebrow">✦ PRÓXIMA FASE · VENTURE ALL STAR</span><h2 class="vas-title">Prepare-se para o desafio All Star</h2><p class="vas-copy">Escolha uma estação para direcionar seus treinos. Pratique qualidade, agilidade, padronização e domínio dos processos.</p></div><div class="vas-star" aria-hidden="true">⭐</div></div>
+        <div class="vas-hero"><div><span class="vas-eyebrow">✦ VENTURE ALL STAR · COZINHA</span><h2 class="vas-title">Treine. Compita. Domine a estação.</h2><p class="vas-copy">Treinamento guiado e provas competitivas com 55 questões baseadas no Book Olimpíadas de Básico — Venture. A nota All Star é separada do XP oficial.</p></div><div class="vas-star" aria-hidden="true">⭐</div></div>
+        <div class="vas-section-heading"><strong>Minha trilha de foco</strong><span>Você pode alterá-la a qualquer momento.</span></div>
         <div id="ventureAllStarTracks" class="vas-track-grid" role="group" aria-label="Escolher trilha All Star">
           <button type="button" class="vas-track" data-allstar-track="balcao" aria-pressed="false"><span class="vas-track-icon" aria-hidden="true">🛎️</span><span><strong>Balcão e atendimento</strong><small>Precisão do pedido e experiência do cliente.</small></span></button>
           <button type="button" class="vas-track" data-allstar-track="drive" aria-pressed="false"><span class="vas-track-icon" aria-hidden="true">🚗</span><span><strong>Drive-Thru</strong><small>Agilidade, confirmação e coordenação.</small></span></button>
           <button type="button" class="vas-track" data-allstar-track="cozinha" aria-pressed="false"><span class="vas-track-icon" aria-hidden="true">🍔</span><span><strong>Cozinha</strong><small>Qualidade, montagem, tempo e segurança.</small></span></button>
-          <button type="button" class="vas-track" data-allstar-track="sobremesas" aria-pressed="false"><span class="vas-track-icon" aria-hidden="true">🍦</span><span><strong>Sobremesas e quiosque</strong><small>Padronização, higiene e apresentação.</small></span></button>
+          <button type="button" class="vas-track" data-allstar-track="sobremesas" aria-pressed="false"><span class="vas-track-icon" aria-hidden="true">🍦</span><span><strong>Sobremesas e quiosque</strong><small>Padronização, higiene, apresentação e atendimento.</small></span></button>
         </div>
-        <p id="ventureAllStarStatus" class="vas-status" role="status" aria-live="polite">Entre na sua conta para escolher sua trilha de preparação.</p>
-        <div class="vas-metrics"><div class="vas-metric"><span>Minha liga mensal</span><strong id="ventureAllStarLeague">Entre na conta</strong></div><div class="vas-metric"><span>Avaliações práticas registradas</span><strong id="ventureAllStarAssessmentCount">—</strong></div></div>
-        <p class="vas-note">Trilha preparatória independente do Venture. Não é integração nem classificação oficial da Arcos Dorados/McDonald's; avaliações e reconhecimento oficial dependem dos critérios da empresa.</p>
+        <p id="ventureAllStarStatus" class="vas-status" role="status" aria-live="polite">Escolha sua trilha e selecione uma estação da Cozinha.</p>
+        <div class="vas-metrics"><div class="vas-metric"><span>Minha liga mensal</span><strong id="ventureAllStarLeague">Entre na conta</strong></div><div class="vas-metric"><span>Sessões All Star registradas</span><strong id="ventureAllStarAssessmentCount">—</strong></div></div>
+        <div class="vas-divider"></div>
+        <div class="vas-section-heading"><strong>Escolha a estação</strong><span>Conteúdo inicial: Cozinha</span></div>
+        <div id="ventureAllStarAreas" class="vas-area-grid" role="group" aria-label="Selecionar área de treinamento">
+          <button type="button" class="vas-area is-selected" data-allstar-area="cozinha" aria-pressed="true"><span>🍳</span><strong>Cozinha completa</strong><small>Prova mista das quatro estações</small></button>
+          <button type="button" class="vas-area" data-allstar-area="linha" aria-pressed="false"><span>🥪</span><strong>Linha</strong><small>Tostagem e montagem</small></button>
+          <button type="button" class="vas-area" data-allstar-area="chapas" aria-pressed="false"><span>🍔</span><strong>Chapas e carnes</strong><small>Preparação e parâmetros</small></button>
+          <button type="button" class="vas-area" data-allstar-area="mcfritas" aria-pressed="false"><span>🍟</span><strong>McFritas</strong><small>Fritura e finalização</small></button>
+          <button type="button" class="vas-area" data-allstar-area="fritos" aria-pressed="false"><span>🍗</span><strong>Produtos fritos</strong><small>Frango, nuggets e tortas</small></button>
+        </div>
+        <div id="ventureAllStarModes" class="vas-mode-switch" role="group" aria-label="Selecionar modo">
+          <button type="button" class="vas-mode is-selected" data-allstar-mode="study" aria-pressed="true"><span>📘</span><strong>Treinamento</strong><small>Gabarito e explicação a cada resposta</small></button>
+          <button type="button" class="vas-mode" data-allstar-mode="challenge" aria-pressed="false"><span>🏆</span><strong>Competição</strong><small>Sem dicas durante a prova</small></button>
+        </div>
+        <div class="vas-source-warning" role="note" aria-label="Fonte das questões e parâmetro de UHC">
+          <strong>📚 Fonte principal: Book Olimpíadas de Básico — Venture</strong>
+          <p>O banco inicial contém 55 questões baseadas nas perguntas e respostas do book, com referência à página e ao número da questão original. Para transformar o conteúdo em múltipla escolha, as alternativas incorretas foram criadas para o jogo; elas não são alternativas transcritas do book. O gabarito é baseado na resposta do material.</p>
+          <strong style="display:block;margin-top:10px">🌡️ UHC de carnes vermelhas — padrão do book</strong>
+          <p>O book confirma <strong>79°C</strong> para carnes vermelhas (questão 13, p. 1) e <strong>10 minutos</strong> de tempo de vida (questão 14, p. 1). Esses são os valores adotados no All Star. Um dos materiais complementares contém valores diferentes; para este parâmetro, o banco segue o book enviado.</p>
+        </div>
+        <div id="ventureAllStarProgress" class="vas-progress" aria-live="polite"></div>
+        <div id="ventureAllStarQuiz" class="vas-quiz" aria-live="polite">
+          <div class="vas-quiz-intro"><h3>Preparando o desafio...</h3><p>Selecione uma estação e um modo para começar.</p></div>
+        </div>
+        <p class="vas-note">Modo preparatório independente do Venture. A meta sugerida de 80% vale apenas para o simulado do site e não representa certificação nem resultado oficial da competição All Star. A pontuação e o histórico All Star não concedem nem descontam XP.</p>
       </section>
       <div class="training-switch" role="group" aria-label="Tipo de treino">
         <button id="training-nav-kitchen" type="button" class="training-choice is-active" onclick="switchTrainingMode('kitchen')" aria-pressed="true"><span aria-hidden="true">🍔</span><span>Cozinha</span></button>
