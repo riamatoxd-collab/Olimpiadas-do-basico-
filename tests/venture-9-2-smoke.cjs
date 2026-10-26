@@ -34,7 +34,7 @@ for (const id of ['rankingPrintArea','leaderboardContainer','podiumTop3Container
 }
 if (!html.includes('html2canvas.min.js') && !read('js/06-contas-sincronizacao.js').includes('html2canvas')) pass('legacy ranking image exporter and html2canvas removed');
 else fail('legacy ranking image exporter remains');
-const allStarQuestionIds = new Set(read('js/13-allstar.js').match(/BK-[A-Z]+-\\d+/g) || []);
+const allStarQuestionIds = new Set(read('js/13-allstar.js').match(/BK-[A-Z]+-\d+/g) || []);
 if (allStarQuestionIds.size === 55) pass('All Star Kitchen includes 55 source-mapped questions');
 else fail('All Star Kitchen question count is ' + allStarQuestionIds.size + ', expected 55');
 for (const name of ['bronze','prata','ouro','safira','rubi','esmeralda','ametista','perola','obsidiana','diamante']) {
