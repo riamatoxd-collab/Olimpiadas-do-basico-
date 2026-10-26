@@ -277,7 +277,7 @@ function renderVentureMonthlyLeague() {
     currentState.division === 9 ? 'Você chegou à liga mais alta.' :
     promoteZone ? '🔥 Você está na zona de promoção!' : active.length < 2 ? 'Jogue para abrir a disputa da liga.' :
       'Ganhe XP nos jogos para entrar na zona de promoção.');
-  setText('vmlPromotionDetail', preSeason ? 'Até lá, seu XP acumulado e o ranking geral continuam valendo normalmente.' :
+  setText('vmlPromotionDetail', preSeason ? 'Até lá, seu XP vitalício permanece preservado; a temporada mensal começa em novembro.' :
     currentState.division === 9 ? 'Mantenha sua posição na Liga Diamante. Os últimos colocados podem cair se houver participantes ativos suficientes.' :
     active.length < 2 ? 'A disputa de promoção abre quando pelo menos dois participantes ganharem XP neste mês.' :
     currentState.division === 0 ? `Os ${movement.promote} melhores participantes ativos podem subir no fechamento do mês. Bronze é a divisão inicial; ninguém cai abaixo dela.` :
