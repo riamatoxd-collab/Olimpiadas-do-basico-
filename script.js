@@ -1,4 +1,4 @@
-/* Venture 9.2.1 · script.js · arquivo carregado na ordem indicada no HTML. */
+/* Venture 9.2.2 · script.js · arquivo carregado na ordem indicada no HTML. */
 function switchTrainingMode(mode) {
   const valid = ["kitchen", "arena", "review", "duel"];
   if (!valid.includes(mode)) return;
@@ -30,9 +30,18 @@ function switchMainTab(tab) {
     if (name === currentNav) button.setAttribute("aria-current", "page");
     else button.removeAttribute("aria-current");
   });
-  if (tab === "training" && typeof renderVentureArena === "function") renderVentureArena();
-  if (tab === "training" && typeof renderVentureDuelDashboard === "function") renderVentureDuelDashboard();
+  if (tab === "training") {
+    if (typeof populateDuelOpponentList === "function") populateDuelOpponentList();
+    if (typeof renderDuelHistory === "function") renderDuelHistory();
+    if (typeof renderVentureArena === "function") renderVentureArena();
+    if (typeof renderVentureDuelDashboard === "function") renderVentureDuelDashboard();
+  }
+  if (tab === "missions") {
+    if (typeof renderMissionHub === "function") renderMissionHub();
+    if (typeof renderDailyChest === "function") renderDailyChest();
+  }
   if (tab === "profile") renderPremiumProfile();
+  if (tab === "admin" && typeof isAdminUnlocked !== "undefined" && isAdminUnlocked && typeof renderAdminUsersList === "function") renderAdminUsersList();
   if (tab === "prizes" || tab === "admin") fetchCloudHistorySafe(false);
   if (tab === "trainer") {renderPracticalChecklist();renderTrainerCenter();fetchTrainerHistory(false);}
   if (typeof window.scrollTo === "function") window.scrollTo({ top: 0, behavior: "instant" });
@@ -41,7 +50,7 @@ function switchMainTab(tab) {
 // =========================================================================
 // V8.5 — ATUALIZAÇÃO DE VERSÃO NO GITHUB PAGES (SEM APAGAR DADOS)
 // =========================================================================
-const APP_VERSION = "9.2.1";
+const APP_VERSION = "9.2.2";
 const APP_UPDATE_INTERVAL_MS = 60000; // Github Pages é estático: checagem periódica, não push instantâneo.
 const APP_UPDATE_IDLE_MS = 45000;
 let availableAppUpdate = null;
@@ -186,12 +195,18 @@ window.onload = async () => {
     $("authModal").classList.add("hidden");
     updateHeaderUI();
   }
-  // Recuperar históricos anteriores ANTES de publicar estados potencialmente
-  // defasados no canal MQTT. O limite evita travar o site em redes lentas.
-  await Promise.race([fetchCloudHistorySafe(true),new Promise(resolve=>setTimeout(resolve,4500))]);
-  initClusterSync();
-  startHeartbeat();
-  fetchTrainerHistory(true);
-  renderTrainerPublicContent();
+  // Recuperar históricos em paralelo à interface. Não bloqueie a validação das
+  // perguntas esperando a nuvem; só inicialize o envio MQTT após o histórico ou timeout.
+  const cloudHistoryReady = Promise.race([
+    fetchCloudHistorySafe(true),
+    new Promise(resolve => setTimeout(resolve, 4500))
+  ]);
+  const startCloudServices = () => {
+    initClusterSync();
+    startHeartbeat();
+    fetchTrainerHistory(true);
+    renderTrainerPublicContent();
+  };
+  cloudHistoryReady.then(startCloudServices, startCloudServices);
   initAppAutoUpdater();
 };
