@@ -6,7 +6,7 @@ const pass = message => console.log('PASS: ' + message);
 const fail = message => { console.error('FAIL: ' + message); process.exitCode = 1; };
 const read = file => fs.readFileSync(path.join(root, file), 'utf8');
 
-for (const file of ['script.js','js/11-ligas-mensais.js','js/12-notificacoes.js','js/13-allstar.js','sw.js']) {
+for (const file of ['script.js','js/06-contas-sincronizacao.js','js/11-ligas-mensais.js','js/12-notificacoes.js','js/13-allstar.js','sw.js']) {
   try { new vm.Script(read(file), { filename: file }); pass(file + ' parses'); }
   catch (error) { fail(file + ' syntax: ' + error.message); }
 }
@@ -18,6 +18,7 @@ const requiredHtml = [
   'venture-notifications.css?v=9210','venture-allstar.css?v=9210',
   'id="ventureNotificationBell"','id="ventureNotificationsModal"',
   'id="ventureAllStar"','id="premiumMonthlyLeagueBadge"','id="publicProfileMonthlyLeagueBadge"',
+  'id="ventureMonthlyLeague"','id="vmlLeaderboard"','defer src="https://cdn.tailwindcss.com"','defer src="https://unpkg.com/mqtt/dist/mqtt.min.js"',
   'js/12-notificacoes.js?v=9210','js/13-allstar.js?v=9210'
 ];
 for (const item of requiredHtml) html.includes(item) ? pass('HTML includes ' + item) : fail('HTML missing ' + item);
