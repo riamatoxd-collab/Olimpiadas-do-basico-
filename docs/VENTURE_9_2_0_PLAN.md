@@ -57,3 +57,8 @@ Adicionar notificações internas, preparar Web Push, apresentar badges Big Mac 
 - Atualizações visuais do ranking causadas por heartbeat são agrupadas por uma janela de 5s quando a aba de ranking está aberta.
 - A sincronização completa e retida continua disponível para mudanças reais de cadastro/progresso.
 - Validação estática dos 19 scripts locais passou sem erros de sintaxe. Ainda falta medir carregamento e responsividade em navegador real; não há benchmark de campo nesta etapa.
+
+## Troca da tela competitiva
+- A tela de ranking geral legado foi removida da navegação visual e substituída pela Liga Mensal como competição principal.
+- Não foram apagados XP vitalício, cadastros, históricos ou funções legadas; os módulos antigos ficam no código para rollback.
+- Histórico de duelos e Jornada de 27 níveis continuam acessíveis como recursos auxiliares.
