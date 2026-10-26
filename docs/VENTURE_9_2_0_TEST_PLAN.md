@@ -28,3 +28,9 @@ A branch precisa de teste manual no navegador e com dois aparelhos. A sincroniza
 - [ ] Com dois usuários online, verificar indicadores online e convites de duelo após o heartbeat de 15s.
 - [ ] Medir no DevTools Network/Performance o tempo de carregamento, Long Tasks, tráfego MQTT/HTTP e responsividade com cadastros de teste; comparar com a versão anterior.
 - [ ] Confirmar que os heartbeats não sobrescrevem a mensagem MQTT retida que contém o estado completo dos cadastros.
+
+## Transição do ranking
+- [ ] Confirmar que a navegação inferior mostra "Ligas" e abre a classificação mensal.
+- [ ] Confirmar que o pódio e a lista do ranking geral antigo não aparecem.
+- [ ] Confirmar que cadastros, XP vitalício, perfil, histórico de duelos e Jornada de 27 níveis permanecem acessíveis.
+- [ ] Confirmar que a temporada mensal segue o calendário planejado e não reinicia XP vitalício.
