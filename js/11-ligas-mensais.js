@@ -335,7 +335,9 @@ function installVentureMonthlyLeagueHooks() {
   if (typeof window.renderLeaderboard === 'function' && !window.renderLeaderboard.__ventureMonthlyLeagueWrapped) {
     const originalRender = window.renderLeaderboard;
     const wrappedRender = function () {
-      const result = originalRender.apply(this, arguments);
+      // A tela do ranking geral foi removida: evite ordenar todos os cadastros para uma lista invisível.
+      const legacyBoardVisible = document.getElementById('leaderboardContainer') || document.getElementById('podiumTop3Container');
+      const result = legacyBoardVisible ? originalRender.apply(this, arguments) : undefined;
       refreshVentureMonthlyLeague();
       return result;
     };
