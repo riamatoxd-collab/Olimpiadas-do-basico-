@@ -18,7 +18,7 @@ const requiredHtml = [
   'venture-notifications.css?v=9210','venture-allstar.css?v=9210',
   'id="ventureNotificationBell"','id="ventureNotificationsModal"',
   'id="ventureAllStar"','id="premiumMonthlyLeagueBadge"','id="publicProfileMonthlyLeagueBadge"',
-  'id="ventureMonthlyLeague"','id="vmlLeaderboard"','defer src="https://cdn.tailwindcss.com"','defer src="https://unpkg.com/mqtt/dist/mqtt.min.js"',
+  'id="ventureMonthlyLeague"','id="vmlLeaderboard"','id="ventureAllStarAreas"','id="ventureAllStarModes"','id="ventureAllStarProgress"','id="ventureAllStarQuiz"','defer src="https://cdn.tailwindcss.com"','defer src="https://unpkg.com/mqtt/dist/mqtt.min.js"',
   'js/12-notificacoes.js?v=9210','js/13-allstar.js?v=9210'
 ];
 for (const item of requiredHtml) html.includes(item) ? pass('HTML includes ' + item) : fail('HTML missing ' + item);
@@ -34,6 +34,9 @@ for (const id of ['rankingPrintArea','leaderboardContainer','podiumTop3Container
 }
 if (!html.includes('html2canvas.min.js') && !read('js/06-contas-sincronizacao.js').includes('html2canvas')) pass('legacy ranking image exporter and html2canvas removed');
 else fail('legacy ranking image exporter remains');
+const allStarQuestionIds = new Set(read('js/13-allstar.js').match(/BK-[A-Z]+-\\d+/g) || []);
+if (allStarQuestionIds.size === 55) pass('All Star Kitchen includes 55 source-mapped questions');
+else fail('All Star Kitchen question count is ' + allStarQuestionIds.size + ', expected 55');
 for (const name of ['bronze','prata','ouro','safira','rubi','esmeralda','ametista','perola','obsidiana','diamante']) {
   fs.existsSync(path.join(root, 'assets/ligas/' + name + '.webp')) ? pass('league badge asset exists: ' + name) : fail('missing league badge asset: ' + name);
 }
