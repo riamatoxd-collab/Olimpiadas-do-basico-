@@ -30,9 +30,18 @@ function switchMainTab(tab) {
     if (name === currentNav) button.setAttribute("aria-current", "page");
     else button.removeAttribute("aria-current");
   });
-  if (tab === "training" && typeof renderVentureArena === "function") renderVentureArena();
-  if (tab === "training" && typeof renderVentureDuelDashboard === "function") renderVentureDuelDashboard();
+  if (tab === "training") {
+    if (typeof populateDuelOpponentList === "function") populateDuelOpponentList();
+    if (typeof renderDuelHistory === "function") renderDuelHistory();
+    if (typeof renderVentureArena === "function") renderVentureArena();
+    if (typeof renderVentureDuelDashboard === "function") renderVentureDuelDashboard();
+  }
+  if (tab === "missions") {
+    if (typeof renderMissionHub === "function") renderMissionHub();
+    if (typeof renderDailyChest === "function") renderDailyChest();
+  }
   if (tab === "profile") renderPremiumProfile();
+  if (tab === "admin" && typeof isAdminUnlocked !== "undefined" && isAdminUnlocked && typeof renderAdminUsersList === "function") renderAdminUsersList();
   if (tab === "prizes" || tab === "admin") fetchCloudHistorySafe(false);
   if (tab === "trainer") {renderPracticalChecklist();renderTrainerCenter();fetchTrainerHistory(false);}
   if (typeof window.scrollTo === "function") window.scrollTo({ top: 0, behavior: "instant" });
