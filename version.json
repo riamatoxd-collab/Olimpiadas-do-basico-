@@ -1,5 +1,5 @@
 {
   "version": "9.2.1",
   "released_at": "2026-10-26",
-  "description": "Venture 9.2.1: monthly leagues become the primary competition screen; the legacy overall XP ranking and ranking-image export are removed from the UI without deleting user records, lifetime XP, duel history, or level progression. Includes lighter initial script loading, a minimal non-retained heartbeat payload, and less frequent update-install checks. Monthly league season launch remains planned for November 2026. Internal notifications and All Star features from 9.2.0 remain. Web Push with the site closed still requires backend/VAPID setup."
+  "description": "Venture 9.2.1: monthly leagues become the primary competition screen; the legacy overall XP ranking and ranking-image export are removed from the UI without deleting user records, lifetime XP, duel history, or level progression. Includes All Star Kitchen training and competition with 55 questions mapped to the Book Olimpíadas de Básico — Venture, with page/question references and results separate from official XP. Also includes lighter initial script loading, a minimal non-retained heartbeat payload, and less frequent update-install checks. Monthly league season launch remains planned for November 2026. Web Push with the site closed still requires backend/VAPID setup."
 }
