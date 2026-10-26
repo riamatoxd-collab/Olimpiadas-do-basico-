@@ -1,4 +1,4 @@
-/* Venture 9.0.1 · js/06-contas-sincronizacao.js · arquivo carregado na ordem indicada no HTML. */
+/* Venture 9.2.2 · js/06-contas-sincronizacao.js · arquivo carregado na ordem indicada no HTML. */
 function isPhotoAvatar(val) { return typeof val === "string" && val.startsWith("data:image/"); }
 function renderAvatarBadge(avatarVal, sizeClasses = "w-10 h-10", textClasses = "text-xl", extraClasses = "pro-card") {
 const val = avatarVal || "🍔";
