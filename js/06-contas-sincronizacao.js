@@ -36,45 +36,6 @@ img.src = e.target.result;
 };
 reader.readAsDataURL(file);
 }
-let html2CanvasLoadingPromise = null;
-async function loadHtml2CanvasOnDemand() {
-if (typeof window.html2canvas === "function") return window.html2canvas;
-if (!html2CanvasLoadingPromise) {
-html2CanvasLoadingPromise = new Promise((resolve, reject) => {
-const script = document.createElement("script");
-script.src = "https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js";
-script.async = true;
-script.onload = () => typeof window.html2canvas === "function" ? resolve(window.html2canvas) : reject(new Error("html2canvas não inicializou"));
-script.onerror = () => reject(new Error("Não foi possível carregar html2canvas"));
-document.head.appendChild(script);
-}).finally(() => { html2CanvasLoadingPromise = null; });
-}
-return html2CanvasLoadingPromise;
-}
-async function captureAndShareRankingImage() {
-playTabClickSound();
-const printArea = $("rankingPrintArea"), btn = $("btnPrintRanking");
-if (!printArea) return shareMyScoreWhatsApp();
-const orig = btn.innerHTML;
-btn.innerHTML = `<span>⏳ Gerando Print...</span>`; btn.disabled = true;
-try {
-const renderCanvas = await loadHtml2CanvasOnDemand();
-const canvas = await renderCanvas(printArea, { scale: 2, useCORS: true, backgroundColor: document.body.classList.contains("dark-mode") ? "#131b2e" : "#ffffff" });
-canvas.toBlob(async blob => {
-btn.innerHTML = orig; btn.disabled = false;
-if (!blob) return;
-const file = new File([blob], "Ranking_Olimpiadas_Mequi.png", { type: "image/png" });
-const list = Object.values(users).filter(u => u && u.name && !u._deleted).sort((a, b) => (b.xp || 0) - (a.xp || 0));
-const top3 = list.slice(0, 3).map((u, i) => `${i === 0 ? '🥇' : i === 1 ? '🥈' : '🥉'} ${u.name}: ${u.xp || 0} XP`).join("\n");
-const caption = `🏆 *RANKING OFICIAL — OLIMPÍADAS DO BÁSICO (FINALIZA 25/10)*\n\n${top3}\n\n🔗 Link: ${window.location.origin}${window.location.pathname}`;
-if (navigator.canShare && navigator.canShare({ files: [file] })) {
-try { await navigator.share({ files: [file], title: "Ranking Méqui", text: caption }); return; } catch (e) {}
-}
-const a = document.createElement("a"); a.download = "Ranking_Olimpiadas_Mequi.png"; a.href = URL.createObjectURL(blob); a.click();
-window.open(`https://wa.me/?text=${encodeURIComponent(caption)}`, "_blank");
-}, "image/png");
-} catch (e) { btn.innerHTML = orig; btn.disabled = false; shareMyScoreWhatsApp(); }
-}
 function initTheme() {
 if (localStorage.getItem(STORAGE_THEME_KEY) === "dark") {
 document.body.classList.add("dark-mode");
