@@ -21,3 +21,10 @@ Venture 9.1.1 com dez emblemas de liga em WebP, ranking mensal previsto para nov
 
 ## Riscos restantes
 A sincronização e as permissões administrativas ainda dependem do cliente/sistema legado. O XP precisa de backend transacional autenticado para garantia autoritativa sob concorrência. O fechamento mensal usa os dados disponíveis no aparelho que executa a rotina; revisar a sincronização antes de divulgar resultados.
+
+## Venture 9.2.1 — transição para Ligas Mensais
+- O ranking geral legado e a exportação de imagem saem da interface; a aba principal passa a se chamar **Ligas**.
+- XP vitalício, cadastros, histórico de duelos, progressão de níveis e dados já salvos permanecem preservados.
+- Tailwind e MQTT passam a usar `defer`; a biblioteca `html2canvas` e o exportador do ranking geral são removidos.
+- Heartbeat passa de 10s para 15s, envia payload MQTT mínimo não-retido e evita chamar a sincronização completa em cada batimento.
+- Versão do app atualizada para 9.2.1 e URLs de assets recebem novo cache-buster para forçar a atualização dos clientes.
