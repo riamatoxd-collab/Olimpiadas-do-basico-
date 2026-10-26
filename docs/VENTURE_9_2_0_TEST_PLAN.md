@@ -5,7 +5,7 @@
 - [ ] Login/cadastro: conta existente entra, perfil abre e o XP acumulado não muda.
 - [ ] Arena: cinco perguntas, cada resposta só pontua uma vez, repetição diária bloqueada, XP x2 respeitado.
 - [ ] Ledger: repetir um rewardId aplicado não adiciona XP; IDs diferentes são preservados na mesclagem.
-- [ ] Liga: em outubro aparece pré-temporada; a primeira temporada é novembro de 2026; XP vitalício e ranking geral não são zerados.
+- [ ] Liga: em outubro aparece pré-temporada; a primeira temporada é novembro de 2026; XP vitalício e cadastros não são zerados.
 - [ ] Perfil pessoal e público mostram o badge de liga Big Mac.
 - [ ] Notificações: abrir sino, marcar como lida, fechar modal, contador de não lidas, anúncio administrativo e persistência após recarregar.
 - [ ] Browser alerts: negar/conceder permissão; testar service worker; confirmar que a interface explica quando push real ainda não está configurado.
