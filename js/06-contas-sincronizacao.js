@@ -321,6 +321,7 @@ function setXpBalanceForUser(key, targetBalance, options = {}) {
     if (oldAdminOverrideAt === undefined) delete user.adminOverrideAt; else user.adminOverrideAt = oldAdminOverrideAt;
     return false;
   }
+  if (typeof backupKnownScores === "function") backupKnownScores(users);
   return true;
 }
 function mergeSingleUser(ex, inc) {
@@ -367,11 +368,37 @@ return m;
 }
 function refreshUIIfNeeded() {
 restoreQuizStreak();
-updateHeaderUI(); syncActiveUserHeartsState(); updateMistakesBadge(); populateDuelOpponentList(); renderDuelHistory(); renderMissionHub(); renderTrainerPublicContent(); if(isTrainerUnlocked)renderPracticalTrainerRoster(); renderPremiumProfile(); renderDailyChest(); if (publicProfileSelectedKey) renderPublicProfile();
+updateHeaderUI();
+syncActiveUserHeartsState();
+updateMistakesBadge();
+const isVisible = id => { const el = $(id); return !!el && !el.classList.contains("hidden"); };
+// Atualize somente os painéis visíveis; os demais são atualizados ao abrir a aba.
+// Isso evita reconstruir listas e perfis inteiros a cada mensagem recebida da nuvem.
+if (isVisible("tab-training")) {
+  populateDuelOpponentList();
+  renderDuelHistory();
+  if (typeof renderVentureArena === "function") renderVentureArena();
+  if (typeof renderVentureDuelDashboard === "function") renderVentureDuelDashboard();
+}
+if (isVisible("tab-missions")) {
+  renderMissionHub();
+  renderDailyChest();
+}
+if (isVisible("tab-trainer")) {
+  renderTrainerPublicContent();
+  if (typeof isTrainerUnlocked !== "undefined" && isTrainerUnlocked) renderPracticalTrainerRoster();
+}
+if (isVisible("tab-profile")) renderPremiumProfile();
+if (typeof publicProfileSelectedKey !== "undefined" && publicProfileSelectedKey && isVisible("publicProfileModal")) renderPublicProfile();
+// A tela do ranking geral foi removida na 9.2.1. Não calcule nem ordene todos
+// os cadastros para uma lista invisível; só faça isso se a tela legado ou o ADM existir.
+const legacyBoardVisible = $("leaderboardContainer") || $("podiumTop3Container");
+const adminNeedsList = typeof isAdminUnlocked !== "undefined" && isAdminUnlocked;
+if (!legacyBoardVisible && !adminNeedsList) return;
 const sorted = Object.values(users).filter(u => u && u.name && !u._deleted).sort((a, b) => (b.xp || 0) - (a.xp || 0));
 const hash = JSON.stringify(sorted.map(u => `${u.name}:${u.xp}:${u.correctAnswers}:${(u.avatar || "").slice(-15)}:${u.role}:${u.lastSeen || 0}:${u.profilePremium?.updatedAt||0}:${Object.keys(u.missionProgress?.badges||{}).length}:${Object.keys(u.practicalAssessments?.records||{}).length}`));
-if (hash !== lastLeaderboardHash) { lastLeaderboardHash = hash; renderLeaderboard(); }
-if (isAdminUnlocked && hash !== lastAdminListHash) { lastAdminListHash = hash; renderAdminUsersList(); }
+if (legacyBoardVisible && hash !== lastLeaderboardHash) { lastLeaderboardHash = hash; renderLeaderboard(); }
+if (adminNeedsList && hash !== lastAdminListHash) { lastAdminListHash = hash; renderAdminUsersList(); }
 }
 function initClusterSync() {
 ["wss://broker.emqx.io:8084/mqtt", "wss://broker.hivemq.com:8884/mqtt"].forEach(url => {
@@ -410,10 +437,52 @@ const p = JSON.stringify(pkt);
 if (['question','answer','finish'].includes(pkt.type)) handleIncomingDuelPacket(pkt);
 mqttClients.forEach(c => { if (c && c.connected) try { c.publish(DUEL_MQTT_TOPIC, p); } catch (e) {} });
 }
+let localUsersPersistTimer = null;
+let localMutationUiRefreshTimer = null;
+function scheduleLocalMutationUiRefresh() {
+if (localMutationUiRefreshTimer) return;
+localMutationUiRefreshTimer = setTimeout(() => {
+  localMutationUiRefreshTimer = null;
+  try {
+    if (currentUserKey && users[currentUserKey] && typeof updateHeaderUI === "function" && $("userNameDisplay")) updateHeaderUI();
+    if (typeof syncActiveUserHeartsState === "function") syncActiveUserHeartsState();
+    if (typeof updateMistakesBadge === "function") updateMistakesBadge();
+    const isVisible = id => { const el = $(id); return !!el && !el.classList.contains("hidden"); };
+    if (isVisible("tab-missions")) {
+      if (typeof renderMissionHub === "function") renderMissionHub();
+      if (typeof renderDailyChest === "function") renderDailyChest();
+    }
+    if (isVisible("tab-training")) {
+      const duelMode = $("training-mode-duel");
+      if (duelMode && !duelMode.classList.contains("hidden")) {
+        if (typeof populateDuelOpponentList === "function") populateDuelOpponentList();
+        if (typeof renderDuelHistory === "function") renderDuelHistory();
+        if (typeof renderVentureDuelDashboard === "function") renderVentureDuelDashboard();
+      }
+    }
+    if (isVisible("tab-profile") && typeof renderPremiumProfile === "function") renderPremiumProfile();
+    if (isVisible("tab-trainer") && typeof renderTrainerPublicContent === "function") {
+      renderTrainerPublicContent();
+      if (typeof isTrainerUnlocked !== "undefined" && isTrainerUnlocked && typeof renderPracticalTrainerRoster === "function") renderPracticalTrainerRoster();
+    }
+    if (isVisible("tab-admin") && typeof isAdminUnlocked !== "undefined" && isAdminUnlocked && typeof renderAdminUsersList === "function") renderAdminUsersList();
+    if (typeof publicProfileSelectedKey !== "undefined" && publicProfileSelectedKey && isVisible("publicProfileModal") && typeof renderPublicProfile === "function") renderPublicProfile();
+  } catch (error) {
+    console.warn("Não foi possível atualizar um painel após a alteração local.", error);
+  }
+}, 0);
+}
 function scheduleCloudSync(keyToPush, immediate = false) {
-backupKnownScores(users);
-localStorage.setItem(STORAGE_USERS_KEY, JSON.stringify(users));
-refreshUIIfNeeded();
+// Persista uma vez por lote de alterações. XP continua com seu write-ahead ledger
+// síncrono; isso evita serializar a base inteira repetidamente no mesmo clique.
+if (!localUsersPersistTimer) {
+  localUsersPersistTimer = setTimeout(() => {
+    localUsersPersistTimer = null;
+    try { localStorage.setItem(STORAGE_USERS_KEY, JSON.stringify(users)); }
+    catch (error) { console.warn("Não foi possível persistir os dados locais.", error); }
+  }, 0);
+}
+scheduleLocalMutationUiRefresh();
 clearTimeout(cloudSyncQueueTimer);
 cloudSyncQueueTimer = setTimeout(() => {
 const full = JSON.stringify(users);
