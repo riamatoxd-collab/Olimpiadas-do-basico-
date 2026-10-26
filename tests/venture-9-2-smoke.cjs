@@ -34,6 +34,14 @@ for (const id of ['rankingPrintArea','leaderboardContainer','podiumTop3Container
 }
 if (!html.includes('html2canvas.min.js') && !read('js/06-contas-sincronizacao.js').includes('html2canvas')) pass('legacy ranking image exporter and html2canvas removed');
 else fail('legacy ranking image exporter remains');
+const syncSource = read('js/06-contas-sincronizacao.js');
+const syncBlock = syncSource.match(/function scheduleCloudSync\([\s\S]*?\n\}/);
+if (syncBlock && !syncBlock[0].includes('refreshUIIfNeeded()')) pass('cloud sync does not synchronously rebuild the whole UI on each click');
+else fail('cloud sync still performs a full synchronous UI refresh');
+if (syncSource.includes('let localUsersPersistTimer = null;') && syncSource.includes('scheduleLocalMutationUiRefresh();')) pass('local persistence and visible-panel refresh are coalesced');
+else fail('local persistence/UI refresh is not coalesced');
+if (syncSource.includes('if (!legacyBoardVisible && !adminNeedsList) return;')) pass('removed legacy ranking no longer sorts all users during refresh');
+else fail('refresh still sorts users for the removed ranking');
 const allStarQuestionIds = new Set(read('js/13-allstar.js').match(/BK-[A-Z]+-\d+/g) || []);
 if (allStarQuestionIds.size === 55) pass('All Star Kitchen includes 55 source-mapped questions');
 else fail('All Star Kitchen question count is ' + allStarQuestionIds.size + ', expected 55');
