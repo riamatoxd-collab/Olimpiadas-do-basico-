@@ -22,7 +22,7 @@
 A branch precisa de teste manual no navegador e com dois aparelhos. A sincronização atual não é uma autoridade central; não anunciar prêmios ou resultados oficiais antes de instalar backend transacional.
 
 ## Desempenho e atualização
-- [ ] Confirmar que o HTML inicia sem carregar `html2canvas`; ao exportar ranking, a biblioteca deve carregar uma única vez sob demanda.
+- [ ] Confirmar que a interface e o código não carregam nem referenciam `html2canvas` após a remoção do exportador do ranking geral legado.
 - [ ] Confirmar que Tailwind e MQTT terminam de carregar e que estilos, login e sincronização em tempo real continuam funcionando com `defer`.
 - [ ] Confirmar que o verificador considera a versão instalada 9.2.0 e não mostra banner de atualização quando `version.json` também está em 9.2.0.
 - [ ] Com dois usuários online, verificar indicadores online e convites de duelo após o heartbeat de 15s.
