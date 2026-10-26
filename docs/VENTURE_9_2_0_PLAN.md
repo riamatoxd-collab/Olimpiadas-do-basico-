@@ -48,3 +48,12 @@ Adicionar notificações internas, preparar Web Push, apresentar badges Big Mac 
 - O banco de 55 questões usa o Book Olimpíadas de Básico — Venture como fonte de enunciados/respostas; alternativas incorretas são elaboradas para o quiz e não são transcritas do book.
 - UHC de carnes vermelhas segue o book enviado: 79°C e máximo de 10 minutos (questões 13 e 14, p. 1). Um material complementar tem valores diferentes, mas não é a fonte adotada para esse parâmetro.
 - Ver checklist e mapa de fontes em `docs/ALLSTAR_COZINHA_QUESTOES.md`.
+
+## Otimização de desempenho — revisão inicial
+- Scripts Tailwind e MQTT passam a usar `defer`, evitando bloquear a leitura inicial do HTML.
+- A biblioteca `html2canvas` sai do carregamento inicial e é carregada sob demanda apenas ao exportar uma imagem do ranking.
+- A versão interna do verificador automático foi alinhada para 9.2.0, igual ao HTML e a `version.json`, evitando detectar a própria versão como atualização disponível.
+- Heartbeat reduzido de 10s para 15s para manter o indicador online dentro da janela de 25s; a mensagem de heartbeat usa payload parcial não-retido e não executa backup, serialização de todos os cadastros ou atualização completa da interface.
+- Atualizações visuais do ranking causadas por heartbeat são agrupadas por uma janela de 5s quando a aba de ranking está aberta.
+- A sincronização completa e retida continua disponível para mudanças reais de cadastro/progresso.
+- Validação estática dos 19 scripts locais passou sem erros de sintaxe. Ainda falta medir carregamento e responsividade em navegador real; não há benchmark de campo nesta etapa.
