@@ -14,18 +14,18 @@ try { JSON.parse(read('version.json')); JSON.parse(read('manifest.webmanifest'))
 catch (error) { fail('invalid metadata JSON: ' + error.message); }
 const html = read('index.html');
 const requiredHtml = [
-  'content="9.2.1"','rel="manifest" href="manifest.webmanifest"',
-  'venture-notifications.css?v=9210','venture-allstar.css?v=9210',
+  'content="9.2.2"','rel="manifest" href="manifest.webmanifest"',
+  'venture-notifications.css?v=9220','venture-allstar.css?v=9220',
   'id="ventureNotificationBell"','id="ventureNotificationsModal"',
   'id="ventureAllStar"','id="premiumMonthlyLeagueBadge"','id="publicProfileMonthlyLeagueBadge"',
   'id="ventureMonthlyLeague"','id="vmlLeaderboard"','id="ventureAllStarAreas"','id="ventureAllStarModes"','id="ventureAllStarProgress"','id="ventureAllStarQuiz"','defer src="https://cdn.tailwindcss.com"','defer src="https://unpkg.com/mqtt/dist/mqtt.min.js"',
-  'js/12-notificacoes.js?v=9210','js/13-allstar.js?v=9210'
+  'js/12-notificacoes.js?v=9220','js/13-allstar.js?v=9220'
 ];
 for (const item of requiredHtml) html.includes(item) ? pass('HTML includes ' + item) : fail('HTML missing ' + item);
 
 const version = JSON.parse(read('version.json'));
-if (version.version === '9.2.1' && read('script.js').includes('const APP_VERSION = "9.2.1";')) pass('runtime and manifest versions match 9.2.1');
-else fail('runtime and manifest versions do not match 9.2.1');
+if (version.version === '9.2.2' && read('script.js').includes('const APP_VERSION = "9.2.2";')) pass('runtime and manifest versions match 9.2.2');
+else fail('runtime and manifest versions do not match 9.2.2');
 if (/id="nav-prizes"[^>]*>[\s\S]*?<span>Ligas<\/span>/.test(html)) pass('main navigation names the competition tab Ligas');
 else fail('main navigation does not show Ligas');
 for (const id of ['rankingPrintArea','leaderboardContainer','podiumTop3Container','btnPrintRanking']) {
@@ -135,4 +135,4 @@ try {
   else fail('merge hook did not preserve the latest All Star track choice');
 } catch (error) { fail('notification/All Star merge smoke: ' + error.stack); }
 
-if (!process.exitCode) console.log('All Venture 9.2.1 smoke tests passed.');
+if (!process.exitCode) console.log('All Venture 9.2.2 smoke tests passed.');
