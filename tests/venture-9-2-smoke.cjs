@@ -42,6 +42,8 @@ if (syncSource.includes('let localUsersPersistTimer = null;') && syncSource.incl
 else fail('local persistence/UI refresh is not coalesced');
 if (syncSource.includes('if (!legacyBoardVisible && !adminNeedsList) return;')) pass('removed legacy ranking no longer sorts all users during refresh');
 else fail('refresh still sorts users for the removed ranking');
+if (read('script.js').includes('cloudHistoryReady.then(startCloudServices, startCloudServices)') && !read('script.js').includes('await Promise.race([fetchCloudHistorySafe(true)')) pass('initial cloud history no longer blocks question interaction');
+else fail('initialization still awaits cloud history before enabling the app');
 const allStarQuestionIds = new Set(read('js/13-allstar.js').match(/BK-[A-Z]+-\d+/g) || []);
 if (allStarQuestionIds.size === 55) pass('All Star Kitchen includes 55 source-mapped questions');
 else fail('All Star Kitchen question count is ' + allStarQuestionIds.size + ', expected 55');
