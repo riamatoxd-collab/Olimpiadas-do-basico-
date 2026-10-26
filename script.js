@@ -41,7 +41,7 @@ function switchMainTab(tab) {
 // =========================================================================
 // V8.5 — ATUALIZAÇÃO DE VERSÃO NO GITHUB PAGES (SEM APAGAR DADOS)
 // =========================================================================
-const APP_VERSION = "9.2.0";
+const APP_VERSION = "9.2.1";
 const APP_UPDATE_INTERVAL_MS = 60000; // Github Pages é estático: checagem periódica, não push instantâneo.
 const APP_UPDATE_IDLE_MS = 45000;
 let availableAppUpdate = null;
@@ -164,7 +164,7 @@ function initAppAutoUpdater() {
   window.addEventListener("online", () => checkForAppUpdate());
   checkForAppUpdate();
   setInterval(() => {if (!document.hidden) checkForAppUpdate();}, APP_UPDATE_INTERVAL_MS);
-  setInterval(maybeInstallAppUpdate, 5000);
+  setInterval(maybeInstallAppUpdate, 15000);
 }
 
 window.onload = async () => {
