@@ -14,13 +14,25 @@ try { JSON.parse(read('version.json')); JSON.parse(read('manifest.webmanifest'))
 catch (error) { fail('invalid metadata JSON: ' + error.message); }
 const html = read('index.html');
 const requiredHtml = [
-  'content="9.2.0"','rel="manifest" href="manifest.webmanifest"',
-  'venture-notifications.css?v=9200','venture-allstar.css?v=9200',
+  'content="9.2.1"','rel="manifest" href="manifest.webmanifest"',
+  'venture-notifications.css?v=9210','venture-allstar.css?v=9210',
   'id="ventureNotificationBell"','id="ventureNotificationsModal"',
   'id="ventureAllStar"','id="premiumMonthlyLeagueBadge"','id="publicProfileMonthlyLeagueBadge"',
-  'js/12-notificacoes.js?v=9200','js/13-allstar.js?v=9200'
+  'js/12-notificacoes.js?v=9210','js/13-allstar.js?v=9210'
 ];
 for (const item of requiredHtml) html.includes(item) ? pass('HTML includes ' + item) : fail('HTML missing ' + item);
+
+const version = JSON.parse(read('version.json'));
+if (version.version === '9.2.1' && read('script.js').includes('const APP_VERSION = "9.2.1";')) pass('runtime and manifest versions match 9.2.1');
+else fail('runtime and manifest versions do not match 9.2.1');
+if (/id="nav-prizes"[^>]*>[\\s\\S]*?<span>Ligas<\\/span>/.test(html)) pass('main navigation names the competition tab Ligas');
+else fail('main navigation does not show Ligas');
+for (const id of ['rankingPrintArea','leaderboardContainer','podiumTop3Container','btnPrintRanking']) {
+  if (!html.includes('id="' + id + '"')) pass('legacy ranked UI removed: ' + id);
+  else fail('legacy ranked UI still visible in HTML: ' + id);
+}
+if (!html.includes('html2canvas.min.js') && !read('js/06-contas-sincronizacao.js').includes('html2canvas')) pass('legacy ranking image exporter and html2canvas removed');
+else fail('legacy ranking image exporter remains');
 for (const name of ['bronze','prata','ouro','safira','rubi','esmeralda','ametista','perola','obsidiana','diamante']) {
   fs.existsSync(path.join(root, 'assets/ligas/' + name + '.webp')) ? pass('league badge asset exists: ' + name) : fail('missing league badge asset: ' + name);
 }
@@ -111,4 +123,4 @@ try {
   else fail('merge hook did not preserve the latest All Star track choice');
 } catch (error) { fail('notification/All Star merge smoke: ' + error.stack); }
 
-if (!process.exitCode) console.log('All Venture 9.2.0 smoke tests passed.');
+if (!process.exitCode) console.log('All Venture 9.2.1 smoke tests passed.');
