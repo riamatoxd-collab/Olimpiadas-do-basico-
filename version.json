@@ -1,5 +1,5 @@
 {
-  "version": "9.2.0",
-  "released_at": "2026-10-25",
-  "description": "Venture 9.2.0: inclui os dez emblemas 3D das ligas da 9.1.1, ranking mensal com estreia em novembro de 2026, badges nos perfis, central de notificações, comunicados locais para cadastros sincronizados, preparação técnica para Web Push e trilhas preparatórias All Star. Preserva cadastros, XP vitalício, ranking geral, Arena, duelos e funções existentes. Push com o site fechado exige backend autenticado e chaves VAPID; sincronização atual continua legada."
+  "version": "9.2.1",
+  "released_at": "2026-10-26",
+  "description": "Venture 9.2.1: monthly leagues become the primary competition screen; the legacy overall XP ranking and ranking-image export are removed from the UI without deleting user records, lifetime XP, duel history, or level progression. Includes lighter initial script loading, a minimal non-retained heartbeat payload, and less frequent update-install checks. Monthly league season launch remains planned for November 2026. Internal notifications and All Star features from 9.2.0 remain. Web Push with the site closed still requires backend/VAPID setup."
 }
