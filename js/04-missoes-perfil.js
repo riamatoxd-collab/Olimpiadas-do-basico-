@@ -313,7 +313,9 @@ function recordMissionActivity(kind, recipeId = null) {
   medalUnlocks.push(...unlockEarnedMedals(user,p));
   if (earned.length) showMissionToast(`🎯 ${earned.map(m=>m.title).join(" • ")}! +${gainedXp} XP`);
   if (medalUnlocks.length) showMissionToast(`🏅 Nova medalha: ${medalUnlocks.map(m=>m.title).join(", ")}`);
-  renderMissionHub();
+  // Não reconstrói a tela de missões a cada acerto no simulado quando ela está escondida.
+  const missionTab = $("tab-missions");
+  if (missionTab && !missionTab.classList.contains("hidden")) renderMissionHub();
 }
 function setMissionView(cycle) {
   if (cycle !== "daily" && cycle !== "weekly") return;
