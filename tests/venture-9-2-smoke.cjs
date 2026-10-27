@@ -38,7 +38,7 @@ const syncSource = read('js/06-contas-sincronizacao.js');
 const xpAddStart = syncSource.indexOf('function addXp(');
 const xpAddEnd = syncSource.indexOf('\nfunction reconcileXpRewardMarkers', xpAddStart);
 const xpAddBlock = xpAddStart >= 0 && xpAddEnd > xpAddStart ? syncSource.slice(xpAddStart, xpAddEnd) : '';
-if (syncSource.includes('function scheduleXpEmergencyBackup()') && xpAddBlock && xpAddBlock[0].includes('scheduleXpEmergencyBackup()')) pass('XP emergency backup is deferred from the question click path');
+if (syncSource.includes('function scheduleXpEmergencyBackup()') && xpAddBlock && xpAddBlock.includes('scheduleXpEmergencyBackup()')) pass('XP emergency backup is deferred from the question click path');
 else fail('XP emergency backup still runs synchronously on each reward');
 const missionSource = read('js/04-missoes-perfil.js');
 if (missionSource.includes('const missionTab = $("tab-missions");') && missionSource.includes('if (missionTab && !missionTab.classList.contains("hidden")) renderMissionHub();')) pass('mission panel is not rebuilt while hidden');
