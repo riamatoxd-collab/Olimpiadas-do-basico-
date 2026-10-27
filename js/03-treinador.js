@@ -105,7 +105,7 @@ function recordTrainerChallengeCorrect() {
     if (Number(challenge.xp)>0) {
       awarded=addXp(challenge.xp,rewardId,{source:'trainer-challenge'});
       const tx=typeof getXpTransaction==='function'?getXpTransaction(rewardId,u):null;
-      if(!tx){u.updatedAt=Date.now();scheduleCloudSync(currentUserKey,false);renderTrainerPublicContent();return;}
+      if(!tx){u.updatedAt=Date.now();scheduleCloudSync(currentUserKey,false);renderTrainerPublicContentIfVisible();return;}
       awarded=awarded||Number(tx.delta)||0;
     }
     progress.claimedAt=Date.now(); // o ID idempotente torna segura a recuperação após interrupção
@@ -114,7 +114,7 @@ function recordTrainerChallengeCorrect() {
     else scheduleCloudSync(currentUserKey,false);
     showMissionToast(`🎯 Desafio ${challenge.title} concluído! +${awarded} XP`);
   } else {u.updatedAt=Date.now();scheduleCloudSync(currentUserKey,false);}
-  renderTrainerPublicContent();
+  renderTrainerPublicContentIfVisible();
 }
 function renderTrainerPublicContent() {
   const a=trainerState.announcement, notice=$('trainerPublicNotice');
@@ -135,6 +135,10 @@ function renderTrainerPublicContent() {
     <h3>${trainerSafeHtml(c.title)}</h3><p>${trainerSafeHtml(c.description||'Acerte perguntas no simulado para completar.')}</p>
     <div class="trainer-challenge-track"><span style="width:${pct}%"></span></div>
     <div class="trainer-challenge-bottom"><small>${user?`${count} de ${c.target} acertos`:'Faça login para participar'}</small><button type="button" onclick="switchMainTab('quiz')">Ir ao Simulado →</button></div>`;
+}
+function renderTrainerPublicContentIfVisible() {
+  const tab = $('tab-trainer');
+  if (tab && !tab.classList.contains('hidden')) renderTrainerPublicContent();
 }
 function unlockTrainerCenter() {
   if ($('trainerPassInput').value !== ADMIN_SECRET_PASS) {
