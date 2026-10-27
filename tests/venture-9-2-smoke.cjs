@@ -35,7 +35,9 @@ for (const id of ['rankingPrintArea','leaderboardContainer','podiumTop3Container
 if (!html.includes('html2canvas.min.js') && !read('js/06-contas-sincronizacao.js').includes('html2canvas')) pass('legacy ranking image exporter and html2canvas removed');
 else fail('legacy ranking image exporter remains');
 const syncSource = read('js/06-contas-sincronizacao.js');
-const xpAddBlock = syncSource.match(/function addXp\\(amount, transactionId = null, metadata = \\{\\}\\) \\{[\\s\\S]*?\\n\\}/);
+const xpAddStart = syncSource.indexOf('function addXp(');
+const xpAddEnd = syncSource.indexOf('\nfunction reconcileXpRewardMarkers', xpAddStart);
+const xpAddBlock = xpAddStart >= 0 && xpAddEnd > xpAddStart ? syncSource.slice(xpAddStart, xpAddEnd) : '';
 if (syncSource.includes('function scheduleXpEmergencyBackup()') && xpAddBlock && xpAddBlock[0].includes('scheduleXpEmergencyBackup()')) pass('XP emergency backup is deferred from the question click path');
 else fail('XP emergency backup still runs synchronously on each reward');
 const missionSource = read('js/04-missoes-perfil.js');
