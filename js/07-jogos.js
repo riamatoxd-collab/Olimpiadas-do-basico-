@@ -1,4 +1,4 @@
-/* Venture 9.0.1 · js/07-jogos.js · arquivo carregado na ordem indicada no HTML. */
+/* Venture 9.2.3 · js/07-jogos.js · arquivo carregado na ordem indicada no HTML. */
 let currentQuizAttemptId = null;
 function getActiveUserMistakes() {
   if (currentUserKey && users[currentUserKey]) {
@@ -635,6 +635,8 @@ function loadNextQuizQuestion() {
   });
 }
 function checkQuizAnswer(selectedBtn, chosen, correct, letter) {
+  // Ignora eventos repetidos no mesmo botão e não deixa um clique duplicado consumir outro coração/XP.
+  if (!selectedBtn || selectedBtn.disabled) return;
   const allBtns = document.querySelectorAll("#quizOptions button");
   allBtns.forEach(b => {
     b.disabled = true;
