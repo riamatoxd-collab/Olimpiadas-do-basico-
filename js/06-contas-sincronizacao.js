@@ -1,4 +1,4 @@
-/* Venture 9.2.2 · js/06-contas-sincronizacao.js · arquivo carregado na ordem indicada no HTML. */
+/* Venture 9.2.3 · js/06-contas-sincronizacao.js · arquivo carregado na ordem indicada no HTML. */
 function isPhotoAvatar(val) { return typeof val === "string" && val.startsWith("data:image/"); }
 function renderAvatarBadge(avatarVal, sizeClasses = "w-10 h-10", textClasses = "text-xl", extraClasses = "pro-card") {
 const val = avatarVal || "🍔";
@@ -102,6 +102,32 @@ function backupKnownScores(candidates) {
     });
     localStorage.setItem(STORAGE_XP_EMERGENCY_BACKUP,JSON.stringify(safe));
   }catch(e){ console.warn('Backup de pontos indisponível',e); }
+}
+let xpEmergencyBackupTimer = null;
+let xpEmergencyBackupIdleHandle = null;
+// O ledger e sua intenção continuam sendo gravados sincronamente. Este backup
+// secundário percorre todos os cadastros, então só roda após uma pausa e em idle.
+function scheduleXpEmergencyBackup() {
+  if (xpEmergencyBackupTimer) clearTimeout(xpEmergencyBackupTimer);
+  if (xpEmergencyBackupIdleHandle !== null && typeof window !== "undefined" && typeof window.cancelIdleCallback === "function") {
+    window.cancelIdleCallback(xpEmergencyBackupIdleHandle);
+  }
+  xpEmergencyBackupIdleHandle = null;
+  xpEmergencyBackupTimer = setTimeout(() => {
+    xpEmergencyBackupTimer = null;
+    const runBackup = () => {
+      xpEmergencyBackupIdleHandle = null;
+      backupKnownScores(users);
+    };
+    if (typeof window !== "undefined" && typeof window.requestIdleCallback === "function") {
+      xpEmergencyBackupIdleHandle = window.requestIdleCallback(runBackup, { timeout: 15000 });
+    } else {
+      xpEmergencyBackupTimer = setTimeout(() => {
+        xpEmergencyBackupTimer = null;
+        runBackup();
+      }, 5000);
+    }
+  }, 10000);
 }
 function rescuePreviousLocalRegistrations() {
   // v6 primeiro: é o cadastro atual. Outros armazenamentos são backups parciais.
@@ -720,7 +746,8 @@ function addXp(amount, transactionId = null, metadata = {}) {
     return 0;
   }
   const credited = Math.max(0, user.xp - balanceBeforeAward);
-  backupKnownScores(users);
+  if (typeof scheduleXpEmergencyBackup === "function") scheduleXpEmergencyBackup();
+  else backupKnownScores(users);
   showXpToast(credited);
   const oldLevel = getLevelInfo(balanceBeforeAward).level;
   const newLevel = getLevelInfo(user.xp).level;

@@ -1,5 +1,5 @@
 {
-  "version": "9.2.2",
-  "released_at": "2026-10-26",
-  "description": "Venture 9.2.2: faster question validation and lighter UI refresh. Local answer feedback no longer waits for full UI reconstruction or leaderboard sorting; local persistence and visible-panel refreshes are coalesced. Initial cloud history recovery runs without blocking the interface, while MQTT publishing still waits for history completion or a 4.5-second safety timeout. The existing write-ahead XP ledger remains synchronous and unchanged, preserving lifetime XP, account records, idempotent rewards, monthly leagues, duels, and All Star Kitchen with 55 source-mapped questions."
+  "version": "9.2.3",
+  "released_at": "2026-10-27",
+  "description": "Venture 9.2.3: reduz a latência percebida ao responder perguntas. O backup auxiliar de pontuação é agendado para período ocioso, e o simulado não reconstrói painéis de missões/treinador quando estão ocultos. O ledger de XP e sua intenção de recuperação continuam sendo persistidos sincronamente; IDs de transação seguem idempotentes. Preserva cadastros, XP vitalício, ligas mensais, duelos e All Star Cozinha com 55 questões. Cache-busting atualizado para carregar os arquivos novos."
 }
