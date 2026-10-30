@@ -1,9 +1,9 @@
-/* Venture 9.2.4: novidades apresentadas após login; não altera pontuação nem sincronização. */
+/* Venture 9.3.0: novidades apresentadas após login; não altera pontuação nem sincronização. */
 (function () {
   "use strict";
   var auth = document.getElementById("authModal");
   var history = document.getElementById("tab-updates");
-  var storagePrefix = "venture_novidades_entrada_924_";
+  var storagePrefix = "venture_novidades_entrada_930_";
   var previousFocus = null;
   var pendingTimer = null;
   var fallbackSeen = Object.create(null);
@@ -24,18 +24,18 @@
         '<header class="vnews-hero">',
           '<span class="vnews-brand">OLIMPÍADAS DO BÁSICO • VENTURE</span>',
           '<span class="vnews-logo" aria-hidden="true">🏆</span>',
-          '<h2 id="ventureNewsTitle">VEJA AS <span>NOVIDADES!</span></h2>',
-          '<p id="ventureNewsDescription">Uma nova experiência de aprendizado e competição está esperando por você.</p>',
-          '<div class="vnews-strip"><span>NOVA TEMPORADA</span><strong>VENTURE 9.2.4</strong></div>',
+          '<h2 id="ventureNewsTitle">ALL STAR <span>HALLOWEEN!</span></h2>',
+          '<p id="ventureNewsDescription">Uma nova temporada chegou: visual roxo e preto, selos dourados e desafios All Star.</p>',
+          '<div class="vnews-strip"><span>🎃 HALLOWEEN SEASON</span><strong>VENTURE 9.3.0</strong></div>',
         '</header>',
         '<div class="vnews-body">',
           '<div class="vnews-topline"><span>✨ O QUE MUDOU</span><small>DESTAQUES DO VENTURE</small></div>',
-          '<div class="vnews-feature"><span class="vnews-feature-icon" aria-hidden="true">🏅</span><div><strong>Ligas mensais</strong><p>Dispute sua posição nas dez divisões, com emblemas e evolução no perfil.</p></div></div>',
-          '<div class="vnews-feature"><span class="vnews-feature-icon" aria-hidden="true">🍔</span><div><strong>All Star Cozinha</strong><p>Trilhas de preparação e 55 questões, com nota separada do XP oficial.</p></div></div>',
-          '<div class="vnews-feature"><span class="vnews-feature-icon" aria-hidden="true">⚡</span><div><strong>Simulado mais ágil</strong><p>Respostas mais rápidas e menos processamento desnecessário, preservando o registro do XP.</p></div></div>',
+          '<div class="vnews-feature"><span class="vnews-feature-icon" aria-hidden="true">🏅</span><div><strong>Selos dourados do treinamento prático</strong><p>Conclua a avaliação presencial de cada estação e conquiste um selo que aparece no seu perfil.</p></div></div>',
+          '<div class="vnews-feature"><span class="vnews-feature-icon" aria-hidden="true">🍔</span><div><strong>All Star com nova identidade</strong><p>Interface roxo profundo e preto, detalhes violeta e conquistas em dourado.</p></div></div>',
+          '<div class="vnews-feature"><span class="vnews-feature-icon" aria-hidden="true">⚡</span><div><strong>Seu progresso continua intacto</strong><p>Contas, XP, ligas mensais, histórico e All Star foram preservados nesta atualização.</p></div></div>',
           '<details class="vnews-history"><summary>📜 Consultar histórico completo de versões ▾</summary><div id="ventureNewsArchive" class="vnews-history-content"></div></details>',
           '<div class="vnews-actions">',
-            '<button type="button" id="ventureNewsExplore" class="vnews-primary">🏆 EXPLORAR AS LIGAS</button>',
+            '<button type="button" id="ventureNewsExplore" class="vnews-primary">🎃 ENTRAR NO ALL STAR</button>',
             '<button type="button" id="ventureNewsContinue" class="vnews-secondary">Agora não, continuar no site</button>',
           '</div>',
           '<p class="vnews-footnote">Você pode reabrir estas novidades a qualquer momento em Mais opções.</p>',
@@ -52,7 +52,7 @@
   if (oldCard) archive.appendChild(oldCard);
   var latest = document.createElement("div");
   latest.className = "vnews-history-entry";
-  latest.innerHTML = '<strong>Versão 9.2.4 • Novidades na entrada</strong>O histórico saiu do menu de abas e agora aparece em uma janela que pode ser fechada. O aviso surge uma vez por sessão após o login.';
+  latest.innerHTML = '<strong>Versão 9.3.0 • Novidades na entrada</strong>O histórico saiu do menu de abas e agora aparece em uma janela que pode ser fechada. O aviso surge uma vez por sessão após o login.';
   archive.insertBefore(latest, archive.firstChild);
   history.remove();
 
@@ -132,7 +132,7 @@
   overlay.querySelector("#ventureNewsContinue").addEventListener("click", closeVentureNews);
   overlay.querySelector("#ventureNewsExplore").addEventListener("click", function () {
     closeVentureNews();
-    if (typeof switchMainTab === "function") switchMainTab("prizes");
+    if (typeof switchMainTab === "function") switchMainTab("training");
   });
   new MutationObserver(function () {
     if (!auth.classList.contains("hidden")) closeVentureNews();

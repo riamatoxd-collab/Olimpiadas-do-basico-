@@ -1,4 +1,4 @@
-/* Venture 8.8 · js/03-treinador.js · arquivo carregado na ordem indicada no HTML. */
+/* Venture 9.3.0 · js/03-treinador.js · arquivo carregado na ordem indicada no HTML. */
 // ========================================================================
 // 🎓 CENTRAL DO TREINADOR v8.3 — perguntas extras, aviso e desafio.
 // Salva separadamente: não altera os dados legados nem QUESTIONS_DB original.
@@ -235,13 +235,13 @@ document.addEventListener('click',ev=>{
 // estes selos são registros internos, não assinaturas/certificações invioláveis.
 // ============================================================================
 const PRACTICAL_STATIONS = [
-  {id:'chapa',icon:'🔥',label:'Chapa',criteria:['Apresentou cuidados de higiene e segurança da estação','Preparou os recursos e manteve a área organizada','Demonstrou a sequência correta conforme orientação local','Concluiu a atividade com limpeza e conferência']},
-  {id:'linha',icon:'🍔',label:'Linha / Montagem',criteria:['Higienizou as mãos e organizou os ingredientes','Conferiu a composição e a sequência de montagem','Demonstrou cuidado com tempo e apresentação','Conferiu o pedido antes da entrega']},
-  {id:'fritura',icon:'🍗',label:'Produtos Fritos',criteria:['Utilizou EPIs e seguiu a segurança da estação','Identificou corretamente os produtos e utensílios','Executou os procedimentos conforme treinamento','Respeitou a organização e o descarte adequado']},
-  {id:'batatas',icon:'🍟',label:'McFritas',criteria:['Preparou a estação respeitando a segurança','Demonstrou o fluxo correto do preparo','Conferiu a apresentação e o padrão do produto','Manteve a estação limpa e organizada']},
-  {id:'balcao',icon:'🥤',label:'Balcão / Atendimento',criteria:['Recebeu e confirmou o pedido com atenção','Demonstrou comunicação e acolhimento','Conferiu itens e necessidades do pedido','Finalizou o atendimento de forma cuidadosa']},
-  {id:'drive',icon:'🚗',label:'Drive-Thru',criteria:['Demonstrou comunicação clara com o cliente','Confirmou o pedido e eventuais alterações','Conferiu os itens no fluxo de entrega','Aplicou orientações de agilidade com segurança']},
-  {id:'lope',icon:'🧽',label:'LOPE',criteria:['Demonstrou hábitos de higiene e segurança','Organizou e identificou os materiais corretamente','Executou tarefas conforme o treinamento local','Finalizou com conferência e organização']}
+  {id:'chapa',icon:'🔥',badgeImage:'assets/allstar-selos/espatula.webp',label:'Chapa',criteria:['Apresentou cuidados de higiene e segurança da estação','Preparou os recursos e manteve a área organizada','Demonstrou a sequência correta conforme orientação local','Concluiu a atividade com limpeza e conferência']},
+  {id:'linha',icon:'🍔',badgeImage:'assets/allstar-selos/bigmac-box.webp',label:'Linha / Montagem',criteria:['Higienizou as mãos e organizou os ingredientes','Conferiu a composição e a sequência de montagem','Demonstrou cuidado com tempo e apresentação','Conferiu o pedido antes da entrega']},
+  {id:'fritura',icon:'🍗',badgeImage:'assets/allstar-selos/batata.webp',label:'Produtos Fritos',criteria:['Utilizou EPIs e seguiu a segurança da estação','Identificou corretamente os produtos e utensílios','Executou os procedimentos conforme treinamento','Respeitou a organização e o descarte adequado']},
+  {id:'batatas',icon:'🍟',badgeImage:'assets/allstar-selos/batata.webp',label:'McFritas',criteria:['Preparou a estação respeitando a segurança','Demonstrou o fluxo correto do preparo','Conferiu a apresentação e o padrão do produto','Manteve a estação limpa e organizada']},
+  {id:'balcao',icon:'🥤',badgeImage:'assets/allstar-selos/bebida.webp',label:'Balcão / Atendimento',criteria:['Recebeu e confirmou o pedido com atenção','Demonstrou comunicação e acolhimento','Conferiu itens e necessidades do pedido','Finalizou o atendimento de forma cuidadosa']},
+  {id:'drive',icon:'🚗',badgeImage:'assets/allstar-selos/carro.webp',label:'Drive-Thru',criteria:['Demonstrou comunicação clara com o cliente','Confirmou o pedido e eventuais alterações','Conferiu os itens no fluxo de entrega','Aplicou orientações de agilidade com segurança']},
+  {id:'lope',icon:'🧽',badgeImage:'assets/allstar-selos/caixa.webp',label:'LOPE',criteria:['Demonstrou hábitos de higiene e segurança','Organizou e identificou os materiais corretamente','Executou tarefas conforme o treinamento local','Finalizou com conferência e organização']}
 ];
 function validPracticalRecord(r) {
   return Boolean(r && typeof r==='object' && /^P-[a-z0-9-]{6,55}$/.test(r.id||'') &&
@@ -279,7 +279,15 @@ function practicalBadgeMarkup(user,showLocked) {
   const earned=practicalApprovedStations(user);
   return PRACTICAL_STATIONS.filter(s=>showLocked || earned[s.id]).map(s=>{
     const record=earned[s.id];
-    return `<div class="practical-badge ${record?'is-approved':'is-pending'}"><span aria-hidden="true">${record?s.icon:'🔒'}</span><strong>${trainerSafeHtml(s.label)}</strong><small>${record?'✅ Aprovado · '+premiumDate(record.createdAt):'Ainda não aprovado'}</small></div>`;
+    const status=record?'Conquistado':'Bloqueado';
+    return `<article class="practical-badge ${record?'is-approved':'is-pending'}" data-practical-badge="${s.id}">
+      <div class="practical-badge-art">
+        <img src="${s.badgeImage}" alt="${trainerSafeHtml(s.label)}" loading="lazy" decoding="async">
+        <span class="practical-badge-lock" aria-label="${status}">${record?'✓':'🔒'}</span>
+      </div>
+      <strong>${trainerSafeHtml(s.label)}</strong>
+      <small>${record?'🏅 Aprovado · '+premiumDate(record.createdAt):'Ainda não aprovado'}</small>
+    </article>`;
   }).join('') || '<p class="practical-empty">Nenhum selo prático conquistado ainda.</p>';
 }
 function practicalHistoryMarkup(user,limit=10) {
@@ -287,7 +295,7 @@ function practicalHistoryMarkup(user,limit=10) {
   if(!records.length) return '<p class="trainer-help">Nenhuma avaliação registrada para este colaborador.</p>';
   return records.map(r=>{
     const station=PRACTICAL_STATIONS.find(s=>s.id===r.stationId);
-    return `<article class="practical-history-entry"><div class="practical-entry-top"><strong>${station.icon} ${trainerSafeHtml(station.label)}</strong><span class="${r.approved?'practical-pass':'practical-retry'}">${r.approved?'✅ Aprovado':'📚 Em desenvolvimento'}</span></div><small>${premiumDate(r.createdAt)} · Avaliador: ${trainerSafeHtml(r.evaluator)} · ${r.checks.filter(Boolean).length}/4 critérios</small>${r.notes?`<p>${trainerSafeHtml(r.notes)}</p>`:''}</article>`;
+    return `<article class="practical-history-entry"><div class="practical-entry-top"><strong><img class="practical-history-icon" src="${station.badgeImage}" alt="" loading="lazy"> ${trainerSafeHtml(station.label)}</strong><span class="${r.approved?'practical-pass':'practical-retry'}">${r.approved?'✅ Aprovado':'📚 Em desenvolvimento'}</span></div><small>${premiumDate(r.createdAt)} · Avaliador: ${trainerSafeHtml(r.evaluator)} · ${r.checks.filter(Boolean).length}/4 critérios</small>${r.notes?`<p>${trainerSafeHtml(r.notes)}</p>`:''}</article>`;
   }).join('');
 }
 function renderPracticalInProfiles(user,publicView=false) {
@@ -316,6 +324,11 @@ function renderPracticalChecklist() {
   const sel=$('practicalStationSelect');const holder=$('practicalChecklist');if(!sel||!holder)return;
   if(!sel.options.length)PRACTICAL_STATIONS.forEach(s=>sel.add(new Option(`${s.icon} ${s.label}`,s.id)));
   const station=PRACTICAL_STATIONS.find(s=>s.id===sel.value)||PRACTICAL_STATIONS[0];
+  const preview=$('practicalStationPreview');
+  if(preview) {
+    preview.innerHTML=`<div class="practical-station-preview-art"><img src="${station.badgeImage}" alt="" loading="lazy"></div><div><span>SELO DA ESTAÇÃO</span><strong>${trainerSafeHtml(station.label)}</strong><small>Concedido ao participante após aprovação presencial dos 4 critérios.</small></div>`;
+    preview.classList.remove('is-ready');
+  }
   holder.replaceChildren();
   station.criteria.forEach((description,i)=>{
     const label=document.createElement('label');label.className='practical-check-row';
@@ -330,7 +343,9 @@ function renderPracticalResultPreview() {
   const count=list.filter(x=>x.checked).length;
   const box=$('practicalResultPreview');if(!box)return;
   box.className='practical-result '+(count===4?'ready':'needs-work');
-  box.textContent=count===4?'✅ 4/4 itens: avaliação aprovada e selo desbloqueado.':`📋 ${count}/4 itens atendidos: resultado “Em desenvolvimento”.`;
+  box.textContent=count===4?'🏅 4/4 itens: avaliação aprovada e selo dourado desbloqueado.':`📋 ${count}/4 itens atendidos: resultado “Em desenvolvimento”.`;
+  const preview=$('practicalStationPreview');
+  if(preview)preview.classList.toggle('is-ready',count===4);
 }
 function renderPracticalTrainerHistory() {
   const box=$('trainerPracticalHistory');if(!box)return;

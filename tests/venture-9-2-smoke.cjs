@@ -14,18 +14,18 @@ try { JSON.parse(read('version.json')); JSON.parse(read('manifest.webmanifest'))
 catch (error) { fail('invalid metadata JSON: ' + error.message); }
 const html = read('index.html');
 const requiredHtml = [
-  'content="9.2.3"','rel="manifest" href="manifest.webmanifest"',
-  'venture-notifications.css?v=9230','venture-allstar.css?v=9230',
+  'content="9.3.0"','rel="manifest" href="manifest.webmanifest"',
+  'venture-notifications.css?v=9300','venture-allstar.css?v=9300',
   'id="ventureNotificationBell"','id="ventureNotificationsModal"',
-  'id="ventureAllStar"','id="premiumMonthlyLeagueBadge"','id="publicProfileMonthlyLeagueBadge"',
+  'id="ventureAllStar"', 'venture-halloween.css?v=9300', 'id="practicalStationPreview"','id="premiumMonthlyLeagueBadge"','id="publicProfileMonthlyLeagueBadge"',
   'id="ventureMonthlyLeague"','id="vmlLeaderboard"','id="ventureAllStarAreas"','id="ventureAllStarModes"','id="ventureAllStarProgress"','id="ventureAllStarQuiz"','defer src="https://cdn.tailwindcss.com"','defer src="https://unpkg.com/mqtt/dist/mqtt.min.js"',
-  'js/12-notificacoes.js?v=9230','js/13-allstar.js?v=9230'
+  'js/12-notificacoes.js?v=9300','js/13-allstar.js?v=9300'
 ];
 for (const item of requiredHtml) html.includes(item) ? pass('HTML includes ' + item) : fail('HTML missing ' + item);
 
 const version = JSON.parse(read('version.json'));
-if (version.version === '9.2.3' && read('script.js').includes('const APP_VERSION = "9.2.3";')) pass('runtime and manifest versions match 9.2.3');
-else fail('runtime and manifest versions do not match 9.2.3');
+if (version.version === '9.3.0' && read('script.js').includes('const APP_VERSION = "9.3.0";')) pass('runtime and manifest versions match 9.3.0');
+else fail('runtime and manifest versions do not match 9.3.0');
 if (/id="nav-prizes"[^>]*>[\s\S]*?<span>Ligas<\/span>/.test(html)) pass('main navigation names the competition tab Ligas');
 else fail('main navigation does not show Ligas');
 for (const id of ['rankingPrintArea','leaderboardContainer','podiumTop3Container','btnPrintRanking']) {
@@ -63,6 +63,17 @@ if (allStarQuestionIds.size === 55) pass('All Star Kitchen includes 55 source-ma
 else fail('All Star Kitchen question count is ' + allStarQuestionIds.size + ', expected 55');
 for (const name of ['bronze','prata','ouro','safira','rubi','esmeralda','ametista','perola','obsidiana','diamante']) {
   fs.existsSync(path.join(root, 'assets/ligas/' + name + '.webp')) ? pass('league badge asset exists: ' + name) : fail('missing league badge asset: ' + name);
+}
+
+
+const halloweenCss = read('venture-halloween.css');
+if (html.includes('halloween-theme') && halloweenCss.includes('--bg-main:#0b0612') && halloweenCss.includes('--mc-red:#8b5cf6')) pass('Halloween purple/black theme is active');
+else fail('Halloween theme or palette is missing');
+const practicalSource = read('js/03-treinador.js');
+if (practicalSource.includes('badgeImage:') && practicalSource.includes('practical-station-preview-art') && practicalSource.includes('practical-badge-art')) pass('practical station seals render in trainer preview and participant profile');
+else fail('practical badge image integration is incomplete');
+for (const name of ['espatula','bigmac-box','batata','bebida','carro','caixa']) {
+  fs.existsSync(path.join(root, 'assets/allstar-selos/' + name + '.webp')) ? pass('practical badge asset exists: ' + name) : fail('missing practical badge asset: ' + name);
 }
 
 const store = { data: {}, setItem(k,v) { this.data[k] = v; }, getItem(k) { return this.data[k] || null; } };

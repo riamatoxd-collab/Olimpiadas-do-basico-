@@ -7,29 +7,30 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="Olimpíadas Méqui" />
-  <meta name="theme-color" content="#DA291C" />
+  <meta name="theme-color" content="#170D2B" />
   <link rel="manifest" href="manifest.webmanifest" />
-  <title>Olimpíadas do Básico — Venture v9.2.4</title>
-  <meta name="app-version" content="9.2.4" />
+  <title>Olimpíadas do Básico — Venture v9.3.0 · Halloween All Star</title>
+  <meta name="app-version" content="9.3.0" />
   <!-- Favicon Oficial: Arcos Dourados em Vetor SVG -->
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='24' fill='%23DA291C'/%3E%3Cpath fill='%23FFC72C' d='M50 46c-3.6-13.8-10.8-23.5-19.6-23.5-12 0-21.6 18.6-21.6 52.5h9.1c0-26.4 6.4-42.8 12.5-42.8 6 0 12 17.6 12.5 42.8H50zm0 0c3.6-13.8 10.8-23.5 19.6-23.5 12 0 21.6 18.6 21.6 52.5h-9.1c0-26.4-6.4-42.8-12.5-42.8-6 0-12 17.6-12.5 42.8H50z'/%3E%3C/svg%3E" />
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='24' fill='%23170D2B'/%3E%3Cpath fill='%23FFC72C' d='M50 46c-3.6-13.8-10.8-23.5-19.6-23.5-12 0-21.6 18.6-21.6 52.5h9.1c0-26.4 6.4-42.8 12.5-42.8 6 0 12 17.6 12.5 42.8H50zm0 0c3.6-13.8 10.8-23.5 19.6-23.5 12 0 21.6 18.6 21.6 52.5h-9.1c0-26.4-6.4-42.8-12.5-42.8-6 0-12 17.6-12.5 42.8H50z'/%3E%3C/svg%3E" />
   <script defer src="https://cdn.tailwindcss.com"></script>
   <script defer src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
   <!-- O exportador do ranking geral foi removido; nenhuma biblioteca de captura é necessária. -->
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="niveis-venture.css?v=9230" />
-  <link rel="stylesheet" href="style.css?v=9230" />
+  <link rel="stylesheet" href="niveis-venture.css?v=9300" />
+  <link rel="stylesheet" href="style.css?v=9300" />
   <link rel="stylesheet" href="hub-pc.css?v=2">
   <link rel="stylesheet" href="venture-intro.css?v=clean3" />
   <!-- Venture 9.1.1: ligas mensais com emblemas 3D -->
-  <link rel="stylesheet" href="venture-arena.css?v=9230">
-  <link rel="stylesheet" href="venture-ligas-mensais.css?v=9230">
-  <link rel="stylesheet" href="venture-notifications.css?v=9230">
-  <link rel="stylesheet" href="venture-allstar.css?v=9230">
-  <link rel="stylesheet" href="venture-9-2.css?v=9230">
-  <link rel="stylesheet" href="venture-novidades.css?v=9240" />
+  <link rel="stylesheet" href="venture-arena.css?v=9300">
+  <link rel="stylesheet" href="venture-ligas-mensais.css?v=9300">
+  <link rel="stylesheet" href="venture-notifications.css?v=9300">
+  <link rel="stylesheet" href="venture-allstar.css?v=9300">
+  <link rel="stylesheet" href="venture-9-2.css?v=9300">
+  <link rel="stylesheet" href="venture-novidades.css?v=9300" />
+  <link rel="stylesheet" href="venture-halloween.css?v=9300" />
 </head>
-<body class="min-h-screen pb-36">
+<body class="min-h-screen pb-36 halloween-theme">
   <!-- Venture Splash Clean: somente apresentação, sem conexão com XP ou cadastros. -->
   <div id="ventureSplash" class="vs-overlay" role="dialog" aria-modal="true" aria-label="Introdução Venture">
     <div class="vs-stage">
@@ -414,7 +415,7 @@
         </div>
       </div>
       <section id="ventureAllStar" class="vas-card" aria-label="Preparação All Star">
-        <div class="vas-hero"><div><span class="vas-eyebrow">✦ VENTURE ALL STAR · COZINHA</span><h2 class="vas-title">Treine. Compita. Domine a estação.</h2><p class="vas-copy">Treinamento guiado e provas competitivas com 55 questões baseadas no Book Olimpíadas de Básico — Venture. A nota All Star é separada do XP oficial.</p></div><div class="vas-star" aria-hidden="true">⭐</div></div>
+        <div class="vas-hero"><div><span class="vas-halloween-tag">🎃 HALLOWEEN SEASON</span><span class="vas-eyebrow">✦ VENTURE ALL STAR · COZINHA</span><h2 class="vas-title">Treine. Compita. Domine a estação.</h2><p class="vas-copy">Treinamento guiado e provas competitivas com 55 questões baseadas no Book Olimpíadas de Básico — Venture. A nota All Star é separada do XP oficial.</p></div><div class="vas-star" aria-hidden="true">⭐</div></div>
         <div class="vas-section-heading"><strong>Minha trilha de foco</strong><span>Você pode alterá-la a qualquer momento.</span></div>
         <div id="ventureAllStarTracks" class="vas-track-grid" role="group" aria-label="Escolher trilha All Star">
           <button type="button" class="vas-track" data-allstar-track="balcao" aria-pressed="false"><span class="vas-track-icon" aria-hidden="true">🛎️</span><span><strong>Balcão e atendimento</strong><small>Precisão do pedido e experiência do cliente.</small></span></button>
@@ -646,7 +647,7 @@
         <p class="premium-stats-foot" id="premiumStatsFoot">Seus registros aparecem aqui conforme você pratica.</p>
       </section>
       <section class="premium-section" aria-label="Avaliações práticas verificadas">
-        <div class="premium-section-head"><h2>🛡️ Treinamento prático</h2><p id="premiumPracticalSummary">Selos por estação após avaliação presencial do treinador.</p></div>
+        <div class="premium-section-head"><h2>🛡️ Treinamento prático</h2><p id="premiumPracticalSummary">Selos dourados por estação após avaliação presencial do treinador.</p></div>
         <div id="premiumPracticalBadges" class="practical-badge-grid"></div>
         <details class="practical-history-disclosure"><summary>📋 Ver avaliações registradas</summary><div id="premiumPracticalHistory" class="practical-history-list"></div></details>
         <p class="premium-stats-foot">Avaliação interna registrada pela Central do Treinador. Não concede XP nem substitui a validação formal da loja.</p>
@@ -743,7 +744,7 @@
         <button type="button" onclick="switchMainTab('trainer')" class="more-menu-item"><span class="more-menu-icon" aria-hidden="true">🎓</span><span class="more-menu-copy"><strong>Central do Treinador</strong><small>Perguntas, comunicados e desafios especiais</small></span><span class="more-chevron" aria-hidden="true">›</span></button>
         <button type="button" onclick="switchMainTab('admin')" class="more-menu-item"><span class="more-menu-icon" aria-hidden="true">⚙️</span><span class="more-menu-copy"><strong>Painel ADM</strong><small>Gerenciamento de colaboradores e XP</small></span><span class="more-chevron" aria-hidden="true">›</span></button>
         <button type="button" onclick="openVentureNews()" class="more-menu-item"><span class="more-menu-icon" aria-hidden="true">🔔</span><span class="more-menu-copy"><strong>Ver novidades</strong><small>Reabrir o aviso de entrada</small></span><span class="more-chevron" aria-hidden="true">›</span></button>
-        <div class="app-version-control" aria-label="Versão do aplicativo"><span>✅ Versão instalada: <strong id="appInstalledVersion">9.2.4</strong></span><button type="button" onclick="checkForAppUpdate(true)">🔄 Procurar atualização</button><p id="appVersionStatus" role="status" aria-live="polite">Checagem automática a cada 60 segundos enquanto o site está aberto.</p></div>
+        <div class="app-version-control" aria-label="Versão do aplicativo"><span>✅ Versão instalada: <strong id="appInstalledVersion">9.3.0</strong></span><button type="button" onclick="checkForAppUpdate(true)">🔄 Procurar atualização</button><p id="appVersionStatus" role="status" aria-live="polite">Checagem automática a cada 60 segundos enquanto o site está aberto.</p></div>
       </div>
       <div class="more-info"><strong>Olimpíadas do Básico · Venture</strong><span>Versão 8.7 · Baú Diário</span></div>
     </section>
@@ -767,10 +768,11 @@
         <details class="trainer-disclosure" id="trainerPracticalDetails">
           <summary><span>📋 Avaliação prática presencial <small class="practical-summary-caption">Registre o treinamento em cada estação</small></span><span aria-hidden="true">⌄</span></summary>
           <div class="trainer-disclosure-content">
-            <p class="trainer-help">Selecione um colaborador, confira o checklist presencialmente e registre o resultado. Todos os itens atendidos = aprovado e selo da estação. As listas abaixo são sugestões: adapte-as aos padrões operacionais vigentes da sua loja.</p>
+            <p class="trainer-help">Selecione um colaborador, confira o checklist presencialmente e registre o resultado. Todos os itens atendidos = aprovado e selo dourado da estação. As listas abaixo são sugestões: adapte-as aos padrões operacionais vigentes da sua loja.</p>
             <form id="trainerPracticalForm" class="trainer-form" onsubmit="savePracticalAssessment(event)">
               <label>Colaborador<select id="practicalStaffSelect" class="trainer-field" required onchange="renderPracticalTrainerHistory()"><option value="">Escolha um colaborador...</option></select></label>
               <label>Estação avaliada<select id="practicalStationSelect" class="trainer-field" required onchange="renderPracticalChecklist()"></select></label>
+              <div id="practicalStationPreview" class="practical-station-preview" aria-live="polite"></div>
               <fieldset class="practical-fieldset">
                 <legend>Critérios observados na prática</legend>
                 <p class="trainer-help">Marque apenas os itens demonstrados corretamente. Se algum não foi atendido, o registro ficará como “Em desenvolvimento”.</p>
@@ -977,25 +979,25 @@
   </div>
 </div>
 <script src="questions.js"></script>
-  <script src="js/01-dados.js?v=9230"></script>
-  <script src="js/02-estado.js?v=9230"></script>
-  <script src="js/03-treinador.js?v=9230"></script>
-  <script src="js/04-missoes-perfil.js?v=9230"></script>
-  <script src="js/05-cozinha.js?v=9230"></script>
-  <script src="js/06-contas-sincronizacao.js?v=9230"></script>
-  <script src="js/07-jogos.js?v=9230"></script>
-  <script src="js/08-comunidade-adm.js?v=9230"></script>
-  <script src="js/09-niveis-extra.js?v=9230"></script>
-  <script src="script.js?v=9240"></script>
+  <script src="js/01-dados.js?v=9300"></script>
+  <script src="js/02-estado.js?v=9300"></script>
+  <script src="js/03-treinador.js?v=9300"></script>
+  <script src="js/04-missoes-perfil.js?v=9300"></script>
+  <script src="js/05-cozinha.js?v=9300"></script>
+  <script src="js/06-contas-sincronizacao.js?v=9300"></script>
+  <script src="js/07-jogos.js?v=9300"></script>
+  <script src="js/08-comunidade-adm.js?v=9300"></script>
+  <script src="js/09-niveis-extra.js?v=9300"></script>
+  <script src="script.js?v=9300"></script>
   <script src="hub-pc.js?v=2"></script>
   <!-- Correcoes isoladas: Book fiel ao Word e convites 1v1 sem alterar XP -->
-  <script src="book-original-fiel.js?v=9230"></script>
-  <script src="duelo-convite-fix.js?v=9230"></script>
+  <script src="book-original-fiel.js?v=9300"></script>
+  <script src="duelo-convite-fix.js?v=9300"></script>
   <!-- Módulos de jogo: Arena diária e ligas mensais. A Taça semanal foi retirada da navegação; seus arquivos ficam em legacy/ para rollback. -->
-  <script src="js/10-arena-venture.js?v=9230"></script>
-  <script src="js/11-ligas-mensais.js?v=9230"></script>
-  <script src="js/12-notificacoes.js?v=9230"></script>
-  <script src="js/13-allstar.js?v=9230"></script>
-  <script src="venture-novidades.js?v=9240"></script>
+  <script src="js/10-arena-venture.js?v=9300"></script>
+  <script src="js/11-ligas-mensais.js?v=9300"></script>
+  <script src="js/12-notificacoes.js?v=9300"></script>
+  <script src="js/13-allstar.js?v=9300"></script>
+  <script src="venture-novidades.js?v=9300"></script>
 </body>
 </html>
