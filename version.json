@@ -1,5 +1,5 @@
 {
-  "version": "9.4.0",
+  "version": "9.4.1",
   "released_at": "2026-10-30",
-  "description": "Venture 9.4.0 — oito fichas operacionais de avaliação prática na Central do Treinador, com critérios marcáveis e descrições de falhas não marcáveis; aprovação integral concede selos de estação no perfil, com histórico compatível com avaliações anteriores. All Star transferido para tela própria acessível em Mais opções. Preserva cadastros, XP, ligas, sincronização e histórico."
+  "description": "Venture 9.4.1 — correção das referências de falhas nas fichas de Chapas e Bebidas e Sobremesas. Mantém oito fichas operacionais com critérios marcáveis e exemplos de falhas não marcáveis; aprovação integral concede selos no perfil. All Star fica em tela própria, acessível por Mais opções. Preserva cadastros, XP, ligas, sincronização e histórico."
 }

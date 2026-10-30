@@ -1,4 +1,4 @@
-/* Venture 9.4.0 — fichas oficiais de avaliação prática presencial.
+/* Venture 9.4.1 — fichas oficiais de avaliação prática presencial.
    Os critérios principais têm checkbox. Os pontos de atenção são texto de referência,
    nunca opções marcáveis. Registros antigos de quatro critérios continuam válidos. */
 const PRACTICAL_STATIONS_V94 = [
@@ -37,7 +37,18 @@ const PRACTICAL_COMMON_V94 = {
     "Não demonstra uma comunicação efetiva durante o turno.",
     "Não demonstra uma cooperação efetiva com os outros durante o turno.",
     "Não demonstra uma coordenação efetiva com os outros durante o turno.",
-    "Não demonstra comunicação, coordenação ou cooperação efetiva durante o turno."
+    "Não demonstra uma comunicação, coordenação ou cooperação efetiva durante o turno."
+  ],
+  teamShow3:[
+    "Não mostra uma comunicação efetiva durante o turno.",
+    "Não mostra uma cooperação efetiva com os outros durante o turno.",
+    "Não mostra uma coordenação efetiva com os outros durante o turno."
+  ],
+  teamShow4:[
+    "Não mostra uma comunicação efetiva durante o turno.",
+    "Não mostra uma cooperação efetiva com os outros durante o turno.",
+    "Não mostra uma coordenação efetiva com os outros durante o turno.",
+    "Não mostra uma comunicação, coordenação ou cooperação efetiva durante o turno."
   ],
   expectations:[
     "Não explica as expectativas dos clientes.",
@@ -95,7 +106,7 @@ const PRACTICAL_CHECKLISTS_V94 = [
         "O equipamento não é limpo corretamente ou regularmente, conforme os procedimentos."
       ]),
       practicalCriterionV94("O funcionário mantém uma atitude positiva e amável durante o turno.",PRACTICAL_COMMON_V94.attitude),
-      practicalCriterionV94("O funcionário mostra uma comunicação, cooperação e coordenação efetiva com os outros.",PRACTICAL_COMMON_V94.team4),
+      practicalCriterionV94("O funcionário mostra uma comunicação, cooperação e coordenação efetiva com os outros.",PRACTICAL_COMMON_V94.teamShow4),
       practicalCriterionV94("Comprova que tanto ele quanto a área de trabalho e os equipamentos estão totalmente preparados antes de começar.",PRACTICAL_COMMON_V94.ready)
     ]
   },
@@ -125,7 +136,7 @@ const PRACTICAL_CHECKLISTS_V94 = [
       ]),
       practicalCriterionV94("A área é mantida limpa e segura durante o turno.",PRACTICAL_COMMON_V94.cleanSafe),
       practicalCriterionV94("O funcionário mantém uma atitude positiva e amável durante o turno.",PRACTICAL_COMMON_V94.attitude),
-      practicalCriterionV94("Mostra uma comunicação, cooperação e coordenação efetiva com os outros.",PRACTICAL_COMMON_V94.team)
+      practicalCriterionV94("Mostra uma comunicação, cooperação e coordenação efetiva com os outros.",PRACTICAL_COMMON_V94.teamShow3)
     ]
   },
   {
@@ -165,7 +176,7 @@ const PRACTICAL_CHECKLISTS_V94 = [
   {
     id:"chapas",stationId:"chapa",label:"Verificação Chapas",icon:"🔥",
     criteria:[
-      practicalCriterionV94("Mostra comunicação, cooperação e coordenação efetiva com os outros.",PRACTICAL_COMMON_V94.team),
+      practicalCriterionV94("Mostra comunicação, cooperação e coordenação efetiva com os outros.",PRACTICAL_COMMON_V94.teamShow4),
       practicalCriterionV94("Comprova que tanto ele quanto a área de trabalho e o equipamento estão totalmente preparados antes de começar.",PRACTICAL_COMMON_V94.ready),
       practicalCriterionV94("Mostra como comprovar o tempo de cozimento e os ajustes antes de começar a preparar o produto.",[
         "Não mostra como realizar as verificações corretamente.",
@@ -241,7 +252,7 @@ const PRACTICAL_CHECKLISTS_V94 = [
       ]),
       practicalCriterionV94("A área de trabalho é mantida limpa e segura durante o turno.",PRACTICAL_COMMON_V94.cleanSafe),
       practicalCriterionV94("É mantida uma atitude positiva e amável durante o turno.",PRACTICAL_COMMON_V94.attitude),
-      practicalCriterionV94("Demonstra comunicação, cooperação e coordenação efetiva com os outros.",PRACTICAL_COMMON_V94.team)
+      practicalCriterionV94("Demonstra comunicação, cooperação e coordenação efetiva com os outros.",PRACTICAL_COMMON_V94.team4)
     ]
   },
   {
@@ -333,7 +344,7 @@ const PRACTICAL_CHECKLISTS_V94 = [
         "Os itens não estão prontos para entrega."
       ]),
       practicalCriterionV94("O funcionário mantém uma atitude positiva e amável durante o turno.",PRACTICAL_COMMON_V94.attitude),
-      practicalCriterionV94("O funcionário mostra uma comunicação, cooperação e coordenação efetiva com os outros.",PRACTICAL_COMMON_V94.team),
+      practicalCriterionV94("O funcionário mostra uma comunicação, cooperação e coordenação efetiva com os outros.",PRACTICAL_COMMON_V94.teamShow3),
       practicalCriterionV94("Aplicam-se todos os procedimentos de segurança do alimento e prevenção de riscos laborais.",[
         "Não se aplicam os procedimentos de segurança do alimento (lavagem das mãos, troca de panos etc.).",
         "Não se aplicam os procedimentos de segurança (limpeza, derramamentos etc.).",
