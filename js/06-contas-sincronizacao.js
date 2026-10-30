@@ -412,7 +412,7 @@ if (isVisible("tab-missions")) {
 }
 if (isVisible("tab-trainer")) {
   renderTrainerPublicContent();
-  if (typeof isTrainerUnlocked !== "undefined" && isTrainerUnlocked) renderPracticalTrainerRoster();
+  if (typeof isTrainerUnlocked !== "undefined" && isTrainerUnlocked) { renderPracticalTrainerRoster(); if (typeof renderPracticalDashboard === "function") renderPracticalDashboard(); }
 }
 if (isVisible("tab-profile")) renderPremiumProfile();
 if (typeof publicProfileSelectedKey !== "undefined" && publicProfileSelectedKey && isVisible("publicProfileModal")) renderPublicProfile();
@@ -489,7 +489,7 @@ localMutationUiRefreshTimer = setTimeout(() => {
     if (isVisible("tab-profile") && typeof renderPremiumProfile === "function") renderPremiumProfile();
     if (isVisible("tab-trainer") && typeof renderTrainerPublicContent === "function") {
       renderTrainerPublicContent();
-      if (typeof isTrainerUnlocked !== "undefined" && isTrainerUnlocked && typeof renderPracticalTrainerRoster === "function") renderPracticalTrainerRoster();
+      if (typeof isTrainerUnlocked !== "undefined" && isTrainerUnlocked && typeof renderPracticalTrainerRoster === "function") { renderPracticalTrainerRoster(); if (typeof renderPracticalDashboard === "function") renderPracticalDashboard(); }
     }
     if (isVisible("tab-admin") && typeof isAdminUnlocked !== "undefined" && isAdminUnlocked && typeof renderAdminUsersList === "function") renderAdminUsersList();
     if (typeof publicProfileSelectedKey !== "undefined" && publicProfileSelectedKey && isVisible("publicProfileModal") && typeof renderPublicProfile === "function") renderPublicProfile();

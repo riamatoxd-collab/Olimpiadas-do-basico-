@@ -147,7 +147,7 @@ function unlockTrainerCenter() {
   isTrainerUnlocked=true;
   $('trainerPassInput').value=''; $('trainerAuthError').classList.add('hidden');
   $('trainerLockScreen').classList.add('hidden'); $('trainerDashboard').classList.remove('hidden');
-  renderPracticalChecklist();renderTrainerCenter();fetchTrainerHistory(true);
+  renderPracticalChecklist();renderPracticalDashboard();renderTrainerCenter();fetchTrainerHistory(true);
 }
 function lockTrainerCenter() {
   isTrainerUnlocked=false;

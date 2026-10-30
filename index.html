@@ -9,8 +9,8 @@
   <meta name="apple-mobile-web-app-title" content="Olimpíadas Méqui" />
   <meta name="theme-color" content="#170D2B" />
   <link rel="manifest" href="manifest.webmanifest" />
-  <title>Olimpíadas do Básico — Venture v9.4.1 · Avaliações Práticas</title>
-  <meta name="app-version" content="9.4.1" />
+  <title>Olimpíadas do Básico — Venture v9.4.2 · Painel Prático</title>
+  <meta name="app-version" content="9.4.2" />
   <!-- Favicon Oficial: Arcos Dourados em Vetor SVG -->
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='24' fill='%23170D2B'/%3E%3Cpath fill='%23FFC72C' d='M50 46c-3.6-13.8-10.8-23.5-19.6-23.5-12 0-21.6 18.6-21.6 52.5h9.1c0-26.4 6.4-42.8 12.5-42.8 6 0 12 17.6 12.5 42.8H50zm0 0c3.6-13.8 10.8-23.5 19.6-23.5 12 0 21.6 18.6 21.6 52.5h-9.1c0-26.4-6.4-42.8-12.5-42.8-6 0-12 17.6-12.5 42.8H50z'/%3E%3C/svg%3E" />
   <script defer src="https://cdn.tailwindcss.com"></script>
@@ -29,6 +29,7 @@
   <link rel="stylesheet" href="venture-9-2.css?v=9400">
   <link rel="stylesheet" href="venture-novidades.css?v=9400" />
   <link rel="stylesheet" href="venture-halloween.css?v=9400" />
+  <link rel="stylesheet" href="venture-practical-dashboard.css?v=9420" />
 </head>
 <body class="min-h-screen pb-36 halloween-theme">
   <!-- Venture Splash Clean: somente apresentação, sem conexão com XP ou cadastros. -->
@@ -749,9 +750,9 @@
         <button type="button" onclick="switchMainTab('trainer')" class="more-menu-item"><span class="more-menu-icon" aria-hidden="true">🎓</span><span class="more-menu-copy"><strong>Central do Treinador</strong><small>Perguntas, comunicados e desafios especiais</small></span><span class="more-chevron" aria-hidden="true">›</span></button>
         <button type="button" onclick="switchMainTab('admin')" class="more-menu-item"><span class="more-menu-icon" aria-hidden="true">⚙️</span><span class="more-menu-copy"><strong>Painel ADM</strong><small>Gerenciamento de colaboradores e XP</small></span><span class="more-chevron" aria-hidden="true">›</span></button>
         <button type="button" onclick="openVentureNews()" class="more-menu-item"><span class="more-menu-icon" aria-hidden="true">🔔</span><span class="more-menu-copy"><strong>Ver novidades</strong><small>Reabrir o aviso de entrada</small></span><span class="more-chevron" aria-hidden="true">›</span></button>
-        <div class="app-version-control" aria-label="Versão do aplicativo"><span>✅ Versão instalada: <strong id="appInstalledVersion">9.4.1</strong></span><button type="button" onclick="checkForAppUpdate(true)">🔄 Procurar atualização</button><p id="appVersionStatus" role="status" aria-live="polite">Checagem automática a cada 60 segundos enquanto o site está aberto.</p></div>
+        <div class="app-version-control" aria-label="Versão do aplicativo"><span>✅ Versão instalada: <strong id="appInstalledVersion">9.4.2</strong></span><button type="button" onclick="checkForAppUpdate(true)">🔄 Procurar atualização</button><p id="appVersionStatus" role="status" aria-live="polite">Checagem automática a cada 60 segundos enquanto o site está aberto.</p></div>
       </div>
-      <div class="more-info"><strong>Olimpíadas do Básico · Venture</strong><span>Versão 9.4.1 · Avaliações práticas</span></div>
+      <div class="more-info"><strong>Olimpíadas do Básico · Venture</strong><span>Versão 9.4.2 · Painel de desempenho prático</span></div>
     </section>
     <!-- V8.3: CENTRAL DO TREINADOR (restrição de interface; sem autorização de servidor) -->
     <section id="tab-trainer" class="app-screen hidden space-y-4" aria-label="Central do Treinador">
@@ -769,6 +770,42 @@
       <div id="trainerDashboard" class="hidden space-y-4">
         <div class="trainer-topbar"><div><span>PAINEL DE CONTEÚDOS</span><strong>Treinamento da equipe</strong></div><button type="button" onclick="lockTrainerCenter()">Bloquear 🔒</button></div>
         <div class="trainer-metrics" aria-label="Resumo de conteúdos"><div><span>Perguntas extras</span><strong id="trainerQuestionCount">0</strong></div><div><span>Comunicado</span><strong id="trainerAnnouncementStatus">Inativo</strong></div><div><span>Desafio especial</span><strong id="trainerChallengeStatus">Inativo</strong></div></div>
+        <details class="trainer-disclosure practical-dashboard-disclosure" id="practicalDashboardDetails" open>
+          <summary><span>📊 Painel de desempenho prático <small>Acompanhamento das oito fichas por colaborador e estação</small></span><span aria-hidden="true">⌄</span></summary>
+          <div class="trainer-disclosure-content">
+            <div class="pdb-shell" id="practicalOverviewDashboard">
+              <header class="pdb-intro">
+                <div><span class="pdb-eyebrow">GESTÃO DE HABILIDADES · ALL STAR</span><h2 class="pdb-title">Mapa de habilidades da equipe</h2><p class="pdb-description">Veja o que já foi aprovado, quem está em desenvolvimento e quais estações ainda aguardam avaliação presencial.</p></div>
+                <span class="pdb-updated" id="practicalDashboardUpdated">Carregando avaliações...</span>
+              </header>
+              <div class="pdb-metrics" id="practicalDashboardMetrics" aria-live="polite"></div>
+              <section class="pdb-coverage" aria-label="Cobertura geral das avaliações">
+                <div class="pdb-coverage-top"><span>COBERTURA DE APROVAÇÃO</span><strong id="practicalDashboardCoverage">0%</strong></div>
+                <span class="pdb-coverage-track"><i id="practicalDashboardCoverageFill" style="width:0%"></i></span>
+                <small class="pdb-coverage-foot" id="practicalDashboardCoverageText">0 verificações aprovadas</small>
+              </section>
+              <section aria-label="Desempenho por estação">
+                <div class="pdb-section-head"><strong>Conquistas por estação</strong><small>Selecione uma área para filtrar a equipe</small></div>
+                <div class="pdb-stations-grid" id="practicalDashboardStations"></div>
+              </section>
+              <section aria-label="Acompanhamento dos colaboradores">
+                <div class="pdb-section-head"><strong>Equipe e andamento</strong><small>Quem precisa de acompanhamento aparece primeiro</small></div>
+                <div class="pdb-toolbar">
+                  <input id="practicalDashboardSearch" type="search" placeholder="Buscar colaborador..." aria-label="Buscar colaborador" oninput="renderPracticalDashboard()" />
+                  <select id="practicalDashboardStationFilter" aria-label="Filtrar por estação" onchange="renderPracticalDashboard()">
+                    <option value="all">Todas as estações</option><option value="lope">Apoio e Preparação LOPE</option><option value="linha">Linha</option><option value="mcfritas">McFritas</option><option value="chapas">Chapas</option><option value="bebidas">Bebidas e Sobremesas</option><option value="drive-montar">Drive-Thru · Montar e Apresentar</option><option value="drive-vendas">Drive-Thru · Vendas e Pagamento</option><option value="mcdelivery">McDelivery</option>
+                  </select>
+                  <select id="practicalDashboardStatusFilter" aria-label="Filtrar por situação" onchange="renderPracticalDashboard()">
+                    <option value="all">Todas as situações</option><option value="approved">Aprovado</option><option value="progress">Em desenvolvimento</option><option value="pending">Aguardando avaliação</option>
+                  </select>
+                  <button type="button" class="pdb-reset" onclick="resetPracticalDashboardFilters()">Limpar filtros</button>
+                </div>
+                <p class="pdb-roster-meta" id="practicalDashboardRosterMeta" aria-live="polite"></p>
+                <div class="pdb-roster-grid" id="practicalDashboardRoster" aria-live="polite"></div>
+              </section>
+            </div>
+          </div>
+        </details>
         <!-- v8.6: avaliações presenciais; não concede XP nem altera o ranking -->
         <details class="trainer-disclosure" id="trainerPracticalDetails">
           <summary><span>📋 Avaliação prática presencial <small class="practical-summary-caption">Registre o treinamento em cada estação</small></span><span aria-hidden="true">⌄</span></summary>
@@ -989,15 +1026,16 @@
 <script src="questions.js"></script>
   <script src="js/01-dados.js?v=9400"></script>
   <script src="js/02-estado.js?v=9400"></script>
-  <script src="js/03-treinador.js?v=9400"></script>
-  <script src="js/14-avaliacoes-praticas.js?v=9410"></script>
+  <script src="js/03-treinador.js?v=9420"></script>
+  <script src="js/14-avaliacoes-praticas.js?v=9420"></script>
+   <script src="js/15-painel-pratico.js?v=9420"></script>
   <script src="js/04-missoes-perfil.js?v=9400"></script>
   <script src="js/05-cozinha.js?v=9400"></script>
-  <script src="js/06-contas-sincronizacao.js?v=9400"></script>
+  <script src="js/06-contas-sincronizacao.js?v=9420"></script>
   <script src="js/07-jogos.js?v=9400"></script>
   <script src="js/08-comunidade-adm.js?v=9400"></script>
   <script src="js/09-niveis-extra.js?v=9400"></script>
-  <script src="script.js?v=9410"></script>
+  <script src="script.js?v=9420"></script>
   <script src="hub-pc.js?v=2"></script>
   <!-- Correcoes isoladas: Book fiel ao Word e convites 1v1 sem alterar XP -->
   <script src="book-original-fiel.js?v=9400"></script>
@@ -1007,6 +1045,6 @@
   <script src="js/11-ligas-mensais.js?v=9400"></script>
   <script src="js/12-notificacoes.js?v=9400"></script>
   <script src="js/13-allstar.js?v=9400"></script>
-  <script src="venture-novidades.js?v=9410"></script>
+  <script src="venture-novidades.js?v=9420"></script>
 </body>
 </html>

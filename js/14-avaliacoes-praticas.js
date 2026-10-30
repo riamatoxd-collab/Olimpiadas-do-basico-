@@ -537,7 +537,7 @@ function savePracticalAssessment(event){
   info.classList.remove("hidden");
   $("trainerPracticalForm").querySelectorAll('input[type="checkbox"]').forEach(function(x){x.checked=false;});
   $("practicalNotes").value="";
-  renderPracticalResultPreview();renderPracticalTrainerHistory();
+  renderPracticalResultPreview();renderPracticalTrainerHistory();renderPracticalDashboard();
   if(currentUserKey===key)renderPremiumProfile();
   if(publicProfileSelectedKey===key)renderPublicProfile();
 }

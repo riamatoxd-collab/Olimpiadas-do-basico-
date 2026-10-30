@@ -1,9 +1,9 @@
-/* Venture 9.4.1: novidades apresentadas após login; não altera pontuação nem sincronização. */
+/* Venture 9.4.2: novidades apresentadas após login; não altera pontuação nem sincronização. */
 (function () {
   "use strict";
   var auth = document.getElementById("authModal");
   var history = document.getElementById("tab-updates");
-  var storagePrefix = "venture_novidades_entrada_941_";
+  var storagePrefix = "venture_novidades_entrada_942_";
   var previousFocus = null;
   var pendingTimer = null;
   var fallbackSeen = Object.create(null);
@@ -26,12 +26,13 @@
           '<span class="vnews-logo" aria-hidden="true">🏆</span>',
           '<h2 id="ventureNewsTitle">AVALIAÇÕES <span>PRÁTICAS!</span></h2>',
           '<p id="ventureNewsDescription">As avaliações presenciais agora usam fichas completas por estação, com critérios para marcar e pontos de atenção apenas como referência.</p>',
-          '<div class="vnews-strip"><span>🛡️ TREINAMENTO PRÁTICO</span><strong>VENTURE 9.4.1</strong></div>',
+          '<div class="vnews-strip"><span>🛡️ TREINAMENTO PRÁTICO</span><strong>VENTURE 9.4.2</strong></div>',
         '</header>',
         '<div class="vnews-body">',
           '<div class="vnews-topline"><span>✨ O QUE MUDOU</span><small>DESTAQUES DO VENTURE</small></div>',
           '<div class="vnews-feature"><span class="vnews-feature-icon" aria-hidden="true">📋</span><div><strong>Oito fichas operacionais</strong><p>O treinador seleciona a estação e marca somente os critérios principais que foram demonstrados corretamente.</p></div></div>',
           '<div class="vnews-feature"><span class="vnews-feature-icon" aria-hidden="true">🔎</span><div><strong>Pontos de atenção não são marcáveis</strong><p>As descrições de falhas aparecem abaixo de cada critério apenas para orientar a avaliação.</p></div></div>',
+          '<div class="vnews-feature"><span class="vnews-feature-icon" aria-hidden="true">📊</span><div><strong>Painel de desempenho prático</strong><p>A Central do Treinador agora mostra aprovações, avaliações em desenvolvimento e estações que ainda aguardam verificação, com filtros por colaborador e área.</p></div></div>',
           '<div class="vnews-feature"><span class="vnews-feature-icon" aria-hidden="true">⭐</span><div><strong>All Star em Mais opções</strong><p>O All Star continua disponível em uma tela própria, sem ocupar espaço na navegação principal.</p></div></div>',
           '<details class="vnews-history"><summary>📜 Consultar histórico completo de versões ▾</summary><div id="ventureNewsArchive" class="vnews-history-content"></div></details>',
           '<div class="vnews-actions">',
@@ -52,7 +53,7 @@
   if (oldCard) archive.appendChild(oldCard);
   var latest = document.createElement("div");
   latest.className = "vnews-history-entry";
-  latest.innerHTML = '<strong>Versão 9.4.1 • Avaliações práticas completas</strong>Oito fichas operacionais, referências de falhas não marcáveis, selos concedidos após aprovação integral e All Star em Mais opções.';
+  latest.innerHTML = '<strong>Versão 9.4.2 • Painel de desempenho prático</strong>Visão geral das aprovações por estação, colaboradores em desenvolvimento e avaliações pendentes, com busca e filtros na Central do Treinador.';
   archive.insertBefore(latest, archive.firstChild);
   history.remove();
 
