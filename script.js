@@ -1,4 +1,4 @@
-/* Venture 9.2.3 · script.js · arquivo carregado na ordem indicada no HTML. */
+/* Venture 9.2.4 · script.js · arquivo carregado na ordem indicada no HTML. */
 function switchTrainingMode(mode) {
   const valid = ["kitchen", "arena", "review", "duel"];
   if (!valid.includes(mode)) return;
@@ -15,14 +15,14 @@ function switchTrainingMode(mode) {
   if (mode === "duel" && typeof renderVentureDuelDashboard === "function") renderVentureDuelDashboard();
 }
 function switchMainTab(tab) {
-  const screens = ["quiz", "training", "missions", "prizes", "more", "profile", "book", "trainer", "admin", "updates"];
+  const screens = ["quiz", "training", "missions", "prizes", "more", "profile", "book", "trainer", "admin"];
   if (!screens.includes(tab)) return;
   playTabClickSound();
   screens.forEach(name => {
     const screen = $(`tab-${name}`);
     if (screen) screen.classList.toggle("hidden", name !== tab);
   });
-  const currentNav = ["profile", "book", "trainer", "admin", "updates"].includes(tab) ? "more" : tab;
+  const currentNav = ["profile", "book", "trainer", "admin"].includes(tab) ? "more" : tab;
   ["quiz", "training", "missions", "prizes", "more"].forEach(name => {
     const button = $(`nav-${name}`);
     if (!button) return;
@@ -50,7 +50,7 @@ function switchMainTab(tab) {
 // =========================================================================
 // V8.5 — ATUALIZAÇÃO DE VERSÃO NO GITHUB PAGES (SEM APAGAR DADOS)
 // =========================================================================
-const APP_VERSION = "9.2.3";
+const APP_VERSION = "9.2.4";
 const APP_UPDATE_INTERVAL_MS = 60000; // Github Pages é estático: checagem periódica, não push instantâneo.
 const APP_UPDATE_IDLE_MS = 45000;
 let availableAppUpdate = null;
@@ -64,7 +64,7 @@ function appVersionMessage(msg) {
 }
 function isAppUpdateUnsafe() {
   if (document.hidden || activeDuel || pendingDuelInvite) return true;
-  const modals = ["duelInvitePopup", "duelArenaModal", "reviewMistakesModal", "publicProfileModal", "avatarPickerModal"];
+  const modals = ["duelInvitePopup", "duelArenaModal", "ventureNewsModal", "reviewMistakesModal", "publicProfileModal", "avatarPickerModal"];
   if (modals.some(id => {const el = $(id); return el && !el.classList.contains("hidden");})) return true;
   const input = document.activeElement;
   if (input && input.matches && input.matches("input, textarea, select, [contenteditable='true']") && input.getClientRects().length) return true;

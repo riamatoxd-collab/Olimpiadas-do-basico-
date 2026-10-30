@@ -1,0 +1,40 @@
+/* Venture 9.2.4 — anúncio de novidades ao entrar, isolado do XP e das contas. */
+.vnews-overlay{position:fixed;inset:0;z-index:99990;display:flex;align-items:center;justify-content:center;padding:14px;background:rgba(5,8,18,.82);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.vnews-overlay.hidden{display:none!important}
+body.vnews-lock{overflow:hidden!important}
+.vnews-dialog{position:relative;width:min(470px,100%);max-height:calc(100dvh - 28px);overflow:hidden;border-radius:18px;background:#111827;box-shadow:0 24px 90px #0009,0 0 0 1px #ffffff27;outline:0}
+.vnews-scroller{max-height:calc(100dvh - 28px);overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:#da291c #111827}
+.vnews-x{position:absolute;top:11px;right:11px;z-index:3;display:grid;place-items:center;width:39px;height:39px;border-radius:50%;background:#0b1223d9;border:1px solid #ffffff6b;color:#fff;font-weight:900;font-size:21px;cursor:pointer;box-shadow:0 3px 12px #0008}
+.vnews-x:hover,.vnews-x:focus-visible{background:#da291c;outline:2px solid #ffc72c;outline-offset:2px}
+.vnews-hero{position:relative;isolation:isolate;overflow:hidden;min-height:348px;padding:31px 23px 24px;text-align:center;color:#fff;background:radial-gradient(ellipse at 52% 68%,#d53a1c7a 0%,transparent 58%),linear-gradient(155deg,#121a2b 0%,#300c14 63%,#151923 100%)}
+.vnews-hero:before{content:"";position:absolute;inset:0;z-index:-1;opacity:.23;background:repeating-linear-gradient(-25deg,transparent 0 18px,#ffffff14 18px 19px),radial-gradient(circle at 11% 26%,#ffc72c44,transparent 28%);pointer-events:none}
+.vnews-brand{display:inline-block;padding:5px 13px;border:1px solid #ffc72c78;border-radius:99px;color:#ffc72c;font-size:10px;font-weight:900;letter-spacing:.17em}
+.vnews-logo{display:block;margin:8px auto 0;font-size:65px;line-height:1.1;filter:drop-shadow(0 8px 13px #0008)}
+.vnews-hero h2{margin:5px auto 0;max-width:420px;font-family:Impact,"Arial Black",system-ui,sans-serif;font-weight:1000;font-size:clamp(39px,10vw,60px);line-height:.98;letter-spacing:-.035em;text-shadow:0 5px 5px #000a}
+.vnews-hero h2 span{display:block;color:#ffc72c;transform:rotate(-2deg);text-shadow:2px 3px 0 #9b1116,0 7px 12px #000a}
+.vnews-hero p{max-width:350px;margin:14px auto 0;font-size:13px;font-weight:750;line-height:1.55;color:#fff6e4}
+.vnews-strip{display:flex;justify-content:center;align-items:center;gap:8px;flex-wrap:wrap;margin-top:18px}
+.vnews-strip span{padding:6px 10px;border-radius:4px;background:#da291c;color:white;font-size:10px;font-weight:900;letter-spacing:.09em}
+.vnews-strip strong{padding:6px 10px;border-radius:4px;background:#ffc72c;color:#1b2030;font-size:10px;font-weight:900;letter-spacing:.05em}
+.vnews-body{padding:18px 20px 22px;background:#fffdf7;color:#182030}
+.vnews-topline{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:13px;padding-bottom:9px;border-bottom:1px solid #e8d6b9;font-size:10px;font-weight:950;color:#8c241b;letter-spacing:.08em}
+.vnews-topline small{color:#64748b;font-weight:850}
+.vnews-feature{display:grid;grid-template-columns:39px 1fr;align-items:start;gap:11px;margin:10px 0;padding:9px;border-radius:12px;background:#fff;border:1px solid #e9e2d7}
+.vnews-feature-icon{display:grid;place-items:center;width:38px;height:38px;border-radius:11px;background:#fff1c9;font-size:22px}
+.vnews-feature strong{display:block;font-size:13px;font-weight:950;color:#192239}
+.vnews-feature p{margin-top:3px;font-size:11px;line-height:1.48;font-weight:650;color:#5a6576}
+.vnews-history{margin:16px 0 14px;padding:0 10px;border:1px solid #ded6c9;border-radius:12px;background:#fbf7f0}
+.vnews-history summary{padding:13px 2px;font-size:11px;font-weight:900;cursor:pointer;color:#334155}
+.vnews-history[open] summary{border-bottom:1px solid #ded6c9}
+.vnews-history-content{max-height:300px;overflow-y:auto;padding:9px 0;scrollbar-width:thin}
+.vnews-history-content .pro-card{padding:8px!important;background:transparent!important;border:none!important;box-shadow:none!important}
+.vnews-history-content .pro-card>*{margin-block:10px}
+.vnews-history-entry{padding:10px;border-left:4px solid #da291c;background:#fff;border-radius:5px;margin:8px 0;font-size:11px;color:#475569}
+.vnews-history-entry strong{display:block;color:#b91c1c;font-size:12px;margin-bottom:4px}
+.vnews-actions{display:grid;gap:9px;padding-top:4px}
+.vnews-actions button{display:block;width:100%;padding:13px 14px;border-radius:11px;font-size:12px;font-weight:950;cursor:pointer;transition:transform .15s,filter .15s}
+.vnews-actions button:hover{filter:brightness(1.04);transform:translateY(-1px)}
+.vnews-primary{background:#da291c;color:#fff;box-shadow:0 5px 0 #8f1a17}
+.vnews-secondary{background:#f3ece2;color:#3e4654;border:1px solid #dfd3c3}
+.vnews-footnote{margin:13px 0 0;font-size:10px;line-height:1.5;color:#64748b;text-align:center}
+@media(max-width:460px){.vnews-overlay{padding:9px}.vnews-dialog{max-height:calc(100dvh - 18px);border-radius:14px}.vnews-scroller{max-height:calc(100dvh - 18px)}.vnews-hero{min-height:290px;padding:21px 17px 18px}.vnews-logo{font-size:49px}.vnews-hero h2{font-size:clamp(36px,12vw,49px)}.vnews-body{padding:15px 13px 17px}.vnews-x{top:8px;right:8px}}

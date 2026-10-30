@@ -1,5 +1,5 @@
 {
-  "version": "9.2.3",
-  "released_at": "2026-10-27",
-  "description": "Venture 9.2.3: reduz a latência percebida ao responder perguntas. O backup auxiliar de pontuação é agendado para período ocioso, e o simulado não reconstrói painéis de missões/treinador quando estão ocultos. O ledger de XP e sua intenção de recuperação continuam sendo persistidos sincronamente; IDs de transação seguem idempotentes. Preserva cadastros, XP vitalício, ligas mensais, duelos e All Star Cozinha com 55 questões. Cache-busting atualizado para carregar os arquivos novos."
+  "version": "9.2.4",
+  "released_at": "2026-10-30",
+  "description": "Venture 9.2.4: novidades e histórico de atualizações apresentados em pop-up ao entrar, fechável pelo X, Escape ou toque no fundo. Histórico preservado, disponível também em Mais > Ver novidades. Mantém integralmente as melhorias de 9.2.3, ligas mensais, All Star, XP e sincronização."
 }

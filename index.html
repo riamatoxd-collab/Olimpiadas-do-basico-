@@ -9,8 +9,8 @@
   <meta name="apple-mobile-web-app-title" content="Olimpíadas Méqui" />
   <meta name="theme-color" content="#DA291C" />
   <link rel="manifest" href="manifest.webmanifest" />
-  <title>Olimpíadas do Básico — Venture v9.2.2</title>
-  <meta name="app-version" content="9.2.3" />
+  <title>Olimpíadas do Básico — Venture v9.2.4</title>
+  <meta name="app-version" content="9.2.4" />
   <!-- Favicon Oficial: Arcos Dourados em Vetor SVG -->
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='24' fill='%23DA291C'/%3E%3Cpath fill='%23FFC72C' d='M50 46c-3.6-13.8-10.8-23.5-19.6-23.5-12 0-21.6 18.6-21.6 52.5h9.1c0-26.4 6.4-42.8 12.5-42.8 6 0 12 17.6 12.5 42.8H50zm0 0c3.6-13.8 10.8-23.5 19.6-23.5 12 0 21.6 18.6 21.6 52.5h-9.1c0-26.4-6.4-42.8-12.5-42.8-6 0-12 17.6-12.5 42.8H50z'/%3E%3C/svg%3E" />
   <script defer src="https://cdn.tailwindcss.com"></script>
@@ -27,6 +27,7 @@
   <link rel="stylesheet" href="venture-notifications.css?v=9230">
   <link rel="stylesheet" href="venture-allstar.css?v=9230">
   <link rel="stylesheet" href="venture-9-2.css?v=9230">
+  <link rel="stylesheet" href="venture-novidades.css?v=9240" />
 </head>
 <body class="min-h-screen pb-36">
   <!-- Venture Splash Clean: somente apresentação, sem conexão com XP ou cadastros. -->
@@ -741,8 +742,8 @@
         <button type="button" onclick="switchMainTab('book')" class="more-menu-item"><span class="more-menu-icon" aria-hidden="true">📖</span><span class="more-menu-copy"><strong>Book oficial</strong><small>Consulte as 200 questões e respostas</small></span><span class="more-chevron" aria-hidden="true">›</span></button>
         <button type="button" onclick="switchMainTab('trainer')" class="more-menu-item"><span class="more-menu-icon" aria-hidden="true">🎓</span><span class="more-menu-copy"><strong>Central do Treinador</strong><small>Perguntas, comunicados e desafios especiais</small></span><span class="more-chevron" aria-hidden="true">›</span></button>
         <button type="button" onclick="switchMainTab('admin')" class="more-menu-item"><span class="more-menu-icon" aria-hidden="true">⚙️</span><span class="more-menu-copy"><strong>Painel ADM</strong><small>Gerenciamento de colaboradores e XP</small></span><span class="more-chevron" aria-hidden="true">›</span></button>
-        <button type="button" onclick="switchMainTab('updates')" class="more-menu-item"><span class="more-menu-icon" aria-hidden="true">🔔</span><span class="more-menu-copy"><strong>Novidades e versões</strong><small>O que mudou no aplicativo</small></span><span class="more-chevron" aria-hidden="true">›</span></button>
-        <div class="app-version-control" aria-label="Versão do aplicativo"><span>✅ Versão instalada: <strong id="appInstalledVersion">9.2.3</strong></span><button type="button" onclick="checkForAppUpdate(true)">🔄 Procurar atualização</button><p id="appVersionStatus" role="status" aria-live="polite">Checagem automática a cada 60 segundos enquanto o site está aberto.</p></div>
+        <button type="button" onclick="openVentureNews()" class="more-menu-item"><span class="more-menu-icon" aria-hidden="true">🔔</span><span class="more-menu-copy"><strong>Ver novidades</strong><small>Reabrir o aviso de entrada</small></span><span class="more-chevron" aria-hidden="true">›</span></button>
+        <div class="app-version-control" aria-label="Versão do aplicativo"><span>✅ Versão instalada: <strong id="appInstalledVersion">9.2.4</strong></span><button type="button" onclick="checkForAppUpdate(true)">🔄 Procurar atualização</button><p id="appVersionStatus" role="status" aria-live="polite">Checagem automática a cada 60 segundos enquanto o site está aberto.</p></div>
       </div>
       <div class="more-info"><strong>Olimpíadas do Básico · Venture</strong><span>Versão 8.7 · Baú Diário</span></div>
     </section>
@@ -995,5 +996,6 @@
   <script src="js/11-ligas-mensais.js?v=9230"></script>
   <script src="js/12-notificacoes.js?v=9230"></script>
   <script src="js/13-allstar.js?v=9230"></script>
+  <script src="venture-novidades.js?v=9240"></script>
 </body>
 </html>
