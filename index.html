@@ -9,26 +9,26 @@
   <meta name="apple-mobile-web-app-title" content="Olimpíadas Méqui" />
   <meta name="theme-color" content="#170D2B" />
   <link rel="manifest" href="manifest.webmanifest" />
-  <title>Olimpíadas do Básico — Venture v9.3.0 · Halloween All Star</title>
-  <meta name="app-version" content="9.3.0" />
+  <title>Olimpíadas do Básico — Venture v9.4.0 · Avaliações Práticas</title>
+  <meta name="app-version" content="9.4.0" />
   <!-- Favicon Oficial: Arcos Dourados em Vetor SVG -->
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='24' fill='%23170D2B'/%3E%3Cpath fill='%23FFC72C' d='M50 46c-3.6-13.8-10.8-23.5-19.6-23.5-12 0-21.6 18.6-21.6 52.5h9.1c0-26.4 6.4-42.8 12.5-42.8 6 0 12 17.6 12.5 42.8H50zm0 0c3.6-13.8 10.8-23.5 19.6-23.5 12 0 21.6 18.6 21.6 52.5h-9.1c0-26.4-6.4-42.8-12.5-42.8-6 0-12 17.6-12.5 42.8H50z'/%3E%3C/svg%3E" />
   <script defer src="https://cdn.tailwindcss.com"></script>
   <script defer src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
   <!-- O exportador do ranking geral foi removido; nenhuma biblioteca de captura é necessária. -->
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="niveis-venture.css?v=9300" />
-  <link rel="stylesheet" href="style.css?v=9300" />
+  <link rel="stylesheet" href="niveis-venture.css?v=9400" />
+  <link rel="stylesheet" href="style.css?v=9400" />
   <link rel="stylesheet" href="hub-pc.css?v=2">
   <link rel="stylesheet" href="venture-intro.css?v=clean3" />
   <!-- Venture 9.1.1: ligas mensais com emblemas 3D -->
-  <link rel="stylesheet" href="venture-arena.css?v=9300">
-  <link rel="stylesheet" href="venture-ligas-mensais.css?v=9300">
-  <link rel="stylesheet" href="venture-notifications.css?v=9300">
-  <link rel="stylesheet" href="venture-allstar.css?v=9300">
-  <link rel="stylesheet" href="venture-9-2.css?v=9300">
-  <link rel="stylesheet" href="venture-novidades.css?v=9300" />
-  <link rel="stylesheet" href="venture-halloween.css?v=9300" />
+  <link rel="stylesheet" href="venture-arena.css?v=9400">
+  <link rel="stylesheet" href="venture-ligas-mensais.css?v=9400">
+  <link rel="stylesheet" href="venture-notifications.css?v=9400">
+  <link rel="stylesheet" href="venture-allstar.css?v=9400">
+  <link rel="stylesheet" href="venture-9-2.css?v=9400">
+  <link rel="stylesheet" href="venture-novidades.css?v=9400" />
+  <link rel="stylesheet" href="venture-halloween.css?v=9400" />
 </head>
 <body class="min-h-screen pb-36 halloween-theme">
   <!-- Venture Splash Clean: somente apresentação, sem conexão com XP ou cadastros. -->
@@ -414,42 +414,6 @@
           <p>Cozinha, Arena, revisão e duelo em um só lugar.</p>
         </div>
       </div>
-      <section id="ventureAllStar" class="vas-card" aria-label="Preparação All Star">
-        <div class="vas-hero"><div><span class="vas-halloween-tag">🎃 HALLOWEEN SEASON</span><span class="vas-eyebrow">✦ VENTURE ALL STAR · COZINHA</span><h2 class="vas-title">Treine. Compita. Domine a estação.</h2><p class="vas-copy">Treinamento guiado e provas competitivas com 55 questões baseadas no Book Olimpíadas de Básico — Venture. A nota All Star é separada do XP oficial.</p></div><div class="vas-star" aria-hidden="true">⭐</div></div>
-        <div class="vas-section-heading"><strong>Minha trilha de foco</strong><span>Você pode alterá-la a qualquer momento.</span></div>
-        <div id="ventureAllStarTracks" class="vas-track-grid" role="group" aria-label="Escolher trilha All Star">
-          <button type="button" class="vas-track" data-allstar-track="balcao" aria-pressed="false"><span class="vas-track-icon" aria-hidden="true">🛎️</span><span><strong>Balcão e atendimento</strong><small>Precisão do pedido e experiência do cliente.</small></span></button>
-          <button type="button" class="vas-track" data-allstar-track="drive" aria-pressed="false"><span class="vas-track-icon" aria-hidden="true">🚗</span><span><strong>Drive-Thru</strong><small>Agilidade, confirmação e coordenação.</small></span></button>
-          <button type="button" class="vas-track" data-allstar-track="cozinha" aria-pressed="false"><span class="vas-track-icon" aria-hidden="true">🍔</span><span><strong>Cozinha</strong><small>Qualidade, montagem, tempo e segurança.</small></span></button>
-          <button type="button" class="vas-track" data-allstar-track="sobremesas" aria-pressed="false"><span class="vas-track-icon" aria-hidden="true">🍦</span><span><strong>Sobremesas e quiosque</strong><small>Padronização, higiene, apresentação e atendimento.</small></span></button>
-        </div>
-        <p id="ventureAllStarStatus" class="vas-status" role="status" aria-live="polite">Escolha sua trilha e selecione uma estação da Cozinha.</p>
-        <div class="vas-metrics"><div class="vas-metric"><span>Minha liga mensal</span><strong id="ventureAllStarLeague">Entre na conta</strong></div><div class="vas-metric"><span>Sessões All Star registradas</span><strong id="ventureAllStarAssessmentCount">—</strong></div></div>
-        <div class="vas-divider"></div>
-        <div class="vas-section-heading"><strong>Escolha a estação</strong><span>Conteúdo inicial: Cozinha</span></div>
-        <div id="ventureAllStarAreas" class="vas-area-grid" role="group" aria-label="Selecionar área de treinamento">
-          <button type="button" class="vas-area is-selected" data-allstar-area="cozinha" aria-pressed="true"><span>🍳</span><strong>Cozinha completa</strong><small>Prova mista das quatro estações</small></button>
-          <button type="button" class="vas-area" data-allstar-area="linha" aria-pressed="false"><span>🥪</span><strong>Linha</strong><small>Tostagem e montagem</small></button>
-          <button type="button" class="vas-area" data-allstar-area="chapas" aria-pressed="false"><span>🍔</span><strong>Chapas e carnes</strong><small>Preparação e parâmetros</small></button>
-          <button type="button" class="vas-area" data-allstar-area="mcfritas" aria-pressed="false"><span>🍟</span><strong>McFritas</strong><small>Fritura e finalização</small></button>
-          <button type="button" class="vas-area" data-allstar-area="fritos" aria-pressed="false"><span>🍗</span><strong>Produtos fritos</strong><small>Frango, nuggets e tortas</small></button>
-        </div>
-        <div id="ventureAllStarModes" class="vas-mode-switch" role="group" aria-label="Selecionar modo">
-          <button type="button" class="vas-mode is-selected" data-allstar-mode="study" aria-pressed="true"><span>📘</span><strong>Treinamento</strong><small>Gabarito e explicação a cada resposta</small></button>
-          <button type="button" class="vas-mode" data-allstar-mode="challenge" aria-pressed="false"><span>🏆</span><strong>Competição</strong><small>Sem dicas durante a prova</small></button>
-        </div>
-        <div class="vas-source-warning" role="note" aria-label="Fonte das questões e parâmetro de UHC">
-          <strong>📚 Fonte principal: Book Olimpíadas de Básico — Venture</strong>
-          <p>O banco inicial contém 55 questões baseadas nas perguntas e respostas do book, com referência à página e ao número da questão original. Para transformar o conteúdo em múltipla escolha, as alternativas incorretas foram criadas para o jogo; elas não são alternativas transcritas do book. O gabarito é baseado na resposta do material.</p>
-          <strong style="display:block;margin-top:10px">🌡️ UHC de carnes vermelhas — padrão do book</strong>
-          <p>O book confirma <strong>79°C</strong> para carnes vermelhas (questão 13, p. 1) e <strong>10 minutos</strong> de tempo de vida (questão 14, p. 1). Esses são os valores adotados no All Star. Um dos materiais complementares contém valores diferentes; para este parâmetro, o banco segue o book enviado.</p>
-        </div>
-        <div id="ventureAllStarProgress" class="vas-progress" aria-live="polite"></div>
-        <div id="ventureAllStarQuiz" class="vas-quiz" aria-live="polite">
-          <div class="vas-quiz-intro"><h3>Preparando o desafio...</h3><p>Selecione uma estação e um modo para começar.</p></div>
-        </div>
-        <p class="vas-note">Modo preparatório independente do Venture. A meta sugerida de 80% vale apenas para o simulado do site e não representa certificação nem resultado oficial da competição All Star. A pontuação e o histórico All Star não concedem nem descontam XP.</p>
-      </section>
       <div class="training-switch" role="group" aria-label="Tipo de treino">
         <button id="training-nav-kitchen" type="button" class="training-choice is-active" onclick="switchTrainingMode('kitchen')" aria-pressed="true"><span aria-hidden="true">🍔</span><span>Cozinha</span></button>
         <button id="training-nav-arena" type="button" class="training-choice" onclick="switchTrainingMode('arena')" aria-pressed="false"><span aria-hidden="true">⚡</span><span>Arena</span></button>
@@ -733,6 +697,46 @@
         </div>
       </details>
     </section>
+    <section id="tab-allstar" class="app-screen hidden space-y-5" aria-label="All Star Venture">
+      <div class="page-heading"><div><span class="page-eyebrow">PREPARAÇÃO E COMPETIÇÃO</span><h1>All Star Venture ⭐</h1><p>Treinamento guiado e provas competitivas, separados do XP oficial.</p></div></div>
+      <button class="back-link" type="button" onclick="switchMainTab('more')">← Voltar ao menu</button>
+      <section id="ventureAllStar" class="vas-card" aria-label="Preparação All Star">
+        <div class="vas-hero"><div><span class="vas-halloween-tag">🎃 HALLOWEEN SEASON</span><span class="vas-eyebrow">✦ VENTURE ALL STAR · COZINHA</span><h2 class="vas-title">Treine. Compita. Domine a estação.</h2><p class="vas-copy">Treinamento guiado e provas competitivas com 55 questões baseadas no Book Olimpíadas de Básico — Venture. A nota All Star é separada do XP oficial.</p></div><div class="vas-star" aria-hidden="true">⭐</div></div>
+        <div class="vas-section-heading"><strong>Minha trilha de foco</strong><span>Você pode alterá-la a qualquer momento.</span></div>
+        <div id="ventureAllStarTracks" class="vas-track-grid" role="group" aria-label="Escolher trilha All Star">
+          <button type="button" class="vas-track" data-allstar-track="balcao" aria-pressed="false"><span class="vas-track-icon" aria-hidden="true">🛎️</span><span><strong>Balcão e atendimento</strong><small>Precisão do pedido e experiência do cliente.</small></span></button>
+          <button type="button" class="vas-track" data-allstar-track="drive" aria-pressed="false"><span class="vas-track-icon" aria-hidden="true">🚗</span><span><strong>Drive-Thru</strong><small>Agilidade, confirmação e coordenação.</small></span></button>
+          <button type="button" class="vas-track" data-allstar-track="cozinha" aria-pressed="false"><span class="vas-track-icon" aria-hidden="true">🍔</span><span><strong>Cozinha</strong><small>Qualidade, montagem, tempo e segurança.</small></span></button>
+          <button type="button" class="vas-track" data-allstar-track="sobremesas" aria-pressed="false"><span class="vas-track-icon" aria-hidden="true">🍦</span><span><strong>Sobremesas e quiosque</strong><small>Padronização, higiene, apresentação e atendimento.</small></span></button>
+        </div>
+        <p id="ventureAllStarStatus" class="vas-status" role="status" aria-live="polite">Escolha sua trilha e selecione uma estação da Cozinha.</p>
+        <div class="vas-metrics"><div class="vas-metric"><span>Minha liga mensal</span><strong id="ventureAllStarLeague">Entre na conta</strong></div><div class="vas-metric"><span>Sessões All Star registradas</span><strong id="ventureAllStarAssessmentCount">—</strong></div></div>
+        <div class="vas-divider"></div>
+        <div class="vas-section-heading"><strong>Escolha a estação</strong><span>Conteúdo inicial: Cozinha</span></div>
+        <div id="ventureAllStarAreas" class="vas-area-grid" role="group" aria-label="Selecionar área de treinamento">
+          <button type="button" class="vas-area is-selected" data-allstar-area="cozinha" aria-pressed="true"><span>🍳</span><strong>Cozinha completa</strong><small>Prova mista das quatro estações</small></button>
+          <button type="button" class="vas-area" data-allstar-area="linha" aria-pressed="false"><span>🥪</span><strong>Linha</strong><small>Tostagem e montagem</small></button>
+          <button type="button" class="vas-area" data-allstar-area="chapas" aria-pressed="false"><span>🍔</span><strong>Chapas e carnes</strong><small>Preparação e parâmetros</small></button>
+          <button type="button" class="vas-area" data-allstar-area="mcfritas" aria-pressed="false"><span>🍟</span><strong>McFritas</strong><small>Fritura e finalização</small></button>
+          <button type="button" class="vas-area" data-allstar-area="fritos" aria-pressed="false"><span>🍗</span><strong>Produtos fritos</strong><small>Frango, nuggets e tortas</small></button>
+        </div>
+        <div id="ventureAllStarModes" class="vas-mode-switch" role="group" aria-label="Selecionar modo">
+          <button type="button" class="vas-mode is-selected" data-allstar-mode="study" aria-pressed="true"><span>📘</span><strong>Treinamento</strong><small>Gabarito e explicação a cada resposta</small></button>
+          <button type="button" class="vas-mode" data-allstar-mode="challenge" aria-pressed="false"><span>🏆</span><strong>Competição</strong><small>Sem dicas durante a prova</small></button>
+        </div>
+        <div class="vas-source-warning" role="note" aria-label="Fonte das questões e parâmetro de UHC">
+          <strong>📚 Fonte principal: Book Olimpíadas de Básico — Venture</strong>
+          <p>O banco inicial contém 55 questões baseadas nas perguntas e respostas do book, com referência à página e ao número da questão original. Para transformar o conteúdo em múltipla escolha, as alternativas incorretas foram criadas para o jogo; elas não são alternativas transcritas do book. O gabarito é baseado na resposta do material.</p>
+          <strong style="display:block;margin-top:10px">🌡️ UHC de carnes vermelhas — padrão do book</strong>
+          <p>O book confirma <strong>79°C</strong> para carnes vermelhas (questão 13, p. 1) e <strong>10 minutos</strong> de tempo de vida (questão 14, p. 1). Esses são os valores adotados no All Star. Um dos materiais complementares contém valores diferentes; para este parâmetro, o banco segue o book enviado.</p>
+        </div>
+        <div id="ventureAllStarProgress" class="vas-progress" aria-live="polite"></div>
+        <div id="ventureAllStarQuiz" class="vas-quiz" aria-live="polite">
+          <div class="vas-quiz-intro"><h3>Preparando o desafio...</h3><p>Selecione uma estação e um modo para começar.</p></div>
+        </div>
+        <p class="vas-note">Modo preparatório independente do Venture. A meta sugerida de 80% vale apenas para o simulado do site e não representa certificação nem resultado oficial da competição All Star. A pontuação e o histórico All Star não concedem nem descontam XP.</p>
+      </section>
+    </section>
     <!-- MENU: ACESSO A FUNÇÕES MENOS USADAS -->
     <section id="tab-more" class="app-screen hidden space-y-5" aria-label="Mais opções">
       <div class="page-heading"><div><span class="page-eyebrow">TUDO ORGANIZADO</span><h1>Mais opções <span aria-hidden="true">✨</span></h1><p>Materiais de consulta e recursos de gerenciamento.</p></div></div>
@@ -740,13 +744,13 @@
         <!-- Jornada dos Campeões: experiência isolada, sem crédito de XP real. -->
         <a href="./jornada-campeoes.html" class="more-menu-item" style="text-decoration:none;color:inherit" aria-label="Abrir Jornada dos Campeões em modo de testes"><span class="more-menu-icon" aria-hidden="true">🏆</span><span class="more-menu-copy"><strong>Jornada dos Campeões · 27 níveis</strong><small>5 ligas, chefões e XP de demonstração · seguro</small></span><span class="more-chevron" aria-hidden="true">›</span></a>
         <button type="button" onclick="switchMainTab('profile')" class="more-menu-item"><span class="more-menu-icon" aria-hidden="true">👑</span><span class="more-menu-copy"><strong>Meu perfil premium</strong><small>Molduras, títulos, medalhas e evolução</small></span><span class="more-chevron" aria-hidden="true">›</span></button>
-        <button type="button" onclick="switchMainTab('book')" class="more-menu-item"><span class="more-menu-icon" aria-hidden="true">📖</span><span class="more-menu-copy"><strong>Book oficial</strong><small>Consulte as 200 questões e respostas</small></span><span class="more-chevron" aria-hidden="true">›</span></button>
+        <button type="button" onclick="switchMainTab('book')" class="more-menu-item"><span class="more-menu-icon" aria-hidden="true">📖</span><span class="more-menu-copy"><strong>Book oficial</strong><small>Consulte as 200 questões e respostas</small></span><span class="more-chevron" aria-hidden="true">›</span></button>\n        <button type="button" onclick="switchMainTab('allstar')" class="more-menu-item"><span class="more-menu-icon" aria-hidden="true">⭐</span><span class="more-menu-copy"><strong>All Star Venture</strong><small>Treinamento guiado e provas competitivas</small></span><span class="more-chevron" aria-hidden="true">›</span></button>
         <button type="button" onclick="switchMainTab('trainer')" class="more-menu-item"><span class="more-menu-icon" aria-hidden="true">🎓</span><span class="more-menu-copy"><strong>Central do Treinador</strong><small>Perguntas, comunicados e desafios especiais</small></span><span class="more-chevron" aria-hidden="true">›</span></button>
         <button type="button" onclick="switchMainTab('admin')" class="more-menu-item"><span class="more-menu-icon" aria-hidden="true">⚙️</span><span class="more-menu-copy"><strong>Painel ADM</strong><small>Gerenciamento de colaboradores e XP</small></span><span class="more-chevron" aria-hidden="true">›</span></button>
         <button type="button" onclick="openVentureNews()" class="more-menu-item"><span class="more-menu-icon" aria-hidden="true">🔔</span><span class="more-menu-copy"><strong>Ver novidades</strong><small>Reabrir o aviso de entrada</small></span><span class="more-chevron" aria-hidden="true">›</span></button>
-        <div class="app-version-control" aria-label="Versão do aplicativo"><span>✅ Versão instalada: <strong id="appInstalledVersion">9.3.0</strong></span><button type="button" onclick="checkForAppUpdate(true)">🔄 Procurar atualização</button><p id="appVersionStatus" role="status" aria-live="polite">Checagem automática a cada 60 segundos enquanto o site está aberto.</p></div>
+        <div class="app-version-control" aria-label="Versão do aplicativo"><span>✅ Versão instalada: <strong id="appInstalledVersion">9.4.0</strong></span><button type="button" onclick="checkForAppUpdate(true)">🔄 Procurar atualização</button><p id="appVersionStatus" role="status" aria-live="polite">Checagem automática a cada 60 segundos enquanto o site está aberto.</p></div>
       </div>
-      <div class="more-info"><strong>Olimpíadas do Básico · Venture</strong><span>Versão 8.7 · Baú Diário</span></div>
+      <div class="more-info"><strong>Olimpíadas do Básico · Venture</strong><span>Versão 9.4.0 · Avaliações práticas</span></div>
     </section>
     <!-- V8.3: CENTRAL DO TREINADOR (restrição de interface; sem autorização de servidor) -->
     <section id="tab-trainer" class="app-screen hidden space-y-4" aria-label="Central do Treinador">
@@ -768,14 +772,15 @@
         <details class="trainer-disclosure" id="trainerPracticalDetails">
           <summary><span>📋 Avaliação prática presencial <small class="practical-summary-caption">Registre o treinamento em cada estação</small></span><span aria-hidden="true">⌄</span></summary>
           <div class="trainer-disclosure-content">
-            <p class="trainer-help">Selecione um colaborador, confira o checklist presencialmente e registre o resultado. Todos os itens atendidos = aprovado e selo dourado da estação. As listas abaixo são sugestões: adapte-as aos padrões operacionais vigentes da sua loja.</p>
+            <p class="trainer-help">Selecione o colaborador e a ficha correspondente à estação. Marque somente as caixas dos critérios principais que foram demonstrados corretamente. As descrições destacadas em “Pontos de atenção — NÃO MARCAR” são referências de falhas e não possuem caixas de seleção. Todos os critérios principais atendidos = aprovação e selo dourado.</p>
             <form id="trainerPracticalForm" class="trainer-form" onsubmit="savePracticalAssessment(event)">
               <label>Colaborador<select id="practicalStaffSelect" class="trainer-field" required onchange="renderPracticalTrainerHistory()"><option value="">Escolha um colaborador...</option></select></label>
-              <label>Estação avaliada<select id="practicalStationSelect" class="trainer-field" required onchange="renderPracticalChecklist()"></select></label>
+              <label>Ficha de avaliação<select id="practicalStationSelect" class="trainer-field" required onchange="renderPracticalChecklist()"></select></label>
               <div id="practicalStationPreview" class="practical-station-preview" aria-live="polite"></div>
+              <div class="practical-progress" aria-live="polite"><div class="practical-progress-top"><span>Critérios atendidos</span><strong id="practicalProgressCount">0/0</strong></div><div class="practical-progress-track"><span id="practicalProgressFill"></span></div></div>
               <fieldset class="practical-fieldset">
                 <legend>Critérios observados na prática</legend>
-                <p class="trainer-help">Marque apenas os itens demonstrados corretamente. Se algum não foi atendido, o registro ficará como “Em desenvolvimento”.</p>
+                <p class="trainer-help">Cada caixa corresponde a um critério principal. As descrições de falhas ficam visíveis logo abaixo, apenas como referência para a avaliação; não devem ser marcadas.</p>
                 <div id="practicalChecklist" class="practical-checklist"></div>
               </fieldset>
               <label>Nome do avaliador<input id="practicalEvaluator" class="trainer-field" maxlength="70" required placeholder="Nome de quem acompanhou a prática" autocomplete="name" /></label>
@@ -909,6 +914,7 @@
           </div>
           <span class="bg-emerald-500/15 text-emerald-600 text-xs font-black px-3 py-1 rounded-full">v9.2.3 Clique mais rápido</span>
         </div>
+        <div class="border-l-4 border-violet-500 pl-3.5 space-y-1"><span class="text-[11px] font-extrabold text-violet-500 uppercase">Versão 9.4.0 • Avaliações práticas por estação</span><h4 class="font-black text-sm">🛡️ Fichas operacionais completas e All Star em área própria</h4><p class="text-xs text-muted-pro">A Central do Treinador recebe oito fichas reais de avaliação, com critérios marcáveis e referências de falhas sem caixas de seleção. A aprovação de todos os critérios libera o selo correspondente no perfil, preservando históricos anteriores. O All Star ganha uma tela própria acessível em Mais opções, deixando Treinos mais limpo.</p></div>
         <div class="border-l-4 border-emerald-500 pl-3.5 space-y-1"><span class="text-[11px] font-extrabold text-emerald-600 uppercase">Versão 9.2.3 • Cliques mais rápidos</span><h4 class="font-black text-sm">⚡ Resposta sem espera por tarefas secundárias</h4><p class="text-xs text-muted-pro">O backup auxiliar de pontuação é adiado para um período ocioso; o simulado deixa de redesenhar missões e painel do treinador quando essas telas estão escondidas. O registro seguro do XP continua síncrono, preservando a intenção e a confirmação das recompensas.</p></div>
         <div class="border-l-4 border-emerald-500 pl-3.5 space-y-1"><span class="text-[11px] font-extrabold text-emerald-600 uppercase">Versão 9.2.2 • Resposta imediata e sincronização leve</span><h4 class="font-black text-sm">⚡ Clique validado sem esperar pela nuvem</h4><p class="text-xs text-muted-pro">A atualização da resposta não aguarda a reconstrução de todas as telas. Salvamentos e atualização dos painéis são agrupados; o ranking legado não ordena mais todos os cadastros. O XP continua usando o registro seguro de intenção e confirmação.</p></div>
         <div class="border-l-4 border-emerald-500 pl-3.5 space-y-1"><span class="text-[11px] font-extrabold text-emerald-600 uppercase">Versão 9.2.1 • Ligas como competição principal</span><h4 class="font-black text-sm">🏆 Ligas mensais no lugar do ranking geral antigo</h4><p class="text-xs text-muted-pro">A aba principal agora mostra as dez divisões mensais. O ranking geral e a exportação de imagem foram retirados da interface sem apagar cadastros, XP vitalício, histórico de duelos ou níveis. All Star Cozinha inclui 55 questões mapeadas ao Book Venture, com nota separada do XP oficial. O carregamento foi aliviado com scripts adiados e sincronização de presença mais leve.</p></div>
@@ -979,25 +985,26 @@
   </div>
 </div>
 <script src="questions.js"></script>
-  <script src="js/01-dados.js?v=9300"></script>
-  <script src="js/02-estado.js?v=9300"></script>
-  <script src="js/03-treinador.js?v=9300"></script>
-  <script src="js/04-missoes-perfil.js?v=9300"></script>
-  <script src="js/05-cozinha.js?v=9300"></script>
-  <script src="js/06-contas-sincronizacao.js?v=9300"></script>
-  <script src="js/07-jogos.js?v=9300"></script>
-  <script src="js/08-comunidade-adm.js?v=9300"></script>
-  <script src="js/09-niveis-extra.js?v=9300"></script>
-  <script src="script.js?v=9300"></script>
+  <script src="js/01-dados.js?v=9400"></script>
+  <script src="js/02-estado.js?v=9400"></script>
+  <script src="js/03-treinador.js?v=9400"></script>
+  <script src="js/14-avaliacoes-praticas.js?v=9400"></script>
+  <script src="js/04-missoes-perfil.js?v=9400"></script>
+  <script src="js/05-cozinha.js?v=9400"></script>
+  <script src="js/06-contas-sincronizacao.js?v=9400"></script>
+  <script src="js/07-jogos.js?v=9400"></script>
+  <script src="js/08-comunidade-adm.js?v=9400"></script>
+  <script src="js/09-niveis-extra.js?v=9400"></script>
+  <script src="script.js?v=9400"></script>
   <script src="hub-pc.js?v=2"></script>
   <!-- Correcoes isoladas: Book fiel ao Word e convites 1v1 sem alterar XP -->
-  <script src="book-original-fiel.js?v=9300"></script>
-  <script src="duelo-convite-fix.js?v=9300"></script>
+  <script src="book-original-fiel.js?v=9400"></script>
+  <script src="duelo-convite-fix.js?v=9400"></script>
   <!-- Módulos de jogo: Arena diária e ligas mensais. A Taça semanal foi retirada da navegação; seus arquivos ficam em legacy/ para rollback. -->
-  <script src="js/10-arena-venture.js?v=9300"></script>
-  <script src="js/11-ligas-mensais.js?v=9300"></script>
-  <script src="js/12-notificacoes.js?v=9300"></script>
-  <script src="js/13-allstar.js?v=9300"></script>
-  <script src="venture-novidades.js?v=9300"></script>
+  <script src="js/10-arena-venture.js?v=9400"></script>
+  <script src="js/11-ligas-mensais.js?v=9400"></script>
+  <script src="js/12-notificacoes.js?v=9400"></script>
+  <script src="js/13-allstar.js?v=9400"></script>
+  <script src="venture-novidades.js?v=9400"></script>
 </body>
 </html>

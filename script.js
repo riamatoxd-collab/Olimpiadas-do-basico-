@@ -15,14 +15,14 @@ function switchTrainingMode(mode) {
   if (mode === "duel" && typeof renderVentureDuelDashboard === "function") renderVentureDuelDashboard();
 }
 function switchMainTab(tab) {
-  const screens = ["quiz", "training", "missions", "prizes", "more", "profile", "book", "trainer", "admin"];
+  const screens = ["quiz", "training", "missions", "prizes", "more", "profile", "book", "trainer", "admin", "allstar"];
   if (!screens.includes(tab)) return;
   playTabClickSound();
   screens.forEach(name => {
     const screen = $(`tab-${name}`);
     if (screen) screen.classList.toggle("hidden", name !== tab);
   });
-  const currentNav = ["profile", "book", "trainer", "admin"].includes(tab) ? "more" : tab;
+  const currentNav = ["profile", "book", "trainer", "admin", "allstar"].includes(tab) ? "more" : tab;
   ["quiz", "training", "missions", "prizes", "more"].forEach(name => {
     const button = $(`nav-${name}`);
     if (!button) return;
@@ -44,13 +44,14 @@ function switchMainTab(tab) {
   if (tab === "admin" && typeof isAdminUnlocked !== "undefined" && isAdminUnlocked && typeof renderAdminUsersList === "function") renderAdminUsersList();
   if (tab === "prizes" || tab === "admin") fetchCloudHistorySafe(false);
   if (tab === "trainer") {renderPracticalChecklist();renderTrainerCenter();fetchTrainerHistory(false);}
+  if (tab === "allstar" && window.VentureAllStar && typeof window.VentureAllStar.render === "function") window.VentureAllStar.render();
   if (typeof window.scrollTo === "function") window.scrollTo({ top: 0, behavior: "instant" });
 }
 
 // =========================================================================
 // V8.5 — ATUALIZAÇÃO DE VERSÃO NO GITHUB PAGES (SEM APAGAR DADOS)
 // =========================================================================
-const APP_VERSION = "9.3.0";
+const APP_VERSION = "9.4.0";
 const APP_UPDATE_INTERVAL_MS = 60000; // Github Pages é estático: checagem periódica, não push instantâneo.
 const APP_UPDATE_IDLE_MS = 45000;
 let availableAppUpdate = null;

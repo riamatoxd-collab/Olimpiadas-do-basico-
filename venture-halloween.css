@@ -320,3 +320,18 @@ body.halloween-theme [class~="border-[#DA291C]"]{border-color:#8b5cf6!important}
   body.halloween-theme .practical-badge-art{width:70px;height:70px}
   body.halloween-theme .practical-badge-art img{width:65px;height:65px}
 }
+
+/* v9.4.0 — leitura das fichas práticas no tema Halloween */
+body.halloween-theme .practical-criterion-card{background:#171023;border-color:#493360}
+body.halloween-theme .practical-criterion-card .practical-check-row{background:#211632;color:#f7f1ff}
+body.halloween-theme .practical-criterion-card .practical-check-row span{color:#f7f1ff}
+body.halloween-theme .practical-failures{background:#130d1e;border-top-color:#493360}
+body.halloween-theme .practical-failures>strong{color:#c4a7ff}
+body.halloween-theme .practical-failures li{color:#e5d9f3}
+body.halloween-theme .practical-progress{background:#211632;border-color:#493360}
+body.halloween-theme .practical-progress-top{color:#f7f1ff}
+body.halloween-theme .practical-progress-track{background:#38274b}
+body.halloween-theme .practical-progress-track span{background:linear-gradient(90deg,#8b5cf6,#d4af37)}
+body.halloween-theme .practical-history-gaps{background:rgba(245,196,81,.08);border-color:rgba(245,196,81,.25)}
+body.halloween-theme .practical-history-gaps strong{color:#f5c451}
+body.halloween-theme .practical-history-gaps li{color:#eee4ff}
