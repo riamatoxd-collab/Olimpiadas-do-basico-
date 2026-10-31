@@ -1,5 +1,5 @@
 {
-  "version": "9.4.2",
-  "released_at": "2026-10-30",
-  "description": "Venture 9.4.2 — painel gerencial de desempenho prático na Central do Treinador. Consolida as oito fichas por colaborador e estação, mostra aprovações, avaliações em desenvolvimento e pendências, com busca, filtros e atalho para abrir uma avaliação. Leitura somente dos registros já sincronizados; não altera XP, selos, históricos, cadastros ou regras de aprovação."
+  "version": "9.4.3",
+  "released_at": "2026-10-31",
+  "description": "Notificações push motivacionais diárias às 10h de Brasília via backend Supabase e Web Push, para participantes que ativarem alertas no aparelho. Mantém XP, avaliações, selos, histórico e cadastros."
 }

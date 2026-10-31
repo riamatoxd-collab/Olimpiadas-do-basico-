@@ -10,7 +10,7 @@
   <meta name="theme-color" content="#170D2B" />
   <link rel="manifest" href="manifest.webmanifest" />
   <title>Olimpíadas do Básico — Venture v9.4.2 · Painel Prático</title>
-  <meta name="app-version" content="9.4.2" />
+  <meta name="app-version" content="9.4.3" />
   <!-- Favicon Oficial: Arcos Dourados em Vetor SVG -->
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='24' fill='%23170D2B'/%3E%3Cpath fill='%23FFC72C' d='M50 46c-3.6-13.8-10.8-23.5-19.6-23.5-12 0-21.6 18.6-21.6 52.5h9.1c0-26.4 6.4-42.8 12.5-42.8 6 0 12 17.6 12.5 42.8H50zm0 0c3.6-13.8 10.8-23.5 19.6-23.5 12 0 21.6 18.6 21.6 52.5h-9.1c0-26.4-6.4-42.8-12.5-42.8-6 0-12 17.6-12.5 42.8H50z'/%3E%3C/svg%3E" />
   <script defer src="https://cdn.tailwindcss.com"></script>
@@ -70,9 +70,10 @@
         <p id="ventureAnnouncementStatus" class="vn-admin-status" role="status" aria-live="polite">O envio usa a sincronização legada e a autorização administrativa é local; não envie dados sensíveis. Os dispositivos precisam sincronizar para receber o aviso.</p>
       </section>
       <section class="vn-admin" aria-label="Alertas do navegador">
-        <h3>📲 Alertas no celular ou computador</h3>
-        <p id="venturePushStatus" class="vn-admin-status" role="status" aria-live="polite">Permita alertas neste aparelho. Push com o site fechado exige servidor de envio configurado.</p>
-        <button id="ventureEnablePushBtn" class="vn-admin-send" type="button">Ativar alertas neste aparelho</button>
+        <h3>📲 Mensagem motivacional diária · 10h</h3>
+        <p id="venturePushStatus" class="vn-admin-status" role="status" aria-live="polite">Receba uma mensagem motivacional todos os dias às 10h, diretamente na barra de notificações do seu celular. É necessário permitir alertas neste aparelho.</p>
+        <button id="ventureEnablePushBtn" class="vn-admin-send" type="button">🔔 Ativar notificações motivacionais</button>
+        <p class="vn-admin-status">No iPhone, adicione o Venture à Tela de Início pelo Safari antes de ativar. Para parar, bloqueie as notificações nas configurações do aparelho.</p>
       </section>
     </div>
   </div>
@@ -750,9 +751,9 @@
         <button type="button" onclick="switchMainTab('trainer')" class="more-menu-item"><span class="more-menu-icon" aria-hidden="true">🎓</span><span class="more-menu-copy"><strong>Central do Treinador</strong><small>Perguntas, comunicados e desafios especiais</small></span><span class="more-chevron" aria-hidden="true">›</span></button>
         <button type="button" onclick="switchMainTab('admin')" class="more-menu-item"><span class="more-menu-icon" aria-hidden="true">⚙️</span><span class="more-menu-copy"><strong>Painel ADM</strong><small>Gerenciamento de colaboradores e XP</small></span><span class="more-chevron" aria-hidden="true">›</span></button>
         <button type="button" onclick="openVentureNews()" class="more-menu-item"><span class="more-menu-icon" aria-hidden="true">🔔</span><span class="more-menu-copy"><strong>Ver novidades</strong><small>Reabrir o aviso de entrada</small></span><span class="more-chevron" aria-hidden="true">›</span></button>
-        <div class="app-version-control" aria-label="Versão do aplicativo"><span>✅ Versão instalada: <strong id="appInstalledVersion">9.4.2</strong></span><button type="button" onclick="checkForAppUpdate(true)">🔄 Procurar atualização</button><p id="appVersionStatus" role="status" aria-live="polite">Checagem automática a cada 60 segundos enquanto o site está aberto.</p></div>
+        <div class="app-version-control" aria-label="Versão do aplicativo"><span>✅ Versão instalada: <strong id="appInstalledVersion">9.4.3</strong></span><button type="button" onclick="checkForAppUpdate(true)">🔄 Procurar atualização</button><p id="appVersionStatus" role="status" aria-live="polite">Checagem automática a cada 60 segundos enquanto o site está aberto.</p></div>
       </div>
-      <div class="more-info"><strong>Olimpíadas do Básico · Venture</strong><span>Versão 9.4.2 · Painel de desempenho prático</span></div>
+      <div class="more-info"><strong>Olimpíadas do Básico · Venture</strong><span>Versão 9.4.3 · Notificações motivacionais diárias</span></div>
     </section>
     <!-- V8.3: CENTRAL DO TREINADOR (restrição de interface; sem autorização de servidor) -->
     <section id="tab-trainer" class="app-screen hidden space-y-4" aria-label="Central do Treinador">
@@ -1043,7 +1044,8 @@
   <!-- Módulos de jogo: Arena diária e ligas mensais. A Taça semanal foi retirada da navegação; seus arquivos ficam em legacy/ para rollback. -->
   <script src="js/10-arena-venture.js?v=9400"></script>
   <script src="js/11-ligas-mensais.js?v=9400"></script>
-  <script src="js/12-notificacoes.js?v=9400"></script>
+  <script>window.VENTURE_PUSH_PUBLIC_KEY="BKysVustilrXAbcIgYlhXR7O1Tp99RTljNxaQWBCG6-oN0V5_2lZxY6mqDX_kJKFXyRaUINJFDQal-P0Zy2zsok";window.VENTURE_PUSH_SUBSCRIBE_URL="https://vsnjhdvcskwtrbvqvfol.supabase.co/functions/v1/venture-motivacao/subscribe";</script>
+  <script src="js/12-notificacoes.js?v=9430"></script>
   <script src="js/13-allstar.js?v=9400"></script>
   <script src="venture-novidades.js?v=9420"></script>
 </body>

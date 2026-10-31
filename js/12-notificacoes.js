@@ -125,13 +125,13 @@
     const button = byId('ventureEnablePushBtn');
     if (status) {
       if (typeof Notification === 'undefined') status.textContent = 'Este navegador não oferece suporte a notificações do sistema. Os avisos internos continuam disponíveis.';
-      else if (Notification.permission === 'granted') status.textContent = 'Permissão concedida neste aparelho. Push com o site fechado ainda depende de backend e VAPID.';
+      else if (Notification.permission === 'granted') status.textContent = 'Permissão concedida. Toque no botão abaixo para confirmar a inscrição diária às 10h.';
       else if (Notification.permission === 'denied') status.textContent = 'Alertas bloqueados no navegador. Altere a permissão nas configurações do site.';
       else status.textContent = 'Ative os alertas deste aparelho. O envio push com o site fechado exige um servidor configurado.';
     }
     if (button) {
       button.disabled = typeof Notification === 'undefined' || !('serviceWorker' in navigator);
-      button.textContent = typeof Notification !== 'undefined' && Notification.permission === 'granted' ? 'Permissão concedida ✓' : 'Ativar alertas neste aparelho';
+      button.textContent = typeof Notification !== 'undefined' && Notification.permission === 'granted' ? '🔔 Confirmar inscrição diária' : '🔔 Ativar notificações motivacionais';
     }
   }
   function open() {
@@ -167,12 +167,12 @@
         if (!subscription) subscription = await registration.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: urlBase64ToUint8Array(publicKey) });
         const response = await fetch(subscribeUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ subscription, playerKey: currentUserKey || null }) });
         if (!response.ok) throw new Error('Falha ao registrar inscrição push.');
-        if (status) status.textContent = 'Inscrição push enviada ao servidor configurado neste aparelho.';
-      } else if (status) status.textContent = 'Permissão concedida e service worker instalado. Para receber push com o site fechado, configure backend autenticado, chave VAPID e endpoint de envio. Os avisos internos já funcionam.';
+        if (status) status.textContent = '✅ Pronto! Este aparelho está inscrito para receber mensagens diárias às 10h.';
+      } else if (status) status.textContent = 'Servidor de notificações ainda não está configurado.';
     } catch (error) {
       if (status) status.textContent = 'Não foi possível ativar agora. Verifique a permissão e a configuração do site.';
     }
-    render();
+    // Não redesenhar agora: mantém a confirmação ou o erro de inscrição visível.
   }
   function sendAnnouncement() {
     if (!currentIsAdmin()) { alert('Somente o administrador pode enviar avisos globais.'); return; }
